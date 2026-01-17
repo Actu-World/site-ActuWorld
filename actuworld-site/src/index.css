@@ -1,68 +1,301 @@
+@import "tailwindcss";
+
+/* =====================================================
+   CHARTE GRAPHIQUE ACTUWORLD
+   ===================================================== */
+
+/* Variables CSS pour les couleurs */
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* Mode clair */
+  --aw-primary: #2E5F4A;
+  --aw-secondary: #94C9AA;
+  --aw-accent: #00A896;
+  --aw-bg: #FAF4EB;
+  --aw-surface: #F5E9DA;
+  --aw-text: #1B3528;
+  --aw-text-muted: #4A6B5A;
+  --aw-success: #D4E9D1;
+  --aw-border: rgba(0, 0, 0, 0.08);
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+.dark {
+  --aw-primary: #A8D5BA;
+  --aw-secondary: #5A8A6A;
+  --aw-accent: #00D4BE;
+  --aw-bg: #0F1512;
+  --aw-surface: #1A2420;
+  --aw-text: #E8F0EC;
+  --aw-text-muted: #A0B8A8;
+  --aw-success: #2A4A35;
+  --aw-border: rgba(255, 255, 255, 0.08);
 }
-a:hover {
-  color: #535bf2;
-}
+
+/* =====================================================
+   TYPOGRAPHIES
+   ===================================================== */
+
+html, body, #root { height: 100%; }
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  font-family: "Urbanist", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--aw-bg);
+  color: var(--aw-text);
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* Titres avec Platypi */
+h1, .h1 {
+  font-family: "Platypi", Georgia, serif;
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 38px;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
+h2, .h2 {
+  font-family: "Platypi", Georgia, serif;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 25px;
+}
+
+/* Tailles responsives pour les titres hero */
+@media (min-width: 768px) {
+  .hero-title {
+    font-size: 56px;
+    line-height: 64px;
+  }
+}
+
+/* Corps de texte */
+.body-medium {
+  font-family: "Urbanist", sans-serif;
   font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  font-size: 16px;
+  line-height: 24px;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+.body-semi {
+  font-family: "Urbanist", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+/* Micro-textes */
+.caption {
+  font-family: "Urbanist", sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.overline {
+  font-family: "Urbanist", sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Liens / CTA */
+.link {
+  font-family: "Urbanist", sans-serif;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--aw-accent);
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* =====================================================
+   CLASSES UTILITAIRES COULEURS
+   ===================================================== */
+
+.bg-aw-bg { background-color: var(--aw-bg); }
+.bg-aw-surface { background-color: var(--aw-surface); }
+.bg-aw-primary { background-color: var(--aw-primary); }
+.bg-aw-secondary { background-color: var(--aw-secondary); }
+.bg-aw-accent { background-color: var(--aw-accent); }
+.bg-aw-success { background-color: var(--aw-success); }
+
+.text-aw-text { color: var(--aw-text); }
+.text-aw-muted { color: var(--aw-text-muted); }
+.text-aw-primary { color: var(--aw-primary); }
+.text-aw-secondary { color: var(--aw-secondary); }
+.text-aw-accent { color: var(--aw-accent); }
+
+.border-aw { border-color: var(--aw-border); }
+
+/* =====================================================
+   COMPOSANTS
+   ===================================================== */
+
+/* Container padding */
+.container-px { @apply px-4 md:px-6; }
+
+/* Glass effect */
+.glass {
+  backdrop-filter: blur(12px);
+  background-color: color-mix(in srgb, var(--aw-bg) 80%, transparent);
+}
+
+/* Cards */
+.card {
+  border-radius: 16px;
+  border: 1px solid var(--aw-border);
+  background-color: var(--aw-surface);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Boutons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-family: "Urbanist", sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 22px;
+  padding: 12px 24px;
+  background-color: var(--aw-primary);
+  color: #FFFFFF;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(46, 95, 74, 0.25);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 4px 16px rgba(46, 95, 74, 0.35);
+}
+
+.btn-primary:focus {
+  outline: 2px solid var(--aw-accent);
+  outline-offset: 2px;
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-family: "Urbanist", sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 22px;
+  padding: 12px 24px;
+  border: 1px solid var(--aw-border);
+  background-color: transparent;
+  color: var(--aw-text);
+  transition: all 0.2s ease;
+}
+
+.btn-outline:hover {
+  background-color: var(--aw-surface);
+  border-color: var(--aw-primary);
+}
+
+.btn-outline:focus {
+  outline: 2px solid var(--aw-accent);
+  outline-offset: 2px;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.badge-primary {
+  background-color: color-mix(in srgb, var(--aw-primary) 15%, transparent);
+  color: var(--aw-primary);
+}
+
+.badge-secondary {
+  background-color: color-mix(in srgb, var(--aw-secondary) 30%, transparent);
+  color: var(--aw-text);
+}
+
+.badge-accent {
+  background-color: color-mix(in srgb, var(--aw-accent) 15%, transparent);
+  color: var(--aw-accent);
+}
+
+.badge-success {
+  background-color: var(--aw-success);
+  color: var(--aw-text);
+}
+
+/* Décor Hero - Blobs */
+.aw-blob {
+  position: absolute;
+  filter: blur(100px);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Progress bars */
+.progress-bar {
+  height: 8px;
+  border-radius: 4px;
+  background-color: var(--aw-border);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--aw-primary), var(--aw-accent));
+}
+
+/* Selection */
+::selection {
+  background-color: color-mix(in srgb, var(--aw-secondary) 50%, transparent);
+  color: var(--aw-text);
+}
+
+/* Focus visible */
+:focus-visible {
+  outline: 2px solid var(--aw-accent);
+  outline-offset: 2px;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--aw-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--aw-secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--aw-primary);
 }
