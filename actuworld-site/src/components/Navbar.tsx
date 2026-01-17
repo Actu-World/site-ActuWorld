@@ -6,10 +6,10 @@ export const Navbar: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navLinks = [
-    { href: "#app", label: "L'App" },
-    { href: "#ai-tool", label: "Outil IA" },
-    { href: "#features", label: "Fonctionnalités" },
-    { href: "#business", label: "Tarifs" },
+    { href: "#problem", label: "Le problème" },
+    { href: "#solution", label: "La solution" },
+    { href: "#reco-src", label: "RECO-SRC" },
+    { href: "#pricing", label: "Tarifs" },
     { href: "#faq", label: "FAQ" },
   ];
 
