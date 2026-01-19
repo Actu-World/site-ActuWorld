@@ -3,15 +3,14 @@ import { Link } from "react-router-dom";
 import { Mail, MessageCircle, Building2, ChevronRight, Globe2 } from "lucide-react";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
-
-const fadeIn = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 }
-};
-
-const stagger = {
-  visible: { transition: { staggerChildren: 0.1 } }
-};
+import {
+  PageWrapper,
+  AnimatedSection,
+  Floating,
+  staggerContainer,
+  fadeInUp,
+  scaleUp
+} from "../components/animations";
 
 export default function ContactPage() {
   const contactMethods = [
@@ -39,17 +38,24 @@ export default function ContactPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-aw-bg text-aw-text">
+    <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
       {/* HEADER */}
       <Section className="pt-24 pb-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#2E5F4A]/10 via-[#94C9AA]/10 to-[#00A896]/10 pointer-events-none"></div>
+        <Floating duration={6} y={10}>
+          <div className="absolute top-20 left-20 w-24 h-24 bg-aw-secondary/30 rounded-full blur-2xl" />
+        </Floating>
+        <Floating duration={8} y={15}>
+          <div className="absolute bottom-10 right-20 w-32 h-32 bg-aw-accent/20 rounded-full blur-2xl" />
+        </Floating>
+
         <motion.div
           initial="hidden"
           animate="visible"
-          variants={stagger}
+          variants={staggerContainer}
           className="text-center relative"
         >
-          <motion.div variants={fadeIn}>
+          <motion.div variants={scaleUp}>
             <H2 kicker="Contact" center>
               Construisons ensemble l'information de demain
             </H2>
@@ -67,25 +73,28 @@ export default function ContactPage() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          variants={stagger}
+          variants={staggerContainer}
+          className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto"
         >
-          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {contactMethods.map((method, i) => (
-              <motion.a
-                key={i}
-                href={method.link}
-                variants={fadeIn}
-                className="card card-hover p-6 text-center block"
+          {contactMethods.map((method, i) => (
+            <motion.a
+              key={i}
+              href={method.link}
+              variants={fadeInUp}
+              whileHover={{ y: -10, scale: 1.02 }}
+              className="card card-hover p-6 text-center block"
+            >
+              <motion.div
+                className="w-14 h-14 mx-auto rounded-2xl bg-aw-success flex items-center justify-center mb-4"
+                whileHover={{ scale: 1.1, rotate: 5 }}
               >
-                <div className="w-14 h-14 mx-auto rounded-2xl bg-aw-success flex items-center justify-center mb-4">
-                  <method.icon className="w-7 h-7 text-aw-primary" />
-                </div>
-                <h3 className="body-semi text-lg mb-1">{method.title}</h3>
-                <p className="text-aw-muted text-sm mb-3">{method.desc}</p>
-                <p className="text-aw-primary font-medium">{method.value}</p>
-              </motion.a>
-            ))}
-          </div>
+                <method.icon className="w-7 h-7 text-aw-primary" />
+              </motion.div>
+              <h3 className="body-semi text-lg mb-1">{method.title}</h3>
+              <p className="text-aw-muted text-sm mb-3">{method.desc}</p>
+              <p className="text-aw-primary font-medium">{method.value}</p>
+            </motion.a>
+          ))}
         </motion.div>
       </Section>
 
@@ -95,95 +104,115 @@ export default function ContactPage() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          variants={stagger}
+          variants={staggerContainer}
           className="max-w-3xl mx-auto text-center"
         >
-          <motion.div variants={fadeIn}>
-            <div className="w-20 h-20 mx-auto rounded-2xl bg-aw-primary flex items-center justify-center mb-6">
+          <motion.div variants={scaleUp}>
+            <motion.div
+              className="w-20 h-20 mx-auto rounded-2xl bg-aw-primary flex items-center justify-center mb-6"
+              animate={{
+                scale: [1, 1.05, 1],
+                rotate: [0, 5, -5, 0]
+              }}
+              transition={{ duration: 4, repeat: Infinity }}
+            >
               <Globe2 className="w-10 h-10 text-white" />
-            </div>
+            </motion.div>
             <h3 className="text-3xl font-bold mb-4">Rejoignez le mouvement</h3>
             <p className="text-aw-muted text-lg mb-8">
               ActuWorld est en développement. Inscrivez-vous pour être informé du lancement
               et faire partie des premiers utilisateurs de la plateforme.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a href="mailto:contact@actuworld.app" className="btn-primary text-lg px-8 py-4">
-                <Mail className="w-5 h-5 mr-2" /> contact@actuworld.app
-              </a>
-            </div>
+            <motion.a
+              href="mailto:contact@actuworld.app"
+              className="btn-primary text-lg px-8 py-4 glow-hover"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Mail className="w-5 h-5 mr-2" /> contact@actuworld.app
+            </motion.a>
           </motion.div>
         </motion.div>
       </Section>
 
       {/* WHAT WE'RE LOOKING FOR */}
       <Section className="py-24">
+        <AnimatedSection>
+          <div className="text-center mb-12">
+            <H2 kicker="On recherche" center>
+              Qui peut nous aider ?
+            </H2>
+          </div>
+        </AnimatedSection>
+
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          variants={stagger}
+          variants={staggerContainer}
+          className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto"
         >
-          <motion.div variants={fadeIn} className="text-center mb-12">
-            <H2 kicker="On recherche" center>
-              Qui peut nous aider ?
-            </H2>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
-            {[
-              {
-                title: "Créateurs de contenu",
-                desc: "Testeurs beta pour valider l'expérience utilisateur et RECO-SRC"
-              },
-              {
-                title: "Médias & Journalistes",
-                desc: "Partenariats pour la vérification d'information"
-              },
-              {
-                title: "Éducateurs",
-                desc: "Intégration dans les parcours pédagogiques"
-              },
-              {
-                title: "Investisseurs",
-                desc: "Financement pour accélérer le développement"
-              }
-            ].map((item, i) => (
-              <motion.div key={i} variants={fadeIn} className="card p-6">
-                <h3 className="body-semi text-lg mb-2">{item.title}</h3>
-                <p className="text-aw-muted text-sm">{item.desc}</p>
-              </motion.div>
-            ))}
-          </div>
+          {[
+            {
+              title: "Créateurs de contenu",
+              desc: "Testeurs beta pour valider l'expérience utilisateur et RECO-SRC"
+            },
+            {
+              title: "Médias & Journalistes",
+              desc: "Partenariats pour la vérification d'information"
+            },
+            {
+              title: "Éducateurs",
+              desc: "Intégration dans les parcours pédagogiques"
+            },
+            {
+              title: "Investisseurs",
+              desc: "Financement pour accélérer le développement"
+            }
+          ].map((item, i) => (
+            <motion.div
+              key={i}
+              variants={fadeInUp}
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="card card-hover p-6"
+            >
+              <h3 className="body-semi text-lg mb-2">{item.title}</h3>
+              <p className="text-aw-muted text-sm">{item.desc}</p>
+            </motion.div>
+          ))}
         </motion.div>
       </Section>
 
       {/* LINKS */}
       <Section className="bg-aw-surface py-16">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={fadeIn}
-          className="text-center"
-        >
-          <h3 className="text-xl font-bold mb-6">En savoir plus</h3>
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <Link to="/" className="btn-outline">
-              Accueil <ChevronRight className="w-4 h-4 ml-1" />
-            </Link>
-            <Link to="/app" className="btn-outline">
-              La plateforme <ChevronRight className="w-4 h-4 ml-1" />
-            </Link>
-            <Link to="/reco-src" className="btn-outline">
-              RECO-SRC <ChevronRight className="w-4 h-4 ml-1" />
-            </Link>
-            <Link to="/faq" className="btn-outline">
-              FAQ <ChevronRight className="w-4 h-4 ml-1" />
-            </Link>
+        <AnimatedSection direction="scale">
+          <div className="text-center">
+            <h3 className="text-xl font-bold mb-6">En savoir plus</h3>
+            <motion.div
+              className="flex flex-wrap items-center justify-center gap-4"
+              initial="hidden"
+              whileInView="visible"
+              variants={staggerContainer}
+            >
+              {[
+                { to: "/", label: "Accueil" },
+                { to: "/app", label: "La plateforme" },
+                { to: "/reco-src", label: "RECO-SRC" },
+                { to: "/faq", label: "FAQ" },
+              ].map((link, i) => (
+                <motion.div key={i} variants={fadeInUp}>
+                  <Link
+                    to={link.to}
+                    className="btn-outline"
+                  >
+                    {link.label} <ChevronRight className="w-4 h-4 ml-1" />
+                  </Link>
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
-        </motion.div>
+        </AnimatedSection>
       </Section>
-    </div>
+    </PageWrapper>
   );
 }

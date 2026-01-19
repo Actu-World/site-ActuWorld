@@ -3,15 +3,13 @@ import { Link } from "react-router-dom";
 import { HelpCircle, ChevronRight } from "lucide-react";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
-
-const fadeIn = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 }
-};
-
-const stagger = {
-  visible: { transition: { staggerChildren: 0.1 } }
-};
+import {
+  PageWrapper,
+  AnimatedSection,
+  staggerContainer,
+  fadeInUp,
+  scaleUp
+} from "../components/animations";
 
 export default function FaqPage() {
   const generalFaq = [
@@ -68,14 +66,28 @@ export default function FaqPage() {
   ];
 
   const FaqSection = ({ title, items }: { title: string; items: { q: string; a: string }[] }) => (
-    <div className="space-y-4">
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+      variants={staggerContainer}
+      className="space-y-4"
+    >
       <h3 className="text-xl font-bold text-aw-primary mb-6">{title}</h3>
       {items.map((item, i) => (
-        <motion.div key={i} variants={fadeIn} className="card p-6">
+        <motion.div
+          key={i}
+          variants={fadeInUp}
+          whileHover={{ x: 5, scale: 1.01 }}
+          className="card card-hover p-6"
+        >
           <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-aw-success flex items-center justify-center">
+            <motion.div
+              className="flex-shrink-0 w-8 h-8 rounded-lg bg-aw-success flex items-center justify-center"
+              whileHover={{ scale: 1.1, rotate: 5 }}
+            >
               <HelpCircle className="w-4 h-4 text-aw-primary" />
-            </div>
+            </motion.div>
             <div>
               <h4 className="body-semi text-lg">{item.q}</h4>
               <p className="text-aw-muted mt-2">{item.a}</p>
@@ -83,20 +95,20 @@ export default function FaqPage() {
           </div>
         </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 
   return (
-    <div className="min-h-screen bg-aw-bg text-aw-text">
+    <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
       {/* HEADER */}
       <Section className="pt-24 pb-12">
         <motion.div
           initial="hidden"
           animate="visible"
-          variants={stagger}
+          variants={staggerContainer}
           className="text-center"
         >
-          <motion.div variants={fadeIn}>
+          <motion.div variants={scaleUp}>
             <H2 kicker="FAQ" center>
               Questions fréquentes
             </H2>
@@ -109,61 +121,39 @@ export default function FaqPage() {
 
       {/* GENERAL FAQ */}
       <Section className="py-12">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={stagger}
-          className="max-w-3xl mx-auto"
-        >
+        <div className="max-w-3xl mx-auto">
           <FaqSection title="Général" items={generalFaq} />
-        </motion.div>
+        </div>
       </Section>
 
       {/* RECO-SRC FAQ */}
       <Section className="bg-aw-surface py-12">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={stagger}
-          className="max-w-3xl mx-auto"
-        >
+        <div className="max-w-3xl mx-auto">
           <FaqSection title="RECO-SRC" items={recoSrcFaq} />
-        </motion.div>
+        </div>
       </Section>
 
       {/* CREATORS FAQ */}
       <Section className="py-12">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={stagger}
-          className="max-w-3xl mx-auto"
-        >
+        <div className="max-w-3xl mx-auto">
           <FaqSection title="Créateurs" items={creatorsFaq} />
-        </motion.div>
+        </div>
       </Section>
 
       {/* CTA */}
       <Section className="bg-aw-surface py-16">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={fadeIn}
-          className="text-center"
-        >
-          <h3 className="text-2xl font-bold mb-4">Vous n'avez pas trouvé votre réponse ?</h3>
-          <p className="text-aw-muted mb-8 max-w-xl mx-auto">
-            Notre équipe est là pour répondre à toutes vos questions.
-          </p>
-          <Link to="/contact" className="btn-primary">
-            Nous contacter <ChevronRight className="w-5 h-5 ml-2" />
-          </Link>
-        </motion.div>
+        <AnimatedSection direction="scale">
+          <div className="text-center">
+            <h3 className="text-2xl font-bold mb-4">Vous n'avez pas trouvé votre réponse ?</h3>
+            <p className="text-aw-muted mb-8 max-w-xl mx-auto">
+              Notre équipe est là pour répondre à toutes vos questions.
+            </p>
+            <Link to="/contact" className="btn-primary glow-hover">
+              Nous contacter <ChevronRight className="w-5 h-5 ml-2" />
+            </Link>
+          </div>
+        </AnimatedSection>
       </Section>
-    </div>
+    </PageWrapper>
   );
 }

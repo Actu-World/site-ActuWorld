@@ -5,15 +5,15 @@ import {
 } from "lucide-react";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
-
-const fadeIn = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 }
-};
-
-const stagger = {
-  visible: { transition: { staggerChildren: 0.1 } }
-};
+import {
+  PageWrapper,
+  AnimatedSection,
+  Parallax,
+  Floating,
+  staggerContainer,
+  fadeInUp,
+  scaleUp
+} from "../components/animations";
 
 export default function RecoSrcPage() {
   const recoFeatures = [
@@ -33,22 +33,29 @@ export default function RecoSrcPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-aw-bg text-aw-text">
+    <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
       {/* HEADER */}
       <Section className="pt-24 pb-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#00A896]/10 via-transparent to-transparent pointer-events-none"></div>
+        <Floating duration={8} y={15}>
+          <div className="absolute top-20 right-20 w-32 h-32 bg-aw-accent/20 rounded-full blur-2xl" />
+        </Floating>
+
         <motion.div
           initial="hidden"
           animate="visible"
-          variants={stagger}
+          variants={staggerContainer}
           className="text-center relative"
         >
-          <motion.div variants={fadeIn}>
-            <span className="badge badge-accent mb-6">
+          <motion.div variants={scaleUp}>
+            <motion.span
+              className="badge badge-accent mb-6"
+              whileHover={{ scale: 1.05 }}
+            >
               <Sparkles className="w-4 h-4" /> Intelligence Artificielle
-            </span>
+            </motion.span>
             <H2 kicker="" center>
-              RECO-SRC, l'IA de <span className="text-aw-accent">vérification</span>
+              RECO-SRC, l'IA de <span className="gradient-text">vérification</span>
             </H2>
             <p className="text-aw-muted mt-4 max-w-3xl mx-auto text-lg">
               Notre outil extrait automatiquement les sources citées dans les vidéos.
@@ -60,26 +67,32 @@ export default function RecoSrcPage() {
 
       {/* DEMO */}
       <Section className="py-12">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={fadeIn}
-        >
+        <AnimatedSection direction="scale">
           <div className="max-w-5xl mx-auto">
-            <div className="card p-8">
+            <motion.div
+              className="card p-8"
+              whileHover={{ scale: 1.01 }}
+              transition={{ duration: 0.3 }}
+            >
               <div className="flex flex-col lg:flex-row gap-8">
                 <div className="lg:w-1/2">
-                  <div className="aspect-video rounded-xl bg-[#1B3528] flex items-center justify-center relative overflow-hidden group cursor-pointer">
+                  <motion.div
+                    className="aspect-video rounded-xl bg-[#1B3528] flex items-center justify-center relative overflow-hidden group cursor-pointer"
+                    whileHover={{ scale: 1.02 }}
+                  >
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                    <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <motion.div
+                      className="w-16 h-16 rounded-full bg-white/20 backdrop-blur flex items-center justify-center"
+                      whileHover={{ scale: 1.2, backgroundColor: "rgba(255,255,255,0.3)" }}
+                      transition={{ duration: 0.2 }}
+                    >
                       <Play className="w-8 h-8 text-white ml-1" />
-                    </div>
+                    </motion.div>
                     <div className="absolute bottom-4 left-4 right-4">
                       <div className="text-white text-sm font-medium">Vidéo analysée par RECO-SRC</div>
                       <div className="text-white/60 text-xs mt-1">Extraction automatique des sources</div>
                     </div>
-                  </div>
+                  </motion.div>
                 </div>
 
                 <div className="lg:w-1/2 space-y-4">
@@ -94,13 +107,26 @@ export default function RecoSrcPage() {
                       { source: "Banque Centrale Européenne", confidence: "91%", time: "1:15" },
                       { source: "Étude Université Paris-Saclay", confidence: "87%", time: "2:33" },
                     ].map((s, i) => (
-                      <div key={i} className="p-3 rounded-lg bg-aw-bg border border-aw flex items-center justify-between">
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.3 + i * 0.1 }}
+                        whileHover={{ x: 5, backgroundColor: "var(--aw-success)" }}
+                        className="p-3 rounded-lg bg-aw-bg border border-aw flex items-center justify-between transition-colors"
+                      >
                         <div>
                           <div className="text-sm font-medium">{s.source}</div>
                           <div className="text-xs text-aw-muted">Timestamp : {s.time}</div>
                         </div>
-                        <div className="text-aw-primary font-bold">{s.confidence}</div>
-                      </div>
+                        <motion.div
+                          className="text-aw-primary font-bold"
+                          animate={{ scale: [1, 1.1, 1] }}
+                          transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
+                        >
+                          {s.confidence}
+                        </motion.div>
+                      </motion.div>
                     ))}
                   </div>
 
@@ -115,138 +141,154 @@ export default function RecoSrcPage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
-        </motion.div>
+        </AnimatedSection>
       </Section>
 
       {/* HOW IT WORKS */}
       <Section className="bg-aw-surface py-24">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={stagger}
-        >
-          <motion.div variants={fadeIn} className="text-center mb-16">
+        <AnimatedSection>
+          <div className="text-center mb-16">
             <H2 kicker="Comment ça marche" center>
-              Le processus <span className="text-aw-accent">RECO-SRC</span>
+              Le processus <span className="gradient-text">RECO-SRC</span>
             </H2>
-          </motion.div>
-
-          <div className="max-w-5xl mx-auto">
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {steps.map((step, i) => (
-                <motion.div
-                  key={i}
-                  variants={fadeIn}
-                  className="card p-6 relative"
-                >
-                  <div className="absolute -top-3 -left-3 w-10 h-10 rounded-xl bg-aw-accent flex items-center justify-center text-white font-bold">
-                    {step.num}
-                  </div>
-                  <h3 className="body-semi text-lg mb-2 mt-4">{step.title}</h3>
-                  <p className="text-aw-muted text-sm">{step.desc}</p>
-                </motion.div>
-              ))}
-            </div>
           </div>
-        </motion.div>
+        </AnimatedSection>
+
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={staggerContainer}
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {steps.map((step, i) => (
+              <motion.div
+                key={i}
+                variants={fadeInUp}
+                whileHover={{ y: -8, scale: 1.02 }}
+                className="card card-hover p-6 relative"
+              >
+                <motion.div
+                  className="absolute -top-3 -left-3 w-10 h-10 rounded-xl bg-aw-accent flex items-center justify-center text-white font-bold"
+                  whileHover={{ scale: 1.2, rotate: 10 }}
+                >
+                  {step.num}
+                </motion.div>
+                <h3 className="body-semi text-lg mb-2 mt-4">{step.title}</h3>
+                <p className="text-aw-muted text-sm">{step.desc}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
       </Section>
 
       {/* FEATURES */}
-      <Section className="py-24">
+      <Section className="py-24 relative overflow-hidden">
+        <Parallax offset={30} className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/3 left-0 w-80 h-80 bg-aw-secondary/10 rounded-full blur-3xl" />
+        </Parallax>
+
+        <AnimatedSection>
+          <div className="text-center mb-16">
+            <H2 kicker="Technologie" center>
+              Les fonctionnalités <span className="gradient-text">clés</span>
+            </H2>
+          </div>
+        </AnimatedSection>
+
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          variants={stagger}
+          variants={staggerContainer}
+          className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 relative"
         >
-          <motion.div variants={fadeIn} className="text-center mb-16">
-            <H2 kicker="Technologie" center>
-              Les fonctionnalités <span className="text-aw-primary">clés</span>
-            </H2>
-          </motion.div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {recoFeatures.map((f, i) => (
+          {recoFeatures.map((f, i) => (
+            <motion.div
+              key={i}
+              variants={scaleUp}
+              whileHover={{ y: -10 }}
+              className="card card-hover p-6 text-center"
+            >
               <motion.div
-                key={i}
-                variants={fadeIn}
-                className="card card-hover p-6 text-center"
+                className="w-14 h-14 mx-auto rounded-2xl bg-aw-success flex items-center justify-center mb-4"
+                whileHover={{ scale: 1.1, rotate: 5 }}
               >
-                <div className="w-14 h-14 mx-auto rounded-2xl bg-aw-success flex items-center justify-center mb-4">
-                  <f.icon className="w-7 h-7 text-aw-primary" />
-                </div>
-                <h3 className="body-semi text-lg mb-2">{f.title}</h3>
-                <p className="text-aw-muted text-sm">{f.desc}</p>
+                <f.icon className="w-7 h-7 text-aw-primary" />
               </motion.div>
-            ))}
-          </div>
+              <h3 className="body-semi text-lg mb-2">{f.title}</h3>
+              <p className="text-aw-muted text-sm">{f.desc}</p>
+            </motion.div>
+          ))}
         </motion.div>
       </Section>
 
       {/* USE CASES */}
       <Section className="bg-aw-surface py-24">
+        <AnimatedSection>
+          <div className="text-center mb-16">
+            <H2 kicker="Cas d'usage" center>
+              Pour qui est <span className="gradient-text">RECO-SRC</span> ?
+            </H2>
+          </div>
+        </AnimatedSection>
+
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          variants={stagger}
+          variants={staggerContainer}
+          className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto"
         >
-          <motion.div variants={fadeIn} className="text-center mb-16">
-            <H2 kicker="Cas d'usage" center>
-              Pour qui est <span className="text-aw-accent">RECO-SRC</span> ?
-            </H2>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            {[
-              {
-                title: "Créateurs de contenu",
-                desc: "Gagnez du temps en extrayant automatiquement vos sources. Publiez plus rapidement du contenu bien sourcé."
-              },
-              {
-                title: "Fact-checkers",
-                desc: "Accélérez votre travail de vérification. Identifiez rapidement les sources citées dans les vidéos virales."
-              },
-              {
-                title: "Journalistes",
-                desc: "Vérifiez rapidement les affirmations des personnalités publiques. Trouvez les sources originales."
-              }
-            ].map((use, i) => (
-              <motion.div key={i} variants={fadeIn} className="card p-6 text-center">
-                <h3 className="body-semi text-lg mb-3">{use.title}</h3>
-                <p className="text-aw-muted text-sm">{use.desc}</p>
-              </motion.div>
-            ))}
-          </div>
+          {[
+            {
+              title: "Créateurs de contenu",
+              desc: "Gagnez du temps en extrayant automatiquement vos sources. Publiez plus rapidement du contenu bien sourcé."
+            },
+            {
+              title: "Fact-checkers",
+              desc: "Accélérez votre travail de vérification. Identifiez rapidement les sources citées dans les vidéos virales."
+            },
+            {
+              title: "Journalistes",
+              desc: "Vérifiez rapidement les affirmations des personnalités publiques. Trouvez les sources originales."
+            }
+          ].map((use, i) => (
+            <motion.div
+              key={i}
+              variants={fadeInUp}
+              whileHover={{ y: -5, scale: 1.02 }}
+              className="card card-hover p-6 text-center"
+            >
+              <h3 className="body-semi text-lg mb-3">{use.title}</h3>
+              <p className="text-aw-muted text-sm">{use.desc}</p>
+            </motion.div>
+          ))}
         </motion.div>
       </Section>
 
       {/* CTA */}
       <Section className="py-24">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={fadeIn}
-          className="text-center"
-        >
-          <h3 className="text-2xl font-bold mb-4">Prêt à essayer RECO-SRC ?</h3>
-          <p className="text-aw-muted mb-8 max-w-xl mx-auto">
-            Découvrez nos offres et commencez à utiliser notre IA de vérification de sources.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/pricing" className="btn-primary">
-              Voir les tarifs <ChevronRight className="w-5 h-5 ml-2" />
-            </Link>
-            <Link to="/contact" className="btn-outline">
-              Nous contacter
-            </Link>
+        <AnimatedSection direction="scale">
+          <div className="text-center">
+            <h3 className="text-2xl font-bold mb-4">Prêt à essayer RECO-SRC ?</h3>
+            <p className="text-aw-muted mb-8 max-w-xl mx-auto">
+              Découvrez nos offres et commencez à utiliser notre IA de vérification de sources.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link to="/pricing" className="btn-primary glow-hover">
+                Voir les tarifs <ChevronRight className="w-5 h-5 ml-2" />
+              </Link>
+              <Link to="/contact" className="btn-outline">
+                Nous contacter
+              </Link>
+            </div>
           </div>
-        </motion.div>
+        </AnimatedSection>
       </Section>
-    </div>
+    </PageWrapper>
   );
 }
