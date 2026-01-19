@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
+import { PageMeta } from "../components/PageMeta";
 import {
   PageWrapper,
   AnimatedSection,
@@ -53,6 +54,11 @@ export default function HomePage() {
 
   return (
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
+      <PageMeta
+        title="ActuWorld — Apprendre plutôt que scroller"
+        description="Le premier réseau social anti-buzz où chaque publication est sourcée. Accédez gratuitement à l'information fiable et valorisez les créateurs de qualité."
+        path="/"
+      />
       {/* HERO */}
       <Section id="hero" container={false} className="relative overflow-hidden pt-16 md:pt-24 pb-20">
         {/* Animated blobs */}

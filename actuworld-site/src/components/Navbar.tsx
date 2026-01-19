@@ -19,20 +19,20 @@ export const Navbar: React.FC = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <header className="sticky top-0 z-40 glass border-b border-aw">
+    <header className="sticky top-0 z-40 glass border-b border-aw" role="banner">
       <div className="max-w-7xl mx-auto container-px h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 font-bold text-lg md:text-xl">
+        <Link to="/" className="flex items-center gap-2 font-bold text-lg md:text-xl" aria-label="Accueil ActuWorld">
           <motion.span
             className="inline-flex items-center justify-center w-8 h-8 rounded-md bg-aw-primary"
             whileHover={{ scale: 1.1, rotate: 5 }}
           >
-            <Globe2 className="w-5 h-5 text-white" />
+            <Globe2 className="w-5 h-5 text-white" aria-hidden="true" />
           </motion.span>
           <span className="text-aw-text">ActuWorld</span>
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-6 text-[15px]">
+        <nav className="hidden md:flex items-center gap-6 text-[15px]" aria-label="Navigation principale">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -42,26 +42,28 @@ export const Navbar: React.FC = () => {
                   ? 'text-aw-primary'
                   : 'text-aw-muted hover:text-aw-primary'
               }`}
+              aria-current={isActive(link.href) ? "page" : undefined}
             >
               {link.label}
               {isActive(link.href) && (
                 <motion.div
                   layoutId="navbar-indicator"
                   className="absolute -bottom-1 left-0 right-0 h-0.5 bg-aw-primary rounded-full"
+                  aria-hidden="true"
                 />
               )}
             </Link>
           ))}
-          <Link to="/contact" className="btn-primary text-sm px-4 py-2">
-            <Mail className="w-4 h-4 mr-2" /> Contact
+          <Link to="/contact" className="btn-primary text-sm px-4 py-2" aria-label="Aller à la page de contact">
+            <Mail className="w-4 h-4 mr-2" aria-hidden="true" /> Contact
           </Link>
 
           {/* Theme toggle */}
           <motion.button
             onClick={toggleTheme}
             className="ml-2 w-9 h-9 rounded-lg border border-aw flex items-center justify-center hover:bg-aw-surface transition-colors"
-            aria-label="Basculer thème"
-            title={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
+            aria-label={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
+            title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -73,6 +75,7 @@ export const Navbar: React.FC = () => {
                   animate={{ rotate: 0, opacity: 1 }}
                   exit={{ rotate: 90, opacity: 0 }}
                   transition={{ duration: 0.2 }}
+                  aria-hidden="true"
                 >
                   <Sun className="w-5 h-5" />
                 </motion.div>
@@ -83,6 +86,7 @@ export const Navbar: React.FC = () => {
                   animate={{ rotate: 0, opacity: 1 }}
                   exit={{ rotate: -90, opacity: 0 }}
                   transition={{ duration: 0.2 }}
+                  aria-hidden="true"
                 >
                   <Moon className="w-5 h-5" />
                 </motion.div>
@@ -96,6 +100,7 @@ export const Navbar: React.FC = () => {
           <motion.button
             onClick={toggleTheme}
             className="p-2 text-aw-text"
+            aria-label={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
             whileTap={{ scale: 0.95 }}
           >
             {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -119,7 +124,7 @@ export const Navbar: React.FC = () => {
             exit={{ opacity: 0, height: 0 }}
             className="md:hidden glass border-t border-aw overflow-hidden"
           >
-            <nav className="flex flex-col p-4 space-y-3">
+            <nav className="flex flex-col p-4 space-y-3" aria-label="Navigation mobile">
               {navLinks.map((link, i) => (
                 <motion.div
                   key={link.href}
@@ -135,6 +140,7 @@ export const Navbar: React.FC = () => {
                         : 'text-aw-muted hover:text-aw-primary'
                     }`}
                     onClick={() => setMobileOpen(false)}
+                    aria-current={isActive(link.href) ? "page" : undefined}
                   >
                     {link.label}
                   </Link>
@@ -149,8 +155,9 @@ export const Navbar: React.FC = () => {
                   to="/contact"
                   className="btn-primary text-sm px-4 py-2 text-center block"
                   onClick={() => setMobileOpen(false)}
+                  aria-label="Aller à la page de contact"
                 >
-                  <Mail className="w-4 h-4 mr-2 inline" /> Contact
+                  <Mail className="w-4 h-4 mr-2 inline" aria-hidden="true" /> Contact
                 </Link>
               </motion.div>
             </nav>

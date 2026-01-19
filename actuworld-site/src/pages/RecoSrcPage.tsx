@@ -1,12 +1,13 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
-  Sparkles, Video, Brain, Search, Shield, ShieldCheck, Globe2,
+  Sparkles, Video, Brain, Shield, ShieldCheck, Globe2,
   FileText, Lock, Clock, AlertTriangle, CheckCircle2, ChevronRight,
   Database, Users, Eye, Zap
 } from "lucide-react";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
+import { PageMeta } from "../components/PageMeta";
 import {
   PageWrapper,
   AnimatedSection,
@@ -88,6 +89,11 @@ export default function RecoSrcPage() {
 
   return (
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
+      <PageMeta
+        title="ASV — L'IA qui vérifie les sources"
+        description="ASV (Automatic Source Verification) extrait et valide automatiquement les sources des vidéos et posts. Précision 60-80% sur contenu éducatif."
+        path="/reco-src"
+      />
       {/* HEADER */}
       <Section className="pt-24 pb-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#00A896]/10 via-transparent to-transparent pointer-events-none"></div>

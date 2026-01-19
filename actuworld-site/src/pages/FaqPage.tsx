@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { HelpCircle, ChevronRight } from "lucide-react";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
+import { PageMeta } from "../components/PageMeta";
 import {
   PageWrapper,
   AnimatedSection,
@@ -33,6 +34,14 @@ export default function FaqPage() {
       q: "Qui peut devenir créateur ?",
       a: "Tout le monde ! Les nouveaux créateurs passent par une phase de modération, puis accèdent à la publication automatique selon leur score de confiance."
     },
+    {
+      q: "Quand ActuWorld sera-t-il disponible ?",
+      a: "Nous finalisons actuellement la bêta fermée. Rejoignez notre liste d'attente pour être parmi les premiers à tester et donner votre avis!"
+    },
+    {
+      q: "Comment rejoindre le programme bêta ?",
+      a: "Consultez la page de contact ou inscrivez-vous à notre liste d'attente. Les bêta-testeurs seront sélectionnés en fonction de leur profil et intérêt pour la mission d'ActuWorld."
+    },
   ];
 
   const recoSrcFaq = [
@@ -62,6 +71,10 @@ export default function FaqPage() {
     {
       q: "Comment augmenter mon score de confiance ?",
       a: "Publiez du contenu bien sourcé et de qualité. Les votes positifs de la communauté augmentent progressivement votre score."
+    },
+    {
+      q: "Comment fonctionne le système de votes ?",
+      a: "Les lecteurs votent 'Fiable', 'Neutre' ou 'Douteuse' sur chaque post. Ces votes construisent un score agrégé visible dans les profils et les classements."
     },
   ];
 
@@ -100,6 +113,11 @@ export default function FaqPage() {
 
   return (
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
+      <PageMeta
+        title="FAQ — Questions fréquentes"
+        description="Trouvez les réponses à vos questions sur ActuWorld, ASV, la disponibilité de la plateforme, et comment rejoindre la bêta."
+        path="/faq"
+      />
       {/* HEADER */}
       <Section className="pt-24 pb-12">
         <motion.div

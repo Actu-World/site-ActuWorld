@@ -8,6 +8,7 @@ import {
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
 import { Card } from "../components/Card";
+import { PageMeta } from "../components/PageMeta";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -73,6 +74,11 @@ export default function ActuWorldLanding() {
 
   return (
     <div className="min-h-screen bg-aw-bg text-aw-text">
+      <PageMeta
+        title="ActuWorld — Le réseau social de l'information fiable"
+        description="Découvrez comment ActuWorld combat la désinformation avec le sourcing obligatoire, un système de confiance communautaire et l'IA ASV."
+        path="/actuworld"
+      />
 
       {/* HERO */}
       <Section id="hero" container={false} className="relative overflow-hidden pt-16 md:pt-24 pb-20">
