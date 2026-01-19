@@ -1,42 +1,49 @@
 import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Globe2, Mail, Menu, X } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
   const [dark, setDark] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
 
   const navLinks = [
-    { href: "#problem", label: "Le problème" },
-    { href: "#solution", label: "La solution" },
-    { href: "#reco-src", label: "RECO-SRC" },
-    { href: "#pricing", label: "Tarifs" },
-    { href: "#faq", label: "FAQ" },
+    { href: "/app", label: "L'App" },
+    { href: "/reco-src", label: "RECO-SRC" },
+    { href: "/pricing", label: "Tarifs" },
+    { href: "/faq", label: "FAQ" },
   ];
+
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <header className="sticky top-0 z-40 glass border-b border-aw">
       <div className="max-w-7xl mx-auto container-px h-16 flex items-center justify-between">
-        <a href="#hero" className="flex items-center gap-2 font-bold text-lg md:text-xl">
+        <Link to="/" className="flex items-center gap-2 font-bold text-lg md:text-xl">
           <span className="inline-flex items-center justify-center w-8 h-8 rounded-md bg-aw-primary">
             <Globe2 className="w-5 h-5 text-white" />
           </span>
           <span className="text-aw-text">ActuWorld</span>
-        </a>
+        </Link>
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-6 text-[15px]">
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.href}
-              href={link.href}
-              className="text-aw-muted hover:text-aw-primary transition-colors font-medium"
+              to={link.href}
+              className={`transition-colors font-medium ${
+                isActive(link.href)
+                  ? 'text-aw-primary'
+                  : 'text-aw-muted hover:text-aw-primary'
+              }`}
             >
               {link.label}
-            </a>
+            </Link>
           ))}
-          <a href="#contact" className="btn-primary text-sm px-4 py-2">
+          <Link to="/contact" className="btn-primary text-sm px-4 py-2">
             <Mail className="w-4 h-4 mr-2" /> Contact
-          </a>
+          </Link>
           <button
             onClick={() => setDark((d) => {
               const root = document.documentElement;
@@ -74,22 +81,26 @@ export const Navbar: React.FC = () => {
         <div className="md:hidden glass border-t border-aw">
           <nav className="flex flex-col p-4 space-y-3">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.href}
-                href={link.href}
-                className="py-2 text-aw-muted hover:text-aw-primary transition-colors font-medium"
+                to={link.href}
+                className={`py-2 transition-colors font-medium ${
+                  isActive(link.href)
+                    ? 'text-aw-primary'
+                    : 'text-aw-muted hover:text-aw-primary'
+                }`}
                 onClick={() => setMobileOpen(false)}
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
-            <a
-              href="#contact"
+            <Link
+              to="/contact"
               className="btn-primary text-sm px-4 py-2 text-center"
               onClick={() => setMobileOpen(false)}
             >
               <Mail className="w-4 h-4 mr-2 inline" /> Contact
-            </a>
+            </Link>
           </nav>
         </div>
       )}
