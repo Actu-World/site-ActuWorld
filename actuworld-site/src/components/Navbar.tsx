@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Globe2, Mail, Menu, X } from 'lucide-react';
+import { Globe2, Mail, Menu, X, Sun, Moon } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useTheme } from '../hooks/useTheme';
 
 export const Navbar: React.FC = () => {
-  const [dark, setDark] = useState(false);
+  const { theme, toggleTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
 
   const navLinks = [
     { href: "/app", label: "L'App" },
-    { href: "/reco-src", label: "RECO-SRC" },
+    { href: "/reco-src", label: "ASV" },
     { href: "/pricing", label: "Tarifs" },
     { href: "/faq", label: "FAQ" },
   ];
@@ -20,9 +22,12 @@ export const Navbar: React.FC = () => {
     <header className="sticky top-0 z-40 glass border-b border-aw">
       <div className="max-w-7xl mx-auto container-px h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2 font-bold text-lg md:text-xl">
-          <span className="inline-flex items-center justify-center w-8 h-8 rounded-md bg-aw-primary">
+          <motion.span
+            className="inline-flex items-center justify-center w-8 h-8 rounded-md bg-aw-primary"
+            whileHover={{ scale: 1.1, rotate: 5 }}
+          >
             <Globe2 className="w-5 h-5 text-white" />
-          </span>
+          </motion.span>
           <span className="text-aw-text">ActuWorld</span>
         </Link>
 
@@ -32,78 +37,126 @@ export const Navbar: React.FC = () => {
             <Link
               key={link.href}
               to={link.href}
-              className={`transition-colors font-medium ${
+              className={`relative transition-colors font-medium ${
                 isActive(link.href)
                   ? 'text-aw-primary'
                   : 'text-aw-muted hover:text-aw-primary'
               }`}
             >
               {link.label}
+              {isActive(link.href) && (
+                <motion.div
+                  layoutId="navbar-indicator"
+                  className="absolute -bottom-1 left-0 right-0 h-0.5 bg-aw-primary rounded-full"
+                />
+              )}
             </Link>
           ))}
           <Link to="/contact" className="btn-primary text-sm px-4 py-2">
             <Mail className="w-4 h-4 mr-2" /> Contact
           </Link>
-          <button
-            onClick={() => setDark((d) => {
-              const root = document.documentElement;
-              if (d) root.classList.remove('dark'); else root.classList.add('dark');
-              return !d;
-            })}
+
+          {/* Theme toggle */}
+          <motion.button
+            onClick={toggleTheme}
             className="ml-2 w-9 h-9 rounded-lg border border-aw flex items-center justify-center hover:bg-aw-surface transition-colors"
             aria-label="Basculer thème"
-            title="Thème clair/sombre"
+            title={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            {dark ? (
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
-            ) : (
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-              </svg>
-            )}
-          </button>
+            <AnimatePresence mode="wait">
+              {theme === 'dark' ? (
+                <motion.div
+                  key="sun"
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Sun className="w-5 h-5" />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="moon"
+                  initial={{ rotate: 90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: -90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Moon className="w-5 h-5" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.button>
         </nav>
 
         {/* Mobile menu button */}
-        <button
-          className="md:hidden p-2 text-aw-text"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Menu"
-        >
-          {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        <div className="flex items-center gap-2 md:hidden">
+          <motion.button
+            onClick={toggleTheme}
+            className="p-2 text-aw-text"
+            whileTap={{ scale: 0.95 }}
+          >
+            {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </motion.button>
+          <button
+            className="p-2 text-aw-text"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Menu"
+          >
+            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile nav */}
-      {mobileOpen && (
-        <div className="md:hidden glass border-t border-aw">
-          <nav className="flex flex-col p-4 space-y-3">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                className={`py-2 transition-colors font-medium ${
-                  isActive(link.href)
-                    ? 'text-aw-primary'
-                    : 'text-aw-muted hover:text-aw-primary'
-                }`}
-                onClick={() => setMobileOpen(false)}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden glass border-t border-aw overflow-hidden"
+          >
+            <nav className="flex flex-col p-4 space-y-3">
+              {navLinks.map((link, i) => (
+                <motion.div
+                  key={link.href}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                >
+                  <Link
+                    to={link.href}
+                    className={`block py-2 transition-colors font-medium ${
+                      isActive(link.href)
+                        ? 'text-aw-primary'
+                        : 'text-aw-muted hover:text-aw-primary'
+                    }`}
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                </motion.div>
+              ))}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: navLinks.length * 0.05 }}
               >
-                {link.label}
-              </Link>
-            ))}
-            <Link
-              to="/contact"
-              className="btn-primary text-sm px-4 py-2 text-center"
-              onClick={() => setMobileOpen(false)}
-            >
-              <Mail className="w-4 h-4 mr-2 inline" /> Contact
-            </Link>
-          </nav>
-        </div>
-      )}
+                <Link
+                  to="/contact"
+                  className="btn-primary text-sm px-4 py-2 text-center block"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <Mail className="w-4 h-4 mr-2 inline" /> Contact
+                </Link>
+              </motion.div>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };

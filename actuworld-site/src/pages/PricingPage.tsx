@@ -27,7 +27,7 @@ export default function PricingPage() {
       title: "Créateur",
       price: "0€",
       desc: "Gratuit pour publier",
-      points: ["Publication sourcée", "RECO-SRC (5 vidéos/mois)", "Recevoir des dons", "Statistiques basiques"],
+      points: ["Publication sourcée", "ASV (5 vidéos/mois)", "Recevoir des dons", "Statistiques basiques"],
       cta: "Devenir créateur",
       featured: false
     },
@@ -37,7 +37,7 @@ export default function PricingPage() {
       price: "9,99€",
       period: "/mois",
       desc: "Pour les créateurs sérieux",
-      points: ["RECO-SRC illimité", "Badge vérifié", "Statistiques avancées", "Support prioritaire"],
+      points: ["ASV illimité", "Badge vérifié", "Statistiques avancées", "Support prioritaire"],
       cta: "Passer Pro",
       featured: true
     },

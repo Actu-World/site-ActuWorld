@@ -22,8 +22,8 @@ export default function FaqPage() {
       a: "Les utilisateurs votent sur la qualité et fiabilité des posts. Ces votes construisent un score de confiance pour chaque créateur, visible sur leur profil."
     },
     {
-      q: "RECO-SRC remplace-t-il les fact-checkers ?",
-      a: "Non, il les aide. RECO-SRC extrait automatiquement les sources citées dans les vidéos, faisant gagner un temps précieux aux vérificateurs humains."
+      q: "ASV remplace-t-il les fact-checkers ?",
+      a: "Non, il les aide. ASV extrait automatiquement les sources citées dans les vidéos, faisant gagner un temps précieux aux vérificateurs humains."
     },
     {
       q: "Pourquoi la lecture est-elle gratuite ?",
@@ -37,16 +37,16 @@ export default function FaqPage() {
 
   const recoSrcFaq = [
     {
-      q: "Quelle est la précision de RECO-SRC ?",
-      a: "Actuellement, RECO-SRC atteint 60-70% de précision sur le contenu éducatif français. Notre objectif est d'atteindre 80%+ dans les prochains mois."
+      q: "Quelle est la précision de ASV ?",
+      a: "Actuellement, ASV atteint 60-70% de précision sur le contenu éducatif français. Notre objectif est d'atteindre 80%+ dans les prochains mois."
     },
     {
       q: "Quels formats sont supportés ?",
-      a: "RECO-SRC analyse les vidéos (MP4, WebM) et les fichiers audio (MP3, WAV). Les podcasts et vidéos YouTube peuvent être analysés via leur URL."
+      a: "ASV analyse les vidéos (MP4, WebM) et les fichiers audio (MP3, WAV). Les podcasts et vidéos YouTube peuvent être analysés via leur URL."
     },
     {
       q: "Comment sont trouvées les sources ?",
-      a: "RECO-SRC utilise des APIs académiques (Crossref, Semantic Scholar) et Wikipedia pour trouver les sources les plus probables correspondant aux affirmations."
+      a: "ASV utilise des APIs académiques (Crossref, Semantic Scholar) et Wikipedia pour trouver les sources les plus probables correspondant aux affirmations."
     },
   ];
 
@@ -57,7 +57,7 @@ export default function FaqPage() {
     },
     {
       q: "Quels sont les avantages du plan Pro ?",
-      a: "RECO-SRC illimité, badge vérifié, statistiques avancées et support prioritaire. Idéal pour les créateurs qui publient régulièrement."
+      a: "ASV illimité, badge vérifié, statistiques avancées et support prioritaire. Idéal pour les créateurs qui publient régulièrement."
     },
     {
       q: "Comment augmenter mon score de confiance ?",
@@ -113,7 +113,7 @@ export default function FaqPage() {
               Questions fréquentes
             </H2>
             <p className="text-aw-muted mt-4 max-w-xl mx-auto text-lg">
-              Trouvez les réponses à vos questions sur ActuWorld, RECO-SRC et notre mission.
+              Trouvez les réponses à vos questions sur ActuWorld, ASV et notre mission.
             </p>
           </motion.div>
         </motion.div>
@@ -126,10 +126,10 @@ export default function FaqPage() {
         </div>
       </Section>
 
-      {/* RECO-SRC FAQ */}
+      {/* ASV FAQ */}
       <Section className="bg-aw-surface py-12">
         <div className="max-w-3xl mx-auto">
-          <FaqSection title="RECO-SRC" items={recoSrcFaq} />
+          <FaqSection title="ASV" items={recoSrcFaq} />
         </div>
       </Section>
 

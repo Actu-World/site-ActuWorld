@@ -18,7 +18,7 @@ export const Footer: React.FC = () => {
           <nav className="flex items-center gap-6 text-sm">
             <Link to="/" className="text-aw-muted hover:text-aw-primary transition-colors">Accueil</Link>
             <Link to="/app" className="text-aw-muted hover:text-aw-primary transition-colors">L'App</Link>
-            <Link to="/reco-src" className="text-aw-muted hover:text-aw-primary transition-colors">RECO-SRC</Link>
+            <Link to="/reco-src" className="text-aw-muted hover:text-aw-primary transition-colors">ASV</Link>
             <Link to="/pricing" className="text-aw-muted hover:text-aw-primary transition-colors">Tarifs</Link>
             <Link to="/faq" className="text-aw-muted hover:text-aw-primary transition-colors">FAQ</Link>
             <Link to="/contact" className="text-aw-muted hover:text-aw-primary transition-colors">Contact</Link>

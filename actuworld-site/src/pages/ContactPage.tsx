@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Mail, MessageCircle, Building2, ChevronRight, Globe2 } from "lucide-react";
+import { Mail, MessageCircle, Instagram, ChevronRight, Globe2 } from "lucide-react";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
 import {
@@ -11,6 +11,7 @@ import {
   fadeInUp,
   scaleUp
 } from "../components/animations";
+import { WaitlistForm } from "../components/ui/WaitlistForm";
 
 export default function ContactPage() {
   const contactMethods = [
@@ -29,11 +30,11 @@ export default function ContactPage() {
       link: "mailto:support@actuworld.app"
     },
     {
-      icon: Building2,
-      title: "Partenariats",
-      desc: "Médias, éducateurs, entreprises",
-      value: "partenaires@actuworld.app",
-      link: "mailto:partenaires@actuworld.app"
+      icon: Instagram,
+      title: "Instagram",
+      desc: "Suivez-nous sur les réseaux",
+      value: "@actuworld8",
+      link: "https://instagram.com/actuworld8"
     },
   ];
 
@@ -123,14 +124,9 @@ export default function ContactPage() {
               ActuWorld est en développement. Inscrivez-vous pour être informé du lancement
               et faire partie des premiers utilisateurs de la plateforme.
             </p>
-            <motion.a
-              href="mailto:contact@actuworld.app"
-              className="btn-primary text-lg px-8 py-4 glow-hover"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Mail className="w-5 h-5 mr-2" /> contact@actuworld.app
-            </motion.a>
+            <div className="max-w-md mx-auto">
+              <WaitlistForm variant="inline" />
+            </div>
           </motion.div>
         </motion.div>
       </Section>
@@ -155,7 +151,7 @@ export default function ContactPage() {
           {[
             {
               title: "Créateurs de contenu",
-              desc: "Testeurs beta pour valider l'expérience utilisateur et RECO-SRC"
+              desc: "Testeurs beta pour valider l'expérience utilisateur et ASV"
             },
             {
               title: "Médias & Journalistes",
@@ -197,7 +193,7 @@ export default function ContactPage() {
               {[
                 { to: "/", label: "Accueil" },
                 { to: "/app", label: "La plateforme" },
-                { to: "/reco-src", label: "RECO-SRC" },
+                { to: "/reco-src", label: "ASV" },
                 { to: "/faq", label: "FAQ" },
               ].map((link, i) => (
                 <motion.div key={i} variants={fadeInUp}>

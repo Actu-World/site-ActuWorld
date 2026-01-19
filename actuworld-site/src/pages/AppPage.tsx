@@ -22,14 +22,14 @@ export default function AppPage() {
     { icon: FileText, title: "Sourcing obligatoire", desc: "Impossible de publier sans indiquer ses sources. Chaque affirmation doit être vérifiable." },
     { icon: ThumbsUp, title: "Confiance communautaire", desc: "La communauté vote sur la qualité et fiabilité des posts. Système de score de confiance." },
     { icon: BookOpen, title: "Catégorisation thématique", desc: "Sciences, Histoire, Tech, Santé, Économie... Trouvez facilement ce qui vous intéresse." },
-    { icon: Video, title: "RECO-SRC intégré", desc: "Notre IA extrait automatiquement les sources citées dans les vidéos uploadées." },
+    { icon: Video, title: "ASV intégré", desc: "Notre IA extrait automatiquement les sources citées dans les vidéos uploadées." },
     { icon: Unlock, title: "100% gratuit en lecture", desc: "Aucun paywall pour accéder au contenu. Le savoir doit rester accessible à tous." },
     { icon: ShieldCheck, title: "Validation progressive", desc: "Nouveaux utilisateurs modérés, puis publication automatique selon leur score de confiance." },
   ];
 
   const differentiators = [
     { icon: Unlock, title: "Gratuit sans compromis", desc: "Contrairement à Medium ou Substack, tout le contenu reste accessible gratuitement." },
-    { icon: Sparkles, title: "IA native", desc: "RECO-SRC est conçu dès le départ pour ActuWorld, pas un outil externe greffé." },
+    { icon: Sparkles, title: "IA native", desc: "ASV est conçu dès le départ pour ActuWorld, pas un outil externe greffé." },
     { icon: Users, title: "Confiance communautaire", desc: "Pas de fact-checkers centralisés coûteux. La communauté valide la qualité." },
     { icon: Heart, title: "Monétisation éthique", desc: "Modèle diversifié qui ne corrompt pas l'algorithme : pub éducative + dons + premium." },
   ];
@@ -257,11 +257,11 @@ export default function AppPage() {
           <div className="text-center">
             <h3 className="text-2xl font-bold mb-4">Découvrez notre IA de vérification</h3>
             <p className="text-aw-muted mb-8 max-w-xl mx-auto">
-              RECO-SRC extrait automatiquement les sources citées dans les vidéos.
+              ASV extrait automatiquement les sources citées dans les vidéos.
               Un gain de temps massif pour les créateurs et les fact-checkers.
             </p>
             <Link to="/reco-src" className="btn-primary glow-hover">
-              <Sparkles className="w-5 h-5 mr-2" /> Découvrir RECO-SRC
+              <Sparkles className="w-5 h-5 mr-2" /> Découvrir ASV
             </Link>
           </div>
         </AnimatedSection>

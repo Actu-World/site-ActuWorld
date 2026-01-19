@@ -1,7 +1,9 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
-  Sparkles, Video, Brain, Search, Target, Play, BarChart3, ChevronRight
+  Sparkles, Video, Brain, Search, Shield, ShieldCheck, Globe2,
+  FileText, Lock, Clock, AlertTriangle, CheckCircle2, ChevronRight,
+  Database, Users, Eye, Zap
 } from "lucide-react";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
@@ -16,20 +18,72 @@ import {
 } from "../components/animations";
 
 export default function RecoSrcPage() {
-  const recoFeatures = [
-    { icon: Video, title: "Transcription audio/vidéo", desc: "Conversion automatique du contenu parlé en texte analysable." },
-    { icon: Brain, title: "Analyse sémantique", desc: "Identification des affirmations, chiffres et citations par GPT-4." },
-    { icon: Search, title: "Recherche de sources", desc: "Interrogation d'APIs académiques (Crossref, Semantic Scholar, Wikipedia)." },
-    { icon: Target, title: "Matching intelligent", desc: "Algorithme de similarité pour identifier les sources les plus probables." },
+  const coreFeatures = [
+    {
+      icon: FileText,
+      title: "Vérification Posts Texte",
+      desc: "Extraction automatique des URLs et vérification dans notre base de 301 domaines fiables.",
+      status: "done"
+    },
+    {
+      icon: Video,
+      title: "Analyse Multimédia",
+      desc: "Transcription audio/vidéo (Whisper) + extraction automatique des claims et recherche de sources.",
+      status: "done"
+    },
+    {
+      icon: ShieldCheck,
+      title: "Scoring Avancé",
+      desc: "Google Safe Browsing, validation SSL, âge WHOIS, métadonnées de page pour un score complet.",
+      status: "done"
+    },
+    {
+      icon: Brain,
+      title: "Détection Cherry-Picking",
+      desc: "Comparaison sémantique entre l'affirmation utilisateur et le contenu réel de la source citée.",
+      status: "coming"
+    },
   ];
 
-  const steps = [
-    { num: "1", title: "Upload", desc: "Le créateur uploade sa vidéo ou audio sur ActuWorld" },
-    { num: "2", title: "Transcription", desc: "RECO-SRC convertit automatiquement le contenu parlé en texte" },
-    { num: "3", title: "Analyse", desc: "L'IA identifie les affirmations, chiffres et références" },
-    { num: "4", title: "Recherche", desc: "Interrogation des bases académiques et encyclopédiques" },
-    { num: "5", title: "Matching", desc: "Algorithme de similarité pour trouver les sources probables" },
-    { num: "6", title: "Résultats", desc: "Liste des sources avec niveau de confiance et timestamps" },
+  const scoringModules = [
+    { name: "Base de données", weight: "40%", icon: Database, desc: "301 domaines vérifiés (institutions, médias, scientifiques)" },
+    { name: "Crowdsourcing", weight: "20%", icon: Users, desc: "Votes et évaluations de la communauté" },
+    { name: "Safe Browsing", weight: "15%", icon: Shield, desc: "Détection malware et phishing (Google)" },
+    { name: "Validation SSL", weight: "10%", icon: Lock, desc: "Certificat valide, émetteur de confiance" },
+    { name: "Âge WHOIS", weight: "10%", icon: Clock, desc: "Domaines récents = plus suspects" },
+    { name: "Métadonnées", weight: "5%", icon: Eye, desc: "Mentions légales, contact, auteur visible" },
+  ];
+
+  const domainStats = [
+    { category: "Médias", count: 127, examples: "AFP, Reuters, Le Monde..." },
+    { category: "Scientifiques", count: 60, examples: "HAL, ArXiv, Nature..." },
+    { category: "Institutions", count: 49, examples: "INSEE, ONU, .gouv..." },
+    { category: "Blacklist", count: 28, examples: "Infowars, RT..." },
+    { category: "Think tanks", count: 18, examples: "IFRI, Fondapol..." },
+    { category: "Fact-checkers", count: 9, examples: "Snopes, PolitiFact..." },
+  ];
+
+  const usps = [
+    {
+      title: "Vérification AVANT publication",
+      desc: "Contrairement aux fact-checkers qui interviennent après la viralité, ASV bloque les fausses infos à la source.",
+      icon: Zap
+    },
+    {
+      title: "Analyse multimédia complète",
+      desc: "Transcription audio/vidéo + extraction automatique des claims. NewsGuard ne fait que les sites web.",
+      icon: Video
+    },
+    {
+      title: "Détection du cherry-picking",
+      desc: "On vérifie si la citation est fidèle à la source, pas juste si la source existe.",
+      icon: Brain
+    },
+    {
+      title: "5-10x moins cher",
+      desc: "API B2B accessible pour les médias et plateformes, pas réservée aux grands groupes.",
+      icon: CheckCircle2
+    },
   ];
 
   return (
@@ -39,6 +93,9 @@ export default function RecoSrcPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-[#00A896]/10 via-transparent to-transparent pointer-events-none"></div>
         <Floating duration={8} y={15}>
           <div className="absolute top-20 right-20 w-32 h-32 bg-aw-accent/20 rounded-full blur-2xl" />
+        </Floating>
+        <Floating duration={6} y={10}>
+          <div className="absolute bottom-10 left-20 w-24 h-24 bg-aw-primary/20 rounded-full blur-2xl" />
         </Floating>
 
         <motion.div
@@ -52,149 +109,47 @@ export default function RecoSrcPage() {
               className="badge badge-accent mb-6"
               whileHover={{ scale: 1.05 }}
             >
-              <Sparkles className="w-4 h-4" /> Intelligence Artificielle
+              <Sparkles className="w-4 h-4" /> ActuWorld Source Verification
             </motion.span>
             <H2 kicker="" center>
-              RECO-SRC, l'IA de <span className="gradient-text">vérification</span>
+              ASV : Vérification <span className="gradient-text">AVANT</span> publication
             </H2>
             <p className="text-aw-muted mt-4 max-w-3xl mx-auto text-lg">
-              Notre outil extrait automatiquement les sources citées dans les vidéos.
-              Un gain de temps massif pour les créateurs et les fact-checkers.
+              Notre IA vérifie automatiquement les sources <strong className="text-aw-text">avant</strong> que le contenu soit publié.
+              Fini les fact-checks qui arrivent trop tard, après la viralité.
             </p>
+          </motion.div>
+
+          <motion.div variants={fadeInUp} className="mt-8 flex flex-wrap items-center justify-center gap-6">
+            {[
+              { icon: Database, label: "301", value: "domaines vérifiés" },
+              { icon: Shield, label: "6", value: "modules de scoring" },
+              { icon: Globe2, label: "B2B", value: "API disponible" },
+            ].map((stat, i) => (
+              <motion.div
+                key={i}
+                className="flex items-center gap-3 px-4 py-2 rounded-xl bg-aw-surface border border-aw"
+                whileHover={{ scale: 1.05 }}
+              >
+                <div className="w-10 h-10 rounded-lg bg-aw-success flex items-center justify-center">
+                  <stat.icon className="w-5 h-5 text-aw-primary" />
+                </div>
+                <div className="text-left">
+                  <div className="text-lg font-bold text-aw-primary">{stat.label}</div>
+                  <div className="text-xs text-aw-muted">{stat.value}</div>
+                </div>
+              </motion.div>
+            ))}
           </motion.div>
         </motion.div>
       </Section>
 
-      {/* DEMO */}
-      <Section className="py-12">
-        <AnimatedSection direction="scale">
-          <div className="max-w-5xl mx-auto">
-            <motion.div
-              className="card p-8"
-              whileHover={{ scale: 1.01 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="flex flex-col lg:flex-row gap-8">
-                <div className="lg:w-1/2">
-                  <motion.div
-                    className="aspect-video rounded-xl bg-[#1B3528] flex items-center justify-center relative overflow-hidden group cursor-pointer"
-                    whileHover={{ scale: 1.02 }}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                    <motion.div
-                      className="w-16 h-16 rounded-full bg-white/20 backdrop-blur flex items-center justify-center"
-                      whileHover={{ scale: 1.2, backgroundColor: "rgba(255,255,255,0.3)" }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Play className="w-8 h-8 text-white ml-1" />
-                    </motion.div>
-                    <div className="absolute bottom-4 left-4 right-4">
-                      <div className="text-white text-sm font-medium">Vidéo analysée par RECO-SRC</div>
-                      <div className="text-white/60 text-xs mt-1">Extraction automatique des sources</div>
-                    </div>
-                  </motion.div>
-                </div>
-
-                <div className="lg:w-1/2 space-y-4">
-                  <h3 className="body-semi text-lg flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-aw-accent" />
-                    Sources extraites
-                  </h3>
-
-                  <div className="space-y-2">
-                    {[
-                      { source: "INSEE - Indice des prix", confidence: "95%", time: "0:42" },
-                      { source: "Banque Centrale Européenne", confidence: "91%", time: "1:15" },
-                      { source: "Étude Université Paris-Saclay", confidence: "87%", time: "2:33" },
-                    ].map((s, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.3 + i * 0.1 }}
-                        whileHover={{ x: 5, backgroundColor: "var(--aw-success)" }}
-                        className="p-3 rounded-lg bg-aw-bg border border-aw flex items-center justify-between transition-colors"
-                      >
-                        <div>
-                          <div className="text-sm font-medium">{s.source}</div>
-                          <div className="text-xs text-aw-muted">Timestamp : {s.time}</div>
-                        </div>
-                        <motion.div
-                          className="text-aw-primary font-bold"
-                          animate={{ scale: [1, 1.1, 1] }}
-                          transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
-                        >
-                          {s.confidence}
-                        </motion.div>
-                      </motion.div>
-                    ))}
-                  </div>
-
-                  <div className="pt-4 border-t border-aw">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-aw-muted">Précision actuelle</span>
-                      <span className="text-aw-accent font-bold">~60-70%</span>
-                    </div>
-                    <div className="text-xs text-aw-muted mt-1">
-                      Objectif : 80%+ sur contenu éducatif français
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </AnimatedSection>
-      </Section>
-
-      {/* HOW IT WORKS */}
-      <Section className="bg-aw-surface py-24">
+      {/* USPs vs NewsGuard */}
+      <Section className="py-16">
         <AnimatedSection>
-          <div className="text-center mb-16">
-            <H2 kicker="Comment ça marche" center>
-              Le processus <span className="gradient-text">RECO-SRC</span>
-            </H2>
-          </div>
-        </AnimatedSection>
-
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-            className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
-            {steps.map((step, i) => (
-              <motion.div
-                key={i}
-                variants={fadeInUp}
-                whileHover={{ y: -8, scale: 1.02 }}
-                className="card card-hover p-6 relative"
-              >
-                <motion.div
-                  className="absolute -top-3 -left-3 w-10 h-10 rounded-xl bg-aw-accent flex items-center justify-center text-white font-bold"
-                  whileHover={{ scale: 1.2, rotate: 10 }}
-                >
-                  {step.num}
-                </motion.div>
-                <h3 className="body-semi text-lg mb-2 mt-4">{step.title}</h3>
-                <p className="text-aw-muted text-sm">{step.desc}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </Section>
-
-      {/* FEATURES */}
-      <Section className="py-24 relative overflow-hidden">
-        <Parallax offset={30} className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/3 left-0 w-80 h-80 bg-aw-secondary/10 rounded-full blur-3xl" />
-        </Parallax>
-
-        <AnimatedSection>
-          <div className="text-center mb-16">
-            <H2 kicker="Technologie" center>
-              Les fonctionnalités <span className="gradient-text">clés</span>
+          <div className="text-center mb-12">
+            <H2 kicker="Avantages" center>
+              Pourquoi ASV <span className="gradient-text">surpasse</span> les solutions existantes
             </H2>
           </div>
         </AnimatedSection>
@@ -204,17 +159,64 @@ export default function RecoSrcPage() {
           whileInView="visible"
           viewport={{ once: true }}
           variants={staggerContainer}
-          className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 relative"
+          className="grid md:grid-cols-2 lg:grid-cols-4 gap-6"
         >
-          {recoFeatures.map((f, i) => (
+          {usps.map((usp, i) => (
+            <motion.div
+              key={i}
+              variants={fadeInUp}
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="card card-hover p-6"
+            >
+              <motion.div
+                className="w-12 h-12 rounded-xl bg-aw-success flex items-center justify-center mb-4"
+                whileHover={{ scale: 1.1, rotate: 5 }}
+              >
+                <usp.icon className="w-6 h-6 text-aw-primary" />
+              </motion.div>
+              <h3 className="body-semi text-lg mb-2">{usp.title}</h3>
+              <p className="text-aw-muted text-sm">{usp.desc}</p>
+            </motion.div>
+          ))}
+        </motion.div>
+      </Section>
+
+      {/* CORE FEATURES */}
+      <Section className="bg-aw-surface py-24">
+        <AnimatedSection>
+          <div className="text-center mb-16">
+            <H2 kicker="Fonctionnalités" center>
+              Les modules de <span className="gradient-text">vérification</span>
+            </H2>
+          </div>
+        </AnimatedSection>
+
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={staggerContainer}
+          className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"
+        >
+          {coreFeatures.map((f, i) => (
             <motion.div
               key={i}
               variants={scaleUp}
               whileHover={{ y: -10 }}
-              className="card card-hover p-6 text-center"
+              className="card card-hover p-6 relative"
             >
+              {f.status === "coming" && (
+                <span className="absolute top-4 right-4 text-xs px-2 py-1 rounded-full bg-aw-accent/20 text-aw-accent font-medium">
+                  Bientôt
+                </span>
+              )}
+              {f.status === "done" && (
+                <span className="absolute top-4 right-4 text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-500 font-medium">
+                  ✓ Actif
+                </span>
+              )}
               <motion.div
-                className="w-14 h-14 mx-auto rounded-2xl bg-aw-success flex items-center justify-center mb-4"
+                className="w-14 h-14 rounded-2xl bg-aw-success flex items-center justify-center mb-4"
                 whileHover={{ scale: 1.1, rotate: 5 }}
               >
                 <f.icon className="w-7 h-7 text-aw-primary" />
@@ -226,12 +228,178 @@ export default function RecoSrcPage() {
         </motion.div>
       </Section>
 
+      {/* SCORING SYSTEM */}
+      <Section className="py-24 relative overflow-hidden">
+        <Parallax offset={30} className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/3 left-0 w-80 h-80 bg-aw-secondary/10 rounded-full blur-3xl" />
+        </Parallax>
+
+        <AnimatedSection>
+          <div className="text-center mb-16">
+            <H2 kicker="Algorithme" center>
+              Le système de <span className="gradient-text">scoring</span>
+            </H2>
+            <p className="text-aw-muted mt-4 max-w-2xl mx-auto">
+              Un score composite pondéré combinant 6 modules de vérification pour une évaluation complète et fiable.
+            </p>
+          </div>
+        </AnimatedSection>
+
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={staggerContainer}
+            className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"
+          >
+            {scoringModules.map((module, i) => (
+              <motion.div
+                key={i}
+                variants={fadeInUp}
+                whileHover={{ scale: 1.03 }}
+                className="card p-4 flex items-start gap-4"
+              >
+                <div className="w-12 h-12 rounded-xl bg-aw-primary/10 flex items-center justify-center flex-shrink-0">
+                  <module.icon className="w-6 h-6 text-aw-primary" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <h4 className="font-semibold text-sm">{module.name}</h4>
+                    <span className="text-aw-accent font-bold">{module.weight}</span>
+                  </div>
+                  <p className="text-aw-muted text-xs">{module.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          <AnimatedSection delay={0.3} className="mt-8">
+            <motion.div
+              className="card p-6 bg-gradient-to-r from-aw-primary/5 to-aw-accent/5 border-aw-primary/20"
+              whileHover={{ scale: 1.01 }}
+            >
+              <div className="text-center">
+                <code className="text-sm text-aw-muted">
+                  Score Final = <span className="text-aw-primary font-semibold">40% DB</span> +
+                  <span className="text-aw-primary font-semibold"> 20% Crowd</span> +
+                  <span className="text-aw-primary font-semibold"> 15% SafeBrowsing</span> +
+                  <span className="text-aw-primary font-semibold"> 10% SSL</span> +
+                  <span className="text-aw-primary font-semibold"> 10% WHOIS</span> +
+                  <span className="text-aw-primary font-semibold"> 5% Meta</span>
+                </code>
+              </div>
+            </motion.div>
+          </AnimatedSection>
+        </div>
+      </Section>
+
+      {/* DATABASE */}
+      <Section className="bg-aw-surface py-24">
+        <AnimatedSection>
+          <div className="text-center mb-12">
+            <H2 kicker="Base de données" center>
+              <span className="gradient-text">301 domaines</span> vérifiés
+            </H2>
+            <p className="text-aw-muted mt-4 max-w-2xl mx-auto">
+              Une base de données crowdsourcée et scalable, classée par catégorie et niveau de confiance.
+            </p>
+          </div>
+        </AnimatedSection>
+
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={staggerContainer}
+          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto"
+        >
+          {domainStats.map((stat, i) => (
+            <motion.div
+              key={i}
+              variants={fadeInUp}
+              whileHover={{ y: -5, scale: 1.02 }}
+              className="card card-hover p-5"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-semibold">{stat.category}</h4>
+                <span className="text-2xl font-bold text-aw-primary">{stat.count}</span>
+              </div>
+              <p className="text-aw-muted text-xs">{stat.examples}</p>
+            </motion.div>
+          ))}
+        </motion.div>
+      </Section>
+
+      {/* CHERRY-PICKING DETECTION */}
+      <Section className="py-24">
+        <div className="max-w-4xl mx-auto">
+          <AnimatedSection>
+            <div className="text-center mb-12">
+              <motion.span
+                className="badge badge-accent mb-4"
+                whileHover={{ scale: 1.05 }}
+              >
+                <AlertTriangle className="w-4 h-4" /> Feature 6 - Bientôt disponible
+              </motion.span>
+              <H2 kicker="" center>
+                Détection du <span className="gradient-text">cherry-picking</span>
+              </H2>
+            </div>
+          </AnimatedSection>
+
+          <AnimatedSection direction="scale">
+            <motion.div
+              className="card p-8"
+              whileHover={{ scale: 1.01 }}
+            >
+              <div className="space-y-6">
+                <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20">
+                  <h4 className="font-semibold text-red-400 mb-2 flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5" /> Exemple de cherry-picking
+                  </h4>
+                  <div className="space-y-3 text-sm">
+                    <div>
+                      <span className="text-aw-muted">Source originale (Le Monde) :</span>
+                      <p className="text-aw-text italic mt-1">
+                        "Le chômage a légèrement baissé de 0.1% ce mois-ci, <strong>mais reste à un niveau préoccupant de 8.5%</strong>, bien au-dessus de la moyenne européenne de 6.2%"
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-aw-muted">Post utilisateur :</span>
+                      <p className="text-aw-text italic mt-1">
+                        "Selon Le Monde, le chômage a baissé ! 📉"
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20">
+                  <h4 className="font-semibold text-green-400 mb-2 flex items-center gap-2">
+                    <CheckCircle2 className="w-5 h-5" /> Détection ASV
+                  </h4>
+                  <div className="space-y-2 text-sm">
+                    <p>✅ Source citée : Le Monde (fiable)</p>
+                    <p>❌ Citation fidèle : <strong className="text-red-400">NON - Contexte important omis</strong></p>
+                    <p>⚠️ Verdict : Cherry-picking détecté (score fidélité : 20%)</p>
+                  </div>
+                </div>
+
+                <p className="text-aw-muted text-sm text-center">
+                  ASV compare sémantiquement ce que dit l'utilisateur avec ce que dit vraiment la source.
+                </p>
+              </div>
+            </motion.div>
+          </AnimatedSection>
+        </div>
+      </Section>
+
       {/* USE CASES */}
       <Section className="bg-aw-surface py-24">
         <AnimatedSection>
           <div className="text-center mb-16">
             <H2 kicker="Cas d'usage" center>
-              Pour qui est <span className="gradient-text">RECO-SRC</span> ?
+              Pour qui est <span className="gradient-text">ASV</span> ?
             </H2>
           </div>
         </AnimatedSection>
@@ -246,15 +414,15 @@ export default function RecoSrcPage() {
           {[
             {
               title: "Créateurs de contenu",
-              desc: "Gagnez du temps en extrayant automatiquement vos sources. Publiez plus rapidement du contenu bien sourcé."
+              desc: "Publiez du contenu sourcé automatiquement. Plus besoin de compiler vos sources manuellement."
             },
             {
-              title: "Fact-checkers",
-              desc: "Accélérez votre travail de vérification. Identifiez rapidement les sources citées dans les vidéos virales."
+              title: "Médias & Plateformes",
+              desc: "API B2B pour intégrer la vérification de sources directement dans votre workflow éditorial."
             },
             {
-              title: "Journalistes",
-              desc: "Vérifiez rapidement les affirmations des personnalités publiques. Trouvez les sources originales."
+              title: "Éducateurs",
+              desc: "Apprenez à vos étudiants l'importance des sources avec un outil de vérification en temps réel."
             }
           ].map((use, i) => (
             <motion.div
@@ -274,9 +442,9 @@ export default function RecoSrcPage() {
       <Section className="py-24">
         <AnimatedSection direction="scale">
           <div className="text-center">
-            <h3 className="text-2xl font-bold mb-4">Prêt à essayer RECO-SRC ?</h3>
+            <h3 className="text-2xl font-bold mb-4">Prêt à vérifier vos sources ?</h3>
             <p className="text-aw-muted mb-8 max-w-xl mx-auto">
-              Découvrez nos offres et commencez à utiliser notre IA de vérification de sources.
+              Rejoignez la beta et soyez parmi les premiers à utiliser ASV.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/pricing" className="btn-primary glow-hover">

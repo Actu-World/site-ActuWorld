@@ -106,7 +106,7 @@ export default function ActuWorldLanding() {
             >
               ActuWorld est le <strong className="text-aw-text">premier réseau social anti-buzz</strong> où
               chaque publication doit être sourcée. L'information fiable devient enfin visible,
-              et les créateurs de qualité sont justement rémunérés.
+              et les créateurs de qualité sont valorisés par la communauté.
             </motion.p>
 
             <motion.div
@@ -529,7 +529,7 @@ export default function ActuWorldLanding() {
             <p className="text-aw-muted mt-6 text-lg leading-relaxed">
               Un espace digital où <strong className="text-aw-text">apprendre prime sur scroller</strong>,
               où l'information sourcée et vérifiée est accessible à tous gratuitement,
-              et où les créateurs de contenu de qualité sont justement rémunérés.
+              et où les créateurs de contenu de qualité obtiennent la visibilité qu'ils méritent.
             </p>
             <p className="text-aw-primary mt-6 body-semi text-lg">
               Lutter contre la désinformation par l'éducation, pas la censure.
