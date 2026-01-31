@@ -53,7 +53,7 @@ export default function AppPage() {
               <Smartphone className="w-4 h-4" /> La Plateforme
             </span>
             <H2 kicker="" center>
-              ActuWorld, le réseau social <span className="gradient-text">anti-buzz</span>
+              ActuWorld, le réseau social <span className="gradient-text">de l'information fiable</span>
             </H2>
             <p className="text-aw-muted mt-4 max-w-2xl mx-auto text-lg">
               Un écosystème où l'information sourcée prime sur le divertissement,
@@ -203,8 +203,8 @@ export default function AppPage() {
                 className="card card-hover p-5 relative"
               >
                 <motion.div
-                  className="absolute -top-3 -left-3 w-8 h-8 rounded-lg bg-aw-primary flex items-center justify-center text-white font-bold text-sm"
-                  whileHover={{ scale: 1.2, rotate: 10 }}
+                  className="absolute -top-3 -right-3 w-9 h-9 rounded-2xl bg-aw-success flex items-center justify-center text-aw-primary font-bold text-sm"
+                  whileHover={{ scale: 1.1, rotate: 6 }}
                 >
                   {step.num}
                 </motion.div>

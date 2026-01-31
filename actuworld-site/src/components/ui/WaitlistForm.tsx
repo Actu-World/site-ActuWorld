@@ -106,9 +106,9 @@ export const WaitlistForm = ({ variant = "card", className = "" }: WaitlistFormP
         >
           <Mail className="w-7 h-7 text-aw-primary" />
         </motion.div>
-        <h3 className="text-xl font-bold mb-2">Rejoignez la waitlist</h3>
+        <h3 className="text-xl font-bold mb-2">Rejoignez la communauté</h3>
         <p className="text-aw-muted text-sm">
-          Soyez parmi les premiers à découvrir ActuWorld lors du lancement.
+          Soyez parmi les premiers à explorer ActuWorld et à faire partie de la révolution de l'information.
         </p>
       </div>
 
@@ -194,7 +194,7 @@ export const WaitlistForm = ({ variant = "card", className = "" }: WaitlistFormP
             </motion.button>
 
             <p className="text-xs text-aw-muted text-center">
-              Pas de spam. Vous pouvez vous désinscrire à tout moment.
+              Pas de spam. Confidentialité garantie. Vous pouvez vous désinscrire à tout moment.
             </p>
           </motion.form>
         )}

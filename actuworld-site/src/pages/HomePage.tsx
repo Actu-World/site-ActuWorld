@@ -33,22 +33,22 @@ export default function HomePage() {
     {
       icon: AlertTriangle,
       title: "Information noyée dans le buzz",
-      desc: "Les algorithmes actuels optimisent pour l'engagement émotionnel, pas la qualité. Les contenus éducatifs sont invisibles face au clickbait."
+      desc: "Les algorithmes privilégient l'engagement émotionnel et la viralité. L'information éducative est invisible face au clickbait et aux tendances."
     },
     {
       icon: Search,
-      title: "Aucune vérification des sources",
-      desc: "N'importe qui peut affirmer n'importe quoi sans preuve. Les fact-checkers interviennent trop tard, après la viralité."
+      title: "Absence de sourcage",
+      desc: "Aucune vérification des sources. N'importe qui peut affirmer n'importe quoi. Les fact-checkers arrivent trop tard, après la propagation virale."
     },
     {
       icon: TrendingDown,
-      title: "Créateurs mal rémunérés",
-      desc: "Les créateurs éducatifs investissent des dizaines d'heures mais gagnent moins que les créateurs de divertissement superficiel."
+      title: "Désinformation incontrôlée",
+      desc: "Sans transparence sur les sources, la désinformation se propage rapidement. Les utilisateurs ne savent plus en qui faire confiance."
     },
     {
       icon: Users,
-      title: "Défiance des jeunes",
-      desc: "68% des 18-35 ans se sentent manipulés par les algorithmes. 73% veulent une alternative plus éthique et éducative."
+      title: "Perte de confiance",
+      desc: "73% des jeunes cherchent une alternative éthique. Ils veulent une plateforme basée sur la vérification et l'éducation, pas sur la manipulation."
     }
   ];
 
@@ -56,7 +56,7 @@ export default function HomePage() {
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
       <PageMeta
         title="ActuWorld — Apprendre plutôt que scroller"
-        description="Le premier réseau social anti-buzz où chaque publication est sourcée. Accédez gratuitement à l'information fiable et valorisez les créateurs de qualité."
+        description="Le réseau social de l'information fiable où chaque publication est sourcée. Accédez à une information claire et valorisez les créateurs de qualité."
         path="/"
       />
       {/* HERO */}
@@ -104,18 +104,19 @@ export default function HomePage() {
               variants={fadeInUp}
               className="hero-title text-4xl md:text-6xl font-bold leading-tight"
             >
-              <span className="text-aw-text">Apprendre plutôt que</span>
+              <span className="text-aw-text">L'information fiable</span>
               <br />
-              <span className="gradient-text">scroller sans fin</span>
+              <span className="gradient-text">enfin mise en avant</span>
             </motion.h1>
 
             <motion.p
               variants={fadeInUp}
               className="mt-8 text-aw-muted text-lg md:text-xl max-w-2xl mx-auto leading-relaxed"
             >
-              ActuWorld est le <strong className="text-aw-text">premier réseau social anti-buzz</strong> où
-              chaque publication doit être sourcée. L'information fiable devient enfin visible,
-              et les créateurs de qualité sont mis en avant par la communauté.
+              ActuWorld réinvente la façon dont nous nous informons. Sur cette plateforme, 
+              <strong className="text-aw-text"> chaque contenu est sourcé et évalué par la communauté</strong>. 
+              Fini le buzz sans fondement. Bienvenue dans le réseau social de l'intelligence collective, 
+              où <strong className="text-aw-text">la qualité prime sur la viralité</strong>.
             </motion.p>
 
             <motion.div
@@ -162,11 +163,12 @@ export default function HomePage() {
         <AnimatedSection>
           <div className="text-center mb-16">
             <H2 kicker="Le constat" center>
-              Les réseaux sociaux actuels ont un <span className="gradient-text">problème</span>
+              Les réseaux sociaux d'aujourd'hui <span className="gradient-text">privilégient le divertissement</span>
             </H2>
             <p className="text-aw-muted mt-4 max-w-2xl mx-auto text-lg">
-              Optimisés pour l'engagement émotionnel et la viralité, ils noient l'information
-              fiable sous le buzz et le clickbait.
+              La majorité des plateformes optimisent pour l'engagement émotionnel. L'information fiable 
+              se noie dans un flux constant. Résultat : désinformation, perte de confiance, et créateurs 
+              éducatifs marginalisés.
             </p>
           </div>
         </AnimatedSection>
@@ -198,8 +200,10 @@ export default function HomePage() {
 
         <AnimatedSection delay={0.3} className="mt-12 text-center">
           <p className="text-lg text-aw-muted">
-            <strong className="text-aw-text">ActuWorld</strong> est né de cette frustration :
-            créer un réseau social qui <span className="text-aw-primary font-semibold highlight-text">récompense la qualité</span> plutôt que la viralité.
+            <strong className="text-aw-text">ActuWorld</strong> naît d'un constat simple : il est temps de 
+            <span className="text-aw-primary font-semibold highlight-text"> rendre l'information utile, claire et formatrice</span>. 
+            Un réseau basé sur l'<strong className="text-aw-text">intelligence collective</strong>, où la communauté valide 
+            la fiabilité des contenus.
           </p>
         </AnimatedSection>
       </Section>
@@ -220,12 +224,16 @@ export default function HomePage() {
         >
           <motion.div variants={scaleUp}>
             <H2 kicker="Notre vision" center>
-              Devenir la référence européenne du réseau social éducatif
+              Bâtir l'avenir de l'<span className="gradient-text">information éducative</span>
             </H2>
             <p className="text-aw-muted mt-6 text-lg leading-relaxed">
-              Un espace digital où <strong className="text-aw-text">apprendre prime sur scroller</strong>,
-              où l'information sourcée et vérifiée est accessible à tous gratuitement,
-              et où les créateurs de contenu de qualité obtiennent la visibilité qu'ils méritent.
+              Une plateforme où les utilisateurs créent et consultent des <strong className="text-aw-text">posts détaillés, 
+              articles et vidéos éducatives</strong> sur des sujets variés : actualité, culture, science, environnement…
+              <br /><br />
+              Chaque contenu est <strong className="text-aw-text">sourcé</strong> et évalué par un score de fiabilité. 
+              Un <strong className="text-aw-text">parcours de contributeur</strong> (Explorateur → Navigateur → Pionnier) 
+              valorise les créateurs sérieux. Et <strong className="text-aw-text">ASV</strong>, notre outil de vérification 
+              automatique, analyse les sources, les note, et détecte le cherry-picking pour une transparence maximale.
             </p>
             <motion.p
               className="text-aw-primary mt-6 body-semi text-lg"
@@ -234,7 +242,7 @@ export default function HomePage() {
               }}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              Lutter contre la désinformation par l'éducation, pas la censure.
+              Lutter contre la désinformation par l'éducation et l'intelligence collective.
             </motion.p>
           </motion.div>
 

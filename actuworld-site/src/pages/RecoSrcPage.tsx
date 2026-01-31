@@ -22,27 +22,27 @@ export default function RecoSrcPage() {
   const coreFeatures = [
     {
       icon: FileText,
-      title: "Vérification Posts Texte",
-      desc: "Extraction automatique des URLs et vérification dans notre base de 301 domaines fiables.",
+      title: "Vérification Posts & Articles",
+      desc: "Extraction automatique des URLs et vérification des sources citées dans nos bases de données fiables.",
       status: "done"
     },
     {
       icon: Video,
-      title: "Analyse Multimédia",
-      desc: "Transcription audio/vidéo (Whisper) + extraction automatique des claims et recherche de sources.",
+      title: "Analyse Vidéos & Multimédia",
+      desc: "Transcription audio/vidéo + extraction automatique des claims et recherche de sources correspondantes.",
       status: "done"
     },
     {
       icon: ShieldCheck,
-      title: "Scoring Avancé",
-      desc: "Google Safe Browsing, validation SSL, âge WHOIS, métadonnées de page pour un score complet.",
+      title: "Notation des Sources",
+      desc: "Évaluation complète des sources avec scoring avancé pour une fiabilité maximale.",
       status: "done"
     },
     {
       icon: Brain,
       title: "Détection Cherry-Picking",
       desc: "Comparaison sémantique entre l'affirmation utilisateur et le contenu réel de la source citée.",
-      status: "coming"
+      status: "done"
     },
   ];
 
@@ -66,23 +66,23 @@ export default function RecoSrcPage() {
 
   const usps = [
     {
-      title: "Vérification AVANT publication",
-      desc: "Contrairement aux fact-checkers qui interviennent après la viralité, ASV bloque les fausses infos à la source.",
+      title: "Analyse de TOUS les posts et articles",
+      desc: "ASV passe derrière chaque post et article pour vérifier automatiquement les sources ET le contenu cité.",
       icon: Zap
     },
     {
-      title: "Analyse multimédia complète",
-      desc: "Transcription audio/vidéo + extraction automatique des claims. NewsGuard ne fait que les sites web.",
-      icon: Video
-    },
-    {
-      title: "Détection du cherry-picking",
-      desc: "On vérifie si la citation est fidèle à la source, pas juste si la source existe.",
+      title: "Vérification complète : sources + contenu",
+      desc: "On ne checke pas juste si la source existe. On vérifie que ce qui a été dit correspond réellement à la source (détection du cherry-picking).",
       icon: Brain
     },
     {
-      title: "5-10x moins cher",
-      desc: "API B2B accessible pour les médias et plateformes, pas réservée aux grands groupes.",
+      title: "Vidéos et multimédia inclus",
+      desc: "Analyse des vidéos pour extraire les sources citées, transcrire le contenu et le comparer avec les affirmations de l'auteur.",
+      icon: Video
+    },
+    {
+      title: "Interface visuelle pour guider",
+      desc: "L'API fournit une info visuelle claire sur chaque article et post. Une première base que l'utilisateur peut développer avec son esprit critique.",
       icon: CheckCircle2
     },
   ];
@@ -90,8 +90,8 @@ export default function RecoSrcPage() {
   return (
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
       <PageMeta
-        title="ASV — L'IA qui vérifie les sources"
-        description="ASV (Automatic Source Verification) extrait et valide automatiquement les sources des vidéos et posts. Précision 60-80% sur contenu éducatif."
+        title="ASV — La vérification gratuite des sources"
+        description="ASV (Automatic Source Verification) vérifie gratuitement les posts, articles et vidéos. Identifie automatiquement les sources, les note et détecte le cherry-picking."
         path="/reco-src"
       />
       {/* HEADER */}
@@ -118,11 +118,12 @@ export default function RecoSrcPage() {
               <Sparkles className="w-4 h-4" /> ActuWorld Source Verification
             </motion.span>
             <H2 kicker="" center>
-              ASV : Vérification <span className="gradient-text">AVANT</span> publication
+              ASV : Vérification <span className="gradient-text">puissante et fiable</span>
             </H2>
             <p className="text-aw-muted mt-4 max-w-3xl mx-auto text-lg">
-              Notre IA vérifie automatiquement les sources <strong className="text-aw-text">avant</strong> que le contenu soit publié.
-              Fini les fact-checks qui arrivent trop tard, après la viralité.
+              ASV passe derrière tous les posts et articles pour vérifier automatiquement les sources ET le contenu.
+              L'API fournit une base visuelle claire, permettant à chaque utilisateur de développer son esprit critique 
+              en se renseignant davantage. Accessible aux journalistes, particuliers et entreprises.
             </p>
           </motion.div>
 
@@ -343,10 +344,10 @@ export default function RecoSrcPage() {
           <AnimatedSection>
             <div className="text-center mb-12">
               <motion.span
-                className="badge badge-accent mb-4"
+                className="badge badge-success mb-4"
                 whileHover={{ scale: 1.05 }}
               >
-                <AlertTriangle className="w-4 h-4" /> Feature 6 - Bientôt disponible
+                <CheckCircle2 className="w-4 h-4" /> Feature active et en fonctionnement
               </motion.span>
               <H2 kicker="" center>
                 Détection du <span className="gradient-text">cherry-picking</span>
@@ -391,9 +392,9 @@ export default function RecoSrcPage() {
                   </div>
                 </div>
 
-                <p className="text-aw-muted text-sm text-center">
-                  ASV compare sémantiquement ce que dit l'utilisateur avec ce que dit vraiment la source.
-                </p>
+            <p className="text-aw-muted text-sm text-center">
+              ASV analyse ce qui a été dit et compare avec le contenu réel de la source. Il détecte et note le cherry-picking.
+            </p>
               </div>
             </motion.div>
           </AnimatedSection>
@@ -415,30 +416,52 @@ export default function RecoSrcPage() {
           whileInView="visible"
           viewport={{ once: true }}
           variants={staggerContainer}
-          className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto"
+          className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-5xl mx-auto"
         >
           {[
             {
+              icon: Users,
+              title: "Utilisateurs & Lecteurs",
+              desc: "Recevez une base visuelle claire sur chaque article et post. Un premier appui pour développer votre esprit critique.",
+              badge: "Lecture & compréhension",
+              accent: "from-aw-primary/10 to-aw-accent/10"
+            },
+            {
+              icon: FileText,
               title: "Créateurs de contenu",
-              desc: "Publiez du contenu sourcé automatiquement. Plus besoin de compiler vos sources manuellement."
+              desc: "Publiez du contenu sourcé avec confiance. ASV valide automatiquement vos sources et votre contenu.",
+              badge: "Publication fiable",
+              accent: "from-aw-success/20 to-aw-primary/10"
             },
             {
-              title: "Médias & Plateformes",
-              desc: "API B2B pour intégrer la vérification de sources directement dans votre workflow éditorial."
+              icon: Globe2,
+              title: "Journalistes & Médias",
+              desc: "API B2B qui vérifie les sources et le contenu pour vous en première passe avant publication. Gagnez du temps dans vos vérifications.",
+              badge: "Workflow newsroom",
+              accent: "from-aw-secondary/15 to-aw-accent/10"
             },
             {
-              title: "Éducateurs",
-              desc: "Apprenez à vos étudiants l'importance des sources avec un outil de vérification en temps réel."
+              icon: ShieldCheck,
+              title: "Communauté & Apprenants",
+              desc: "Une app ouverte et pédagogique pour tous : un réseau de confiance où l'on vérifie ensemble les sources et le contenu.",
+              badge: "Esprit critique",
+              accent: "from-aw-primary/10 to-aw-success/20"
             }
           ].map((use, i) => (
             <motion.div
               key={i}
               variants={fadeInUp}
-              whileHover={{ y: -5, scale: 1.02 }}
-              className="card card-hover p-6 text-center"
+              whileHover={{ y: -6, scale: 1.02 }}
+              className="card card-hover p-6 text-center border border-aw/60 bg-gradient-to-br from-aw-surface to-aw-bg"
             >
-              <h3 className="body-semi text-lg mb-3">{use.title}</h3>
-              <p className="text-aw-muted text-sm">{use.desc}</p>
+              <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${use.accent} flex items-center justify-center mb-4 mx-auto`}>
+                <use.icon className="w-6 h-6 text-aw-primary" />
+              </div>
+              <div className="inline-flex items-center justify-center gap-2 text-xs font-semibold text-aw-primary bg-aw-success/30 px-3 py-1 rounded-full mb-3 mx-auto">
+                {use.badge}
+              </div>
+              <h3 className="body-semi text-lg mb-2">{use.title}</h3>
+              <p className="text-aw-muted text-sm leading-relaxed">{use.desc}</p>
             </motion.div>
           ))}
         </motion.div>

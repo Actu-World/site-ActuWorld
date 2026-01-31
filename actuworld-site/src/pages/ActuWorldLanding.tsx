@@ -110,8 +110,8 @@ export default function ActuWorldLanding() {
               variants={fadeIn}
               className="mt-8 text-aw-muted text-lg md:text-xl max-w-2xl mx-auto leading-relaxed"
             >
-              ActuWorld est le <strong className="text-aw-text">premier réseau social anti-buzz</strong> où
-              chaque publication doit être sourcée. L'information fiable devient enfin visible,
+              ActuWorld est le <strong className="text-aw-text">réseau social de l'information fiable</strong> où
+              chaque publication doit être sourcée. L'information claire devient enfin visible,
               et les créateurs de qualité sont valorisés par la communauté.
             </motion.p>
 
@@ -213,7 +213,7 @@ export default function ActuWorldLanding() {
               <Smartphone className="w-4 h-4" /> La Plateforme
             </span>
             <H2 kicker="" center>
-              ActuWorld, le réseau social <span className="text-aw-primary">anti-buzz</span>
+              ActuWorld, le réseau social <span className="text-aw-primary">de l'information fiable</span>
             </H2>
             <p className="text-aw-muted mt-4 max-w-2xl mx-auto text-lg">
               Un écosystème où l'information sourcée prime sur le divertissement,
@@ -328,7 +328,7 @@ export default function ActuWorldLanding() {
                   variants={fadeIn}
                   className="card p-5 relative"
                 >
-                  <div className="absolute -top-3 -left-3 w-8 h-8 rounded-lg bg-aw-primary flex items-center justify-center text-white font-bold text-sm">
+                  <div className="absolute -top-3 -right-3 w-9 h-9 rounded-2xl bg-aw-success flex items-center justify-center text-aw-primary font-bold text-sm">
                     {step.num}
                   </div>
                   <step.icon className="w-8 h-8 text-aw-secondary mb-3 mt-2" />

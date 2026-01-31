@@ -24,7 +24,7 @@ export default function FaqPage() {
     },
     {
       q: "ASV remplace-t-il les fact-checkers ?",
-      a: "Non, il les aide. ASV extrait automatiquement les sources citées dans les vidéos, faisant gagner un temps précieux aux vérificateurs humains."
+      a: "Non, ASV est un outil de vérification automatique des sources payant pour les journalistes, particuliers et entreprises. Les fact-checkers peuvent l'utiliser pour gagner du temps dans leurs recherches."
     },
     {
       q: "Pourquoi la lecture est-elle gratuite ?",
@@ -55,7 +55,7 @@ export default function FaqPage() {
     },
     {
       q: "Comment sont trouvées les sources ?",
-      a: "ASV utilise des APIs académiques (Crossref, Semantic Scholar) et Wikipedia pour trouver les sources les plus probables correspondant aux affirmations."
+      a: "ASV analyse les posts, articles et vidéos pour extraire et identifier les sources citées. Il les note et compare ce qui a été dit avec le contenu réel de la source pour détecter le cherry-picking."
     },
   ];
 
@@ -66,7 +66,7 @@ export default function FaqPage() {
     },
     {
       q: "Quels sont les avantages du plan Pro ?",
-      a: "ASV illimité, badge vérifié, statistiques avancées et support prioritaire. Idéal pour les créateurs qui publient régulièrement."
+      a: "Analyses détaillées ASV, badge vérifié, statistiques avancées et support prioritaire. Idéal pour les créateurs qui publient régulièrement et veulent des insights approfondis."
     },
     {
       q: "Comment augmenter mon score de confiance ?",
