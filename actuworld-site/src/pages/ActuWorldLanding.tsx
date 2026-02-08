@@ -1,10 +1,12 @@
 import { motion } from "framer-motion";
 import {
-  ShieldCheck, Star, BadgeCheck, FileText, Brain, LineChart, Megaphone,
+  ShieldCheck, Star, FileText, Brain, LineChart, Megaphone,
   HelpCircle, Mail, ChevronRight, Play, Video, Search, BarChart3,
-  CheckCircle2, Sparkles, Eye, Smartphone, Target, Users, AlertTriangle,
-  TrendingDown, ThumbsUp, BookOpen, Globe2, Heart, Unlock
+  CheckCircle2, Sparkles, Smartphone, Target, Users, AlertTriangle,
+  TrendingDown, ThumbsUp, BookOpen, Globe2, Heart, Unlock,
+  Bell, MessageCircle, Image, X, Check, MoreHorizontal, Home, PenLine, PlaySquare, PlusCircle
 } from "lucide-react";
+import phoneImg from "../assets/phone_img.jpg";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
 import { Card } from "../components/Card";
@@ -227,48 +229,89 @@ export default function ActuWorldLanding() {
               <div className="relative mx-auto w-72 md:w-80">
                 <div className="relative rounded-[3rem] border-8 border-[#1B3528] bg-[#1B3528] shadow-2xl overflow-hidden">
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-6 bg-[#1B3528] rounded-b-xl z-10"></div>
-                  <div className="aspect-[9/19] bg-aw-bg p-4 pt-8">
-                    <div className="space-y-3">
-                      {/* Header */}
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-semibold text-aw-primary">Économie</span>
-                        <span className="text-[10px] text-aw-muted">Il y a 2h</span>
+                  <div className="aspect-[9/19] bg-aw-bg p-3 pt-7 flex flex-col">
+                    {/* Top bar */}
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="w-7 h-7 rounded-full bg-aw-surface border border-aw"></div>
+                      <span className="text-[13px] font-bold text-aw-primary" style={{fontFamily: 'Georgia, serif', letterSpacing: '0.5px'}}>ActuWorld</span>
+                      <div className="flex items-center gap-1.5">
+                        <div className="relative">
+                          <Bell className="w-4 h-4 text-aw-primary" />
+                          <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full text-[5px] text-white flex items-center justify-center font-bold">1</div>
+                        </div>
+                        <MessageCircle className="w-4 h-4 text-aw-primary" />
                       </div>
-                      {/* Post card */}
-                      <div className="card p-3">
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="w-8 h-8 rounded-full bg-aw-secondary"></div>
-                          <div>
-                            <div className="text-xs font-semibold">@eco_expert</div>
-                            <div className="flex items-center gap-1">
-                              <BadgeCheck className="w-3 h-3 text-aw-accent" />
-                              <span className="text-[9px] text-aw-muted">Score 94%</span>
-                            </div>
-                          </div>
+                    </div>
+
+                    {/* Tab switcher */}
+                    <div className="flex rounded-xl overflow-hidden bg-aw-surface border border-aw mb-2.5">
+                      <div className="flex-1 py-1.5 text-center text-[8px] font-medium bg-aw-success text-aw-primary rounded-xl flex items-center justify-center gap-1">
+                        <Image className="w-3 h-3" /> Fil visuel
+                      </div>
+                      <div className="flex-1 py-1.5 text-center text-[8px] text-aw-muted flex items-center justify-center gap-1">
+                        <FileText className="w-3 h-3" /> Journal
+                      </div>
+                    </div>
+
+                    {/* Post header */}
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-6 h-6 rounded-full bg-aw-surface border border-aw"></div>
+                        <span className="text-[10px] font-semibold text-aw-text">ScienceExplorer</span>
+                      </div>
+                      <div className="flex gap-1">
+                        <div className="w-5 h-5 rounded-md border border-red-800/60 flex items-center justify-center">
+                          <X className="w-2.5 h-2.5 text-red-400" />
                         </div>
-                        <p className="text-[11px] mb-2">L'inflation en France atteint 4.2% selon les derniers chiffres...</p>
-                        {/* Sources */}
-                        <div className="bg-aw-bg rounded-lg p-2 mb-2">
-                          <div className="text-[9px] text-aw-muted mb-1">3 sources vérifiées</div>
-                          <div className="flex gap-1">
-                            <span className="text-[8px] px-1.5 py-0.5 bg-aw-success rounded text-aw-primary">INSEE</span>
-                            <span className="text-[8px] px-1.5 py-0.5 bg-aw-success rounded text-aw-primary">BCE</span>
-                            <span className="text-[8px] px-1.5 py-0.5 bg-aw-success rounded text-aw-primary">+1</span>
-                          </div>
-                        </div>
-                        {/* Actions */}
-                        <div className="flex items-center justify-between text-[10px] text-aw-muted">
-                          <div className="flex items-center gap-3">
-                            <span className="flex items-center gap-1"><ThumbsUp className="w-3 h-3" /> 847</span>
-                            <span className="flex items-center gap-1"><Eye className="w-3 h-3" /> 2.1k</span>
-                          </div>
-                          <button className="px-2 py-1 bg-aw-primary text-white rounded text-[9px]">Soutenir</button>
+                        <div className="w-5 h-5 rounded-md border border-aw-primary/60 flex items-center justify-center">
+                          <Check className="w-2.5 h-2.5 text-aw-primary" />
                         </div>
                       </div>
-                      {/* Second post preview */}
-                      <div className="card p-3 opacity-60">
-                        <div className="h-2 w-3/4 bg-aw-surface rounded mb-2"></div>
-                        <div className="h-2 w-1/2 bg-aw-surface rounded"></div>
+                    </div>
+
+                    {/* Vote bar */}
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="flex-1 h-1 bg-aw-surface rounded-full overflow-hidden">
+                        <div className="h-full w-1/2 bg-amber-500 rounded-full"></div>
+                      </div>
+                      <span className="text-[7px] text-aw-muted">2 votes</span>
+                    </div>
+
+                    {/* Large image */}
+                    <div className="flex-1 rounded-2xl overflow-hidden relative mb-1.5 min-h-0">
+                      <img src={phoneImg} alt="Post nature" className="w-full h-full object-cover" />
+                      <div className="absolute top-2 right-2 flex gap-1">
+                        <div className="w-5 h-5 rounded-full bg-black/50 flex items-center justify-center text-[7px] text-white font-medium">2</div>
+                        <div className="w-5 h-5 rounded-full bg-black/50 flex items-center justify-center">
+                          <MoreHorizontal className="w-3 h-3 text-white" />
+                        </div>
+                      </div>
+                      <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-black/40 rounded-full text-[7px] text-white flex items-center gap-1">
+                        <PenLine className="w-2.5 h-2.5" /> Nature
+                      </div>
+                    </div>
+
+                    {/* Post title */}
+                    <p className="text-[10px] font-semibold text-aw-text mb-1.5">Les cascades cachées de la biodiversité</p>
+
+                    {/* Bottom nav */}
+                    <div className="flex items-center justify-around py-1.5 border-t border-aw mt-auto">
+                      <div className="flex flex-col items-center gap-0.5">
+                        <Home className="w-3.5 h-3.5 text-aw-primary" />
+                        <span className="text-[5px] text-aw-primary font-medium">Home</span>
+                      </div>
+                      <div className="flex flex-col items-center gap-0.5">
+                        <PlaySquare className="w-3.5 h-3.5 text-aw-muted" />
+                        <span className="text-[5px] text-aw-muted">Reel</span>
+                      </div>
+                      <PlusCircle className="w-5 h-5 text-aw-primary" />
+                      <div className="flex flex-col items-center gap-0.5">
+                        <Search className="w-3.5 h-3.5 text-aw-muted" />
+                        <span className="text-[5px] text-aw-muted">Search</span>
+                      </div>
+                      <div className="flex flex-col items-center gap-0.5">
+                        <Globe2 className="w-3.5 h-3.5 text-aw-muted" />
+                        <span className="text-[5px] text-aw-muted">ActuWorld</span>
                       </div>
                     </div>
                   </div>
