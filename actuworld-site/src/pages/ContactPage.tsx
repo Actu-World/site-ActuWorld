@@ -19,15 +19,15 @@ export default function ContactPage() {
       icon: Mail,
       title: "Email",
       desc: "Pour toute question générale",
-      value: "contact@actuworld.app",
-      link: "mailto:contact@actuworld.app"
+      value: "actuworld.app@outlook.fr",
+      link: "mailto:actuworld.app@outlook.fr"
     },
     {
       icon: MessageCircle,
       title: "Support",
       desc: "Aide technique et assistance",
-      value: "support@actuworld.app",
-      link: "mailto:support@actuworld.app"
+      value: "actuworld.app@outlook.fr",
+      link: "mailto:actuworld.app@outlook.fr"
     },
     {
       icon: Instagram,

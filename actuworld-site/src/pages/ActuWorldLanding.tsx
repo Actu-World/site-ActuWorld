@@ -599,8 +599,8 @@ export default function ActuWorldLanding() {
               contactez-nous pour être parmi les premiers à découvrir ActuWorld.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a href="mailto:contact@actuworld.app" className="btn-primary">
-                <Mail className="w-5 h-5 mr-2"/> contact@actuworld.app
+              <a href="mailto:actuworld.app@outlook.fr" className="btn-primary">
+                <Mail className="w-5 h-5 mr-2"/> actuworld.app@outlook.fr
               </a>
               <a href="#hero" className="btn-outline">
                 Rejoindre la beta (bientôt)
