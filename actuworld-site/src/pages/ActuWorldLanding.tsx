@@ -103,9 +103,9 @@ export default function ActuWorldLanding() {
               variants={fadeIn}
               className="hero-title text-4xl md:text-6xl font-bold leading-tight"
             >
-              <span className="text-aw-text">Apprendre plutôt que</span>
+              <span className="text-aw-text">L'information vérifiée par tous,</span>
               <br />
-              <span className="text-aw-primary">scroller sans fin</span>
+              <span className="text-aw-primary">accessible à tous</span>
             </motion.h1>
 
             <motion.p
@@ -576,7 +576,7 @@ export default function ActuWorldLanding() {
               Devenir la référence européenne du réseau social éducatif
             </H2>
             <p className="text-aw-muted mt-6 text-lg leading-relaxed">
-              Un espace digital où <strong className="text-aw-text">apprendre prime sur scroller</strong>,
+              Un espace digital où <strong className="text-aw-text">l'information est vérifiée par tous</strong>,
               où l'information sourcée et vérifiée est accessible à tous gratuitement,
               et où les créateurs de contenu de qualité obtiennent la visibilité qu'ils méritent.
             </p>

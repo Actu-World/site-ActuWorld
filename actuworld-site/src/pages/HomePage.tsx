@@ -55,7 +55,7 @@ export default function HomePage() {
   return (
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
       <PageMeta
-        title="ActuWorld — Apprendre plutôt que scroller"
+        title="ActuWorld — L'information vérifiée par tous, accessible à tous"
         description="Le réseau social de l'information fiable où chaque publication est sourcée. Accédez à une information claire et valorisez les créateurs de qualité."
         path="/"
       />
