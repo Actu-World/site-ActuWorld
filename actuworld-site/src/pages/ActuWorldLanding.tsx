@@ -534,7 +534,7 @@ export default function ActuWorldLanding() {
                 className={`card p-8 relative ${i === 2 ? 'ring-2 ring-aw-primary' : ''}`}
               >
                 {i === 2 && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-aw-primary text-white text-xs font-bold rounded-full">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-aw-primary text-on-primary text-xs font-bold rounded-full">
                     Recommandé
                   </div>
                 )}

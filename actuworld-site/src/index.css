@@ -16,6 +16,7 @@
   --aw-text-muted: #4A6B5A;
   --aw-success: #D4E9D1;
   --aw-border: rgba(0, 0, 0, 0.08);
+  --aw-on-primary: #FFFFFF;
 }
 
 .dark {
@@ -28,6 +29,7 @@
   --aw-text-muted: #A0B8A8;
   --aw-success: #2A4A35;
   --aw-border: rgba(255, 255, 255, 0.08);
+  --aw-on-primary: #0F1512;
 }
 
 /* =====================================================
@@ -133,6 +135,8 @@ h2, .h2 {
 
 .border-aw { border-color: var(--aw-border); }
 
+.text-on-primary { color: var(--aw-on-primary); }
+
 /* =====================================================
    COMPOSANTS
    ===================================================== */
@@ -175,7 +179,7 @@ h2, .h2 {
   line-height: 22px;
   padding: 12px 24px;
   background-color: var(--aw-primary);
-  color: #FFFFFF;
+  color: var(--aw-on-primary);
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(46, 95, 74, 0.25);
 }

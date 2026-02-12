@@ -97,7 +97,7 @@ export default function PricingPage() {
             >
               {p.featured && (
                 <motion.div
-                  className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-aw-primary text-white text-xs font-bold rounded-full"
+                  className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-aw-primary text-on-primary text-xs font-bold rounded-full"
                   animate={{ scale: [1, 1.05, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
@@ -109,7 +109,7 @@ export default function PricingPage() {
                   className={`w-12 h-12 rounded-xl flex items-center justify-center ${p.featured ? 'bg-aw-primary' : 'bg-aw-success'}`}
                   whileHover={{ scale: 1.1, rotate: 5 }}
                 >
-                  <p.icon className={`w-6 h-6 ${p.featured ? 'text-white' : 'text-aw-primary'}`} />
+                  <p.icon className={`w-6 h-6 ${p.featured ? 'text-on-primary' : 'text-aw-primary'}`} />
                 </motion.div>
                 <div>
                   <h3 className="body-semi text-xl">{p.title}</h3>
@@ -142,7 +142,7 @@ export default function PricingPage() {
               <motion.button
                 className={`w-full py-3 px-4 rounded-xl font-semibold transition-colors ${
                   p.featured
-                    ? 'bg-aw-primary text-white hover:bg-aw-primary/90'
+                    ? 'bg-aw-primary text-on-primary hover:bg-aw-primary/90'
                     : 'bg-aw-surface border border-aw text-aw-text hover:bg-aw-success'
                 }`}
                 whileHover={{ scale: 1.02 }}

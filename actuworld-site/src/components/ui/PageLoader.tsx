@@ -35,7 +35,7 @@ export const PageLoader = ({ isLoading }: PageLoaderProps) => {
                 ease: "easeInOut",
               }}
             >
-              <Globe2 className="w-8 h-8 text-white" />
+              <Globe2 className="w-8 h-8 text-on-primary" />
             </motion.div>
 
             {/* Texte */}
