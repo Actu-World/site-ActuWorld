@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
-  Smartphone, FileText, ThumbsUp, BookOpen, Video, Unlock, ShieldCheck,
+  Smartphone, FileText, ThumbsUp, BookOpen, Video, Unlock,
   Search, Heart, Sparkles, Users,
   Bell, MessageCircle, Image, X, Check, MoreHorizontal, Home, PenLine, PlaySquare, PlusCircle, Globe2
 } from "lucide-react";
@@ -26,14 +26,13 @@ export default function AppPage() {
     { icon: BookOpen, title: "Catégorisation thématique", desc: "Sciences, Histoire, Tech, Santé, Économie... Trouvez facilement ce qui vous intéresse." },
     { icon: Video, title: "ASV intégré", desc: "Notre IA extrait automatiquement les sources citées dans les vidéos uploadées." },
     { icon: Unlock, title: "100% gratuit en lecture", desc: "Aucun paywall pour accéder au contenu. Le savoir doit rester accessible à tous." },
-    { icon: ShieldCheck, title: "Validation progressive", desc: "Nouveaux utilisateurs modérés, puis publication automatique selon leur score de confiance." },
   ];
 
   const differentiators = [
-    { icon: Unlock, title: "Gratuit sans compromis", desc: "Contrairement à Medium ou Substack, tout le contenu reste accessible gratuitement." },
-    { icon: Sparkles, title: "IA native", desc: "ASV est conçu dès le départ pour ActuWorld, pas un outil externe greffé." },
-    { icon: Users, title: "Confiance communautaire", desc: "Pas de fact-checkers centralisés coûteux. La communauté valide la qualité." },
-    { icon: Heart, title: "Monétisation éthique", desc: "Modèle diversifié qui ne corrompt pas l'algorithme : pub éducative + dons + premium." },
+    { icon: Unlock, title: "Gratuit pour tous", desc: "Lire, apprendre et s'informer sans jamais payer. Aucun abonnement requis pour accéder aux contenus et aux sources." },
+    { icon: Sparkles, title: "IA intégrée", desc: "Notre IA ASV vérifie les sources de vos textes et vidéos, analyse leur fiabilité et détecte les informations non sourcées." },
+    { icon: Users, title: "Validé par la communauté", desc: "Les utilisateurs évaluent chaque contenu. Plus un post est sourcé et apprécié, plus il gagne en visibilité sur la plateforme." },
+    { icon: Heart, title: "Monétisation éthique", desc: "Les créateurs sont rémunérés par les dons et abonnements de leur audience. Pas de publicité intrusive, pas d'algorithme à buzz." },
   ];
 
   return (
@@ -303,10 +302,10 @@ export default function AppPage() {
       <Section className="bg-aw-surface py-16">
         <AnimatedSection direction="scale">
           <div className="text-center">
-            <h3 className="text-2xl font-bold mb-4">Découvrez notre IA de vérification</h3>
+            <h3 className="text-2xl font-bold mb-4">Découvrez notre <span className="gradient-text">IA de vérification</span></h3>
             <p className="text-aw-muted mb-8 max-w-xl mx-auto">
-              ASV extrait automatiquement les sources citées dans les vidéos.
-              Un gain de temps massif pour les créateurs et les fact-checkers.
+              ASV analyse vos textes et vidéos, vérifie les sources citées et évalue leur fiabilité.
+              Publiez en confiance, informez en toute transparence.
             </p>
             <Link to="/reco-src" className="btn-primary glow-hover">
               <Sparkles className="w-5 h-5 mr-2" /> Découvrir ASV

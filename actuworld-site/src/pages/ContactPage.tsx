@@ -11,7 +11,6 @@ import {
   fadeInUp,
   scaleUp
 } from "../components/animations";
-import { WaitlistForm } from "../components/ui/WaitlistForm";
 
 export default function ContactPage() {
   const contactMethods = [
@@ -121,12 +120,12 @@ export default function ContactPage() {
             </motion.div>
             <h3 className="text-3xl font-bold mb-4">Rejoignez le mouvement</h3>
             <p className="text-aw-muted text-lg mb-8">
-              ActuWorld est en développement. Inscrivez-vous pour être informé du lancement
+              ActuWorld est en développement. Contactez-nous pour être informé du lancement
               et faire partie des premiers utilisateurs de la plateforme.
             </p>
-            <div className="max-w-md mx-auto">
-              <WaitlistForm variant="inline" />
-            </div>
+            <a href="mailto:actuworld.app@outlook.fr?subject=Rejoindre la beta ActuWorld" className="btn-primary glow-hover inline-flex items-center">
+              <Mail className="w-5 h-5 mr-2" /> Rejoindre la beta
+            </a>
           </motion.div>
         </motion.div>
       </Section>

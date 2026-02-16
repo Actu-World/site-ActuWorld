@@ -18,6 +18,7 @@ import {
   scaleUp
 } from "../components/animations";
 import { WaitlistForm } from "../components/ui/WaitlistForm";
+import { Tooltip } from "../components/ui/Tooltip";
 
 export default function HomePage() {
   const heroRef = useRef(null);
@@ -93,14 +94,7 @@ export default function HomePage() {
             variants={staggerContainer}
             className="text-center max-w-4xl mx-auto"
           >
-            <motion.div
-              variants={fadeInUp}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-aw-success text-aw-primary text-sm font-semibold mb-6"
-            >
-              <Globe2 className="w-4 h-4" /> Réseau social éducatif nouvelle génération
-            </motion.div>
-
-            <motion.h1
+<motion.h1
               variants={fadeInUp}
               className="hero-title text-4xl md:text-6xl font-bold leading-tight"
             >
@@ -233,7 +227,7 @@ export default function HomePage() {
               Chaque contenu est <strong className="text-aw-text">sourcé</strong> et évalué par un score de fiabilité. 
               Un <strong className="text-aw-text">parcours de contributeur</strong> (Explorateur → Navigateur → Pionnier) 
               valorise les créateurs sérieux. Et <strong className="text-aw-text">ASV</strong>, notre outil de vérification 
-              automatique, analyse les sources, les note, et détecte le cherry-picking pour une transparence maximale.
+              automatique, analyse les sources, les note, et détecte le <Tooltip text="Le cherry-picking consiste à sélectionner uniquement les données ou faits qui soutiennent son argument, en ignorant ceux qui le contredisent.">cherry-picking</Tooltip> pour une transparence maximale.
             </p>
             <motion.p
               className="text-aw-primary mt-6 body-semi text-lg"

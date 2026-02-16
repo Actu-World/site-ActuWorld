@@ -2,8 +2,8 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
   Sparkles, Video, Brain, Shield, ShieldCheck, Globe2,
-  FileText, Lock, Clock, AlertTriangle, CheckCircle2, ChevronRight,
-  Database, Users, Eye, Zap
+  FileText, AlertTriangle, CheckCircle2, ChevronRight,
+  Database, Users, Zap
 } from "lucide-react";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
@@ -17,6 +17,7 @@ import {
   fadeInUp,
   scaleUp
 } from "../components/animations";
+import { Tooltip } from "../components/ui/Tooltip";
 
 export default function RecoSrcPage() {
   const coreFeatures = [
@@ -46,22 +47,16 @@ export default function RecoSrcPage() {
     },
   ];
 
-  const scoringModules = [
-    { name: "Base de données", weight: "40%", icon: Database, desc: "301 domaines vérifiés (institutions, médias, scientifiques)" },
-    { name: "Crowdsourcing", weight: "20%", icon: Users, desc: "Votes et évaluations de la communauté" },
-    { name: "Safe Browsing", weight: "15%", icon: Shield, desc: "Détection malware et phishing (Google)" },
-    { name: "Validation SSL", weight: "10%", icon: Lock, desc: "Certificat valide, émetteur de confiance" },
-    { name: "Âge WHOIS", weight: "10%", icon: Clock, desc: "Domaines récents = plus suspects" },
-    { name: "Métadonnées", weight: "5%", icon: Eye, desc: "Mentions légales, contact, auteur visible" },
+  const scoringPillars = [
+    { name: "Fiabilité de la source", icon: Database, desc: "ASV vérifie si la source provient d'un site reconnu : média, institution, revue scientifique ou organisme officiel." },
+    { name: "Avis de la communauté", icon: Users, desc: "Les utilisateurs d'ActuWorld évaluent les contenus. Leurs votes renforcent ou questionnent la fiabilité d'un post." },
+    { name: "Sécurité du site", icon: Shield, desc: "ASV s'assure que le site source est sûr, actif et transparent : pas de site frauduleux ni de source douteuse." },
   ];
 
-  const domainStats = [
-    { category: "Médias", count: 127, examples: "AFP, Reuters, Le Monde..." },
-    { category: "Scientifiques", count: 60, examples: "HAL, ArXiv, Nature..." },
-    { category: "Institutions", count: 49, examples: "INSEE, ONU, .gouv..." },
-    { category: "Blacklist", count: 28, examples: "Infowars, RT..." },
-    { category: "Think tanks", count: 18, examples: "IFRI, Fondapol..." },
-    { category: "Fact-checkers", count: 9, examples: "Snopes, PolitiFact..." },
+  const dbHighlights = [
+    { label: "Sources reconnues", desc: "Médias, revues scientifiques, institutions officielles : ASV s'appuie sur des centaines de sources vérifiées." },
+    { label: "Sites à risque identifiés", desc: "Les sites connus pour la désinformation sont repérés et signalés automatiquement." },
+    { label: "Base en constante évolution", desc: "La communauté et notre équipe enrichissent la base chaque jour pour couvrir toujours plus de sources." },
   ];
 
   const usps = [
@@ -72,7 +67,7 @@ export default function RecoSrcPage() {
     },
     {
       title: "Vérification complète : sources + contenu",
-      desc: "On ne checke pas juste si la source existe. On vérifie que ce qui a été dit correspond réellement à la source (détection du cherry-picking).",
+      desc: <>On ne checke pas juste si la source existe. On vérifie que ce qui a été dit correspond réellement à la source (détection du <Tooltip text="Le cherry-picking consiste à sélectionner uniquement les données ou faits qui soutiennent son argument, en ignorant ceux qui le contredisent.">cherry-picking</Tooltip>).</>,
       icon: Brain
     },
     {
@@ -156,7 +151,7 @@ export default function RecoSrcPage() {
         <AnimatedSection>
           <div className="text-center mb-12">
             <H2 kicker="Avantages" center>
-              Pourquoi ASV <span className="gradient-text">surpasse</span> les solutions existantes
+              Ce que fait <span className="gradient-text">ASV</span> pour vous
             </H2>
           </div>
         </AnimatedSection>
@@ -243,61 +238,40 @@ export default function RecoSrcPage() {
 
         <AnimatedSection>
           <div className="text-center mb-16">
-            <H2 kicker="Algorithme" center>
-              Le système de <span className="gradient-text">scoring</span>
+            <H2 kicker="Score de fiabilité" center>
+              Comment ASV <span className="gradient-text">évalue</span> une source
             </H2>
             <p className="text-aw-muted mt-4 max-w-2xl mx-auto">
-              Un score composite pondéré combinant 6 modules de vérification pour une évaluation complète et fiable.
+              Chaque source reçoit un score de fiabilité basé sur 3 piliers. Simple, transparent et compréhensible par tous.
             </p>
           </div>
         </AnimatedSection>
 
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={staggerContainer}
-            className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"
+            className="space-y-6"
           >
-            {scoringModules.map((module, i) => (
+            {scoringPillars.map((pillar, i) => (
               <motion.div
                 key={i}
                 variants={fadeInUp}
-                whileHover={{ scale: 1.03 }}
-                className="card p-4 flex items-start gap-4"
+                whileHover={{ x: 8 }}
+                className="card card-hover p-6 flex items-center gap-6"
               >
-                <div className="w-12 h-12 rounded-xl bg-aw-primary/10 flex items-center justify-center flex-shrink-0">
-                  <module.icon className="w-6 h-6 text-aw-primary" />
+                <div className="flex-shrink-0 w-14 h-14 rounded-2xl bg-aw-primary flex items-center justify-center">
+                  <span className="text-2xl font-bold text-on-primary">{i + 1}</span>
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <h4 className="font-semibold text-sm">{module.name}</h4>
-                    <span className="text-aw-accent font-bold">{module.weight}</span>
-                  </div>
-                  <p className="text-aw-muted text-xs">{module.desc}</p>
+                <div>
+                  <h3 className="body-semi text-lg">{pillar.name}</h3>
+                  <p className="text-aw-muted text-sm mt-1">{pillar.desc}</p>
                 </div>
               </motion.div>
             ))}
           </motion.div>
-
-          <AnimatedSection delay={0.3} className="mt-8">
-            <motion.div
-              className="card p-6 bg-gradient-to-r from-aw-primary/5 to-aw-accent/5 border-aw-primary/20"
-              whileHover={{ scale: 1.01 }}
-            >
-              <div className="text-center">
-                <code className="text-sm text-aw-muted">
-                  Score Final = <span className="text-aw-primary font-semibold">40% DB</span> +
-                  <span className="text-aw-primary font-semibold"> 20% Crowd</span> +
-                  <span className="text-aw-primary font-semibold"> 15% SafeBrowsing</span> +
-                  <span className="text-aw-primary font-semibold"> 10% SSL</span> +
-                  <span className="text-aw-primary font-semibold"> 10% WHOIS</span> +
-                  <span className="text-aw-primary font-semibold"> 5% Meta</span>
-                </code>
-              </div>
-            </motion.div>
-          </AnimatedSection>
         </div>
       </Section>
 
@@ -305,11 +279,11 @@ export default function RecoSrcPage() {
       <Section className="bg-aw-surface py-24">
         <AnimatedSection>
           <div className="text-center mb-12">
-            <H2 kicker="Base de données" center>
-              <span className="gradient-text">301 domaines</span> vérifiés
+            <H2 kicker="Sources fiables" center>
+              Une base de <span className="gradient-text">sources vérifiées</span>
             </H2>
             <p className="text-aw-muted mt-4 max-w-2xl mx-auto">
-              Une base de données crowdsourcée et scalable, classée par catégorie et niveau de confiance.
+              ASV s'appuie sur une base de données de sources fiables, enrichie en continu par notre équipe et la communauté.
             </p>
           </div>
         </AnimatedSection>
@@ -319,20 +293,17 @@ export default function RecoSrcPage() {
           whileInView="visible"
           viewport={{ once: true }}
           variants={staggerContainer}
-          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto"
+          className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto"
         >
-          {domainStats.map((stat, i) => (
+          {dbHighlights.map((item, i) => (
             <motion.div
               key={i}
               variants={fadeInUp}
-              whileHover={{ y: -5, scale: 1.02 }}
-              className="card card-hover p-5"
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="card card-hover p-6 text-center"
             >
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="font-semibold">{stat.category}</h4>
-                <span className="text-2xl font-bold text-aw-primary">{stat.count}</span>
-              </div>
-              <p className="text-aw-muted text-xs">{stat.examples}</p>
+              <h4 className="body-semi text-lg mb-2">{item.label}</h4>
+              <p className="text-aw-muted text-sm">{item.desc}</p>
             </motion.div>
           ))}
         </motion.div>
@@ -350,7 +321,7 @@ export default function RecoSrcPage() {
                 <CheckCircle2 className="w-4 h-4" /> Feature active et en fonctionnement
               </motion.span>
               <H2 kicker="" center>
-                Détection du <span className="gradient-text">cherry-picking</span>
+                Détection du <Tooltip text="Le cherry-picking consiste à sélectionner uniquement les données ou faits qui soutiennent son argument, en ignorant ceux qui le contredisent."><span className="gradient-text">cherry-picking</span></Tooltip>
               </H2>
             </div>
           </AnimatedSection>
@@ -393,7 +364,7 @@ export default function RecoSrcPage() {
                 </div>
 
             <p className="text-aw-muted text-sm text-center">
-              ASV analyse ce qui a été dit et compare avec le contenu réel de la source. Il détecte et note le cherry-picking.
+              ASV analyse ce qui a été dit et compare avec le contenu réel de la source. Il détecte et note le <Tooltip text="Le cherry-picking consiste à sélectionner uniquement les données ou faits qui soutiennent son argument, en ignorant ceux qui le contredisent.">cherry-picking</Tooltip>.
             </p>
               </div>
             </motion.div>

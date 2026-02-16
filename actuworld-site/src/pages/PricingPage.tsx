@@ -33,26 +33,22 @@ export default function PricingPage() {
     },
     {
       icon: Megaphone,
-      title: "Créateur Pro",
-      price: "9,99€",
-      period: "/mois",
-      desc: "Pour les créateurs sérieux",
-      points: ["Analyses détaillées ASV", "Badge vérifié", "Statistiques avancées", "Support prioritaire"],
-      cta: "Passer Pro",
+      title: "ASV Pro",
+      price: "Sur devis",
+      period: "",
+      desc: "Pour les professionnels de l'info",
+      points: ["ASV illimité et personnalisable", "Intégration sur vos outils", "Adapté aux médias, entreprises et rédactions", "Support dédié"],
+      cta: "Nous contacter",
       featured: true
     },
   ];
 
   const faq = [
     {
-      q: "Puis-je changer de plan à tout moment ?",
-      a: "Oui, vous pouvez upgrader ou downgrader votre plan à tout moment. Les changements prennent effet immédiatement."
+      q: "À qui s'adresse ASV Pro ?",
+      a: "ASV Pro est conçu pour tous les professionnels de l'information : médias, journaux, entreprises, rédactions ou particuliers qui souhaitent intégrer notre IA de vérification dans leurs outils."
     },
-    {
-      q: "Y a-t-il une période d'essai pour le plan Pro ?",
-      a: "Oui, nous offrons 14 jours d'essai gratuit pour le plan Créateur Pro. Aucune carte bancaire requise."
-    },
-    {
+{
       q: "Comment fonctionne le système de dons ?",
       a: "Les lecteurs peuvent donner directement aux créateurs. ActuWorld prélève une commission de 10% pour maintenir la plateforme."
     }
@@ -155,76 +151,6 @@ export default function PricingPage() {
         </motion.div>
       </Section>
 
-      {/* COMPARISON */}
-      <Section className="bg-aw-surface py-24">
-        <AnimatedSection>
-          <div className="text-center mb-12">
-            <H2 kicker="Comparaison" center>
-              Pourquoi choisir <span className="gradient-text">ActuWorld</span> ?
-            </H2>
-          </div>
-        </AnimatedSection>
-
-        <AnimatedSection direction="scale">
-          <div className="max-w-4xl mx-auto">
-            <motion.div
-              className="card overflow-hidden"
-              whileHover={{ scale: 1.01 }}
-            >
-              <table className="w-full">
-                <thead className="bg-aw-surface">
-                  <tr>
-                    <th className="text-left p-4 font-semibold">Fonctionnalité</th>
-                    <th className="text-center p-4 font-semibold text-aw-primary">ActuWorld</th>
-                    <th className="text-center p-4 font-semibold text-aw-muted">Medium</th>
-                    <th className="text-center p-4 font-semibold text-aw-muted">Substack</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    { feature: "Lecture gratuite", aw: true, medium: false, substack: "Partiel" },
-                    { feature: "Sourcing obligatoire", aw: true, medium: false, substack: false },
-                    { feature: "IA de vérification", aw: true, medium: false, substack: false },
-                    { feature: "Score de confiance", aw: true, medium: false, substack: false },
-                    { feature: "Dons aux créateurs", aw: true, medium: false, substack: true },
-                  ].map((row, i) => (
-                    <motion.tr
-                      key={i}
-                      className="border-t border-aw"
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      transition={{ delay: i * 0.1 }}
-                    >
-                      <td className="p-4">{row.feature}</td>
-                      <td className="text-center p-4">
-                        {row.aw === true ? (
-                          <motion.div
-                            initial={{ scale: 0 }}
-                            whileInView={{ scale: 1 }}
-                            transition={{ delay: i * 0.1 + 0.2 }}
-                          >
-                            <CheckCircle2 className="w-5 h-5 text-aw-accent mx-auto" />
-                          </motion.div>
-                        ) : row.aw}
-                      </td>
-                      <td className="text-center p-4 text-aw-muted">
-                        {row.medium === true ? (
-                          <CheckCircle2 className="w-5 h-5 text-aw-muted mx-auto" />
-                        ) : row.medium === false ? "—" : row.medium}
-                      </td>
-                      <td className="text-center p-4 text-aw-muted">
-                        {row.substack === true ? (
-                          <CheckCircle2 className="w-5 h-5 text-aw-muted mx-auto" />
-                        ) : row.substack === false ? "—" : row.substack}
-                      </td>
-                    </motion.tr>
-                  ))}
-                </tbody>
-              </table>
-            </motion.div>
-          </div>
-        </AnimatedSection>
-      </Section>
 
       {/* FAQ */}
       <Section className="py-24">

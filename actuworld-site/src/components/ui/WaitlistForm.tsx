@@ -112,93 +112,17 @@ export const WaitlistForm = ({ variant = "card", className = "" }: WaitlistFormP
         </p>
       </div>
 
-      <AnimatePresence mode="wait">
-        {status === "success" ? (
-          <motion.div
-            key="success"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            className="text-center py-6"
-          >
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: "spring", stiffness: 200 }}
-            >
-              <CheckCircle2 className="w-16 h-16 text-aw-accent mx-auto mb-4" />
-            </motion.div>
-            <h4 className="text-lg font-semibold text-aw-text mb-2">
-              Merci pour votre inscription !
-            </h4>
-            <p className="text-aw-muted text-sm">
-              Nous vous contacterons dès le lancement de la beta.
-            </p>
-          </motion.div>
-        ) : (
-          <motion.form
-            key="form"
-            onSubmit={handleSubmit}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="space-y-4"
-          >
-            <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-aw-muted" />
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  if (status === "error") setStatus("idle");
-                }}
-                placeholder="Votre adresse email"
-                className={`w-full pl-12 pr-4 py-3 rounded-xl border bg-aw-bg text-aw-text placeholder:text-aw-muted focus:outline-none focus:ring-2 transition-all ${
-                  status === "error"
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-aw focus:ring-aw-accent"
-                }`}
-                disabled={status === "loading"}
-              />
-            </div>
-
-            <AnimatePresence>
-              {status === "error" && (
-                <motion.p
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="text-red-500 text-sm"
-                >
-                  {errorMessage}
-                </motion.p>
-              )}
-            </AnimatePresence>
-
-            <motion.button
-              type="submit"
-              disabled={status === "loading"}
-              className="btn-primary w-full disabled:opacity-70"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              {status === "loading" ? (
-                <Loader2 className="w-5 h-5 animate-spin mx-auto" />
-              ) : (
-                <>
-                  <Sparkles className="w-5 h-5 mr-2" />
-                  Rejoindre la beta
-                </>
-              )}
-            </motion.button>
-
-            <p className="text-xs text-aw-muted text-center">
-              Pas de spam. Confidentialité garantie. Vous pouvez vous désinscrire à tout moment.
-            </p>
-          </motion.form>
-        )}
-      </AnimatePresence>
+      <div className="text-center">
+        <motion.a
+          href="mailto:actuworld.app@outlook.fr?subject=Rejoindre la beta ActuWorld"
+          className="btn-primary w-full inline-flex items-center justify-center"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <Sparkles className="w-5 h-5 mr-2" />
+          Rejoindre la beta
+        </motion.a>
+      </div>
 
       {/* Instagram */}
       <div className="mt-6 pt-6 border-t border-aw">

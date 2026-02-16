@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import {
-  ShieldCheck, Star, FileText, Brain, LineChart, Megaphone,
+  Star, FileText, Brain, LineChart, Megaphone,
   HelpCircle, Mail, ChevronRight, Play, Video, Search, BarChart3,
   CheckCircle2, Sparkles, Smartphone, Target, Users, AlertTriangle,
   TrendingDown, ThumbsUp, BookOpen, Globe2, Heart, Unlock,
@@ -51,7 +51,6 @@ export default function ActuWorldLanding() {
     { icon: BookOpen, title: "Catégorisation thématique", desc: "Sciences, Histoire, Tech, Santé, Économie... Trouvez facilement ce qui vous intéresse." },
     { icon: Video, title: "RECO-SRC intégré", desc: "Notre IA extrait automatiquement les sources citées dans les vidéos uploadées." },
     { icon: Unlock, title: "100% gratuit en lecture", desc: "Aucun paywall pour accéder au contenu. Le savoir doit rester accessible à tous." },
-    { icon: ShieldCheck, title: "Validation progressive", desc: "Nouveaux utilisateurs modérés, puis publication automatique selon leur score de confiance." },
   ];
 
   const recoFeatures = [
@@ -62,16 +61,16 @@ export default function ActuWorldLanding() {
   ];
 
   const differentiators = [
-    { icon: Unlock, title: "Gratuit sans compromis", desc: "Contrairement à Medium ou Substack, tout le contenu reste accessible gratuitement." },
-    { icon: Sparkles, title: "IA native", desc: "RECO-SRC est conçu dès le départ pour ActuWorld, pas un outil externe greffé." },
-    { icon: Users, title: "Confiance communautaire", desc: "Pas de fact-checkers centralisés coûteux. La communauté valide la qualité." },
-    { icon: Heart, title: "Monétisation éthique", desc: "Modèle diversifié qui ne corrompt pas l'algorithme : pub éducative + dons + premium." },
+    { icon: Unlock, title: "Gratuit pour tous", desc: "Lire, apprendre et s'informer sans jamais payer. Aucun abonnement requis pour accéder aux contenus et aux sources." },
+    { icon: Sparkles, title: "IA intégrée", desc: "Notre IA ASV vérifie les sources de vos textes et vidéos, analyse leur fiabilité et évalue les sources." },
+    { icon: Users, title: "Validé par la communauté", desc: "Les utilisateurs évaluent le contenu. Et permet de contribuer à partager la vérité" },
+    { icon: Heart, title: "Monétisation éthique", desc: "Les créateurs sont rémunérés par les dons et abonnements de leur audience. Pas de publicité intrusive, pas d'algorithme poubelle" },
   ];
 
   const pricing = [
     { icon: Star, title: "Lecteur", price: "0€", desc: "Pour toujours", points: ["Lecture illimitée", "Accès à toutes les sources", "Votes communautaires", "Suivre des créateurs"] },
     { icon: LineChart, title: "Créateur", price: "0€", desc: "Gratuit pour publier", points: ["Publication sourcée", "RECO-SRC (5 vidéos/mois)", "Recevoir des dons", "Statistiques basiques"] },
-    { icon: Megaphone, title: "Créateur Pro", price: "9,99€/mois", desc: "Pour les créateurs sérieux", points: ["RECO-SRC illimité", "Badge vérifié", "Statistiques avancées", "Support prioritaire"] },
+    { icon: Megaphone, title: "ASV Pro", price: "Sur devis",desc: "Pour les professionnels de l'info", points: ["ASV", "Intégration sur vos outils", "Adapté aux médias, entreprises et rédactions", "Support dédié"] },
   ];
 
   return (
@@ -402,8 +401,8 @@ export default function ActuWorldLanding() {
               RECO-SRC, l'IA de <span className="text-aw-accent">vérification</span>
             </H2>
             <p className="text-aw-muted mt-4 max-w-3xl mx-auto text-lg">
-              Notre outil extrait automatiquement les sources citées dans les vidéos.
-              Un gain de temps massif pour les créateurs et les fact-checkers.
+              ASV analyse vos textes et vidéos, vérifie les sources citées et évalue leur fiabilité.
+              Publiez en confiance, informez en toute transparence.
             </p>
           </motion.div>
 
@@ -645,7 +644,7 @@ export default function ActuWorldLanding() {
               <a href="mailto:actuworld.app@outlook.fr" className="btn-primary">
                 <Mail className="w-5 h-5 mr-2"/> actuworld.app@outlook.fr
               </a>
-              <a href="#hero" className="btn-outline">
+              <a href="mailto:actuworld.app@outlook.fr?subject=Rejoindre la beta ActuWorld" className="btn-outline">
                 Rejoindre la beta (bientôt)
               </a>
             </div>
