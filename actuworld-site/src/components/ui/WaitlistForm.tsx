@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Mail, CheckCircle2, Loader2, Sparkles, Instagram } from "lucide-react";
 
 interface WaitlistFormProps {
@@ -10,14 +10,13 @@ interface WaitlistFormProps {
 export const WaitlistForm = ({ variant = "card", className = "" }: WaitlistFormProps) => {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [errorMessage, setErrorMessage] = useState("");
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!email || !email.includes("@")) {
       setStatus("error");
-      setErrorMessage("Veuillez entrer une adresse email valide");
       return;
     }
 

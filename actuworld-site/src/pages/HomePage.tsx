@@ -2,7 +2,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useRef } from "react";
 import {
-  Globe2, ChevronRight, FileText, Unlock, ThumbsUp, Sparkles,
+  ChevronRight, FileText, Unlock, ThumbsUp, Sparkles,
   AlertTriangle, Search, TrendingDown, Users
 } from "lucide-react";
 import { Section } from "../components/Section";
