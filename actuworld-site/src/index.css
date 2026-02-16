@@ -257,6 +257,15 @@ h2, .h2 {
   filter: blur(100px);
   opacity: 0.4;
   pointer-events: none;
+  will-change: transform;
+}
+
+/* Réduire les blobs sur mobile pour éviter le lag GPU */
+@media (max-width: 768px) {
+  .aw-blob {
+    filter: blur(60px);
+    opacity: 0.25;
+  }
 }
 
 /* Progress bars */
@@ -308,10 +317,13 @@ h2, .h2 {
    ANIMATIONS & MICRO-INTERACTIONS
    ===================================================== */
 
-/* Smooth transitions for all interactive elements */
-* {
+/* Smooth transitions for interactive elements (scoped to avoid initial load flash) */
+a, button, input, textarea, select,
+.btn-primary, .btn-outline, .card, .badge, .link,
+.card-hover, .glow-hover, .highlight-text {
   transition-property: color, background-color, border-color, box-shadow, transform, opacity;
   transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  transition-duration: 0.3s;
 }
 
 /* Button pulse animation */

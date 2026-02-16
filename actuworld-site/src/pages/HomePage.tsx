@@ -61,9 +61,9 @@ export default function HomePage() {
       />
       {/* HERO */}
       <Section id="hero" container={false} className="relative overflow-hidden pt-16 md:pt-24 pb-20">
-        {/* Animated blobs */}
+        {/* Animated blobs — tailles réduites sur mobile via classes responsive */}
         <motion.div
-          className="aw-blob w-[40rem] h-[40rem] bg-[#94C9AA] -top-32 -right-32"
+          className="aw-blob w-[20rem] h-[20rem] md:w-[40rem] md:h-[40rem] bg-[#94C9AA] -top-32 -right-32"
           animate={{
             scale: [1, 1.1, 1],
             rotate: [0, 180, 360],
@@ -71,7 +71,7 @@ export default function HomePage() {
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
         />
         <motion.div
-          className="aw-blob w-[32rem] h-[32rem] bg-[#00A896] -bottom-32 -left-32"
+          className="aw-blob w-[16rem] h-[16rem] md:w-[32rem] md:h-[32rem] bg-[#00A896] -bottom-32 -left-32"
           animate={{
             scale: [1.1, 1, 1.1],
             rotate: [360, 180, 0],
@@ -79,7 +79,7 @@ export default function HomePage() {
           transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
         />
         <Floating duration={6} y={20}>
-          <div className="aw-blob w-[20rem] h-[20rem] bg-[#2E5F4A] top-1/2 left-1/3 opacity-20" />
+          <div className="aw-blob w-[10rem] h-[10rem] md:w-[20rem] md:h-[20rem] bg-[#2E5F4A] top-1/2 left-1/3 opacity-20" />
         </Floating>
 
         <motion.div
