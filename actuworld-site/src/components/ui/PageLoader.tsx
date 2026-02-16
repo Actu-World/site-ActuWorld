@@ -22,46 +22,18 @@ export const PageLoader = ({ isLoading }: PageLoaderProps) => {
             transition={{ duration: 0.3 }}
             className="flex flex-col items-center gap-4"
           >
-            {/* Logo animé */}
+            {/* Icône Globe2 qui tourne */}
             <motion.div
-              className="w-16 h-16 rounded-2xl bg-aw-primary flex items-center justify-center"
-              animate={{
-                scale: [1, 1.1, 1],
-                rotate: [0, 5, -5, 0],
-              }}
+              animate={{ rotate: 360 }}
               transition={{
                 duration: 1.5,
                 repeat: Infinity,
-                ease: "easeInOut",
+                ease: "linear",
               }}
             >
-              <Globe2 className="w-8 h-8 text-on-primary" />
+              <Globe2 className="w-12 h-12 text-aw-primary" />
             </motion.div>
-
-            {/* Texte */}
-            <motion.div
-              className="text-center"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <h2 className="text-xl font-bold text-aw-text">ActuWorld</h2>
-              <p className="text-sm text-aw-muted">Chargement...</p>
-            </motion.div>
-
-            {/* Barre de progression */}
-            <motion.div className="w-48 h-1 bg-aw-surface rounded-full overflow-hidden">
-              <motion.div
-                className="h-full bg-gradient-to-r from-aw-primary via-aw-accent to-aw-secondary"
-                initial={{ x: "-100%" }}
-                animate={{ x: "100%" }}
-                transition={{
-                  duration: 1,
-                  repeat: Infinity,
-                  ease: "linear",
-                }}
-              />
-            </motion.div>
+            <h2 className="text-xl font-bold text-aw-text">ActuWorld</h2>
           </motion.div>
         </motion.div>
       )}
