@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Mail, MessageCircle, Instagram, ChevronRight, Globe2 } from "lucide-react";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
+import { useLanguage } from "../i18n/LanguageContext";
 import {
   PageWrapper,
   AnimatedSection,
@@ -13,25 +14,28 @@ import {
 } from "../components/animations";
 
 export default function ContactPage() {
+  const { isEnglish } = useLanguage();
+  const t = (fr: string, en: string) => (isEnglish ? en : fr);
+
   const contactMethods = [
     {
       icon: Mail,
       title: "Email",
-      desc: "Pour toute question générale",
+      desc: t("Pour toute question générale", "For any general question"),
       value: "actuworld.app@outlook.fr",
       link: "mailto:actuworld.app@outlook.fr"
     },
     {
       icon: MessageCircle,
-      title: "Support",
-      desc: "Aide technique et assistance",
+      title: t("Support", "Support"),
+      desc: t("Aide technique et assistance", "Technical help and support"),
       value: "actuworld.app@outlook.fr",
       link: "mailto:actuworld.app@outlook.fr"
     },
     {
       icon: Instagram,
       title: "Instagram",
-      desc: "Suivez-nous sur les réseaux",
+      desc: t("Suivez-nous sur les réseaux", "Follow us on social media"),
       value: "@actuworld8",
       link: "https://instagram.com/actuworld8"
     },
@@ -57,11 +61,10 @@ export default function ContactPage() {
         >
           <motion.div variants={scaleUp}>
             <H2 kicker="Contact" center>
-              Construisons ensemble l'information de demain
+              {t("Construisons ensemble l'information de demain", "Let's build tomorrow's information together")}
             </H2>
             <p className="text-aw-muted mt-4 max-w-2xl mx-auto text-lg">
-              Que vous soyez créateur, média, éducateur ou simplement curieux —
-              contactez-nous pour être parmi les premiers à découvrir ActuWorld.
+              {t("Que vous soyez créateur, média, éducateur ou simplement curieux — contactez-nous pour être parmi les premiers à découvrir ActuWorld.", "Whether you're a creator, media organization, educator, or simply curious — contact us to be among the first to discover ActuWorld.")}
             </p>
           </motion.div>
         </motion.div>
@@ -118,13 +121,12 @@ export default function ContactPage() {
             >
               <Globe2 className="w-10 h-10 text-white" />
             </motion.div>
-            <h3 className="text-3xl font-bold mb-4">Rejoignez le mouvement</h3>
+            <h3 className="text-3xl font-bold mb-4">{t("Rejoignez le mouvement", "Join the movement")}</h3>
             <p className="text-aw-muted text-lg mb-8">
-              ActuWorld est en développement. Contactez-nous pour être informé du lancement
-              et faire partie des premiers utilisateurs de la plateforme.
+              {t("ActuWorld est en développement. Contactez-nous pour être informé du lancement et faire partie des premiers utilisateurs de la plateforme.", "ActuWorld is in development. Contact us to be informed about launch and become one of the first users on the platform.")}
             </p>
             <a href="mailto:actuworld.app@outlook.fr?subject=Rejoindre la beta ActuWorld" className="btn-primary glow-hover inline-flex items-center">
-              <Mail className="w-5 h-5 mr-2" /> Rejoindre la beta
+              <Mail className="w-5 h-5 mr-2" /> {t("Rejoindre la beta", "Join the beta")}
             </a>
           </motion.div>
         </motion.div>
@@ -135,7 +137,7 @@ export default function ContactPage() {
         <AnimatedSection>
           <div className="text-center mb-12">
             <H2 kicker="On recherche" center>
-              Qui peut nous aider ?
+              {t("Qui peut nous aider ?", "Who can help us?")}
             </H2>
           </div>
         </AnimatedSection>
@@ -149,20 +151,20 @@ export default function ContactPage() {
         >
           {[
             {
-              title: "Créateurs de contenu",
-              desc: "Testeurs beta pour valider l'expérience utilisateur et ASV"
+              title: t("Créateurs de contenu", "Content creators"),
+              desc: t("Testeurs beta pour valider l'expérience utilisateur et ASV", "Beta testers to validate user experience and ASV")
             },
             {
-              title: "Médias & Journalistes",
-              desc: "Partenariats pour la vérification d'information"
+              title: t("Médias & Journalistes", "Media & journalists"),
+              desc: t("Partenariats pour la vérification d'information", "Partnerships for information verification")
             },
             {
-              title: "Éducateurs",
-              desc: "Intégration dans les parcours pédagogiques"
+              title: t("Éducateurs", "Educators"),
+              desc: t("Intégration dans les parcours pédagogiques", "Integration into learning pathways")
             },
             {
-              title: "Investisseurs",
-              desc: "Financement pour accélérer le développement"
+              title: t("Investisseurs", "Investors"),
+              desc: t("Financement pour accélérer le développement", "Funding to accelerate development")
             }
           ].map((item, i) => (
             <motion.div
@@ -182,7 +184,7 @@ export default function ContactPage() {
       <Section className="bg-aw-surface py-16">
         <AnimatedSection direction="scale">
           <div className="text-center">
-            <h3 className="text-xl font-bold mb-6">En savoir plus</h3>
+            <h3 className="text-xl font-bold mb-6">{t("En savoir plus", "Learn more")}</h3>
             <motion.div
               className="flex flex-wrap items-center justify-center gap-4"
               initial="hidden"
@@ -190,8 +192,8 @@ export default function ContactPage() {
               variants={staggerContainer}
             >
               {[
-                { to: "/", label: "Accueil" },
-                { to: "/app", label: "La plateforme" },
+                { to: "/", label: t("Accueil", "Home") },
+                { to: "/app", label: t("La plateforme", "The platform") },
                 { to: "/reco-src", label: "ASV" },
                 { to: "/faq", label: "FAQ" },
               ].map((link, i) => (

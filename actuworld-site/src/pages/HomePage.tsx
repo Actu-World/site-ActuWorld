@@ -19,8 +19,12 @@ import {
 } from "../components/animations";
 import { WaitlistForm } from "../components/ui/WaitlistForm";
 import { Tooltip } from "../components/ui/Tooltip";
+import { useLanguage } from "../i18n/LanguageContext";
 
 export default function HomePage() {
+  const { isEnglish } = useLanguage();
+  const t = (fr: string, en: string) => (isEnglish ? en : fr);
+
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -33,31 +37,31 @@ export default function HomePage() {
   const problems = [
     {
       icon: AlertTriangle,
-      title: "Information noyée dans le buzz",
-      desc: "Les algorithmes privilégient l'engagement émotionnel et la viralité. L'information éducative est invisible face au clickbait et aux tendances."
+      title: t("Information noyée dans le buzz", "Information drowned in hype"),
+      desc: t("Les algorithmes privilégient l'engagement émotionnel et la viralité. L'information éducative est invisible face au clickbait et aux tendances.", "Algorithms prioritize emotional engagement and virality. Educational information becomes invisible against clickbait and trends.")
     },
     {
       icon: Search,
-      title: "Absence de sourcage",
-      desc: "Aucune vérification des sources. N'importe qui peut affirmer n'importe quoi. Les fact-checkers arrivent trop tard, après la propagation virale."
+      title: t("Absence de sourcage", "Lack of sourcing"),
+      desc: t("Aucune vérification des sources. N'importe qui peut affirmer n'importe quoi. Les fact-checkers arrivent trop tard, après la propagation virale.", "No source verification. Anyone can claim anything. Fact-checkers arrive too late, after viral spread.")
     },
     {
       icon: TrendingDown,
-      title: "Désinformation incontrôlée",
-      desc: "Sans transparence sur les sources, la désinformation se propage rapidement. Les utilisateurs ne savent plus en qui faire confiance."
+      title: t("Désinformation incontrôlée", "Unchecked misinformation"),
+      desc: t("Sans transparence sur les sources, la désinformation se propage rapidement. Les utilisateurs ne savent plus en qui faire confiance.", "Without source transparency, misinformation spreads rapidly. Users no longer know whom to trust.")
     },
     {
       icon: Users,
-      title: "Perte de confiance",
-      desc: "73% des jeunes cherchent une alternative éthique. Ils veulent une plateforme basée sur la vérification et l'éducation, pas sur la manipulation."
+      title: t("Perte de confiance", "Loss of trust"),
+      desc: t("73% des jeunes cherchent une alternative éthique. Ils veulent une plateforme basée sur la vérification et l'éducation, pas sur la manipulation.", "73% of young people are looking for an ethical alternative. They want a platform built on verification and education, not manipulation.")
     }
   ];
 
   return (
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
       <PageMeta
-        title="ActuWorld — L'information vérifiée par tous, accessible à tous"
-        description="Le réseau social de l'information fiable où chaque publication est sourcée. Accédez à une information claire et valorisez les créateurs de qualité."
+        title={t("ActuWorld — L'information vérifiée par tous, accessible à tous", "ActuWorld — Verified information by everyone, for everyone")}
+        description={t("Le réseau social de l'information fiable où chaque publication est sourcée. Accédez à une information claire et valorisez les créateurs de qualité.", "The social network for reliable information where every publication is sourced. Access clear information and support high-quality creators.")}
         path="/"
       />
       {/* HERO */}
@@ -98,19 +102,19 @@ export default function HomePage() {
               variants={fadeInUp}
               className="hero-title text-4xl md:text-6xl font-bold leading-tight"
             >
-              <span className="text-aw-text">L'information fiable</span>
+              <span className="text-aw-text">{t("L'information fiable", "Reliable information")}</span>
               <br />
-              <span className="gradient-text">enfin mise en avant</span>
+              <span className="gradient-text">{t("enfin mise en avant", "finally put first")}</span>
             </motion.h1>
 
             <motion.p
               variants={fadeInUp}
               className="mt-8 text-aw-muted text-lg md:text-xl max-w-2xl mx-auto leading-relaxed"
             >
-              ActuWorld réinvente la façon dont nous nous informons. Sur cette plateforme, 
-              <strong className="text-aw-text"> chaque contenu est sourcé et évalué par la communauté</strong>. 
-              Fini le buzz sans fondement. Bienvenue dans le réseau social de l'intelligence collective, 
-              où <strong className="text-aw-text">la qualité prime sur la viralité</strong>.
+              {t("ActuWorld réinvente la façon dont nous nous informons. Sur cette plateforme, ", "ActuWorld is reinventing how we stay informed. On this platform, ")}
+              <strong className="text-aw-text"> {t("chaque contenu est sourcé et évalué par la communauté", "every piece of content is sourced and reviewed by the community")}</strong>. 
+              {t("Fini le buzz sans fondement. Bienvenue dans le réseau social de l'intelligence collective, où ", "No more baseless buzz. Welcome to the social network of collective intelligence, where ")}
+              <strong className="text-aw-text">{t("la qualité prime sur la viralité", "quality comes before virality")}</strong>.
             </motion.p>
 
             <motion.div
@@ -118,11 +122,11 @@ export default function HomePage() {
               className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
             >
               <Link to="/app" className="btn-primary glow-hover">
-                Découvrir ActuWorld <ChevronRight className="w-5 h-5 ml-2" />
+                {t("Découvrir ActuWorld", "Discover ActuWorld")} <ChevronRight className="w-5 h-5 ml-2" />
               </Link>
               <Link to="/reco-src" className="btn-outline group">
                 <Sparkles className="w-5 h-5 mr-2 text-aw-accent" />
-                L'IA ASV
+                {t("L'IA ASV", "ASV AI")}
               </Link>
             </motion.div>
 
@@ -131,9 +135,9 @@ export default function HomePage() {
               className="mt-12 flex flex-wrap items-center gap-6 justify-center"
             >
               {[
-                { icon: FileText, label: "Sourcing", value: "obligatoire" },
-                { icon: Unlock, label: "Lecture", value: "100% gratuite" },
-                { icon: ThumbsUp, label: "Qualité", value: "> Viralité" },
+                { icon: FileText, label: t("Sourcing", "Sourcing"), value: t("obligatoire", "mandatory") },
+                { icon: Unlock, label: t("Lecture", "Reading"), value: t("100% gratuite", "100% free") },
+                { icon: ThumbsUp, label: t("Qualité", "Quality"), value: t("> Viralité", "> Virality") },
               ].map((item, i) => (
                 <motion.div
                   key={i}
@@ -157,12 +161,10 @@ export default function HomePage() {
         <AnimatedSection>
           <div className="text-center mb-16">
             <H2 kicker="Le constat" center>
-              Les réseaux sociaux d'aujourd'hui <span className="gradient-text">privilégient le divertissement</span>
+              {isEnglish ? <>Today's social networks <span className="gradient-text">prioritize entertainment</span></> : <>Les réseaux sociaux d'aujourd'hui <span className="gradient-text">privilégient le divertissement</span></>}
             </H2>
             <p className="text-aw-muted mt-4 max-w-2xl mx-auto text-lg">
-              La majorité des plateformes optimisent pour l'engagement émotionnel. L'information fiable 
-              se noie dans un flux constant. Résultat : désinformation, perte de confiance, et créateurs 
-              éducatifs marginalisés.
+              {t("La majorité des plateformes optimisent pour l'engagement émotionnel. L'information fiable se noie dans un flux constant. Résultat : désinformation, perte de confiance, et créateurs éducatifs marginalisés.", "Most platforms optimize for emotional engagement. Reliable information is drowned in a constant stream. Result: misinformation, loss of trust, and marginalized educational creators.")}
             </p>
           </div>
         </AnimatedSection>
@@ -194,10 +196,9 @@ export default function HomePage() {
 
         <AnimatedSection delay={0.3} className="mt-12 text-center">
           <p className="text-lg text-aw-muted">
-            <strong className="text-aw-text">ActuWorld</strong> naît d'un constat simple : il est temps de 
-            <span className="text-aw-primary font-semibold highlight-text"> rendre l'information utile, claire et formatrice</span>. 
-            Un réseau basé sur l'<strong className="text-aw-text">intelligence collective</strong>, où la communauté valide 
-            la fiabilité des contenus.
+            <strong className="text-aw-text">ActuWorld</strong> {t("naît d'un constat simple : il est temps de ", "is built on a simple observation: it's time to ")}
+            <span className="text-aw-primary font-semibold highlight-text"> {t("rendre l'information utile, claire et formatrice", "make information useful, clear, and educational")}</span>. 
+            {t("Un réseau basé sur l'", "A network based on ")}<strong className="text-aw-text">{t("intelligence collective", "collective intelligence")}</strong>{t(", où la communauté valide la fiabilité des contenus.", ", where the community validates content reliability.")}
           </p>
         </AnimatedSection>
       </Section>
@@ -218,16 +219,14 @@ export default function HomePage() {
         >
           <motion.div variants={scaleUp}>
             <H2 kicker="Notre vision" center>
-              Bâtir l'avenir de l'<span className="gradient-text">information éducative</span>
+              {isEnglish ? <>Building the future of <span className="gradient-text">educational information</span></> : <>Bâtir l'avenir de l'<span className="gradient-text">information éducative</span></>}
             </H2>
             <p className="text-aw-muted mt-6 text-lg leading-relaxed">
-              Une plateforme où les utilisateurs créent et consultent des <strong className="text-aw-text">posts détaillés, 
-              articles et vidéos éducatives</strong> sur des sujets variés : actualité, culture, science, environnement…
+              {t("Une plateforme où les utilisateurs créent et consultent des ", "A platform where users create and consult ")}<strong className="text-aw-text">{t("posts détaillés, articles et vidéos éducatives", "detailed posts, articles, and educational videos")}</strong>{t(" sur des sujets variés : actualité, culture, science, environnement…", " on a wide range of topics: news, culture, science, environment...")}
               <br /><br />
-              Chaque contenu est <strong className="text-aw-text">sourcé</strong> et évalué par un score de fiabilité. 
-              Un <strong className="text-aw-text">parcours de contributeur</strong> (Explorateur → Navigateur → Pionnier) 
-              valorise les créateurs sérieux. Et <strong className="text-aw-text">ASV</strong>, notre outil de vérification 
-              automatique, analyse les sources, les note, et détecte le <Tooltip text="Le cherry-picking consiste à sélectionner uniquement les données ou faits qui soutiennent son argument, en ignorant ceux qui le contredisent.">cherry-picking</Tooltip> pour une transparence maximale.
+              {t("Chaque contenu est ", "Every piece of content is ")}<strong className="text-aw-text">{t("sourcé", "sourced")}</strong>{t(" et évalué par un score de fiabilité. ", " and evaluated through a reliability score. ")}
+              {t("Un ", "A ")}<strong className="text-aw-text">{t("parcours de contributeur", "contributor pathway")}</strong>{t(" (Explorateur → Navigateur → Pionnier) valorise les créateurs sérieux. Et ", " (Explorer → Navigator → Pioneer) rewards serious creators. And ")}
+              <strong className="text-aw-text">ASV</strong>, {t("notre outil de vérification automatique, analyse les sources, les note, et détecte le ", "our automatic verification tool, analyzes sources, rates them, and detects ")}<Tooltip text={t("Le cherry-picking consiste à sélectionner uniquement les données ou faits qui soutiennent son argument, en ignorant ceux qui le contredisent.", "Cherry-picking means selecting only data or facts that support an argument while ignoring contradictory evidence.")}>cherry-picking</Tooltip>{t(" pour une transparence maximale.", " for maximum transparency.")}
             </p>
             <motion.p
               className="text-aw-primary mt-6 body-semi text-lg"
@@ -236,13 +235,13 @@ export default function HomePage() {
               }}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              Lutter contre la désinformation par l'éducation et l'intelligence collective.
+              {t("Lutter contre la désinformation par l'éducation et l'intelligence collective.", "Fighting misinformation through education and collective intelligence.")}
             </motion.p>
           </motion.div>
 
           <motion.div variants={fadeInUp} className="mt-12">
             <Link to="/app" className="btn-primary glow-hover">
-              Découvrir la plateforme <ChevronRight className="w-5 h-5 ml-2" />
+              {t("Découvrir la plateforme", "Discover the platform")} <ChevronRight className="w-5 h-5 ml-2" />
             </Link>
           </motion.div>
         </motion.div>

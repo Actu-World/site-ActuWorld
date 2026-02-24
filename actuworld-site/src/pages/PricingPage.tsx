@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Star, LineChart, Megaphone, CheckCircle2, ChevronRight } from "lucide-react";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
+import { useLanguage } from "../i18n/LanguageContext";
 import {
   PageWrapper,
   AnimatedSection,
@@ -12,45 +13,63 @@ import {
 } from "../components/animations";
 
 export default function PricingPage() {
+  const { isEnglish } = useLanguage();
+  const t = (fr: string, en: string) => (isEnglish ? en : fr);
+
   const pricing = [
     {
       icon: Star,
-      title: "Lecteur",
+      title: t("Lecteur", "Reader"),
       price: "0€",
-      desc: "Pour toujours",
-      points: ["Lecture illimitée", "Accès à toutes les sources", "Votes communautaires", "Suivre des créateurs"],
-      cta: "Commencer gratuitement",
+      desc: t("Pour toujours", "Forever"),
+      points: [
+        t("Lecture illimitée", "Unlimited reading"),
+        t("Accès à toutes les sources", "Access to all sources"),
+        t("Votes communautaires", "Community voting"),
+        t("Suivre des créateurs", "Follow creators")
+      ],
+      cta: t("Commencer gratuitement", "Start for free"),
       featured: false
     },
     {
       icon: LineChart,
-      title: "Créateur",
+      title: t("Créateur", "Creator"),
       price: "0€",
-      desc: "Gratuit pour publier",
-      points: ["Publication sourcée", "Vérification des sources intégrée", "Recevoir des dons", "Statistiques basiques"],
-      cta: "Devenir créateur",
+      desc: t("Gratuit pour publier", "Free to publish"),
+      points: [
+        t("Publication sourcée", "Source-based publishing"),
+        t("Vérification des sources intégrée", "Built-in source verification"),
+        t("Recevoir des dons", "Receive donations"),
+        t("Statistiques basiques", "Basic analytics")
+      ],
+      cta: t("Devenir créateur", "Become a creator"),
       featured: false
     },
     {
       icon: Megaphone,
       title: "ASV Pro",
-      price: "Sur devis",
+      price: t("Sur devis", "Custom quote"),
       period: "",
-      desc: "Pour les professionnels de l'info",
-      points: ["ASV illimité et personnalisable", "Intégration sur vos outils", "Adapté aux médias, entreprises et rédactions", "Support dédié"],
-      cta: "Nous contacter",
+      desc: t("Pour les professionnels de l'info", "For information professionals"),
+      points: [
+        t("ASV illimité et personnalisable", "Unlimited and customizable ASV"),
+        t("Intégration sur vos outils", "Integration with your tools"),
+        t("Adapté aux médias, entreprises et rédactions", "Designed for media, companies, and newsrooms"),
+        t("Support dédié", "Dedicated support")
+      ],
+      cta: t("Nous contacter", "Contact us"),
       featured: true
     },
   ];
 
   const faq = [
     {
-      q: "À qui s'adresse ASV Pro ?",
-      a: "ASV Pro est conçu pour tous les professionnels de l'information : médias, journaux, entreprises, rédactions ou particuliers qui souhaitent intégrer notre IA de vérification dans leurs outils."
+      q: t("À qui s'adresse ASV Pro ?", "Who is ASV Pro for?"),
+      a: t("ASV Pro est conçu pour tous les professionnels de l'information : médias, journaux, entreprises, rédactions ou particuliers qui souhaitent intégrer notre IA de vérification dans leurs outils.", "ASV Pro is built for information professionals: media teams, newsrooms, companies, and individuals who want to integrate our verification AI into their workflows.")
     },
 {
-      q: "Comment fonctionne le système de dons ?",
-      a: "Les lecteurs peuvent donner directement aux créateurs. ActuWorld prélève une commission de 10% pour maintenir la plateforme."
+      q: t("Comment fonctionne le système de dons ?", "How does the donation system work?"),
+      a: t("Les lecteurs peuvent donner directement aux créateurs. ActuWorld prélève une commission de 10% pour maintenir la plateforme.", "Readers can donate directly to creators. ActuWorld takes a 10% fee to maintain the platform.")
     }
   ];
 
@@ -65,11 +84,11 @@ export default function PricingPage() {
           className="text-center"
         >
           <motion.div variants={scaleUp}>
-            <H2 kicker="Tarifs" center>
-              Le savoir accessible à <span className="gradient-text">tous</span>
+            <H2 kicker={t("Tarifs", "Pricing")} center>
+              {isEnglish ? <>Knowledge accessible to <span className="gradient-text">everyone</span></> : <>Le savoir accessible à <span className="gradient-text">tous</span></>}
             </H2>
             <p className="text-aw-muted mt-4 max-w-xl mx-auto text-lg">
-              La lecture est et restera toujours gratuite. Pas de paywall sur le savoir.
+              {t("La lecture est et restera toujours gratuite. Pas de paywall sur le savoir.", "Reading is and will always remain free. No paywall on knowledge.")}
             </p>
           </motion.div>
         </motion.div>
@@ -97,7 +116,7 @@ export default function PricingPage() {
                   animate={{ scale: [1, 1.05, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  Recommandé
+                  {t("Recommandé", "Recommended")}
                 </motion.div>
               )}
               <div className="flex items-center gap-3 mb-4">
@@ -157,7 +176,7 @@ export default function PricingPage() {
         <AnimatedSection>
           <div className="text-center mb-12">
             <H2 kicker="Questions" center>
-              Questions sur les <span className="gradient-text">tarifs</span>
+              {isEnglish ? <>Questions about <span className="gradient-text">pricing</span></> : <>Questions sur les <span className="gradient-text">tarifs</span></>}
             </H2>
           </div>
         </AnimatedSection>
@@ -184,7 +203,7 @@ export default function PricingPage() {
 
         <AnimatedSection delay={0.3} className="text-center mt-8">
           <Link to="/faq" className="text-aw-primary hover:underline inline-flex items-center gap-1 link-underline">
-            Voir toutes les FAQ <ChevronRight className="w-4 h-4" />
+            {t("Voir toutes les FAQ", "See all FAQs")} <ChevronRight className="w-4 h-4" />
           </Link>
         </AnimatedSection>
       </Section>
@@ -193,12 +212,12 @@ export default function PricingPage() {
       <Section className="bg-aw-surface py-16">
         <AnimatedSection direction="scale">
           <div className="text-center">
-            <h3 className="text-2xl font-bold mb-4">Des questions ?</h3>
+            <h3 className="text-2xl font-bold mb-4">{t("Des questions ?", "Any questions?")}</h3>
             <p className="text-aw-muted mb-8 max-w-xl mx-auto">
-              Notre équipe est là pour répondre à toutes vos questions sur ActuWorld.
+              {t("Notre équipe est là pour répondre à toutes vos questions sur ActuWorld.", "Our team is here to answer all your questions about ActuWorld.")}
             </p>
             <Link to="/contact" className="btn-primary glow-hover">
-              Nous contacter <ChevronRight className="w-5 h-5 ml-2" />
+              {t("Nous contacter", "Contact us")} <ChevronRight className="w-5 h-5 ml-2" />
             </Link>
           </div>
         </AnimatedSection>

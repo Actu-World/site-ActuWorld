@@ -18,8 +18,12 @@ import {
   scaleUp
 } from "../components/animations";
 import { Tooltip } from "../components/ui/Tooltip";
+import { useLanguage } from "../i18n/LanguageContext";
 
 export default function RecoSrcPage() {
+  const { isEnglish } = useLanguage();
+  const t = (fr: string, en: string) => (isEnglish ? en : fr);
+
   const coreFeatures = [
     {
       icon: FileText,
@@ -85,8 +89,8 @@ export default function RecoSrcPage() {
   return (
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
       <PageMeta
-        title="ASV — La vérification gratuite des sources"
-        description="ASV (Automatic Source Verification) vérifie gratuitement les posts, articles et vidéos. Identifie automatiquement les sources, les note et détecte le cherry-picking."
+        title={t("ASV — La vérification gratuite des sources", "ASV — Free source verification")}
+        description={t("ASV (Automatic Source Verification) vérifie gratuitement les posts, articles et vidéos. Identifie automatiquement les sources, les note et détecte le cherry-picking.", "ASV (Automatic Source Verification) verifies posts, articles, and videos for free. It automatically identifies sources, rates them, and detects cherry-picking.")}
         path="/reco-src"
       />
       {/* HEADER */}
@@ -113,20 +117,18 @@ export default function RecoSrcPage() {
               <Sparkles className="w-4 h-4" /> ActuWorld Source Verification
             </motion.span>
             <H2 kicker="" center>
-              ASV : Vérification <span className="gradient-text">puissante et fiable</span>
+              {isEnglish ? <>ASV: <span className="gradient-text">Powerful and reliable</span> verification</> : <>ASV : Vérification <span className="gradient-text">puissante et fiable</span></>}
             </H2>
             <p className="text-aw-muted mt-4 max-w-3xl mx-auto text-lg">
-              ASV passe derrière tous les posts et articles pour vérifier automatiquement les sources ET le contenu.
-              L'API fournit une base visuelle claire, permettant à chaque utilisateur de développer son esprit critique 
-              en se renseignant davantage. Accessible aux journalistes, particuliers et entreprises.
+              {t("ASV passe derrière tous les posts et articles pour vérifier automatiquement les sources ET le contenu. L'API fournit une base visuelle claire, permettant à chaque utilisateur de développer son esprit critique en se renseignant davantage. Accessible aux journalistes, particuliers et entreprises.", "ASV runs behind all posts and articles to automatically verify both sources and content. The API provides a clear visual baseline that helps users build critical thinking by exploring further. Accessible to journalists, individuals, and companies.")}
             </p>
           </motion.div>
 
           <motion.div variants={fadeInUp} className="mt-8 flex flex-wrap items-center justify-center gap-6">
             {[
-              { icon: Database, label: "301", value: "domaines vérifiés" },
-              { icon: Shield, label: "6", value: "modules de scoring" },
-              { icon: Globe2, label: "B2B", value: "API disponible" },
+              { icon: Database, label: "301", value: t("domaines vérifiés", "verified domains") },
+              { icon: Shield, label: "6", value: t("modules de scoring", "scoring modules") },
+              { icon: Globe2, label: "B2B", value: t("API disponible", "API available") },
             ].map((stat, i) => (
               <motion.div
                 key={i}
@@ -151,7 +153,7 @@ export default function RecoSrcPage() {
         <AnimatedSection>
           <div className="text-center mb-12">
             <H2 kicker="Avantages" center>
-              Ce que fait <span className="gradient-text">ASV</span> pour vous
+              {isEnglish ? <>What <span className="gradient-text">ASV</span> does for you</> : <>Ce que fait <span className="gradient-text">ASV</span> pour vous</>}
             </H2>
           </div>
         </AnimatedSection>
@@ -188,7 +190,7 @@ export default function RecoSrcPage() {
         <AnimatedSection>
           <div className="text-center mb-16">
             <H2 kicker="Fonctionnalités" center>
-              Les modules de <span className="gradient-text">vérification</span>
+              {isEnglish ? <>The <span className="gradient-text">verification</span> modules</> : <>Les modules de <span className="gradient-text">vérification</span></>}
             </H2>
           </div>
         </AnimatedSection>
@@ -209,12 +211,12 @@ export default function RecoSrcPage() {
             >
               {f.status === "coming" && (
                 <span className="absolute top-4 right-4 text-xs px-2 py-1 rounded-full bg-aw-accent/20 text-aw-accent font-medium">
-                  Bientôt
+                  {t("Bientôt", "Soon")}
                 </span>
               )}
               {f.status === "done" && (
                 <span className="absolute top-4 right-4 text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-500 font-medium">
-                  ✓ Actif
+                  {t("✓ Actif", "✓ Live")}
                 </span>
               )}
               <motion.div
@@ -239,10 +241,10 @@ export default function RecoSrcPage() {
         <AnimatedSection>
           <div className="text-center mb-16">
             <H2 kicker="Score de fiabilité" center>
-              Comment ASV <span className="gradient-text">évalue</span> une source
+              {isEnglish ? <>How ASV <span className="gradient-text">evaluates</span> a source</> : <>Comment ASV <span className="gradient-text">évalue</span> une source</>}
             </H2>
             <p className="text-aw-muted mt-4 max-w-2xl mx-auto">
-              Chaque source reçoit un score de fiabilité basé sur 3 piliers. Simple, transparent et compréhensible par tous.
+              {t("Chaque source reçoit un score de fiabilité basé sur 3 piliers. Simple, transparent et compréhensible par tous.", "Each source gets a reliability score based on 3 pillars. Simple, transparent, and easy to understand.")}
             </p>
           </div>
         </AnimatedSection>
@@ -280,10 +282,10 @@ export default function RecoSrcPage() {
         <AnimatedSection>
           <div className="text-center mb-12">
             <H2 kicker="Sources fiables" center>
-              Une base de <span className="gradient-text">sources vérifiées</span>
+              {isEnglish ? <>A database of <span className="gradient-text">verified sources</span></> : <>Une base de <span className="gradient-text">sources vérifiées</span></>}
             </H2>
             <p className="text-aw-muted mt-4 max-w-2xl mx-auto">
-              ASV s'appuie sur une base de données de sources fiables, enrichie en continu par notre équipe et la communauté.
+              {t("ASV s'appuie sur une base de données de sources fiables, enrichie en continu par notre équipe et la communauté.", "ASV relies on a trusted source database, continuously enriched by our team and the community.")}
             </p>
           </div>
         </AnimatedSection>
@@ -318,10 +320,10 @@ export default function RecoSrcPage() {
                 className="badge badge-success mb-4"
                 whileHover={{ scale: 1.05 }}
               >
-                <CheckCircle2 className="w-4 h-4" /> Feature active et en fonctionnement
+                <CheckCircle2 className="w-4 h-4" /> {t("Feature active et en fonctionnement", "Feature active and running")}
               </motion.span>
               <H2 kicker="" center>
-                Détection du <Tooltip text="Le cherry-picking consiste à sélectionner uniquement les données ou faits qui soutiennent son argument, en ignorant ceux qui le contredisent."><span className="gradient-text">cherry-picking</span></Tooltip>
+                {t("Détection du ", "Detection of ")}<Tooltip text={t("Le cherry-picking consiste à sélectionner uniquement les données ou faits qui soutiennent son argument, en ignorant ceux qui le contredisent.", "Cherry-picking means selecting only data or facts that support an argument while ignoring contradictory evidence.")}><span className="gradient-text">cherry-picking</span></Tooltip>
               </H2>
             </div>
           </AnimatedSection>
@@ -442,16 +444,16 @@ export default function RecoSrcPage() {
       <Section className="py-24">
         <AnimatedSection direction="scale">
           <div className="text-center">
-            <h3 className="text-2xl font-bold mb-4">Prêt à vérifier vos sources ?</h3>
+            <h3 className="text-2xl font-bold mb-4">{t("Prêt à vérifier vos sources ?", "Ready to verify your sources?")}</h3>
             <p className="text-aw-muted mb-8 max-w-xl mx-auto">
-              Rejoignez la beta et soyez parmi les premiers à utiliser ASV.
+              {t("Rejoignez la beta et soyez parmi les premiers à utiliser ASV.", "Join the beta and be among the first to use ASV.")}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/pricing" className="btn-primary glow-hover">
-                Voir les tarifs <ChevronRight className="w-5 h-5 ml-2" />
+                {t("Voir les tarifs", "See pricing")} <ChevronRight className="w-5 h-5 ml-2" />
               </Link>
               <Link to="/contact" className="btn-outline">
-                Nous contacter
+                {t("Nous contacter", "Contact us")}
               </Link>
             </div>
           </div>

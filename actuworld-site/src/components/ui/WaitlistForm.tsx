@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, CheckCircle2, Loader2, Sparkles, Instagram } from "lucide-react";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 interface WaitlistFormProps {
   variant?: "inline" | "card";
@@ -8,6 +9,9 @@ interface WaitlistFormProps {
 }
 
 export const WaitlistForm = ({ variant = "card", className = "" }: WaitlistFormProps) => {
+  const { isEnglish } = useLanguage();
+  const t = (fr: string, en: string) => (isEnglish ? en : fr);
+
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
@@ -45,7 +49,7 @@ export const WaitlistForm = ({ variant = "card", className = "" }: WaitlistFormP
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Votre adresse email"
+              placeholder={t("Votre adresse email", "Your email address")}
               className="w-full pl-12 pr-4 py-3 rounded-xl border border-aw bg-aw-bg text-aw-text placeholder:text-aw-muted focus:outline-none focus:ring-2 focus:ring-aw-accent transition-all"
               disabled={status === "loading" || status === "success"}
             />
@@ -62,12 +66,12 @@ export const WaitlistForm = ({ variant = "card", className = "" }: WaitlistFormP
             ) : status === "success" ? (
               <>
                 <CheckCircle2 className="w-5 h-5 mr-2" />
-                Inscrit !
+                {t("Inscrit !", "Joined!")}
               </>
             ) : (
               <>
                 <Sparkles className="w-5 h-5 mr-2" />
-                Rejoindre la beta
+                {t("Rejoindre la beta", "Join the beta")}
               </>
             )}
           </motion.button>
@@ -75,7 +79,7 @@ export const WaitlistForm = ({ variant = "card", className = "" }: WaitlistFormP
 
         {/* Instagram link */}
         <div className="flex items-center justify-center gap-2 text-sm">
-          <span className="text-aw-muted">Suivez-nous sur</span>
+          <span className="text-aw-muted">{t("Suivez-nous sur", "Follow us on")}</span>
           <motion.a
             href="https://instagram.com/actuworld8"
             target="_blank"
@@ -105,9 +109,9 @@ export const WaitlistForm = ({ variant = "card", className = "" }: WaitlistFormP
         >
           <Mail className="w-7 h-7 text-aw-primary" />
         </motion.div>
-        <h3 className="text-xl font-bold mb-2">Rejoignez la communauté</h3>
+        <h3 className="text-xl font-bold mb-2">{t("Rejoignez la communauté", "Join the community")}</h3>
         <p className="text-aw-muted text-sm">
-          Soyez parmi les premiers à explorer ActuWorld et à faire partie de la révolution de l'information.
+          {t("Soyez parmi les premiers à explorer ActuWorld et à faire partie de la révolution de l'information.", "Be among the first to explore ActuWorld and be part of the information revolution.")}
         </p>
       </div>
 
@@ -119,7 +123,7 @@ export const WaitlistForm = ({ variant = "card", className = "" }: WaitlistFormP
           whileTap={{ scale: 0.98 }}
         >
           <Sparkles className="w-5 h-5 mr-2" />
-          Rejoindre la beta
+          {t("Rejoindre la beta", "Join the beta")}
         </motion.a>
       </div>
 
@@ -137,7 +141,7 @@ export const WaitlistForm = ({ variant = "card", className = "" }: WaitlistFormP
             <Instagram className="w-5 h-5 text-white" />
           </div>
           <div className="text-left">
-            <div className="text-sm font-semibold text-aw-text">Suivez-nous sur Instagram</div>
+            <div className="text-sm font-semibold text-aw-text">{t("Suivez-nous sur Instagram", "Follow us on Instagram")}</div>
             <div className="text-xs text-aw-muted">@actuworld8</div>
           </div>
         </motion.a>

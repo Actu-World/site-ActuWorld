@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { Globe2 } from 'lucide-react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 export const Footer: React.FC = () => {
+  const { isEnglish } = useLanguage();
   const year = new Date().getFullYear();
   return (
     <footer className="py-10 border-t border-aw bg-aw-surface">
@@ -16,18 +18,18 @@ export const Footer: React.FC = () => {
           </div>
 
           <nav className="flex items-center gap-6 text-sm">
-            <Link to="/" className="text-aw-muted hover:text-aw-primary transition-colors">Accueil</Link>
-            <Link to="/app" className="text-aw-muted hover:text-aw-primary transition-colors">L'App</Link>
+            <Link to="/" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'Home' : 'Accueil'}</Link>
+            <Link to="/app" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'App' : "L'App"}</Link>
             <Link to="/reco-src" className="text-aw-muted hover:text-aw-primary transition-colors">ASV</Link>
-            <Link to="/pricing" className="text-aw-muted hover:text-aw-primary transition-colors">Tarifs</Link>
+            <Link to="/pricing" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'Pricing' : 'Tarifs'}</Link>
             <Link to="/faq" className="text-aw-muted hover:text-aw-primary transition-colors">FAQ</Link>
-            <Link to="/contact" className="text-aw-muted hover:text-aw-primary transition-colors">Contact</Link>
+            <Link to="/contact" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'Contact' : 'Contact'}</Link>
           </nav>
 
           <div className="flex items-center gap-4 caption text-aw-muted">
-            <a href="#" className="hover:text-aw-primary transition-colors">Confidentialité</a>
-            <a href="#" className="hover:text-aw-primary transition-colors">Conditions</a>
-            <a href="#" className="hover:text-aw-primary transition-colors">Presse</a>
+            <a href="#" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Privacy' : 'Confidentialité'}</a>
+            <a href="#" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Terms' : 'Conditions'}</a>
+            <a href="#" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Press' : 'Presse'}</a>
           </div>
         </div>
       </div>

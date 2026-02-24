@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Home, Search, ArrowLeft, Globe2 } from "lucide-react";
+import { useLanguage } from "../i18n/LanguageContext";
 import {
   PageWrapper,
   staggerContainer,
@@ -9,6 +10,9 @@ import {
 } from "../components/animations";
 
 export default function NotFoundPage() {
+  const { isEnglish } = useLanguage();
+  const t = (fr: string, en: string) => (isEnglish ? en : fr);
+
   return (
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text flex items-center justify-center">
       <div className="max-w-2xl mx-auto px-4 py-20 text-center">
@@ -66,10 +70,10 @@ export default function NotFoundPage() {
           {/* Message */}
           <motion.div variants={fadeInUp} className="mb-8">
             <h2 className="text-2xl md:text-3xl font-bold mb-4">
-              Page introuvable
+              {t("Page introuvable", "Page not found")}
             </h2>
             <p className="text-aw-muted text-lg max-w-md mx-auto">
-              Oups ! La page que vous recherchez semble avoir disparu dans le flux d'informations.
+              {t("Oups ! La page que vous recherchez semble avoir disparu dans le flux d'informations.", "Oops! The page you are looking for seems to have disappeared in the information flow.")}
             </p>
           </motion.div>
 
@@ -86,8 +90,8 @@ export default function NotFoundPage() {
                 <Home className="w-5 h-5 text-aw-primary" />
               </div>
               <div>
-                <div className="font-semibold text-sm">Accueil</div>
-                <div className="text-xs text-aw-muted">Retourner à l'accueil</div>
+                <div className="font-semibold text-sm">{t("Accueil", "Home")}</div>
+                <div className="text-xs text-aw-muted">{t("Retourner à l'accueil", "Go back to home")}</div>
               </div>
             </Link>
 
@@ -99,8 +103,8 @@ export default function NotFoundPage() {
                 <Search className="w-5 h-5 text-aw-primary" />
               </div>
               <div>
-                <div className="font-semibold text-sm">Explorer</div>
-                <div className="text-xs text-aw-muted">Découvrir ActuWorld</div>
+                <div className="font-semibold text-sm">{t("Explorer", "Explore")}</div>
+                <div className="text-xs text-aw-muted">{t("Découvrir ActuWorld", "Discover ActuWorld")}</div>
               </div>
             </Link>
           </motion.div>
@@ -112,7 +116,7 @@ export default function NotFoundPage() {
               className="btn-outline inline-flex items-center gap-2"
             >
               <ArrowLeft className="w-4 h-4" />
-              Retour à la page précédente
+              {t("Retour à la page précédente", "Back to previous page")}
             </button>
           </motion.div>
 
@@ -122,9 +126,8 @@ export default function NotFoundPage() {
             className="mt-12 p-4 rounded-2xl bg-aw-surface"
           >
             <p className="text-sm text-aw-muted">
-              <span className="text-aw-primary font-semibold">Le saviez-vous ?</span>{" "}
-              Sur ActuWorld, chaque information est sourcée et vérifiable.
-              Pas de fake news, même pour les pages 404 !
+              <span className="text-aw-primary font-semibold">{t("Le saviez-vous ?", "Did you know?")}</span>{" "}
+              {t("Sur ActuWorld, chaque information est sourcée et vérifiable. Pas de fake news, même pour les pages 404 !", "On ActuWorld, every piece of information is sourced and verifiable. No fake news, even on 404 pages!")}
             </p>
           </motion.div>
         </motion.div>

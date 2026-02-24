@@ -9,6 +9,7 @@ import phoneImg from "../assets/phone_img.jpg";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
 import { Card } from "../components/Card";
+import { useLanguage } from "../i18n/LanguageContext";
 import {
   PageWrapper,
   AnimatedSection,
@@ -20,19 +21,22 @@ import {
 } from "../components/animations";
 
 export default function AppPage() {
+  const { isEnglish } = useLanguage();
+  const t = (fr: string, en: string) => (isEnglish ? en : fr);
+
   const features = [
-    { icon: FileText, title: "Sourcing obligatoire", desc: "Impossible de publier sans indiquer ses sources. Chaque affirmation doit être vérifiable." },
-    { icon: ThumbsUp, title: "Confiance communautaire", desc: "La communauté vote sur la qualité et fiabilité des posts. Système de score de confiance." },
-    { icon: BookOpen, title: "Catégorisation thématique", desc: "Sciences, Histoire, Tech, Santé, Économie... Trouvez facilement ce qui vous intéresse." },
-    { icon: Video, title: "ASV intégré", desc: "Notre IA extrait automatiquement les sources citées dans les vidéos uploadées." },
-    { icon: Unlock, title: "100% gratuit en lecture", desc: "Aucun paywall pour accéder au contenu. Le savoir doit rester accessible à tous." },
+    { icon: FileText, title: t("Sourcing obligatoire", "Mandatory sourcing"), desc: t("Impossible de publier sans indiquer ses sources. Chaque affirmation doit être vérifiable.", "You cannot publish without citing your sources. Every claim must be verifiable.") },
+    { icon: ThumbsUp, title: t("Confiance communautaire", "Community trust"), desc: t("La communauté vote sur la qualité et fiabilité des posts. Système de score de confiance.", "The community votes on post quality and reliability. Trust score system.") },
+    { icon: BookOpen, title: t("Catégorisation thématique", "Topic categories"), desc: t("Sciences, Histoire, Tech, Santé, Économie... Trouvez facilement ce qui vous intéresse.", "Science, History, Tech, Health, Economy... Easily find what interests you.") },
+    { icon: Video, title: t("ASV intégré", "Built-in ASV"), desc: t("Notre IA extrait automatiquement les sources citées dans les vidéos uploadées.", "Our AI automatically extracts sources cited in uploaded videos.") },
+    { icon: Unlock, title: t("100% gratuit en lecture", "100% free to read"), desc: t("Aucun paywall pour accéder au contenu. Le savoir doit rester accessible à tous.", "No paywall to access content. Knowledge should remain accessible to everyone.") },
   ];
 
   const differentiators = [
-    { icon: Unlock, title: "Gratuit pour tous", desc: "Lire, apprendre et s'informer sans jamais payer. Aucun abonnement requis pour accéder aux contenus et aux sources." },
-    { icon: Sparkles, title: "IA intégrée", desc: "Notre IA ASV vérifie les sources de vos textes et vidéos, analyse leur fiabilité et détecte les informations non sourcées." },
-    { icon: Users, title: "Validé par la communauté", desc: "Les utilisateurs évaluent chaque contenu. Plus un post est sourcé et apprécié, plus il gagne en visibilité sur la plateforme." },
-    { icon: Heart, title: "Monétisation éthique", desc: "Les créateurs sont rémunérés par les dons et abonnements de leur audience. Pas de publicité intrusive, pas d'algorithme à buzz." },
+    { icon: Unlock, title: t("Gratuit pour tous", "Free for everyone"), desc: t("Lire, apprendre et s'informer sans jamais payer. Aucun abonnement requis pour accéder aux contenus et aux sources.", "Read, learn, and stay informed without paying. No subscription required to access content and sources.") },
+    { icon: Sparkles, title: t("IA intégrée", "Integrated AI"), desc: t("Notre IA ASV vérifie les sources de vos textes et vidéos, analyse leur fiabilité et détecte les informations non sourcées.", "Our ASV AI verifies sources from your texts and videos, analyzes reliability, and detects unsourced claims.") },
+    { icon: Users, title: t("Validé par la communauté", "Community validated"), desc: t("Les utilisateurs évaluent chaque contenu. Plus un post est sourcé et apprécié, plus il gagne en visibilité sur la plateforme.", "Users evaluate each piece of content. The more sourced and appreciated a post is, the more visibility it gains.") },
+    { icon: Heart, title: t("Monétisation éthique", "Ethical monetization"), desc: t("Les créateurs sont rémunérés par les dons et abonnements de leur audience. Pas de publicité intrusive, pas d'algorithme à buzz.", "Creators are paid through audience donations and subscriptions. No intrusive ads, no buzz algorithm.") },
   ];
 
   return (
@@ -51,14 +55,13 @@ export default function AppPage() {
         >
           <motion.div variants={scaleUp}>
             <span className="badge badge-primary mb-6">
-              <Smartphone className="w-4 h-4" /> La Plateforme
+              <Smartphone className="w-4 h-4" /> {t("La Plateforme", "The Platform")}
             </span>
             <H2 kicker="" center>
-              ActuWorld, le réseau social <span className="gradient-text">de l'information fiable</span>
+              {isEnglish ? <>ActuWorld, the social network <span className="gradient-text">for reliable information</span></> : <>ActuWorld, le réseau social <span className="gradient-text">de l'information fiable</span></>}
             </H2>
             <p className="text-aw-muted mt-4 max-w-2xl mx-auto text-lg">
-              Un écosystème où l'information sourcée prime sur le divertissement,
-              et où les créateurs éducatifs sont valorisés.
+              {t("Un écosystème où l'information sourcée prime sur le divertissement, et où les créateurs éducatifs sont valorisés.", "An ecosystem where sourced information comes before entertainment, and educational creators are valued.")}
             </p>
           </motion.div>
         </motion.div>
@@ -93,10 +96,10 @@ export default function AppPage() {
                   {/* Tab switcher */}
                   <div className="flex rounded-xl overflow-hidden bg-aw-surface border border-aw mb-2.5">
                     <div className="flex-1 py-1.5 text-center text-[8px] font-medium bg-aw-success text-aw-primary rounded-xl flex items-center justify-center gap-1">
-                      <Image className="w-3 h-3" /> Fil visuel
+                      <Image className="w-3 h-3" /> {t("Fil visuel", "Visual feed")}
                     </div>
                     <div className="flex-1 py-1.5 text-center text-[8px] text-aw-muted flex items-center justify-center gap-1">
-                      <FileText className="w-3 h-3" /> Journal
+                      <FileText className="w-3 h-3" /> {t("Journal", "Journal")}
                     </div>
                   </div>
 
@@ -154,7 +157,7 @@ export default function AppPage() {
                   </motion.div>
 
                   {/* Post title */}
-                  <p className="text-[10px] font-semibold text-aw-text mb-1.5">Les cascades cachées de la biodiversité</p>
+                  <p className="text-[10px] font-semibold text-aw-text mb-1.5">{t("Les cascades cachées de la biodiversité", "Hidden cascades of biodiversity")}</p>
 
                   {/* Bottom nav */}
                   <div className="flex items-center justify-around py-1.5 border-t border-aw mt-auto">
@@ -219,10 +222,10 @@ export default function AppPage() {
         <AnimatedSection>
           <div className="text-center mb-12">
             <H2 kicker="En pratique" center>
-              L'expérience <span className="gradient-text">Emma</span>
+              {isEnglish ? <>The <span className="gradient-text">Emma</span> journey</> : <>L'expérience <span className="gradient-text">Emma</span></>}
             </H2>
             <p className="text-aw-muted mt-4 max-w-xl mx-auto">
-              Découvrez comment une étudiante utilise ActuWorld au quotidien.
+              {t("Découvrez comment une étudiante utilise ActuWorld au quotidien.", "See how a student uses ActuWorld every day.")}
             </p>
           </div>
         </AnimatedSection>
@@ -236,12 +239,12 @@ export default function AppPage() {
             className="grid md:grid-cols-2 lg:grid-cols-3 gap-4"
           >
             {[
-              { num: "1", text: "Emma, étudiante en économie, ouvre ActuWorld le matin", icon: Smartphone },
-              { num: "2", text: "Son feed montre un article sur l'inflation avec 3 sources (INSEE, BCE, étude universitaire)", icon: FileText },
-              { num: "3", text: "Elle clique sur les sources pour approfondir et vérifier", icon: Search },
-              { num: "4", text: "Elle vote 'fiable' sur le post, augmentant le score du créateur", icon: ThumbsUp },
-              { num: "5", text: "Elle découvre d'autres posts du créateur dans la catégorie Économie", icon: BookOpen },
-              { num: "6", text: "Elle décide de donner 3€ pour soutenir le créateur", icon: Heart },
+              { num: "1", text: t("Emma, étudiante en économie, ouvre ActuWorld le matin", "Emma, an economics student, opens ActuWorld in the morning"), icon: Smartphone },
+              { num: "2", text: t("Son feed montre un article sur l'inflation avec 3 sources (INSEE, BCE, étude universitaire)", "Her feed shows an article on inflation with 3 sources (INSEE, ECB, university study)"), icon: FileText },
+              { num: "3", text: t("Elle clique sur les sources pour approfondir et vérifier", "She clicks the sources to dive deeper and verify"), icon: Search },
+              { num: "4", text: t("Elle vote 'fiable' sur le post, augmentant le score du créateur", "She votes 'reliable' on the post, increasing the creator's score"), icon: ThumbsUp },
+              { num: "5", text: t("Elle découvre d'autres posts du créateur dans la catégorie Économie", "She discovers more posts from the creator in the Economy category"), icon: BookOpen },
+              { num: "6", text: t("Elle décide de donner 3€ pour soutenir le créateur", "She decides to donate €3 to support the creator"), icon: Heart },
             ].map((step, i) => (
               <motion.div
                 key={i}
@@ -272,11 +275,10 @@ export default function AppPage() {
         <AnimatedSection>
           <div className="text-center mb-16">
             <H2 kicker="Pourquoi nous" center>
-              Ce qui nous rend <span className="gradient-text">uniques</span>
+              {isEnglish ? <>What makes us <span className="gradient-text">unique</span></> : <>Ce qui nous rend <span className="gradient-text">uniques</span></>}
             </H2>
             <p className="text-aw-muted mt-4 max-w-2xl mx-auto text-lg">
-              ActuWorld est le <strong>seul</strong> réseau social combinant sourcing obligatoire,
-              IA intégrée et système de confiance communautaire.
+              {t("ActuWorld est le ", "ActuWorld is the ")}<strong>{t("seul", "only")}</strong>{t(" réseau social combinant sourcing obligatoire, IA intégrée et système de confiance communautaire.", " social network combining mandatory sourcing, integrated AI, and a community trust system.")}
             </p>
           </div>
         </AnimatedSection>
@@ -302,13 +304,12 @@ export default function AppPage() {
       <Section className="bg-aw-surface py-16">
         <AnimatedSection direction="scale">
           <div className="text-center">
-            <h3 className="text-2xl font-bold mb-4">Découvrez notre <span className="gradient-text">IA de vérification</span></h3>
+            <h3 className="text-2xl font-bold mb-4">{isEnglish ? <>Discover our <span className="gradient-text">verification AI</span></> : <>Découvrez notre <span className="gradient-text">IA de vérification</span></>}</h3>
             <p className="text-aw-muted mb-8 max-w-xl mx-auto">
-              ASV analyse vos textes et vidéos, vérifie les sources citées et évalue leur fiabilité.
-              Publiez en confiance, informez en toute transparence.
+              {t("ASV analyse vos textes et vidéos, vérifie les sources citées et évalue leur fiabilité. Publiez en confiance, informez en toute transparence.", "ASV analyzes your texts and videos, verifies cited sources, and evaluates reliability. Publish with confidence and inform with transparency.")}
             </p>
             <Link to="/reco-src" className="btn-primary glow-hover">
-              <Sparkles className="w-5 h-5 mr-2" /> Découvrir ASV
+              <Sparkles className="w-5 h-5 mr-2" /> {t("Découvrir ASV", "Discover ASV")}
             </Link>
           </div>
         </AnimatedSection>
