@@ -126,7 +126,7 @@ export default function RecoSrcPage() {
 
           <motion.div variants={fadeInUp} className="mt-8 flex flex-wrap items-center justify-center gap-6">
             {[
-              { icon: Database, label: "301", value: t("domaines vérifiés", "verified domains") },
+              { icon: Database, label: "+300", value: t("domaines vérifiés", "verified domains") },
               { icon: Shield, label: "6", value: t("modules de scoring", "scoring modules") },
               { icon: Globe2, label: "B2B", value: t("API disponible", "API available") },
             ].map((stat, i) => (
