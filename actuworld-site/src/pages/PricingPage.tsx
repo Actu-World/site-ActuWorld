@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Star, LineChart, Megaphone, CheckCircle2, ChevronRight } from "lucide-react";
+import { Star, LineChart, Megaphone, CheckCircle2, ChevronRight, Mail, Instagram, X } from "lucide-react";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
 import { useLanguage } from "../i18n/LanguageContext";
@@ -15,6 +16,11 @@ import {
 export default function PricingPage() {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
+  const [isBetaModalOpen, setIsBetaModalOpen] = useState(false);
+
+  const showBetaNotice = () => {
+    setIsBetaModalOpen(true);
+  };
 
   const pricing = [
     {
@@ -29,6 +35,7 @@ export default function PricingPage() {
         t("Suivre des créateurs", "Follow creators")
       ],
       cta: t("Commencer gratuitement", "Start for free"),
+      showBetaNotice: true,
       featured: false
     },
     {
@@ -43,6 +50,7 @@ export default function PricingPage() {
         t("Statistiques basiques", "Basic analytics")
       ],
       cta: t("Devenir créateur", "Become a creator"),
+      showBetaNotice: true,
       featured: false
     },
     {
@@ -58,6 +66,7 @@ export default function PricingPage() {
         t("Support dédié", "Dedicated support")
       ],
       cta: t("Nous contacter", "Contact us"),
+      showBetaNotice: false,
       featured: true
     },
   ];
@@ -160,6 +169,7 @@ export default function PricingPage() {
                     ? 'bg-aw-primary text-on-primary hover:bg-aw-primary/90'
                     : 'bg-aw-surface border border-aw text-aw-text hover:bg-aw-success'
                 }`}
+                onClick={p.showBetaNotice ? showBetaNotice : undefined}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -170,6 +180,63 @@ export default function PricingPage() {
         </motion.div>
       </Section>
 
+
+      {isBetaModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <button
+            type="button"
+            aria-label={t("Fermer", "Close")}
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setIsBetaModalOpen(false)}
+          />
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            className="relative w-full max-w-lg card p-6 md:p-8 bg-aw-surface border border-aw"
+          >
+            <button
+              type="button"
+              onClick={() => setIsBetaModalOpen(false)}
+              aria-label={t("Fermer", "Close")}
+              className="absolute top-4 right-4 text-aw-muted hover:text-aw-text"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <p className="text-xs uppercase tracking-wider text-aw-primary font-semibold mb-2">
+              {t("Phase bêta", "Beta phase")}
+            </p>
+            <h3 className="text-2xl font-bold mb-3">
+              {t("On arrive bientôt ✨", "We’re launching soon ✨")}
+            </h3>
+            <p className="text-aw-muted mb-6">
+              {t(
+                "ActuWorld est encore en bêta, mais on avance vite 💚 Si tu veux être prévenu(e) du lancement et des nouveautés, laisse-nous un message ou suis-nous sur Insta.",
+                "ActuWorld is still in beta, but we’re moving fast 💚 If you want launch updates and early news, send us a message or follow us on Instagram."
+              )}
+            </p>
+
+            <div className="grid sm:grid-cols-2 gap-3">
+              <a
+                href="mailto:actuworld.app@outlook.fr?subject=Je souhaite rester au courant de la beta ActuWorld"
+                className="btn-primary glow-hover inline-flex items-center justify-center"
+              >
+                <Mail className="w-4 h-4 mr-2" />
+                {t("Me tenir au courant", "Keep me updated")}
+              </a>
+              <a
+                href="https://instagram.com/actuworld8"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-outline inline-flex items-center justify-center"
+              >
+                <Instagram className="w-4 h-4 mr-2" />
+                {t("Suivre sur Instagram", "Follow on Instagram")}
+              </a>
+            </div>
+          </motion.div>
+        </div>
+      )}
 
       {/* FAQ */}
       <Section className="py-24">
