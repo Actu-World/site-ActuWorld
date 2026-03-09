@@ -116,7 +116,7 @@ export default function RecoSrcPage() {
             >
               <Sparkles className="w-4 h-4" /> ActuWorld Source Verification
             </motion.span>
-            <H2 kicker="" center>
+            <H2 kicker="" center as="h1">
               {isEnglish ? <>ASV: <span className="gradient-text">Powerful and reliable</span> verification</> : <>ASV : Vérification <span className="gradient-text">puissante et fiable</span></>}
             </H2>
             <p className="text-aw-muted mt-4 max-w-3xl mx-auto text-lg">
@@ -455,6 +455,10 @@ export default function RecoSrcPage() {
               <Link to="/contact" className="btn-outline">
                 {t("Nous contacter", "Contact us")}
               </Link>
+            </div>
+            <div className="flex items-center justify-center gap-6 mt-6 text-sm">
+              <Link to="/app" className="text-aw-muted hover:text-aw-primary transition-colors link-underline">{t("Découvrir la plateforme", "Discover the app")}</Link>
+              <Link to="/faq" className="text-aw-muted hover:text-aw-primary transition-colors link-underline">{t("Questions fréquentes", "FAQ")}</Link>
             </div>
           </div>
         </AnimatedSection>

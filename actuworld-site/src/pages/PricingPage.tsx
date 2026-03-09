@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Star, LineChart, Megaphone, CheckCircle2, ChevronRight, Mail, Instagram, X } from "lucide-react";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
+import { PageMeta } from "../components/PageMeta";
 import { useLanguage } from "../i18n/LanguageContext";
 import {
   PageWrapper,
@@ -84,6 +85,11 @@ export default function PricingPage() {
 
   return (
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
+      <PageMeta
+        title={t("Tarifs — Lecture gratuite, création accessible", "Pricing — Free reading, accessible creation")}
+        description={t("La lecture est et restera toujours gratuite. Pas de paywall sur le savoir. Découvrez les plans Lecteur, Créateur et ASV Pro.", "Reading is and will always remain free. No paywall on knowledge. Discover Reader, Creator and ASV Pro plans.")}
+        path="/pricing"
+      />
       {/* HEADER */}
       <Section className="pt-24 pb-12">
         <motion.div
@@ -93,7 +99,7 @@ export default function PricingPage() {
           className="text-center"
         >
           <motion.div variants={scaleUp}>
-            <H2 kicker={t("Tarifs", "Pricing")} center>
+            <H2 kicker={t("Tarifs", "Pricing")} center as="h1">
               {isEnglish ? <>Knowledge accessible to <span className="gradient-text">everyone</span></> : <>Le savoir accessible à <span className="gradient-text">tous</span></>}
             </H2>
             <p className="text-aw-muted mt-4 max-w-xl mx-auto text-lg">
@@ -286,6 +292,10 @@ export default function PricingPage() {
             <Link to="/contact" className="btn-primary glow-hover">
               {t("Nous contacter", "Contact us")} <ChevronRight className="w-5 h-5 ml-2" />
             </Link>
+            <div className="flex items-center justify-center gap-6 mt-6 text-sm">
+              <Link to="/app" className="text-aw-muted hover:text-aw-primary transition-colors link-underline">{t("Découvrir la plateforme", "Discover the app")}</Link>
+              <Link to="/reco-src" className="text-aw-muted hover:text-aw-primary transition-colors link-underline">{t("Découvrir ASV", "Discover ASV")}</Link>
+            </div>
           </div>
         </AnimatedSection>
       </Section>

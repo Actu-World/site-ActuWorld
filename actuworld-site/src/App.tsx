@@ -1,18 +1,22 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { PageLoader } from './components/ui/PageLoader';
 import { ScrollProgress } from './components/ui/ScrollProgress';
 import { BackToTop } from './components/ui/BackToTop';
-import HomePage from './pages/HomePage';
-import AppPage from './pages/AppPage';
-import RecoSrcPage from './pages/RecoSrcPage';
-import PricingPage from './pages/PricingPage';
-import FaqPage from './pages/FaqPage';
-import ContactPage from './pages/ContactPage';
-import NotFoundPage from './pages/NotFoundPage';
+
+const HomePage = lazy(() => import('./pages/HomePage'));
+const AppPage = lazy(() => import('./pages/AppPage'));
+const RecoSrcPage = lazy(() => import('./pages/RecoSrcPage'));
+const PricingPage = lazy(() => import('./pages/PricingPage'));
+const FaqPage = lazy(() => import('./pages/FaqPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
+const TermsPage = lazy(() => import('./pages/TermsPage'));
+const PressPage = lazy(() => import('./pages/PressPage'));
 
 // Scroll to top on route change
 function ScrollToTop() {
@@ -33,7 +37,7 @@ export default function App() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1500);
+    }, 300);
 
     return () => clearTimeout(timer);
   }, []);
@@ -45,6 +49,7 @@ export default function App() {
       <ScrollToTop />
       <Navbar />
       <main>
+        <Suspense fallback={<PageLoader isLoading={true} />}>
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={<HomePage />} />
@@ -53,9 +58,13 @@ export default function App() {
             <Route path="/pricing" element={<PricingPage />} />
             <Route path="/faq" element={<FaqPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/press" element={<PressPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </AnimatePresence>
+        </Suspense>
       </main>
       <Footer />
       <BackToTop />

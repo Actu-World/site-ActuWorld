@@ -131,7 +131,7 @@ export default function FaqPage() {
           className="text-center"
         >
           <motion.div variants={scaleUp}>
-            <H2 kicker="FAQ" center>
+            <H2 kicker="FAQ" center as="h1">
               {t("Questions fréquentes", "Frequently asked questions")}
             </H2>
             <p className="text-aw-muted mt-4 max-w-xl mx-auto text-lg">
@@ -173,6 +173,11 @@ export default function FaqPage() {
             <Link to="/contact" className="btn-primary glow-hover">
               {t("Nous contacter", "Contact us")} <ChevronRight className="w-5 h-5 ml-2" />
             </Link>
+            <div className="flex items-center justify-center gap-6 mt-6 text-sm">
+              <Link to="/app" className="text-aw-muted hover:text-aw-primary transition-colors link-underline">{t("Découvrir la plateforme", "Discover the app")}</Link>
+              <Link to="/reco-src" className="text-aw-muted hover:text-aw-primary transition-colors link-underline">{t("Découvrir ASV", "Discover ASV")}</Link>
+              <Link to="/pricing" className="text-aw-muted hover:text-aw-primary transition-colors link-underline">{t("Voir les tarifs", "See pricing")}</Link>
+            </div>
           </div>
         </AnimatedSection>
       </Section>

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Mail, MessageCircle, Instagram, ChevronRight, Globe2 } from "lucide-react";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
+import { PageMeta } from "../components/PageMeta";
 import { useLanguage } from "../i18n/LanguageContext";
 import {
   PageWrapper,
@@ -43,6 +44,11 @@ export default function ContactPage() {
 
   return (
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
+      <PageMeta
+        title={t("Contact — Rejoindre ActuWorld", "Contact — Join ActuWorld")}
+        description={t("Contactez l'équipe ActuWorld — créateurs, médias, éducateurs ou curieux. Rejoignez la bêta.", "Contact the ActuWorld team — creators, media, educators or curious minds. Join the beta.")}
+        path="/contact"
+      />
       {/* HEADER */}
       <Section className="pt-24 pb-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#2E5F4A]/10 via-[#94C9AA]/10 to-[#00A896]/10 pointer-events-none"></div>
@@ -60,7 +66,7 @@ export default function ContactPage() {
           className="text-center relative"
         >
           <motion.div variants={scaleUp}>
-            <H2 kicker="Contact" center>
+            <H2 kicker="Contact" center as="h1">
               {t("Construisons ensemble l'information de demain", "Let's build tomorrow's information together")}
             </H2>
             <p className="text-aw-muted mt-4 max-w-2xl mx-auto text-lg">

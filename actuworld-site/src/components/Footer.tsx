@@ -27,9 +27,9 @@ export const Footer: React.FC = () => {
           </nav>
 
           <div className="flex items-center gap-4 caption text-aw-muted">
-            <a href="#" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Privacy' : 'Confidentialité'}</a>
-            <a href="#" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Terms' : 'Conditions'}</a>
-            <a href="#" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Press' : 'Presse'}</a>
+            <Link to="/privacy" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Privacy' : 'Confidentialité'}</Link>
+            <Link to="/terms" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Terms' : 'Conditions'}</Link>
+            <Link to="/press" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Press' : 'Presse'}</Link>
           </div>
         </div>
       </div>

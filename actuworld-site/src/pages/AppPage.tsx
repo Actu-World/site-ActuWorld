@@ -5,10 +5,11 @@ import {
   Search, Heart, Sparkles, Users,
   Bell, MessageCircle, Image, X, Check, MoreHorizontal, Home, PenLine, PlaySquare, PlusCircle, Globe2
 } from "lucide-react";
-import phoneImg from "../assets/phone_img.jpg";
+import phoneImg from "../assets/phone_img.webp";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
 import { Card } from "../components/Card";
+import { PageMeta } from "../components/PageMeta";
 import { useLanguage } from "../i18n/LanguageContext";
 import {
   PageWrapper,
@@ -41,6 +42,11 @@ export default function AppPage() {
 
   return (
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
+      <PageMeta
+        title={t("La Plateforme — Réseau social de l'information fiable", "The Platform — Social network for reliable information")}
+        description={t("Découvrez ActuWorld : sourcing obligatoire, score de confiance communautaire, catégorisation thématique, ASV intégré. 100% gratuit en lecture.", "Discover ActuWorld: mandatory sourcing, community trust score, topic categories, built-in ASV. 100% free to read.")}
+        path="/app"
+      />
       {/* HEADER */}
       <Section className="pt-24 pb-12 relative overflow-hidden">
         <Parallax offset={20} className="absolute inset-0 pointer-events-none">
@@ -57,7 +63,7 @@ export default function AppPage() {
             <span className="badge badge-primary mb-6">
               <Smartphone className="w-4 h-4" /> {t("La Plateforme", "The Platform")}
             </span>
-            <H2 kicker="" center>
+            <H2 kicker="" center as="h1">
               {isEnglish ? <>ActuWorld, the social network <span className="gradient-text">for reliable information</span></> : <>ActuWorld, le réseau social <span className="gradient-text">de l'information fiable</span></>}
             </H2>
             <p className="text-aw-muted mt-4 max-w-2xl mx-auto text-lg">
@@ -144,7 +150,7 @@ export default function AppPage() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.6, duration: 0.4 }}
                   >
-                    <img src={phoneImg} alt="Post nature" className="w-full h-full object-cover" />
+                    <img src={phoneImg} alt="Capture d'écran du fil d'actualités ActuWorld avec un post sourcé" className="w-full h-full object-cover" loading="lazy" width={4000} height={3000} />
                     <div className="absolute top-2 right-2 flex gap-1">
                       <div className="w-5 h-5 rounded-full bg-black/50 flex items-center justify-center text-[7px] text-white font-medium">2</div>
                       <div className="w-5 h-5 rounded-full bg-black/50 flex items-center justify-center">
@@ -311,6 +317,10 @@ export default function AppPage() {
             <Link to="/reco-src" className="btn-primary glow-hover">
               <Sparkles className="w-5 h-5 mr-2" /> {t("Découvrir ASV", "Discover ASV")}
             </Link>
+            <div className="flex items-center justify-center gap-6 mt-6 text-sm">
+              <Link to="/pricing" className="text-aw-muted hover:text-aw-primary transition-colors link-underline">{t("Voir les tarifs", "See pricing")}</Link>
+              <Link to="/faq" className="text-aw-muted hover:text-aw-primary transition-colors link-underline">{t("Questions fréquentes", "FAQ")}</Link>
+            </div>
           </div>
         </AnimatedSection>
       </Section>

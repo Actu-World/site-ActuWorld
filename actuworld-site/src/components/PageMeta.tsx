@@ -21,24 +21,24 @@ export function PageMeta({ title, description, path, image = '/og-image.png' }: 
     // Update Open Graph tags
     updateOrCreateMetaTag('property', 'og:title', title);
     updateOrCreateMetaTag('property', 'og:description', description);
-    updateOrCreateMetaTag('property', 'og:url', `https://actuworld.app${path}`);
-    updateOrCreateMetaTag('property', 'og:image', `https://actuworld.app${image}`);
+    updateOrCreateMetaTag('property', 'og:url', `https://www.actuworld.fr${path}`);
+    updateOrCreateMetaTag('property', 'og:image', `https://www.actuworld.fr${image}`);
     updateOrCreateMetaTag('property', 'og:type', 'website');
 
     // Update Twitter tags
     updateOrCreateMetaTag('name', 'twitter:card', 'summary_large_image');
     updateOrCreateMetaTag('name', 'twitter:title', title);
     updateOrCreateMetaTag('name', 'twitter:description', description);
-    updateOrCreateMetaTag('name', 'twitter:image', `https://actuworld.app${image}`);
+    updateOrCreateMetaTag('name', 'twitter:image', `https://www.actuworld.fr${image}`);
 
     // Update canonical URL
     const canonical = document.querySelector('link[rel="canonical"]');
     if (canonical) {
-      canonical.setAttribute('href', `https://actuworld.app${path}`);
+      canonical.setAttribute('href', `https://www.actuworld.fr${path}`);
     } else {
       const link = document.createElement('link');
       link.rel = 'canonical';
-      link.href = `https://actuworld.app${path}`;
+      link.href = `https://www.actuworld.fr${path}`;
       document.head.appendChild(link);
     }
   }, [title, description, path, image]);

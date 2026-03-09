@@ -243,6 +243,10 @@ export default function HomePage() {
             <Link to="/app" className="btn-primary glow-hover">
               {t("Découvrir la plateforme", "Discover the platform")} <ChevronRight className="w-5 h-5 ml-2" />
             </Link>
+            <div className="flex items-center justify-center gap-6 mt-6 text-sm">
+              <Link to="/pricing" className="text-aw-muted hover:text-aw-primary transition-colors link-underline">{t("Voir les tarifs", "See pricing")}</Link>
+              <Link to="/faq" className="text-aw-muted hover:text-aw-primary transition-colors link-underline">{t("Questions fréquentes", "FAQ")}</Link>
+            </div>
           </motion.div>
         </motion.div>
       </Section>
