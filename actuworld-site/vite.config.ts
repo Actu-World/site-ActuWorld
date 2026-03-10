@@ -5,8 +5,8 @@ import PuppeteerRenderer from '@prerenderer/renderer-puppeteer'
 
 // https://vite.dev/config/
 export default defineConfig(() => {
-  const isVercel = process.env.VERCEL === '1'
-  const isCi = process.env.CI === 'true'
+  const isVercel = Boolean(process.env.VERCEL || process.env.VERCEL_ENV)
+  const isCi = Boolean(process.env.CI && process.env.CI !== 'false')
   const enablePrerender = process.env.ENABLE_PRERENDER === 'true'
 
   const shouldPrerender = enablePrerender || (!isVercel && !isCi)
