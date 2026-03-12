@@ -173,11 +173,6 @@ export default function FaqPage() {
             <Link to="/contact" className="btn-primary glow-hover">
               {t("Nous contacter", "Contact us")} <ChevronRight className="w-5 h-5 ml-2" />
             </Link>
-            <div className="flex items-center justify-center gap-6 mt-6 text-sm">
-              <Link to="/app" className="text-aw-muted hover:text-aw-primary transition-colors link-underline">{t("Découvrir la plateforme", "Discover the app")}</Link>
-              <Link to="/reco-src" className="text-aw-muted hover:text-aw-primary transition-colors link-underline">{t("Découvrir ASV", "Discover ASV")}</Link>
-              <Link to="/pricing" className="text-aw-muted hover:text-aw-primary transition-colors link-underline">{t("Voir les tarifs", "See pricing")}</Link>
-            </div>
           </div>
         </AnimatedSection>
       </Section>

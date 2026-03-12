@@ -243,12 +243,33 @@ export default function HomePage() {
             <Link to="/app" className="btn-primary glow-hover">
               {t("Découvrir la plateforme", "Discover the platform")} <ChevronRight className="w-5 h-5 ml-2" />
             </Link>
-            <div className="flex items-center justify-center gap-6 mt-6 text-sm">
-              <Link to="/pricing" className="text-aw-muted hover:text-aw-primary transition-colors link-underline">{t("Voir les tarifs", "See pricing")}</Link>
-              <Link to="/faq" className="text-aw-muted hover:text-aw-primary transition-colors link-underline">{t("Questions fréquentes", "FAQ")}</Link>
-            </div>
           </motion.div>
         </motion.div>
+      </Section>
+
+      {/* POURQUOI ACTUWORLD EXISTE */}
+      <Section id="founder" className="bg-aw-surface py-20">
+        <AnimatedSection>
+          <div className="max-w-4xl mx-auto card p-8 md:p-10">
+            <p className="text-sm uppercase tracking-wide text-aw-primary mb-3">
+              {t("Pourquoi ActuWorld existe", "Why ActuWorld exists")}
+            </p>
+            <h3 className="text-2xl md:text-3xl font-bold mb-4">
+              {t("J'ai construit l'outil dont j'avais besoin.", "I built the tool I needed.")}
+            </h3>
+            <p className="text-aw-muted leading-relaxed">
+              {t(
+                "Quand je lisais des informations, j'avais toujours ce doute: est-ce que tout ce qui est dit est vrai ? Il manquait ce petit outil qui permette de prendre du recul, de faire une vraie auto-critique avant de croire ou de partager. ActuWorld est né de ce besoin.",
+                "When I read information, I always had that doubt: is everything being said really true? I was missing a simple tool to step back and self-check before believing or sharing. ActuWorld was born from that need."
+              )}
+            </p>
+            <div className="mt-6">
+              <Link to="/app" className="btn-outline">
+                {t("Lire notre vision", "Read our vision")}
+              </Link>
+            </div>
+          </div>
+        </AnimatedSection>
       </Section>
 
       {/* WAITLIST */}

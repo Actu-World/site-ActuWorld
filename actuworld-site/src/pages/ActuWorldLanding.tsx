@@ -6,7 +6,7 @@ import {
   TrendingDown, ThumbsUp, BookOpen, Globe2, Heart, Unlock,
   Bell, MessageCircle, Image, X, Check, MoreHorizontal, Home, PenLine, PlaySquare, PlusCircle
 } from "lucide-react";
-import phoneImg from "../assets/phone_img.jpg";
+import phoneImg from "../assets/phone_img_normalized.jpg";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
 import { Card } from "../components/Card";
@@ -278,7 +278,7 @@ export default function ActuWorldLanding() {
 
                     {/* Large image */}
                     <div className="flex-1 rounded-2xl overflow-hidden relative mb-1.5 min-h-0">
-                      <img src={phoneImg} alt="Post nature" className="w-full h-full object-cover" />
+                      <img src={phoneImg} alt="Post nature" className="w-full h-full object-cover object-center" />
                       <div className="absolute top-2 right-2 flex gap-1">
                         <div className="w-5 h-5 rounded-full bg-black/50 flex items-center justify-center text-[7px] text-white font-medium">2</div>
                         <div className="w-5 h-5 rounded-full bg-black/50 flex items-center justify-center">

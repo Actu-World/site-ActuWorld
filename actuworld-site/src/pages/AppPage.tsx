@@ -5,7 +5,7 @@ import {
   Search, Heart, Sparkles, Users,
   Bell, MessageCircle, Image, X, Check, MoreHorizontal, Home, PenLine, PlaySquare, PlusCircle, Globe2
 } from "lucide-react";
-import phoneImg from "../assets/phone_img.webp";
+import phoneImg from "../assets/phone_img_normalized.jpg";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
 import { Card } from "../components/Card";
@@ -317,10 +317,6 @@ export default function AppPage() {
             <Link to="/reco-src" className="btn-primary glow-hover">
               <Sparkles className="w-5 h-5 mr-2" /> {t("Découvrir ASV", "Discover ASV")}
             </Link>
-            <div className="flex items-center justify-center gap-6 mt-6 text-sm">
-              <Link to="/pricing" className="text-aw-muted hover:text-aw-primary transition-colors link-underline">{t("Voir les tarifs", "See pricing")}</Link>
-              <Link to="/faq" className="text-aw-muted hover:text-aw-primary transition-colors link-underline">{t("Questions fréquentes", "FAQ")}</Link>
-            </div>
           </div>
         </AnimatedSection>
       </Section>

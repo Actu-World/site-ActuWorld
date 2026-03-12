@@ -456,10 +456,6 @@ export default function RecoSrcPage() {
                 {t("Nous contacter", "Contact us")}
               </Link>
             </div>
-            <div className="flex items-center justify-center gap-6 mt-6 text-sm">
-              <Link to="/app" className="text-aw-muted hover:text-aw-primary transition-colors link-underline">{t("Découvrir la plateforme", "Discover the app")}</Link>
-              <Link to="/faq" className="text-aw-muted hover:text-aw-primary transition-colors link-underline">{t("Questions fréquentes", "FAQ")}</Link>
-            </div>
           </div>
         </AnimatedSection>
       </Section>
