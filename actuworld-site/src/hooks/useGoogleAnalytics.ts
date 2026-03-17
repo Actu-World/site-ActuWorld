@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
+type GtagParam = string | Date | Record<string, unknown>;
+
 /**
  * Hook pour initialiser et tracker avec Google Analytics
  * 
@@ -11,8 +13,8 @@ import { useLocation } from 'react-router-dom';
  */
 declare global {
   interface Window {
-    dataLayer?: any[];
-    gtag?: (...args: any[]) => void;
+    dataLayer?: GtagParam[][];
+    gtag?: (...args: GtagParam[]) => void;
   }
 }
 
@@ -34,14 +36,13 @@ export const useGoogleAnalytics = () => {
       window.dataLayer = window.dataLayer || [];
       
       // Fonction gtag
-      function gtag(...args: any[]) {
+      function gtag(...args: GtagParam[]) {
         window.dataLayer?.push(args);
       }
       
       window.gtag = gtag;
       gtag('js', new Date());
       gtag('config', gaId, { 
-        'page_path': pathname,
         'anonymize_ip': true 
       });
 
