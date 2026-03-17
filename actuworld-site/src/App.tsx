@@ -6,6 +6,7 @@ import { Footer } from './components/Footer';
 import { PageLoader } from './components/ui/PageLoader';
 import { ScrollProgress } from './components/ui/ScrollProgress';
 import { BackToTop } from './components/ui/BackToTop';
+import { useGoogleAnalytics } from './hooks/useGoogleAnalytics';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const AppPage = lazy(() => import('./pages/AppPage'));
@@ -32,6 +33,9 @@ function ScrollToTop() {
 export default function App() {
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
+
+  // Initialize Google Analytics
+  useGoogleAnalytics();
 
   // Initial page loader
   useEffect(() => {
