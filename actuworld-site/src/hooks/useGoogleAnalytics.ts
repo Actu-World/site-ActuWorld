@@ -35,7 +35,7 @@ export const useGoogleAnalytics = () => {
       
       // Fonction gtag
       function gtag(...args: any[]) {
-        window.dataLayer?.push(arguments);
+        window.dataLayer?.push(args);
       }
       
       window.gtag = gtag;
