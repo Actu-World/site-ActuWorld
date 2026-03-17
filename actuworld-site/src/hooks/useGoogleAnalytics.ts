@@ -55,7 +55,7 @@ export const useGoogleAnalytics = () => {
     }
   }, []);
 
-  // Tracker chaque changement de page
+  // Tracker chaque changement de page (SPA route changes)
   useEffect(() => {
     if (window.gtag) {
       window.gtag('event', 'page_view', {
