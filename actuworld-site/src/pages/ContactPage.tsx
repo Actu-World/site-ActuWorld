@@ -37,8 +37,8 @@ export default function ContactPage() {
       icon: Instagram,
       title: "Instagram",
       desc: t("Suivez-nous sur les réseaux", "Follow us on social media"),
-      value: "@actuworld8",
-      link: "https://instagram.com/actuworld8"
+      value: "@actuworld_fr",
+      link: "https://instagram.com/actuworld_fr"
     },
   ];
 

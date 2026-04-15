@@ -272,6 +272,39 @@ export default function HomePage() {
         </AnimatedSection>
       </Section>
 
+      {/* ILS SUIVENT LE PROJET */}
+      <Section id="supporters" className="py-20">
+        <AnimatedSection>
+          <div className="text-center mb-12">
+            <H2 kicker={t("Soutiens", "Supporters")} center>
+              {isEnglish ? <>They <span className="gradient-text">follow the project</span></> : <>Ils <span className="gradient-text">suivent le projet</span></>}
+            </H2>
+            <p className="text-aw-muted mt-4 max-w-2xl mx-auto">
+              {t(
+                "Des médias et acteurs de l'information qui s'intéressent à notre démarche.",
+                "Media outlets and information stakeholders who are interested in our approach."
+              )}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-10">
+            <motion.a
+              href="https://territoires.media"
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.2 }}
+              className="grayscale hover:grayscale-0 opacity-80 hover:opacity-100 transition-all duration-300"
+            >
+              <img
+                src="/partners/territoires-media.png"
+                alt="Territoire(s) Média"
+                className="h-12 md:h-16 w-auto object-contain"
+              />
+            </motion.a>
+          </div>
+        </AnimatedSection>
+      </Section>
+
       {/* WAITLIST */}
       <Section className="bg-aw-surface py-24">
         <div className="max-w-lg mx-auto">

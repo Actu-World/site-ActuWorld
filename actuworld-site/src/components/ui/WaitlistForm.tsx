@@ -81,14 +81,14 @@ export const WaitlistForm = ({ variant = "card", className = "" }: WaitlistFormP
         <div className="flex items-center justify-center gap-2 text-sm">
           <span className="text-aw-muted">{t("Suivez-nous sur", "Follow us on")}</span>
           <motion.a
-            href="https://instagram.com/actuworld8"
+            href="https://instagram.com/actuworld_fr"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 text-aw-primary font-medium hover:underline"
             whileHover={{ scale: 1.05 }}
           >
             <Instagram className="w-4 h-4" />
-            @actuworld8
+            @actuworld_fr
           </motion.a>
         </div>
       </div>
@@ -130,7 +130,7 @@ export const WaitlistForm = ({ variant = "card", className = "" }: WaitlistFormP
       {/* Instagram */}
       <div className="mt-6 pt-6 border-t border-aw">
         <motion.a
-          href="https://instagram.com/actuworld8"
+          href="https://instagram.com/actuworld_fr"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center justify-center gap-3 p-3 rounded-xl bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-orange-500/10 hover:from-purple-500/20 hover:via-pink-500/20 hover:to-orange-500/20 transition-all"
@@ -142,7 +142,7 @@ export const WaitlistForm = ({ variant = "card", className = "" }: WaitlistFormP
           </div>
           <div className="text-left">
             <div className="text-sm font-semibold text-aw-text">{t("Suivez-nous sur Instagram", "Follow us on Instagram")}</div>
-            <div className="text-xs text-aw-muted">@actuworld8</div>
+            <div className="text-xs text-aw-muted">@actuworld_fr</div>
           </div>
         </motion.a>
       </div>

@@ -231,7 +231,7 @@ export default function PricingPage() {
                 {t("Me tenir au courant", "Keep me updated")}
               </a>
               <a
-                href="https://instagram.com/actuworld8"
+                href="https://instagram.com/actuworld_fr"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-outline inline-flex items-center justify-center"
