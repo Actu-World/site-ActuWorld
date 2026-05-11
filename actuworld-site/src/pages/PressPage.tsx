@@ -40,8 +40,8 @@ export default function PressPage() {
               </h2>
               <p className="text-aw-text/80 leading-relaxed">
                 {t(
-                  "ActuWorld est un réseau social éducatif fondé en 2024, conçu pour lutter contre la désinformation. La plateforme impose le sourcing obligatoire de chaque publication et intègre un système de score de confiance communautaire. Notre outil ASV (Analyse et Score de Vérification) permet d'évaluer la fiabilité de n'importe quelle source en temps réel.",
-                  "ActuWorld is an educational social network founded in 2024, designed to fight misinformation. The platform requires mandatory sourcing for every publication and integrates a community trust scoring system. Our ASV (Analysis and Verification Score) tool enables real-time source reliability assessment."
+                  "ActuWorld est un réseau social préventif fondé en 2024, dédié au partage d'informations fiables sur tout sujet, selon les passions et les intérêts de chacun. Chaque publication s'appuie sur une source visible obligatoire, vérifiée par ASV (ActuWorld Source Verification) qui contrôle la cohérence entre la source et le contenu. Un jugement communautaire via un score de confiance rend la fiabilité plus claire pour tous.",
+                  "ActuWorld is a preventive social network founded in 2024, dedicated to sharing reliable information on any topic, based on users' passions and interests. Every post requires a mandatory visible source, verified by ASV (ActuWorld Source Verification) which checks source-content consistency. Community judgment through a trust score makes reliability clearer for everyone."
                 )}
               </p>
             </section>
@@ -53,9 +53,9 @@ export default function PressPage() {
               </h2>
               <ul className="space-y-3 text-aw-text/80">
                 <li>📅 {t("Fondé en 2024", "Founded in 2024")}</li>
-                <li>🎯 {t("Mission : rendre l'information fiable accessible à tous", "Mission: make reliable information accessible to all")}</li>
+                <li>🎯 {t("Mission : donner à chacun les outils pour partager avec preuves et explorer avec clarté", "Mission: give everyone the tools to share with proof and explore with clarity")}</li>
                 <li>📱 {t("Application mobile React Native (iOS & Android)", "React Native mobile app (iOS & Android)")}</li>
-                <li>🔍 {t("ASV : outil d'analyse de sources intégré", "ASV: integrated source analysis tool")}</li>
+                <li>🔍 {t("ASV (ActuWorld Source Verification) : vérification de la cohérence source-contenu", "ASV (ActuWorld Source Verification): source-content consistency check")}</li>
                 <li>💡 {t("Lecture 100% gratuite, sans paywall", "100% free reading, no paywall")}</li>
               </ul>
             </section>

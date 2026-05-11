@@ -59,7 +59,7 @@ export default function RecoSrcPage() {
 
   const dbHighlights = [
     { label: "Sources reconnues", desc: "Médias, revues scientifiques, institutions officielles : ASV s'appuie sur des centaines de sources vérifiées." },
-    { label: "Sites à risque identifiés", desc: "Les sites connus pour la désinformation sont repérés et signalés automatiquement." },
+    { label: "Sites à risque identifiés", desc: "Les sites peu fiables sont repérés et signalés automatiquement pour plus de transparence." },
     { label: "Base en constante évolution", desc: "La communauté et notre équipe enrichissent la base chaque jour pour couvrir toujours plus de sources." },
   ];
 
@@ -89,8 +89,8 @@ export default function RecoSrcPage() {
   return (
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
       <PageMeta
-        title={t("ASV — La vérification gratuite des sources", "ASV — Free source verification")}
-        description={t("ASV (Automatic Source Verification) vérifie gratuitement les posts, articles et vidéos. Identifie automatiquement les sources, les note et détecte le cherry-picking.", "ASV (Automatic Source Verification) verifies posts, articles, and videos for free. It automatically identifies sources, rates them, and detects cherry-picking.")}
+        title={t("ASV — ActuWorld Source Verification", "ASV — ActuWorld Source Verification")}
+        description={t("ASV (ActuWorld Source Verification) vérifie si la source est cohérente avec le contenu et détecte les détournements de contexte. Analyse posts, articles et vidéos.", "ASV (ActuWorld Source Verification) checks if the source is consistent with the content and detects context distortions. Analyzes posts, articles, and videos.")}
         path="/reco-src"
       />
       {/* HEADER */}
@@ -120,7 +120,7 @@ export default function RecoSrcPage() {
               {isEnglish ? <>ASV: <span className="gradient-text">Powerful and reliable</span> verification</> : <>ASV : Vérification <span className="gradient-text">puissante et fiable</span></>}
             </H2>
             <p className="text-aw-muted mt-4 max-w-3xl mx-auto text-lg">
-              {t("ASV passe derrière tous les posts et articles pour vérifier automatiquement les sources ET le contenu. L'API fournit une base visuelle claire, permettant à chaque utilisateur de développer son esprit critique en se renseignant davantage. Accessible aux journalistes, particuliers et entreprises.", "ASV runs behind all posts and articles to automatically verify both sources and content. The API provides a clear visual baseline that helps users build critical thinking by exploring further. Accessible to journalists, individuals, and companies.")}
+              {t("ASV (ActuWorld Source Verification) vérifie automatiquement si la source est cohérente avec le contenu publié et détecte les détournements de contexte. Il donne à chaque utilisateur une base claire pour juger par soi-même. Accessible aux créateurs, journalistes et entreprises.", "ASV (ActuWorld Source Verification) automatically checks if the source is consistent with published content and detects context distortions. It gives every user a clear basis to judge for themselves. Accessible to creators, journalists, and companies.")}
             </p>
           </motion.div>
 

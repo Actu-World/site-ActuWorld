@@ -22,10 +22,10 @@ export default function NewsletterPage() {
   const contentCards = [
     {
       icon: ShieldCheck,
-      title: t("Actus vérifiées", "Verified news"),
+      title: t("Contenus sourcés", "Sourced content"),
       desc: t(
-        "L'essentiel de l'actualité passée au crible de notre système de vérification ASV.",
-        "Key news stories filtered through our ASV verification system."
+        "L'essentiel des publications passées au crible d'ASV (ActuWorld Source Verification).",
+        "The best posts filtered through ASV (ActuWorld Source Verification)."
       ),
     },
     {
@@ -38,10 +38,10 @@ export default function NewsletterPage() {
     },
     {
       icon: BookOpen,
-      title: t("Ressources éducatives", "Educational resources"),
+      title: t("Ressources & guides", "Resources & guides"),
       desc: t(
-        "Guides et outils pour développer votre esprit critique face à l'information.",
-        "Guides and tools to sharpen your critical thinking about information."
+        "Guides et outils pour explorer tes sujets avec plus de clarté et de rigueur.",
+        "Guides and tools to explore your topics with more clarity and rigor."
       ),
     },
     {
@@ -62,8 +62,8 @@ export default function NewsletterPage() {
           "Newsletter — Stay informed with ActuWorld"
         )}
         description={t(
-          "Inscrivez-vous à la newsletter ActuWorld : actus vérifiées, décryptages et ressources éducatives dans votre boîte mail.",
-          "Subscribe to the ActuWorld newsletter: verified news, deep dives and educational resources in your inbox."
+          "Inscris-toi à la newsletter ActuWorld : contenus sourcés, décryptages et ressources pour explorer tes sujets avec plus de clarté.",
+          "Subscribe to the ActuWorld newsletter: sourced content, deep dives and resources to explore your topics with more clarity."
         )}
         path="/newsletter"
       />
@@ -87,14 +87,14 @@ export default function NewsletterPage() {
           <motion.div variants={scaleUp}>
             <H2 kicker="Newsletter" center as="h1">
               {t(
-                "L'info vérifiée, directement dans votre boîte mail",
-                "Verified news, straight to your inbox"
+                "L'info sourcée, directement dans ta boîte mail",
+                "Sourced info, straight to your inbox"
               )}
             </H2>
             <p className="text-aw-muted mt-4 max-w-2xl mx-auto text-lg">
               {t(
-                "Chaque semaine, recevez le meilleur d'ActuWorld : actualités passées au crible, décryptages et ressources pour mieux comprendre le monde.",
-                "Every week, get the best of ActuWorld: fact-checked news, deep dives and resources to better understand the world."
+                "Chaque semaine, reçois le meilleur d'ActuWorld : contenus sourcés, décryptages et ressources pour explorer tes sujets avec plus de clarté.",
+                "Every week, get the best of ActuWorld: sourced content, deep dives, and resources to explore your topics with more clarity."
               )}
             </p>
           </motion.div>

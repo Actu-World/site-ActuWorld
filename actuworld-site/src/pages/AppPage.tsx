@@ -26,25 +26,25 @@ export default function AppPage() {
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
 
   const features = [
-    { icon: FileText, title: t("Sourcing obligatoire", "Mandatory sourcing"), desc: t("Impossible de publier sans indiquer ses sources. Chaque affirmation doit être vérifiable.", "You cannot publish without citing your sources. Every claim must be verifiable.") },
-    { icon: ThumbsUp, title: t("Confiance communautaire", "Community trust"), desc: t("La communauté vote sur la qualité et fiabilité des posts. Système de score de confiance.", "The community votes on post quality and reliability. Trust score system.") },
-    { icon: BookOpen, title: t("Catégorisation thématique", "Topic categories"), desc: t("Sciences, Histoire, Tech, Santé, Économie... Trouvez facilement ce qui vous intéresse.", "Science, History, Tech, Health, Economy... Easily find what interests you.") },
-    { icon: Video, title: t("ASV intégré", "Built-in ASV"), desc: t("Notre IA extrait automatiquement les sources citées dans les vidéos uploadées.", "Our AI automatically extracts sources cited in uploaded videos.") },
+    { icon: FileText, title: t("Source visible obligatoire", "Mandatory visible source"), desc: t("Avant de publier, tu montres d'où vient ton information. Tes sources parlent pour toi.", "Before publishing, you show where your information comes from. Your sources speak for you.") },
+    { icon: ThumbsUp, title: t("Jugement communautaire", "Community judgment"), desc: t("La communauté vote sur la qualité et fiabilité des posts. Un score de confiance visible pour tous.", "The community votes on post quality and reliability. A trust score visible to everyone.") },
+    { icon: BookOpen, title: t("Tous les sujets", "All topics"), desc: t("Culture, sport, sciences, société, tech, environnement, passions... Explore tes sujets avec plus de clarté.", "Culture, sports, science, society, tech, environment, passions... Explore your topics with more clarity.") },
+    { icon: Video, title: t("ASV intégré", "Built-in ASV"), desc: t("ASV (ActuWorld Source Verification) vérifie la cohérence entre tes sources et ton contenu.", "ASV (ActuWorld Source Verification) checks the consistency between your sources and your content.") },
     { icon: Unlock, title: t("100% gratuit en lecture", "100% free to read"), desc: t("Aucun paywall pour accéder au contenu. Le savoir doit rester accessible à tous.", "No paywall to access content. Knowledge should remain accessible to everyone.") },
   ];
 
   const differentiators = [
-    { icon: Unlock, title: t("Gratuit pour tous", "Free for everyone"), desc: t("Lire, apprendre et s'informer sans jamais payer. Aucun abonnement requis pour accéder aux contenus et aux sources.", "Read, learn, and stay informed without paying. No subscription required to access content and sources.") },
-    { icon: Sparkles, title: t("IA intégrée", "Integrated AI"), desc: t("Notre IA ASV vérifie les sources de vos textes et vidéos, analyse leur fiabilité et détecte les informations non sourcées.", "Our ASV AI verifies sources from your texts and videos, analyzes reliability, and detects unsourced claims.") },
-    { icon: Users, title: t("Validé par la communauté", "Community validated"), desc: t("Les utilisateurs évaluent chaque contenu. Plus un post est sourcé et apprécié, plus il gagne en visibilité sur la plateforme.", "Users evaluate each piece of content. The more sourced and appreciated a post is, the more visibility it gains.") },
+    { icon: Unlock, title: t("Gratuit pour tous", "Free for everyone"), desc: t("Lire, explorer et s'informer sans jamais payer. Aucun abonnement requis pour accéder aux contenus et aux sources.", "Read, explore, and stay informed without paying. No subscription required to access content and sources.") },
+    { icon: Sparkles, title: t("ASV intégré", "Built-in ASV"), desc: t("ASV (ActuWorld Source Verification) vérifie la cohérence entre tes sources et ton contenu, et détecte les détournements de contexte.", "ASV (ActuWorld Source Verification) checks consistency between your sources and content, and detects context distortions.") },
+    { icon: Users, title: t("Jugement communautaire", "Community judgment"), desc: t("Les utilisateurs évaluent chaque contenu. Un score de confiance visible rend la fiabilité plus claire pour tous.", "Users evaluate each piece of content. A visible trust score makes reliability clearer for everyone.") },
     { icon: Heart, title: t("Monétisation éthique", "Ethical monetization"), desc: t("Les créateurs sont rémunérés par les dons et abonnements de leur audience. Pas de publicité intrusive, pas d'algorithme à buzz.", "Creators are paid through audience donations and subscriptions. No intrusive ads, no buzz algorithm.") },
   ];
 
   return (
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
       <PageMeta
-        title={t("La Plateforme — Réseau social de l'information fiable", "The Platform — Social network for reliable information")}
-        description={t("Découvrez ActuWorld : sourcing obligatoire, score de confiance communautaire, catégorisation thématique, ASV intégré. 100% gratuit en lecture.", "Discover ActuWorld: mandatory sourcing, community trust score, topic categories, built-in ASV. 100% free to read.")}
+        title={t("La Plateforme — Réseau social préventif de partage d'informations fiables", "The Platform — Preventive social network for sharing reliable information")}
+        description={t("Découvrez ActuWorld : source visible obligatoire, ASV (ActuWorld Source Verification), jugement communautaire. Partage sur tout sujet, 100% gratuit en lecture.", "Discover ActuWorld: mandatory visible sources, ASV (ActuWorld Source Verification), community judgment. Share on any topic, 100% free to read.")}
         path="/app"
       />
       {/* HEADER */}
@@ -64,10 +64,10 @@ export default function AppPage() {
               <Smartphone className="w-4 h-4" /> {t("La Plateforme", "The Platform")}
             </span>
             <H2 kicker="" center as="h1">
-              {isEnglish ? <>ActuWorld, the social network <span className="gradient-text">for reliable information</span></> : <>ActuWorld, le réseau social <span className="gradient-text">de l'information fiable</span></>}
+              {isEnglish ? <>ActuWorld, the <span className="gradient-text">preventive</span> social network</> : <>ActuWorld, le réseau social <span className="gradient-text">préventif</span></>}
             </H2>
             <p className="text-aw-muted mt-4 max-w-2xl mx-auto text-lg">
-              {t("Un écosystème où l'information sourcée prime sur le divertissement, et où les créateurs éducatifs sont valorisés.", "An ecosystem where sourced information comes before entertainment, and educational creators are valued.")}
+              {t("Un espace pour publier, explorer et partager sur tout sujet — avec des sources visibles et un score de confiance qui rend la fiabilité plus claire.", "A space to publish, explore, and share on any topic — with visible sources and a trust score that makes reliability clearer.")}
             </p>
           </motion.div>
         </motion.div>
@@ -284,7 +284,7 @@ export default function AppPage() {
               {isEnglish ? <>What makes us <span className="gradient-text">unique</span></> : <>Ce qui nous rend <span className="gradient-text">uniques</span></>}
             </H2>
             <p className="text-aw-muted mt-4 max-w-2xl mx-auto text-lg">
-              {t("ActuWorld est le ", "ActuWorld is the ")}<strong>{t("seul", "only")}</strong>{t(" réseau social combinant sourcing obligatoire, IA intégrée et système de confiance communautaire.", " social network combining mandatory sourcing, integrated AI, and a community trust system.")}
+              {t("ActuWorld est le ", "ActuWorld is the ")}<strong>{t("seul", "only")}</strong>{t(" réseau social combinant source visible obligatoire, ASV et jugement communautaire.", " social network combining mandatory visible sources, ASV, and community judgment.")}
             </p>
           </div>
         </AnimatedSection>

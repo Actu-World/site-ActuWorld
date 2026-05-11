@@ -127,7 +127,7 @@ export default function NotFoundPage() {
           >
             <p className="text-sm text-aw-muted">
               <span className="text-aw-primary font-semibold">{t("Le saviez-vous ?", "Did you know?")}</span>{" "}
-              {t("Sur ActuWorld, chaque information est sourcée et vérifiable. Pas de fake news, même pour les pages 404 !", "On ActuWorld, every piece of information is sourced and verifiable. No fake news, even on 404 pages!")}
+              {t("Sur ActuWorld, chaque publication s'appuie sur une source visible. Même nos pages 404 sont transparentes !", "On ActuWorld, every post is backed by a visible source. Even our 404 pages are transparent!")}
             </p>
           </motion.div>
         </motion.div>

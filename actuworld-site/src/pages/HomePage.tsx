@@ -38,30 +38,30 @@ export default function HomePage() {
     {
       icon: AlertTriangle,
       title: t("Information noyée dans le buzz", "Information drowned in hype"),
-      desc: t("Les algorithmes privilégient l'engagement émotionnel et la viralité. L'information éducative est invisible face au clickbait et aux tendances.", "Algorithms prioritize emotional engagement and virality. Educational information becomes invisible against clickbait and trends.")
+      desc: t("Les algorithmes privilégient l'engagement émotionnel et la viralité. Les contenus de qualité sont invisibles face au clickbait et aux tendances.", "Algorithms prioritize emotional engagement and virality. Quality content becomes invisible against clickbait and trends.")
     },
     {
       icon: Search,
       title: t("Absence de sourcage", "Lack of sourcing"),
-      desc: t("Aucune vérification des sources. N'importe qui peut affirmer n'importe quoi. Les fact-checkers arrivent trop tard, après la propagation virale.", "No source verification. Anyone can claim anything. Fact-checkers arrive too late, after viral spread.")
+      desc: t("N'importe qui peut affirmer n'importe quoi sans preuve. Aucune plateforme n'exige de montrer ses sources avant de publier.", "Anyone can claim anything without proof. No platform requires showing sources before publishing.")
     },
     {
       icon: TrendingDown,
-      title: t("Désinformation incontrôlée", "Unchecked misinformation"),
-      desc: t("Sans transparence sur les sources, la désinformation se propage rapidement. Les utilisateurs ne savent plus en qui faire confiance.", "Without source transparency, misinformation spreads rapidly. Users no longer know whom to trust.")
+      title: t("Contenus sans preuves", "Content without proof"),
+      desc: t("Sans transparence sur les sources, impossible de savoir ce qui mérite confiance. Les utilisateurs naviguent à l'aveugle.", "Without source transparency, it's impossible to know what deserves trust. Users are navigating blind.")
     },
     {
       icon: Users,
       title: t("Perte de confiance", "Loss of trust"),
-      desc: t("73% des jeunes cherchent une alternative éthique. Ils veulent une plateforme basée sur la vérification et l'éducation, pas sur la manipulation.", "73% of young people are looking for an ethical alternative. They want a platform built on verification and education, not manipulation.")
+      desc: t("73% des jeunes cherchent une alternative plus claire. Ils veulent un espace où la preuve précède la publication.", "73% of young people want a clearer alternative. They want a space where proof comes before publishing.")
     }
   ];
 
   return (
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
       <PageMeta
-        title={t("ActuWorld — L'information vérifiée par tous, accessible à tous", "ActuWorld — Verified information by everyone, for everyone")}
-        description={t("Le réseau social de l'information fiable où chaque publication est sourcée. Accédez à une information claire et valorisez les créateurs de qualité.", "The social network for reliable information where every publication is sourced. Access clear information and support high-quality creators.")}
+        title={t("ActuWorld — Partage ce qui t'intéresse. Prouve pourquoi c'est fiable.", "ActuWorld — Share what matters to you. Show why it's reliable.")}
+        description={t("ActuWorld est un réseau social préventif de partage d'informations fiables sur tout sujet, selon les passions et les intérêts de chacun. Source visible, ASV et jugement communautaire.", "ActuWorld is a preventive social network for sharing reliable information on any topic, based on your passions and interests. Visible sources, ASV and community trust.")}
         path="/"
       />
       {/* HERO */}
@@ -102,19 +102,20 @@ export default function HomePage() {
               variants={fadeInUp}
               className="hero-title text-4xl md:text-6xl font-bold leading-tight"
             >
-              <span className="text-aw-text">{t("L'information fiable", "Reliable information")}</span>
+              <span className="text-aw-text">{t("Partage ce qui t'intéresse.", "Share what matters to you.")}</span>
               <br />
-              <span className="gradient-text">{t("enfin mise en avant", "finally put first")}</span>
+              <span className="gradient-text">{t("Prouve pourquoi c'est fiable.", "Show why it's reliable.")}</span>
             </motion.h1>
 
             <motion.p
               variants={fadeInUp}
               className="mt-8 text-aw-muted text-lg md:text-xl max-w-2xl mx-auto leading-relaxed"
             >
-              {t("ActuWorld réinvente la façon dont nous nous informons. Sur cette plateforme, ", "ActuWorld is reinventing how we stay informed. On this platform, ")}
-              <strong className="text-aw-text"> {t("chaque contenu est sourcé et évalué par la communauté", "every piece of content is sourced and reviewed by the community")}</strong>. 
-              {t("Fini le buzz sans fondement. Bienvenue dans le réseau social de l'intelligence collective, où ", "No more baseless buzz. Welcome to the social network of collective intelligence, where ")}
-              <strong className="text-aw-text">{t("la qualité prime sur la viralité", "quality comes before virality")}</strong>.
+              {t("ActuWorld est un réseau social préventif de partage d'informations fiables sur tout sujet, selon ", "ActuWorld is a preventive social network for sharing reliable information on any topic, based on ")}
+              <strong className="text-aw-text">{t("tes passions et tes intérêts", "your passions and interests")}</strong>.{" "}
+              {t("Chaque publication s'appuie sur une source visible, vérifiée par ", "Every post is backed by a visible source, verified by ")}
+              <strong className="text-aw-text">ASV (ActuWorld Source Verification)</strong>
+              {t(", puis éclairée par un jugement communautaire.", ", then enhanced by community judgment.")}
             </motion.p>
 
             <motion.div
@@ -161,10 +162,10 @@ export default function HomePage() {
         <AnimatedSection>
           <div className="text-center mb-16">
             <H2 kicker="Le constat" center>
-              {isEnglish ? <>Today's social networks <span className="gradient-text">prioritize entertainment</span></> : <>Les réseaux sociaux d'aujourd'hui <span className="gradient-text">privilégient le divertissement</span></>}
+              {isEnglish ? <>Today's social networks <span className="gradient-text">don't ask for proof</span></> : <>Les réseaux sociaux d'aujourd'hui <span className="gradient-text">ne demandent aucune preuve</span></>}
             </H2>
             <p className="text-aw-muted mt-4 max-w-2xl mx-auto text-lg">
-              {t("La majorité des plateformes optimisent pour l'engagement émotionnel. L'information fiable se noie dans un flux constant. Résultat : désinformation, perte de confiance, et créateurs éducatifs marginalisés.", "Most platforms optimize for emotional engagement. Reliable information is drowned in a constant stream. Result: misinformation, loss of trust, and marginalized educational creators.")}
+              {t("La majorité des plateformes optimisent pour l'engagement émotionnel. Personne ne demande d'où vient l'info. Résultat : confusion, perte de confiance, et créateurs sérieux marginalisés.", "Most platforms optimize for emotional engagement. Nobody asks where the info comes from. Result: confusion, loss of trust, and serious creators marginalized.")}
             </p>
           </div>
         </AnimatedSection>
@@ -197,8 +198,8 @@ export default function HomePage() {
         <AnimatedSection delay={0.3} className="mt-12 text-center">
           <p className="text-lg text-aw-muted">
             <strong className="text-aw-text">ActuWorld</strong> {t("naît d'un constat simple : il est temps de ", "is built on a simple observation: it's time to ")}
-            <span className="text-aw-primary font-semibold highlight-text"> {t("rendre l'information utile, claire et formatrice", "make information useful, clear, and educational")}</span>. 
-            {t("Un réseau basé sur l'", "A network based on ")}<strong className="text-aw-text">{t("intelligence collective", "collective intelligence")}</strong>{t(", où la communauté valide la fiabilité des contenus.", ", where the community validates content reliability.")}
+            <span className="text-aw-primary font-semibold highlight-text">{t("donner à chacun les outils pour publier, explorer et partager avec preuves", "give everyone the tools to publish, explore, and share with proof")}</span>.{" "}
+            {t("Un réseau où ", "A network where ")}<strong className="text-aw-text">{t("tes sources parlent pour toi", "your sources speak for you")}</strong>.
           </p>
         </AnimatedSection>
       </Section>
@@ -219,14 +220,14 @@ export default function HomePage() {
         >
           <motion.div variants={scaleUp}>
             <H2 kicker="Notre vision" center>
-              {isEnglish ? <>Building the future of <span className="gradient-text">educational information</span></> : <>Bâtir l'avenir de l'<span className="gradient-text">information éducative</span></>}
+              {isEnglish ? <>A space to share <span className="gradient-text">with clarity</span></> : <>Un espace pour partager <span className="gradient-text">avec clarté</span></>}
             </H2>
             <p className="text-aw-muted mt-6 text-lg leading-relaxed">
-              {t("Une plateforme où les utilisateurs créent et consultent des ", "A platform where users create and consult ")}<strong className="text-aw-text">{t("posts détaillés, articles et vidéos éducatives", "detailed posts, articles, and educational videos")}</strong>{t(" sur des sujets variés : actualité, culture, science, environnement…", " on a wide range of topics: news, culture, science, environment...")}
+              {t("Publie des ", "Publish ")}<strong className="text-aw-text">{t("posts, articles et vidéos", "posts, articles, and videos")}</strong>{t(" sur tout ce qui te passionne : culture, sport, sciences, société, tech, environnement, actualité locale…", " about anything you're passionate about: culture, sports, science, society, tech, environment, local news...")}
               <br /><br />
-              {t("Chaque contenu est ", "Every piece of content is ")}<strong className="text-aw-text">{t("sourcé", "sourced")}</strong>{t(" et évalué par un score de fiabilité. ", " and evaluated through a reliability score. ")}
-              {t("Un ", "A ")}<strong className="text-aw-text">{t("parcours de contributeur", "contributor pathway")}</strong>{t(" (Explorateur → Navigateur → Pionnier) valorise les créateurs sérieux. Et ", " (Explorer → Navigator → Pioneer) rewards serious creators. And ")}
-              <strong className="text-aw-text">ASV</strong>, {t("notre outil de vérification automatique, analyse les sources, les note, et détecte le ", "our automatic verification tool, analyzes sources, rates them, and detects ")}<Tooltip text={t("Le cherry-picking consiste à sélectionner uniquement les données ou faits qui soutiennent son argument, en ignorant ceux qui le contredisent.", "Cherry-picking means selecting only data or facts that support an argument while ignoring contradictory evidence.")}>cherry-picking</Tooltip>{t(" pour une transparence maximale.", " for maximum transparency.")}
+              {t("Chaque publication s'appuie sur une ", "Every post is backed by a ")}<strong className="text-aw-text">{t("source visible", "visible source")}</strong>{t(", vérifiée par ", ", verified by ")}
+              <strong className="text-aw-text">ASV (ActuWorld Source Verification)</strong>{t(" qui vérifie la cohérence entre la source et le contenu, et détecte le ", " which checks source-content consistency and detects ")}<Tooltip text={t("Le cherry-picking consiste à sélectionner uniquement les données ou faits qui soutiennent son argument, en ignorant ceux qui le contredisent.", "Cherry-picking means selecting only data or facts that support an argument while ignoring contradictory evidence.")}>cherry-picking</Tooltip>.{" "}
+              {t("Un ", "A ")}<strong className="text-aw-text">{t("parcours de contributeur", "contributor pathway")}</strong>{t(" (Explorateur → Navigateur → Pionnier) valorise ceux qui publient avec rigueur.", " (Explorer → Navigator → Pioneer) rewards those who publish with rigor.")}
             </p>
             <motion.p
               className="text-aw-primary mt-6 body-semi text-lg"
@@ -235,7 +236,7 @@ export default function HomePage() {
               }}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              {t("Lutter contre la désinformation par l'éducation et l'intelligence collective.", "Fighting misinformation through education and collective intelligence.")}
+              {t("ActuWorld ne dit pas quoi penser. Il donne les outils pour chercher, juger et montrer ce qui mérite confiance.", "ActuWorld doesn't tell you what to think. It gives you the tools to search, judge, and show what deserves trust.")}
             </motion.p>
           </motion.div>
 
@@ -259,8 +260,8 @@ export default function HomePage() {
             </h3>
             <p className="text-aw-muted leading-relaxed">
               {t(
-                "Quand je lisais des informations, j'avais toujours ce doute: est-ce que tout ce qui est dit est vrai ? Il manquait ce petit outil qui permette de prendre du recul, de faire une vraie auto-critique avant de croire ou de partager. ActuWorld est né de ce besoin.",
-                "When I read information, I always had that doubt: is everything being said really true? I was missing a simple tool to step back and self-check before believing or sharing. ActuWorld was born from that need."
+                "Quand je lisais des informations, j'avais toujours ce doute : est-ce que c'est fiable ? Il manquait un endroit où l'on puisse partager ce qui nous intéresse tout en montrant d'où ça vient. Un espace où vérifier avant de croire devient naturel. ActuWorld est né de ce besoin.",
+                "When I read information, I always had that doubt: is this reliable? I was missing a place where you could share what interests you while showing where it comes from. A space where verifying before believing becomes natural. ActuWorld was born from that need."
               )}
             </p>
             <div className="mt-6">

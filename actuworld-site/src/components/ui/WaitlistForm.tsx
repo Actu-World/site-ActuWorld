@@ -109,9 +109,9 @@ export const WaitlistForm = ({ variant = "card", className = "" }: WaitlistFormP
         >
           <Mail className="w-7 h-7 text-aw-primary" />
         </motion.div>
-        <h3 className="text-xl font-bold mb-2">{t("Rejoignez la communauté", "Join the community")}</h3>
+        <h3 className="text-xl font-bold mb-2">{t("Rejoins la communauté", "Join the community")}</h3>
         <p className="text-aw-muted text-sm">
-          {t("Soyez parmi les premiers à explorer ActuWorld et à faire partie de la révolution de l'information.", "Be among the first to explore ActuWorld and be part of the information revolution.")}
+          {t("Sois parmi les premiers à publier, explorer et partager avec preuves sur ActuWorld.", "Be among the first to publish, explore, and share with proof on ActuWorld.")}
         </p>
       </div>
 

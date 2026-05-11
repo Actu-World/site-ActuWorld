@@ -26,7 +26,7 @@ export default function ActuWorldLanding() {
     {
       icon: AlertTriangle,
       title: "Information noyée dans le buzz",
-      desc: "Les algorithmes actuels optimisent pour l'engagement émotionnel, pas la qualité. Les contenus éducatifs sont invisibles face au clickbait."
+      desc: "Les algorithmes actuels optimisent pour l'engagement émotionnel, pas la qualité. Les contenus sourcés et rigoureux sont invisibles face au clickbait."
     },
     {
       icon: Search,
@@ -36,7 +36,7 @@ export default function ActuWorldLanding() {
     {
       icon: TrendingDown,
       title: "Créateurs mal rémunérés",
-      desc: "Les créateurs éducatifs investissent des dizaines d'heures mais gagnent moins que les créateurs de divertissement superficiel."
+      desc: "Les créateurs qui sourcent et approfondissent investissent des dizaines d'heures mais gagnent moins que les créateurs de divertissement superficiel."
     },
     {
       icon: Users,
@@ -49,7 +49,7 @@ export default function ActuWorldLanding() {
     { icon: FileText, title: "Sourcing obligatoire", desc: "Impossible de publier sans indiquer ses sources. Chaque affirmation doit être vérifiable." },
     { icon: ThumbsUp, title: "Confiance communautaire", desc: "La communauté vote sur la qualité et fiabilité des posts. Système de score de confiance." },
     { icon: BookOpen, title: "Catégorisation thématique", desc: "Sciences, Histoire, Tech, Santé, Économie... Trouvez facilement ce qui vous intéresse." },
-    { icon: Video, title: "RECO-SRC intégré", desc: "Notre IA extrait automatiquement les sources citées dans les vidéos uploadées." },
+    { icon: Video, title: "ASV intégré", desc: "ASV (ActuWorld Source Verification) vérifie la cohérence entre tes sources et ton contenu." },
     { icon: Unlock, title: "100% gratuit en lecture", desc: "Aucun paywall pour accéder au contenu. Le savoir doit rester accessible à tous." },
   ];
 
@@ -63,21 +63,21 @@ export default function ActuWorldLanding() {
   const differentiators = [
     { icon: Unlock, title: "Gratuit pour tous", desc: "Lire, apprendre et s'informer sans jamais payer. Aucun abonnement requis pour accéder aux contenus et aux sources." },
     { icon: Sparkles, title: "IA intégrée", desc: "Notre IA ASV vérifie les sources de vos textes et vidéos, analyse leur fiabilité et évalue les sources." },
-    { icon: Users, title: "Validé par la communauté", desc: "Les utilisateurs évaluent le contenu. Et permet de contribuer à partager la vérité" },
+    { icon: Users, title: "Validé par la communauté", desc: "Les utilisateurs évaluent chaque contenu. Un score de confiance visible rend la fiabilité plus claire pour tous." },
     { icon: Heart, title: "Monétisation éthique", desc: "Les créateurs sont rémunérés par les dons et abonnements de leur audience. Pas de publicité intrusive, pas d'algorithme poubelle" },
   ];
 
   const pricing = [
     { icon: Star, title: "Lecteur", price: "0€", desc: "Pour toujours", points: ["Lecture illimitée", "Accès à toutes les sources", "Votes communautaires", "Suivre des créateurs"] },
-    { icon: LineChart, title: "Créateur", price: "0€", desc: "Gratuit pour publier", points: ["Publication sourcée", "RECO-SRC (5 vidéos/mois)", "Recevoir des dons", "Statistiques basiques"] },
+    { icon: LineChart, title: "Créateur", price: "0€", desc: "Gratuit pour publier", points: ["Publication sourcée", "Vérification ASV intégrée", "Recevoir des dons", "Statistiques basiques"] },
     { icon: Megaphone, title: "ASV Pro", price: "Sur devis",desc: "Pour les professionnels de l'info", points: ["ASV", "Intégration sur vos outils", "Adapté aux médias, entreprises et rédactions", "Support dédié"] },
   ];
 
   return (
     <div className="min-h-screen bg-aw-bg text-aw-text">
       <PageMeta
-        title="ActuWorld — Le réseau social de l'information fiable"
-        description="Découvrez comment ActuWorld combat la désinformation avec le sourcing obligatoire, un système de confiance communautaire et l'IA ASV."
+        title="ActuWorld — Le réseau social préventif où tes sources parlent pour toi"
+        description="ActuWorld est un réseau social préventif de partage d'informations fiables sur tout sujet. Source visible obligatoire, ASV (ActuWorld Source Verification) et jugement communautaire."
         path="/actuworld"
       />
 
@@ -95,25 +95,25 @@ export default function ActuWorldLanding() {
             className="text-center max-w-4xl mx-auto"
           >
             <motion.div variants={fadeIn} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-aw-success text-aw-primary text-sm font-semibold mb-6">
-              <Globe2 className="w-4 h-4" /> Réseau social éducatif nouvelle génération
+              <Globe2 className="w-4 h-4" /> Réseau social préventif
             </motion.div>
 
             <motion.h1
               variants={fadeIn}
               className="hero-title text-4xl md:text-6xl font-bold leading-tight"
             >
-              <span className="text-aw-text">L'information vérifiée par tous,</span>
+              <span className="text-aw-text">Partage ce qui t'intéresse.</span>
               <br />
-              <span className="text-aw-primary">accessible à tous</span>
+              <span className="text-aw-primary">Prouve pourquoi c'est fiable.</span>
             </motion.h1>
 
             <motion.p
               variants={fadeIn}
               className="mt-8 text-aw-muted text-lg md:text-xl max-w-2xl mx-auto leading-relaxed"
             >
-              ActuWorld est le <strong className="text-aw-text">réseau social de l'information fiable</strong> où
-              chaque publication doit être sourcée. L'information claire devient enfin visible,
-              et les créateurs de qualité sont valorisés par la communauté.
+              ActuWorld est un <strong className="text-aw-text">réseau social préventif de partage d'informations fiables</strong> sur
+              tout sujet, selon tes passions et tes intérêts. Chaque publication s'appuie sur une source visible,
+              vérifiée par ASV (ActuWorld Source Verification), puis éclairée par un jugement communautaire.
             </motion.p>
 
             <motion.div
@@ -125,7 +125,7 @@ export default function ActuWorldLanding() {
               </a>
               <a href="#reco-src" className="btn-outline group">
                 <Sparkles className="w-5 h-5 mr-2 text-aw-accent" />
-                L'IA RECO-SRC
+                Découvrir ASV
               </a>
             </motion.div>
 
@@ -166,11 +166,11 @@ export default function ActuWorldLanding() {
         >
           <motion.div variants={fadeIn} className="text-center mb-16">
             <H2 kicker="Le constat" center>
-              Les réseaux sociaux actuels ont un <span className="text-aw-accent">problème</span>
+              Les réseaux sociaux actuels ne demandent <span className="text-aw-accent">aucune preuve</span>
             </H2>
             <p className="text-aw-muted mt-4 max-w-2xl mx-auto text-lg">
-              Optimisés pour l'engagement émotionnel et la viralité, ils noient l'information
-              fiable sous le buzz et le clickbait.
+              Optimisés pour l'engagement émotionnel et la viralité, ils laissent n'importe qui publier
+              n'importe quoi sans montrer d'où ça vient.
             </p>
           </motion.div>
 
@@ -194,8 +194,8 @@ export default function ActuWorldLanding() {
 
           <motion.div variants={fadeIn} className="mt-12 text-center">
             <p className="text-lg text-aw-muted">
-              <strong className="text-aw-text">ActuWorld</strong> est né de cette frustration :
-              créer un réseau social qui <span className="text-aw-primary font-semibold">récompense la qualité</span> plutôt que la viralité.
+              <strong className="text-aw-text">ActuWorld</strong> est né d'une conviction :
+              chacun devrait pouvoir <span className="text-aw-primary font-semibold">publier avec intention, pas juste réagir</span>. Un réseau où tes sources parlent pour toi.
             </p>
           </motion.div>
         </motion.div>
@@ -214,11 +214,11 @@ export default function ActuWorldLanding() {
               <Smartphone className="w-4 h-4" /> La Plateforme
             </span>
             <H2 kicker="" center>
-              ActuWorld, le réseau social <span className="text-aw-primary">de l'information fiable</span>
+              ActuWorld, le réseau social <span className="text-aw-primary">préventif</span>
             </H2>
             <p className="text-aw-muted mt-4 max-w-2xl mx-auto text-lg">
-              Un écosystème où l'information sourcée prime sur le divertissement,
-              et où les créateurs éducatifs sont valorisés.
+              Un espace pour partager sur tout sujet — culture, sport, sciences, tech, société — avec des sources visibles
+              et un score de confiance qui rend la fiabilité plus claire.
             </p>
           </motion.div>
 
@@ -382,7 +382,7 @@ export default function ActuWorldLanding() {
         </motion.div>
       </Section>
 
-      {/* RECO-SRC */}
+      {/* ASV */}
       <Section id="reco-src" className="py-24 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#00A896]/5 to-transparent pointer-events-none"></div>
 
@@ -398,11 +398,11 @@ export default function ActuWorldLanding() {
               <Sparkles className="w-4 h-4" /> Intelligence Artificielle
             </span>
             <H2 kicker="" center>
-              RECO-SRC, l'IA de <span className="text-aw-accent">vérification</span>
+              ASV, l'IA de <span className="text-aw-accent">vérification</span>
             </H2>
             <p className="text-aw-muted mt-4 max-w-3xl mx-auto text-lg">
-              ASV analyse vos textes et vidéos, vérifie les sources citées et évalue leur fiabilité.
-              Publiez en confiance, informez en toute transparence.
+              ASV (ActuWorld Source Verification) vérifie si ta source est cohérente avec ton contenu et détecte les détournements de contexte.
+              Publie en confiance, partage en toute transparence.
             </p>
           </motion.div>
 
@@ -418,7 +418,7 @@ export default function ActuWorldLanding() {
                         <Play className="w-8 h-8 text-white ml-1" />
                       </div>
                       <div className="absolute bottom-4 left-4 right-4">
-                        <div className="text-white text-sm font-medium">Vidéo analysée par RECO-SRC</div>
+                        <div className="text-white text-sm font-medium">Vidéo analysée par ASV</div>
                         <div className="text-white/60 text-xs mt-1">Extraction automatique des sources</div>
                       </div>
                     </div>
@@ -452,7 +452,7 @@ export default function ActuWorldLanding() {
                         <span className="text-aw-accent font-bold">~60-70%</span>
                       </div>
                       <div className="text-xs text-aw-muted mt-1">
-                        Objectif : 80%+ sur contenu éducatif français
+                        Objectif : 80%+ sur contenu français
                       </div>
                     </div>
                   </div>
@@ -572,15 +572,15 @@ export default function ActuWorldLanding() {
         >
           <motion.div variants={fadeIn}>
             <H2 kicker="Notre vision" center>
-              Devenir la référence européenne du réseau social éducatif
+              Le réseau social où la preuve commence avant la publication
             </H2>
             <p className="text-aw-muted mt-6 text-lg leading-relaxed">
-              Un espace digital où <strong className="text-aw-text">l'information est vérifiée par tous</strong>,
-              où l'information sourcée et vérifiée est accessible à tous gratuitement,
-              et où les créateurs de contenu de qualité obtiennent la visibilité qu'ils méritent.
+              Un espace pour partager sur <strong className="text-aw-text">tout ce qui te passionne</strong> —
+              culture, sport, sciences, société, tech, environnement, passions personnelles —
+              avec des sources visibles et un score de confiance clair.
             </p>
             <p className="text-aw-primary mt-6 body-semi text-lg">
-              Lutter contre la désinformation par l'éducation, pas la censure.
+              ActuWorld ne dit pas quoi penser. Il donne les outils pour chercher, juger et montrer ce qui mérite confiance.
             </p>
           </motion.div>
         </motion.div>
@@ -600,9 +600,9 @@ export default function ActuWorldLanding() {
 
           <div className="max-w-3xl mx-auto space-y-4">
             {[
-              { q: "Pourquoi le sourcing est-il obligatoire ?", a: "C'est le cœur de notre mission. Chaque affirmation doit pouvoir être vérifiée. Cela combat la désinformation à la source et responsabilise les créateurs." },
+              { q: "Pourquoi le sourcing est-il obligatoire ?", a: "C'est le principe fondateur d'ActuWorld. Avant de publier, tu montres d'où vient ton information. Ça donne du poids à ce que tu partages et de la clarté à ceux qui te lisent." },
               { q: "Comment fonctionne le système de confiance ?", a: "Les utilisateurs votent sur la qualité et fiabilité des posts. Ces votes construisent un score de confiance pour chaque créateur, visible sur leur profil." },
-              { q: "RECO-SRC remplace-t-il les fact-checkers ?", a: "Non, il les aide. RECO-SRC extrait automatiquement les sources citées dans les vidéos, faisant gagner un temps précieux aux vérificateurs humains." },
+              { q: "ASV remplace-t-il les fact-checkers ?", a: "Non. ASV (ActuWorld Source Verification) est un outil qui vérifie automatiquement la cohérence entre les sources citées et le contenu publié. Il aide chacun à juger par soi-même." },
               { q: "Pourquoi la lecture est-elle gratuite ?", a: "L'accès au savoir ne doit pas dépendre du portefeuille. Notre modèle repose sur les créateurs pro, les dons et la publicité éducative ciblée." },
               { q: "Qui peut devenir créateur ?", a: "Tout le monde ! Les nouveaux créateurs passent par une phase de modération, puis accèdent à la publication automatique selon leur score de confiance." },
             ].map((item, i) => (
@@ -633,12 +633,12 @@ export default function ActuWorldLanding() {
           className="relative"
         >
           <motion.div variants={fadeIn} className="max-w-3xl mx-auto text-center">
-            <H2 kicker="Prêt à rejoindre le mouvement ?" center>
-              Construisons ensemble l'information de demain
+            <H2 kicker="Prêt à explorer ?" center>
+              Rejoins l'espace où tes sources parlent pour toi
             </H2>
             <p className="text-aw-muted mt-4 text-lg">
-              Que vous soyez créateur, média, éducateur ou simplement curieux —
-              contactez-nous pour être parmi les premiers à découvrir ActuWorld.
+              Que tu sois passionné, créateur, journaliste ou simplement curieux —
+              contacte-nous pour être parmi les premiers à découvrir ActuWorld.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <a href="mailto:actuworld.app@outlook.fr" className="btn-primary">

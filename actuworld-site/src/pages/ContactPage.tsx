@@ -67,10 +67,10 @@ export default function ContactPage() {
         >
           <motion.div variants={scaleUp}>
             <H2 kicker="Contact" center as="h1">
-              {t("Construisons ensemble l'information de demain", "Let's build tomorrow's information together")}
+              {t("Rejoins l'espace où tes sources parlent pour toi", "Join the space where your sources speak for you")}
             </H2>
             <p className="text-aw-muted mt-4 max-w-2xl mx-auto text-lg">
-              {t("Que vous soyez créateur, média, éducateur ou simplement curieux — contactez-nous pour être parmi les premiers à découvrir ActuWorld.", "Whether you're a creator, media organization, educator, or simply curious — contact us to be among the first to discover ActuWorld.")}
+              {t("Que tu sois passionné, créateur, journaliste ou simplement curieux — contacte-nous pour être parmi les premiers à découvrir ActuWorld.", "Whether you're passionate about a topic, a creator, journalist, or simply curious — contact us to be among the first to discover ActuWorld.")}
             </p>
           </motion.div>
         </motion.div>
@@ -127,9 +127,9 @@ export default function ContactPage() {
             >
               <Globe2 className="w-10 h-10 text-white" />
             </motion.div>
-            <h3 className="text-3xl font-bold mb-4">{t("Rejoignez le mouvement", "Join the movement")}</h3>
+            <h3 className="text-3xl font-bold mb-4">{t("Explore avec nous", "Explore with us")}</h3>
             <p className="text-aw-muted text-lg mb-8">
-              {t("ActuWorld est en développement. Contactez-nous pour être informé du lancement et faire partie des premiers utilisateurs de la plateforme.", "ActuWorld is in development. Contact us to be informed about launch and become one of the first users on the platform.")}
+              {t("ActuWorld est en développement. Contacte-nous pour être informé du lancement et faire partie des premiers à publier, explorer et partager avec preuves.", "ActuWorld is in development. Contact us to get launch updates and be among the first to publish, explore, and share with proof.")}
             </p>
             <a href="mailto:actuworld.app@outlook.fr?subject=Rejoindre la beta ActuWorld" className="btn-primary glow-hover inline-flex items-center">
               <Mail className="w-5 h-5 mr-2" /> {t("Rejoindre la beta", "Join the beta")}

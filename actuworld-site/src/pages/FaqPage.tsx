@@ -20,38 +20,38 @@ export default function FaqPage() {
   const generalFaq = [
     {
       q: t("Pourquoi le sourcing est-il obligatoire ?", "Why is source citation mandatory?"),
-      a: t("C'est le cœur de notre mission. Chaque affirmation doit pouvoir être vérifiée. Cela combat la désinformation à la source et responsabilise les créateurs.", "This is central to our mission. Every claim must be verifiable. It fights misinformation at the source and encourages creator responsibility.")
+      a: t("C'est le principe fondateur d'ActuWorld. Avant de publier, tu montres d'où vient ton information. Ça donne du poids à ce que tu partages et de la clarté à ceux qui te lisent.", "This is ActuWorld's founding principle. Before publishing, you show where your information comes from. It gives weight to what you share and clarity to those who read you.")
     },
     {
       q: t("Comment fonctionne le système de confiance ?", "How does the trust system work?"),
-      a: t("Les utilisateurs votent sur la qualité et fiabilité des posts. Ces votes construisent un score de confiance pour chaque créateur, visible sur leur profil.", "Users vote on post quality and reliability. These votes build a trust score for each creator, visible on their profile.")
+      a: t("Les utilisateurs votent sur la qualité et fiabilité des posts. Ces votes construisent un score de confiance pour chaque créateur, visible sur leur profil. C'est le jugement communautaire qui rend la confiance plus claire.", "Users vote on post quality and reliability. These votes build a trust score for each creator, visible on their profile. It's community judgment that makes trust clearer.")
     },
     {
       q: t("ASV remplace-t-il les fact-checkers ?", "Does ASV replace fact-checkers?"),
-      a: t("Non, ASV est un outil de vérification automatique des sources payant pour les journalistes, particuliers et entreprises. Les fact-checkers peuvent l'utiliser pour gagner du temps dans leurs recherches.", "No. ASV is a paid automatic source verification tool for journalists, individuals, and companies. Fact-checkers can use it to save research time.")
+      a: t("Non. ASV (ActuWorld Source Verification) vérifie automatiquement si la source est cohérente avec le contenu et détecte les détournements de contexte. C'est un outil qui donne à chacun les moyens de juger par soi-même.", "No. ASV (ActuWorld Source Verification) automatically checks if the source is consistent with the content and detects context distortions. It's a tool that empowers everyone to judge for themselves.")
     },
     {
       q: t("Pourquoi la lecture est-elle gratuite ?", "Why is reading free?"),
-      a: t("L'accès au savoir ne doit pas dépendre du portefeuille. Notre modèle repose sur les créateurs pro, les dons et la publicité éducative ciblée.", "Access to knowledge should not depend on income. Our model relies on pro creators, donations, and targeted educational advertising.")
+      a: t("L'accès au savoir ne doit pas dépendre du portefeuille. Notre modèle repose sur les créateurs pro, les dons et la publicité ciblée.", "Access to knowledge should not depend on income. Our model relies on pro creators, donations, and targeted advertising.")
     },
     {
       q: t("Qui peut devenir créateur ?", "Who can become a creator?"),
-      a: t("Tout le monde ! Les nouveaux créateurs passent par une phase de modération, puis accèdent à la publication automatique selon leur score de confiance.", "Anyone. New creators go through a moderation phase, then gain automatic publishing based on their trust score.")
+      a: t("Tout le monde ! Que tu sois passionné de sport, de sciences, de culture ou d'actualité locale, tu peux publier. Les nouveaux créateurs passent par une phase de modération, puis accèdent à la publication automatique selon leur score de confiance.", "Anyone! Whether you're passionate about sports, science, culture, or local news, you can publish. New creators go through a moderation phase, then gain automatic publishing based on their trust score.")
     },
     {
       q: t("Quand ActuWorld sera-t-il disponible ?", "When will ActuWorld be available?"),
-      a: t("Nous finalisons actuellement la bêta fermée. Rejoignez notre liste d'attente pour être parmi les premiers à tester et donner votre avis!", "We are currently finalizing the closed beta. Join our waitlist to be among the first to test and share feedback.")
+      a: t("Nous finalisons actuellement la bêta fermée. Rejoins notre liste d'attente pour être parmi les premiers à tester et donner ton avis !", "We are currently finalizing the closed beta. Join our waitlist to be among the first to test and share feedback!")
     },
     {
       q: t("Comment rejoindre le programme bêta ?", "How can I join the beta program?"),
-      a: t("Consultez la page de contact ou inscrivez-vous à notre liste d'attente. Les bêta-testeurs seront sélectionnés en fonction de leur profil et intérêt pour la mission d'ActuWorld.", "Visit the contact page or sign up for our waitlist. Beta testers are selected based on profile and interest in ActuWorld's mission.")
+      a: t("Consulte la page de contact ou inscris-toi à notre liste d'attente. Les bêta-testeurs sont sélectionnés en fonction de leur profil et de leur intérêt pour ActuWorld.", "Visit the contact page or sign up for our waitlist. Beta testers are selected based on profile and interest in ActuWorld.")
     },
   ];
 
   const recoSrcFaq = [
     {
       q: t("Quelle est la précision de ASV ?", "What is ASV's current accuracy?"),
-      a: t("Actuellement, ASV atteint 60-70% de précision sur le contenu éducatif français. Notre objectif est d'atteindre 80%+ dans les prochains mois.", "Currently, ASV reaches 60-70% accuracy on French educational content. Our goal is to reach 80%+ over the coming months.")
+      a: t("Actuellement, ASV atteint 60-70% de précision sur le contenu français. Notre objectif est d'atteindre 80%+ dans les prochains mois.", "Currently, ASV reaches 60-70% accuracy on French content. Our goal is to reach 80%+ over the coming months.")
     },
     {
       q: t("Quels formats sont supportés ?", "Which formats are supported?"),
@@ -135,7 +135,7 @@ export default function FaqPage() {
               {t("Questions fréquentes", "Frequently asked questions")}
             </H2>
             <p className="text-aw-muted mt-4 max-w-xl mx-auto text-lg">
-              {t("Trouvez les réponses à vos questions sur ActuWorld, ASV et notre mission.", "Find answers to your questions about ActuWorld, ASV, and our mission.")}
+              {t("Trouvez les réponses à vos questions sur ActuWorld, ASV (ActuWorld Source Verification) et notre approche.", "Find answers to your questions about ActuWorld, ASV (ActuWorld Source Verification) and our approach.")}
             </p>
           </motion.div>
         </motion.div>
