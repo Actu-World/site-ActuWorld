@@ -299,7 +299,7 @@ export default function HomePage() {
               <img
                 src="/partners/territoires-media.png"
                 alt="Territoire(s) Média"
-                className="h-12 md:h-16 w-auto object-contain"
+                className="h-12 md:h-16 w-auto object-contain dark:bg-white dark:rounded-lg dark:px-3 dark:py-1"
               />
             </motion.a>
           </div>

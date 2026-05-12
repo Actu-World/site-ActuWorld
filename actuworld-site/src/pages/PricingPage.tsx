@@ -68,7 +68,8 @@ export default function PricingPage() {
       ],
       cta: t("Nous contacter", "Contact us"),
       showBetaNotice: false,
-      featured: true
+      featured: true,
+      mailto: "mailto:actuworld.app@outlook.fr?subject=ASV Pro — Demande d'information"
     },
   ];
 
@@ -169,18 +170,33 @@ export default function PricingPage() {
                   </motion.li>
                 ))}
               </ul>
-              <motion.button
-                className={`w-full py-3 px-4 rounded-xl font-semibold transition-colors ${
-                  p.featured
-                    ? 'bg-aw-primary text-on-primary hover:bg-aw-primary/90'
-                    : 'bg-aw-surface border border-aw text-aw-text hover:bg-aw-success'
-                }`}
-                onClick={p.showBetaNotice ? showBetaNotice : undefined}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                {p.cta}
-              </motion.button>
+              {p.mailto ? (
+                <motion.a
+                  href={p.mailto}
+                  className={`w-full py-3 px-4 rounded-xl font-semibold transition-colors block text-center ${
+                    p.featured
+                      ? 'bg-aw-primary text-on-primary hover:bg-aw-primary/90'
+                      : 'bg-aw-surface border border-aw text-aw-text hover:bg-aw-success'
+                  }`}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {p.cta}
+                </motion.a>
+              ) : (
+                <motion.button
+                  className={`w-full py-3 px-4 rounded-xl font-semibold transition-colors ${
+                    p.featured
+                      ? 'bg-aw-primary text-on-primary hover:bg-aw-primary/90'
+                      : 'bg-aw-surface border border-aw text-aw-text hover:bg-aw-success'
+                  }`}
+                  onClick={p.showBetaNotice ? showBetaNotice : undefined}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {p.cta}
+                </motion.button>
+              )}
             </motion.div>
           ))}
         </motion.div>
