@@ -15,13 +15,16 @@ const LanguageContext = createContext<LanguageContextValue | null>(null);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>(() => {
-    const storedLanguage = localStorage.getItem(STORAGE_KEY);
-    if (storedLanguage === 'fr' || storedLanguage === 'en') {
-      return storedLanguage;
+    if (typeof window !== 'undefined') {
+      const storedLanguage = localStorage.getItem(STORAGE_KEY);
+      if (storedLanguage === 'fr' || storedLanguage === 'en') {
+        return storedLanguage;
+      }
     }
 
-    const browserLanguage = navigator.language.toLowerCase();
-    return browserLanguage.startsWith('fr') ? 'fr' : 'en';
+    // Site francophone (.fr) : français par défaut.
+    // L'anglais reste disponible via le sélecteur FR/EN.
+    return 'fr';
   });
 
   useEffect(() => {
