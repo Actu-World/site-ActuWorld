@@ -21,6 +21,7 @@ const TermsPage = lazy(() => import('./pages/TermsPage'));
 const PressPage = lazy(() => import('./pages/PressPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const LegalNoticePage = lazy(() => import('./pages/LegalNoticePage'));
+const PartnersPage = lazy(() => import('./pages/PartnersPage'));
 
 // Scroll to top on route change
 function ScrollToTop() {
@@ -70,6 +71,7 @@ export default function App() {
             <Route path="/press" element={<PressPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/mentions-legales" element={<LegalNoticePage />} />
+            <Route path="/partenaires" element={<PartnersPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </AnimatePresence>

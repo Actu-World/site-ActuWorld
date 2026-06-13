@@ -21,6 +21,7 @@ export const Footer: React.FC = () => {
             <Link to="/app" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'App' : "L'App"}</Link>
             <Link to="/reco-src" className="text-aw-muted hover:text-aw-primary transition-colors">ASV</Link>
             <Link to="/faq" className="text-aw-muted hover:text-aw-primary transition-colors">FAQ</Link>
+            <Link to="/partenaires" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'Partners' : 'Partenaires'}</Link>
             <Link to="/contact" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'Contact' : 'Contact'}</Link>
           </nav>
 

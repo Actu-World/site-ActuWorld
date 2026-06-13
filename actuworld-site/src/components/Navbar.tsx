@@ -24,6 +24,7 @@ export const Navbar: React.FC = () => {
     { href: "/app", label: isEnglish ? "App" : "L'App" },
     { href: "/reco-src", label: "ASV" },
     { href: "/faq", label: "FAQ" },
+    { href: "/partenaires", label: isEnglish ? "Partners" : "Partenaires" },
   ];
 
   const isActive = (path: string) => location.pathname === path;

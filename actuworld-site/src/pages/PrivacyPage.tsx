@@ -96,8 +96,8 @@ export default function PrivacyPage() {
               </h2>
               <p>
                 {t(
-                  "Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, de suppression et de portabilité de vos données. Pour toute demande, contactez-nous à contact@actuworld.fr.",
-                  "Under GDPR, you have the right to access, rectify, delete and port your data. For any request, contact us at contact@actuworld.fr."
+                  "Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, de suppression et de portabilité de vos données. Pour toute demande, contactez-nous à actuworld.app@outlook.fr.",
+                  "Under GDPR, you have the right to access, rectify, delete and port your data. For any request, contact us at actuworld.app@outlook.fr."
                 )}
               </p>
             </section>
@@ -108,8 +108,8 @@ export default function PrivacyPage() {
               </h2>
               <p>
                 {t(
-                  "Pour toute question relative à la confidentialité, écrivez-nous à contact@actuworld.fr.",
-                  "For any privacy-related questions, write to us at contact@actuworld.fr."
+                  "Pour toute question relative à la confidentialité, écrivez-nous à actuworld.app@outlook.fr.",
+                  "For any privacy-related questions, write to us at actuworld.app@outlook.fr."
                 )}
               </p>
             </section>

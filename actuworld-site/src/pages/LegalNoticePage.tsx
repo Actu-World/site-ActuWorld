@@ -46,7 +46,7 @@ export default function LegalNoticePage() {
                 <br />
                 {t("SIRET : ", "Company ID: ")}<strong>[À COMPLÉTER — n° SIRET si immatriculé]</strong>
                 <br />
-                {t("E-mail : ", "Email: ")}contact@actuworld.fr
+                {t("E-mail : ", "Email: ")}actuworld.app@outlook.fr
               </p>
             </section>
 
@@ -104,8 +104,8 @@ export default function LegalNoticePage() {
               </h2>
               <p>
                 {t(
-                  "Pour toute question concernant ces mentions légales, écrivez-nous à contact@actuworld.fr.",
-                  "For any question regarding this legal notice, write to us at contact@actuworld.fr."
+                  "Pour toute question concernant ces mentions légales, écrivez-nous à actuworld.app@outlook.fr.",
+                  "For any question regarding this legal notice, write to us at actuworld.app@outlook.fr."
                 )}
               </p>
             </section>

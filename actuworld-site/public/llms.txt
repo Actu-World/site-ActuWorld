@@ -1,16 +1,24 @@
 # ActuWorld
-> Réseau social éducatif de l'information vérifiée
+> Réseau social préventif de partage d'informations fiables, sur tout sujet.
 
 ## Description
-ActuWorld est une plateforme où chaque publication est sourcée et évaluée par la communauté. Intègre ASV (Automatic Source Verification) pour détecter le cherry-picking.
+ActuWorld est une plateforme où chaque publication s'appuie sur une source visible, vérifiée par ASV (ActuWorld Source Verification) qui contrôle la cohérence entre la source et le contenu et détecte le cherry-picking, puis éclairée par un jugement communautaire. La lecture est gratuite.
 
 ## Pages principales
 - Accueil : https://www.actuworld.fr/
-- Plateforme : https://www.actuworld.fr/app
-- ASV : https://www.actuworld.fr/reco-src
-- Tarifs : https://www.actuworld.fr/pricing
+- À propos / Mission : https://www.actuworld.fr/about
+- La plateforme (App) : https://www.actuworld.fr/app
+- ASV (vérification des sources) : https://www.actuworld.fr/reco-src
 - FAQ : https://www.actuworld.fr/faq
+- Partenaires : https://www.actuworld.fr/partenaires
 - Contact : https://www.actuworld.fr/contact
-- Confidentialité : https://www.actuworld.fr/privacy
-- Conditions : https://www.actuworld.fr/terms
 - Presse : https://www.actuworld.fr/press
+
+## Mentions légales
+- Confidentialité : https://www.actuworld.fr/privacy
+- Conditions d'utilisation : https://www.actuworld.fr/terms
+- Mentions légales : https://www.actuworld.fr/mentions-legales
+
+## Contact
+- E-mail : actuworld.app@outlook.fr
+- Instagram : https://instagram.com/actuworld_fr

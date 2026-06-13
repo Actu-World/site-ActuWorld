@@ -5,11 +5,11 @@ import PuppeteerRenderer from '@prerenderer/renderer-puppeteer'
 
 // https://vite.dev/config/
 export default defineConfig(() => {
-  const isVercel = Boolean(process.env.VERCEL || process.env.VERCEL_ENV)
-  const isCi = Boolean(process.env.CI && process.env.CI !== 'false')
-  const enablePrerender = process.env.ENABLE_PRERENDER === 'true'
-
-  const shouldPrerender = enablePrerender || (!isVercel && !isCi)
+  // Pré-rendu activé par défaut sur tous les builds de production (y compris Vercel)
+  // afin que le HTML servi contienne le contenu et les balises SEO de chaque page.
+  // Porte de sortie : si l'environnement de build n'a pas accès à Chrome/Chromium,
+  // définir DISABLE_PRERENDER=true pour livrer la SPA sans pré-rendu.
+  const shouldPrerender = process.env.DISABLE_PRERENDER !== 'true'
 
   return {
     plugins: [react()],
@@ -18,7 +18,7 @@ export default defineConfig(() => {
         plugins: shouldPrerender
           ? [
               prerender({
-                routes: ['/', '/about', '/app', '/reco-src', '/faq', '/contact', '/pricing', '/privacy', '/terms', '/mentions-legales', '/press'],
+                routes: ['/', '/about', '/app', '/reco-src', '/faq', '/partenaires', '/contact', '/pricing', '/privacy', '/terms', '/mentions-legales', '/press'],
                 renderer: new PuppeteerRenderer({
                   renderAfterTime: 3000,
                 }),

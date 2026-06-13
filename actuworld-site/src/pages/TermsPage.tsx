@@ -120,8 +120,8 @@ export default function TermsPage() {
               </h2>
               <p>
                 {t(
-                  "Pour toute question relative aux conditions d'utilisation, contactez-nous à contact@actuworld.fr.",
-                  "For any questions about these terms, contact us at contact@actuworld.fr."
+                  "Pour toute question relative aux conditions d'utilisation, contactez-nous à actuworld.app@outlook.fr.",
+                  "For any questions about these terms, contact us at actuworld.app@outlook.fr."
                 )}
               </p>
             </section>

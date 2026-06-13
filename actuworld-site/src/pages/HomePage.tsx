@@ -63,7 +63,7 @@ export default function HomePage() {
   return (
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
       <PageMeta
-        title={t("ActuWorld — Partage ce qui t'intéresse. Prouve pourquoi c'est fiable.", "ActuWorld — Share what matters to you. Show why it's reliable.")}
+        title={t("Partage ce qui t'intéresse. Prouve pourquoi c'est fiable.", "Share what matters to you. Show why it's reliable.")}
         description={t("ActuWorld est un réseau social préventif de partage d'informations fiables sur tout sujet, selon les passions et les intérêts de chacun. Source visible, ASV et jugement communautaire.", "ActuWorld is a preventive social network for sharing reliable information on any topic, based on your passions and interests. Visible sources, ASV and community trust.")}
         path="/"
       />
@@ -359,6 +359,12 @@ export default function HomePage() {
                 className="h-9 md:h-11 w-auto object-contain dark:bg-white dark:rounded-md dark:px-2 dark:py-1"
               />
             </motion.a>
+          </div>
+          <div className="mt-8">
+            <Link to="/partenaires" className="link-underline text-aw-primary font-semibold inline-flex items-center gap-1">
+              {t("Devenir partenaire ou nous soutenir", "Become a partner or support us")}
+              <ChevronRight className="w-4 h-4" />
+            </Link>
           </div>
         </AnimatedSection>
       </Section>

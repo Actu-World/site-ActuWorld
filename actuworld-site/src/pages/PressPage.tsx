@@ -96,7 +96,7 @@ export default function PressPage() {
                 )}
               </p>
               <p className="mt-3 font-medium text-aw-primary">
-                contact@actuworld.fr
+                actuworld.app@outlook.fr
               </p>
             </section>
           </div>
