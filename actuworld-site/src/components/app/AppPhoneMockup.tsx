@@ -4,7 +4,7 @@ import {
   Bell, MessageCircle, Star, Clock,
   MoreHorizontal, MoreVertical, Home, Newspaper, PlusCircle, Search, Globe2,
 } from "lucide-react";
-import phoneImg from "../../assets/phone_img_normalized.jpg";
+import phoneImg from "../../assets/phone_img_opt.webp";
 import { useLanguage } from "../../i18n/LanguageContext";
 
 /* Mini bouclier de vérification (score + étoiles) */

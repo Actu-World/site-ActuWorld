@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { MoreHorizontal, Clock, Star, ChevronLeft } from "lucide-react";
-import phoneImg from "../../assets/phone_img_normalized.jpg";
+import phoneImg from "../../assets/phone_img_opt.webp";
 import { useLanguage } from "../../i18n/LanguageContext";
 
 /**

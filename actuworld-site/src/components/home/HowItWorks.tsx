@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
 import { Link2, ShieldCheck, Star, Users, CheckCircle2, AlertCircle } from "lucide-react";
-import phoneImg from "../../assets/phone_img_normalized.jpg";
+import phoneImg from "../../assets/phone_img_opt.webp";
 import { Section } from "../Section";
 import { H2 } from "../H2";
 import { SectionKicker } from "./SectionKicker";

@@ -5,7 +5,7 @@ import {
   ChevronRight, FileText, Unlock, ThumbsUp, Sparkles,
   AlertTriangle, Search, TrendingDown, Users, Quote
 } from "lucide-react";
-import founderImg from "../assets/max-image.jpg";
+import founderImg from "../assets/max-image-opt.webp";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
 import { PageMeta } from "../components/PageMeta";
@@ -292,8 +292,9 @@ export default function HomePage() {
                 src={founderImg}
                 alt={t("Maxence Allier, fondateur d'ActuWorld", "Maxence Allier, founder of ActuWorld")}
                 className="relative rounded-[1.75rem] w-full aspect-[3/4] object-cover object-top border border-aw shadow-2xl"
-                width={539}
-                height={808}
+                loading="lazy"
+                width={650}
+                height={975}
               />
               {/* Badge fondateur */}
               <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap glass-enhanced border border-aw rounded-full px-4 py-1.5 text-sm font-semibold text-aw-text shadow-lg">
