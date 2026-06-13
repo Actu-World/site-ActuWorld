@@ -6,6 +6,7 @@ import { Footer } from './components/Footer';
 import { PageLoader } from './components/ui/PageLoader';
 import { ScrollProgress } from './components/ui/ScrollProgress';
 import { BackToTop } from './components/ui/BackToTop';
+import { CookieBanner } from './components/ui/CookieBanner';
 import { useGoogleAnalytics } from './hooks/useGoogleAnalytics';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -18,6 +19,8 @@ const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
 const PressPage = lazy(() => import('./pages/PressPage'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const LegalNoticePage = lazy(() => import('./pages/LegalNoticePage'));
 
 // Scroll to top on route change
 function ScrollToTop() {
@@ -65,6 +68,8 @@ export default function App() {
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/press" element={<PressPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/mentions-legales" element={<LegalNoticePage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </AnimatePresence>
@@ -72,6 +77,7 @@ export default function App() {
       </main>
       <Footer />
       <BackToTop />
+      <CookieBanner />
     </>
   );
 }

@@ -18,7 +18,7 @@ export default defineConfig(() => {
         plugins: shouldPrerender
           ? [
               prerender({
-                routes: ['/', '/app', '/pricing', '/faq', '/reco-src', '/contact', '/privacy', '/terms', '/press'],
+                routes: ['/', '/about', '/app', '/reco-src', '/faq', '/contact', '/pricing', '/privacy', '/terms', '/mentions-legales', '/press'],
                 renderer: new PuppeteerRenderer({
                   renderAfterTime: 3000,
                 }),

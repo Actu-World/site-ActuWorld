@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 import { useRef } from "react";
 import {
   ChevronRight, FileText, Unlock, ThumbsUp, Sparkles,
-  AlertTriangle, Search, TrendingDown, Users
+  AlertTriangle, Search, TrendingDown, Users, Quote
 } from "lucide-react";
+import founderImg from "../assets/max-image.jpg";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
 import { PageMeta } from "../components/PageMeta";
@@ -14,11 +15,13 @@ import {
   Parallax,
   Floating,
   staggerContainer,
-  fadeInUp,
-  scaleUp
+  fadeInUp
 } from "../components/animations";
 import { WaitlistForm } from "../components/ui/WaitlistForm";
 import { Tooltip } from "../components/ui/Tooltip";
+import { HeroPostCard } from "../components/home/HeroPostCard";
+import { SectionKicker } from "../components/home/SectionKicker";
+import { HowItWorks } from "../components/home/HowItWorks";
 import { useLanguage } from "../i18n/LanguageContext";
 
 export default function HomePage() {
@@ -92,76 +95,100 @@ export default function HomePage() {
           style={{ y: heroY, opacity: heroOpacity }}
           className="max-w-7xl mx-auto container-px relative"
         >
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={staggerContainer}
-            className="text-center max-w-4xl mx-auto"
-          >
-<motion.h1
-              variants={fadeInUp}
-              className="hero-title text-4xl md:text-6xl font-bold leading-tight"
-            >
-              <span className="text-aw-text">{t("Partage ce qui t'intéresse.", "Share what matters to you.")}</span>
-              <br />
-              <span className="gradient-text">{t("Prouve pourquoi c'est fiable.", "Show why it's reliable.")}</span>
-            </motion.h1>
-
-            <motion.p
-              variants={fadeInUp}
-              className="mt-8 text-aw-muted text-lg md:text-xl max-w-2xl mx-auto leading-relaxed"
-            >
-              {t("ActuWorld est un réseau social préventif de partage d'informations fiables sur tout sujet, selon ", "ActuWorld is a preventive social network for sharing reliable information on any topic, based on ")}
-              <strong className="text-aw-text">{t("tes passions et tes intérêts", "your passions and interests")}</strong>.{" "}
-              {t("Chaque publication s'appuie sur une source visible, vérifiée par ", "Every post is backed by a visible source, verified by ")}
-              <strong className="text-aw-text">ASV (ActuWorld Source Verification)</strong>
-              {t(", puis éclairée par un jugement communautaire.", ", then enhanced by community judgment.")}
-            </motion.p>
-
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+            {/* Colonne texte */}
             <motion.div
-              variants={fadeInUp}
-              className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
+              initial="hidden"
+              animate="visible"
+              variants={staggerContainer}
+              className="text-center lg:text-left max-w-2xl mx-auto lg:mx-0"
             >
-              <Link to="/app" className="btn-primary glow-hover">
-                {t("Découvrir ActuWorld", "Discover ActuWorld")} <ChevronRight className="w-5 h-5 ml-2" />
-              </Link>
-              <Link to="/reco-src" className="btn-outline group">
-                <Sparkles className="w-5 h-5 mr-2 text-aw-accent" />
-                {t("L'IA ASV", "ASV AI")}
-              </Link>
+              <motion.div variants={fadeInUp} className="flex justify-center lg:justify-start mb-6">
+                <span className="glass-enhanced inline-flex items-center gap-2 rounded-full border border-aw px-4 py-1.5 text-sm font-medium text-aw-text">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-aw-accent opacity-75" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-aw-accent" />
+                  </span>
+                  {t("Réseau social de l'information vérifiée", "The social network for verified information")}
+                </span>
+              </motion.div>
+
+              <motion.h1
+                variants={fadeInUp}
+                className="hero-title text-4xl md:text-6xl font-bold leading-tight"
+              >
+                <span className="text-aw-text">{t("Partage ce qui t'intéresse.", "Share what matters to you.")}</span>
+                <br />
+                <span className="gradient-text">{t("Prouve pourquoi c'est fiable.", "Show why it's reliable.")}</span>
+              </motion.h1>
+
+              <motion.p
+                variants={fadeInUp}
+                className="mt-6 text-aw-muted text-lg md:text-xl leading-relaxed"
+              >
+                {t("Un réseau social préventif où chaque publication s'appuie sur une ", "A preventive social network where every post is backed by a ")}
+                <strong className="text-aw-text">{t("source visible", "visible source")}</strong>
+                {t(", vérifiée par ", ", verified by ")}
+                <strong className="text-aw-text">ASV</strong>
+                {t(", puis éclairée par un jugement communautaire.", ", then enhanced by community judgment.")}
+              </motion.p>
+
+              <motion.div
+                variants={fadeInUp}
+                className="mt-8 flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4"
+              >
+                <Link to="/app" className="btn-primary glow-hover">
+                  {t("Découvrir ActuWorld", "Discover ActuWorld")} <ChevronRight className="w-5 h-5 ml-2" />
+                </Link>
+                <Link to="/reco-src" className="btn-outline group">
+                  <Sparkles className="w-5 h-5 mr-2 text-aw-accent" />
+                  {t("L'IA ASV", "ASV AI")}
+                </Link>
+              </motion.div>
+
+              <motion.div
+                variants={fadeInUp}
+                className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4 justify-center lg:justify-start"
+              >
+                {[
+                  { icon: FileText, label: t("Sourcing", "Sourcing"), value: t("obligatoire", "mandatory") },
+                  { icon: Unlock, label: t("Lecture", "Reading"), value: t("100% gratuite", "100% free") },
+                  { icon: ThumbsUp, label: t("Qualité", "Quality"), value: t("> Viralité", "> Virality") },
+                ].map((item, i) => (
+                  <motion.div
+                    key={i}
+                    className="flex items-center gap-2 text-sm"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <div className="w-10 h-10 rounded-full bg-aw-success flex items-center justify-center">
+                      <item.icon className="w-5 h-5 text-aw-primary" />
+                    </div>
+                    <span className="text-aw-muted">{item.label}<br/><strong className="text-aw-text">{item.value}</strong></span>
+                  </motion.div>
+                ))}
+              </motion.div>
             </motion.div>
 
+            {/* Colonne visuel produit */}
             <motion.div
-              variants={fadeInUp}
-              className="mt-12 flex flex-wrap items-center gap-6 justify-center"
+              initial={{ opacity: 0, scale: 0.92, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+              className="hidden md:block"
             >
-              {[
-                { icon: FileText, label: t("Sourcing", "Sourcing"), value: t("obligatoire", "mandatory") },
-                { icon: Unlock, label: t("Lecture", "Reading"), value: t("100% gratuite", "100% free") },
-                { icon: ThumbsUp, label: t("Qualité", "Quality"), value: t("> Viralité", "> Virality") },
-              ].map((item, i) => (
-                <motion.div
-                  key={i}
-                  className="flex items-center gap-2 text-sm"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <div className="w-10 h-10 rounded-full bg-aw-success flex items-center justify-center">
-                    <item.icon className="w-5 h-5 text-aw-primary" />
-                  </div>
-                  <span className="text-aw-muted">{item.label}<br/><strong className="text-aw-text">{item.value}</strong></span>
-                </motion.div>
-              ))}
+              <HeroPostCard />
             </motion.div>
-          </motion.div>
+          </div>
         </motion.div>
       </Section>
 
-      {/* LE PROBLÈME */}
+      {/* 01 · LE CONSTAT */}
       <Section id="problem" className="bg-aw-surface py-24">
         <AnimatedSection>
-          <div className="text-center mb-16">
-            <H2 kicker="Le constat" center>
+          <div className="flex flex-col items-center text-center mb-16">
+            <SectionKicker number="01" label={t("Le constat", "The problem")} center className="mb-5" />
+            <H2 center>
               {isEnglish ? <>Today's social networks <span className="gradient-text">don't ask for proof</span></> : <>Les réseaux sociaux d'aujourd'hui <span className="gradient-text">ne demandent aucune preuve</span></>}
             </H2>
             <p className="text-aw-muted mt-4 max-w-2xl mx-auto text-lg">
@@ -175,21 +202,29 @@ export default function HomePage() {
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
           variants={staggerContainer}
-          className="grid md:grid-cols-2 gap-6"
+          className="grid md:grid-cols-2 gap-5"
         >
           {problems.map((p, i) => (
             <motion.div
               key={i}
               variants={fadeInUp}
-              whileHover={{ y: -5, scale: 1.02 }}
-              className="card card-hover p-6 flex gap-4"
+              whileHover={{ y: -6 }}
+              className="group relative card card-hover p-6 flex gap-5 overflow-hidden"
             >
-              <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
+              {/* Liseré rouge animé au survol */}
+              <span
+                aria-hidden="true"
+                className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-red-400 to-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+              />
+              <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-red-100 dark:bg-red-900/25 flex items-center justify-center ring-1 ring-red-500/10 group-hover:scale-110 transition-transform">
                 <p.icon className="w-6 h-6 text-red-600 dark:text-red-400" />
               </div>
               <div>
-                <h3 className="body-semi text-lg">{p.title}</h3>
-                <p className="text-aw-muted text-sm mt-1">{p.desc}</p>
+                <h3 className="body-semi text-lg flex items-center gap-2">
+                  <span className="text-xs font-bold text-red-500/60 tabular-nums">0{i + 1}</span>
+                  {p.title}
+                </h3>
+                <p className="text-aw-muted text-sm mt-1.5 leading-relaxed">{p.desc}</p>
               </div>
             </motion.div>
           ))}
@@ -204,115 +239,163 @@ export default function HomePage() {
         </AnimatedSection>
       </Section>
 
-      {/* VISION */}
-      <Section id="vision" className="py-24 relative overflow-hidden">
+      {/* 02 · COMMENT ÇA MARCHE */}
+      <HowItWorks />
+
+      {/* 03 · VISION */}
+      <Section id="vision" className="bg-aw-surface py-24 relative overflow-hidden">
         <Parallax offset={30} className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/4 right-0 w-96 h-96 bg-aw-secondary/20 rounded-full blur-3xl" />
           <div className="absolute bottom-1/4 left-0 w-80 h-80 bg-aw-accent/10 rounded-full blur-3xl" />
         </Parallax>
 
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={staggerContainer}
-          className="max-w-4xl mx-auto text-center relative"
-        >
-          <motion.div variants={scaleUp}>
-            <H2 kicker="Notre vision" center>
+        <div className="max-w-5xl mx-auto relative">
+          <AnimatedSection className="flex flex-col items-center text-center">
+            <SectionKicker number="03" label={t("Notre vision", "Our vision")} center className="mb-5" />
+            <H2 center>
               {isEnglish ? <>A space to share <span className="gradient-text">with clarity</span></> : <>Un espace pour partager <span className="gradient-text">avec clarté</span></>}
             </H2>
-            <p className="text-aw-muted mt-6 text-lg leading-relaxed">
-              {t("Publie des ", "Publish ")}<strong className="text-aw-text">{t("posts, articles et vidéos", "posts, articles, and videos")}</strong>{t(" sur tout ce qui te passionne : culture, sport, sciences, société, tech, environnement, actualité locale…", " about anything you're passionate about: culture, sports, science, society, tech, environment, local news...")}
-              <br /><br />
-              {t("Chaque publication s'appuie sur une ", "Every post is backed by a ")}<strong className="text-aw-text">{t("source visible", "visible source")}</strong>{t(", vérifiée par ", ", verified by ")}
-              <strong className="text-aw-text">ASV (ActuWorld Source Verification)</strong>{t(" qui vérifie la cohérence entre la source et le contenu, et détecte le ", " which checks source-content consistency and detects ")}<Tooltip text={t("Le cherry-picking consiste à sélectionner uniquement les données ou faits qui soutiennent son argument, en ignorant ceux qui le contredisent.", "Cherry-picking means selecting only data or facts that support an argument while ignoring contradictory evidence.")}>cherry-picking</Tooltip>.{" "}
-              {t("Un ", "A ")}<strong className="text-aw-text">{t("parcours de contributeur", "contributor pathway")}</strong>{t(" (Explorateur → Navigateur → Pionnier) valorise ceux qui publient avec rigueur.", " (Explorer → Navigator → Pioneer) rewards those who publish with rigor.")}
+            <p className="text-aw-muted mt-6 text-lg leading-relaxed max-w-3xl">
+              {t("Publie des ", "Publish ")}<strong className="text-aw-text">{t("posts, articles et vidéos", "posts, articles, and videos")}</strong>{t(" sur tout ce qui te passionne — culture, sport, sciences, société, tech, environnement, actualité locale. Chaque publication s'appuie sur une ", " about anything you're passionate about — culture, sports, science, society, tech, environment, local news. Every post is backed by a ")}
+              <strong className="text-aw-text">{t("source visible", "visible source")}</strong>{t(", vérifiée par ", ", verified by ")}
+              <strong className="text-aw-text">ASV</strong>{t(" qui détecte le ", " which detects ")}<Tooltip text={t("Le cherry-picking consiste à sélectionner uniquement les données ou faits qui soutiennent son argument, en ignorant ceux qui le contredisent.", "Cherry-picking means selecting only data or facts that support an argument while ignoring contradictory evidence.")}>cherry-picking</Tooltip>{t(", puis éclairée par la communauté.", ", then enhanced by the community.")}
             </p>
-            <motion.p
-              className="text-aw-primary mt-6 body-semi text-lg"
-              animate={{
-                scale: [1, 1.02, 1],
-              }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
+          </AnimatedSection>
+
+          <AnimatedSection delay={0.1} className="text-center mt-12">
+            <p className="text-aw-primary body-semi text-lg max-w-2xl mx-auto">
               {t("ActuWorld ne dit pas quoi penser. Il donne les outils pour chercher, juger et montrer ce qui mérite confiance.", "ActuWorld doesn't tell you what to think. It gives you the tools to search, judge, and show what deserves trust.")}
-            </motion.p>
-          </motion.div>
-
-          <motion.div variants={fadeInUp} className="mt-12">
-            <Link to="/app" className="btn-primary glow-hover">
-              {t("Découvrir la plateforme", "Discover the platform")} <ChevronRight className="w-5 h-5 ml-2" />
-            </Link>
-          </motion.div>
-        </motion.div>
-      </Section>
-
-      {/* POURQUOI ACTUWORLD EXISTE */}
-      <Section id="founder" className="bg-aw-surface py-20">
-        <AnimatedSection>
-          <div className="max-w-4xl mx-auto card p-8 md:p-10">
-            <p className="text-sm uppercase tracking-wide text-aw-primary mb-3">
-              {t("Pourquoi ActuWorld existe", "Why ActuWorld exists")}
             </p>
-            <h3 className="text-2xl md:text-3xl font-bold mb-4">
-              {t("J'ai construit l'outil dont j'avais besoin.", "I built the tool I needed.")}
-            </h3>
-            <p className="text-aw-muted leading-relaxed">
-              {t(
-                "Quand je lisais des informations, j'avais toujours ce doute : est-ce que c'est fiable ? Il manquait un endroit où l'on puisse partager ce qui nous intéresse tout en montrant d'où ça vient. Un espace où vérifier avant de croire devient naturel. ActuWorld est né de ce besoin.",
-                "When I read information, I always had that doubt: is this reliable? I was missing a place where you could share what interests you while showing where it comes from. A space where verifying before believing becomes natural. ActuWorld was born from that need."
-              )}
-            </p>
-            <div className="mt-6">
-              <Link to="/app" className="btn-outline">
-                {t("Lire notre vision", "Read our vision")}
+            <div className="mt-8">
+              <Link to="/app" className="btn-primary glow-hover">
+                {t("Découvrir la plateforme", "Discover the platform")} <ChevronRight className="w-5 h-5 ml-2" />
               </Link>
             </div>
-          </div>
-        </AnimatedSection>
+          </AnimatedSection>
+        </div>
+      </Section>
+
+      {/* 04 · POURQUOI ACTUWORLD EXISTE */}
+      <Section id="founder" className="py-24">
+        <div className="max-w-5xl mx-auto grid md:grid-cols-[auto_1fr] gap-10 md:gap-16 items-center">
+          {/* Photo du fondateur */}
+          <AnimatedSection direction="left">
+            <div className="relative mx-auto w-56 sm:w-64 md:w-[18rem]">
+              {/* Halo + carré d'accent décoratif */}
+              <div
+                aria-hidden="true"
+                className="absolute -inset-3 rounded-[2rem] opacity-70 blur-xl"
+                style={{ background: "linear-gradient(135deg, color-mix(in srgb, var(--aw-primary) 30%, transparent), color-mix(in srgb, var(--aw-accent) 30%, transparent))" }}
+              />
+              <div aria-hidden="true" className="absolute -bottom-5 -right-5 w-24 h-24 rounded-3xl border-2 border-aw-primary/30" />
+              <img
+                src={founderImg}
+                alt={t("Maxence Allier, fondateur d'ActuWorld", "Maxence Allier, founder of ActuWorld")}
+                className="relative rounded-[1.75rem] w-full aspect-[3/4] object-cover object-top border border-aw shadow-2xl"
+                width={539}
+                height={808}
+              />
+              {/* Badge fondateur */}
+              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap glass-enhanced border border-aw rounded-full px-4 py-1.5 text-sm font-semibold text-aw-text shadow-lg">
+                {t("Fondateur", "Founder")}
+              </div>
+            </div>
+          </AnimatedSection>
+
+          {/* Citation */}
+          <AnimatedSection direction="right">
+            <SectionKicker number="04" label={t("Pourquoi ActuWorld existe", "Why ActuWorld exists")} className="mb-6" />
+            <Quote className="w-10 h-10 text-aw-primary/25 mb-2" aria-hidden="true" />
+            <p
+              className="text-2xl md:text-3xl font-bold leading-snug text-aw-text"
+              style={{ fontFamily: '"Platypi", Georgia, serif' }}
+            >
+              {t("« J'ai construit l'outil dont j'avais besoin. »", "“I built the tool I needed.”")}
+            </p>
+            <p className="text-aw-muted leading-relaxed mt-5 text-lg">
+              {t(
+                "Quand je lisais des informations, j'avais toujours ce doute : est-ce fiable ? Il manquait un endroit où partager ce qui nous intéresse tout en montrant d'où ça vient — un espace où vérifier avant de croire devient naturel. ActuWorld est né de ce besoin.",
+                "When I read information, I always had that doubt: is this reliable? I was missing a place to share what interests me while showing where it comes from — a space where verifying before believing becomes natural. ActuWorld was born from that need."
+              )}
+            </p>
+
+            {/* Signature */}
+            <div className="mt-6 flex items-center gap-3">
+              <div className="h-px w-8 bg-aw-primary/40" aria-hidden="true" />
+              <div>
+                <div className="font-bold text-aw-text">Maxence Allier</div>
+                <div className="text-sm text-aw-muted">{t("Fondateur d'ActuWorld", "Founder of ActuWorld")}</div>
+              </div>
+            </div>
+
+            <div className="mt-8">
+              <Link to="/app" className="btn-outline">
+                {t("Lire notre vision", "Read our vision")} <ChevronRight className="w-4 h-4 ml-2" />
+              </Link>
+            </div>
+          </AnimatedSection>
+        </div>
       </Section>
 
       {/* ILS SUIVENT LE PROJET */}
-      <Section id="supporters" className="py-20">
-        <AnimatedSection>
-          <div className="text-center mb-12">
-            <H2 kicker={t("Soutiens", "Supporters")} center>
-              {isEnglish ? <>They <span className="gradient-text">follow the project</span></> : <>Ils <span className="gradient-text">suivent le projet</span></>}
-            </H2>
-            <p className="text-aw-muted mt-4 max-w-2xl mx-auto">
-              {t(
-                "Des médias et acteurs de l'information qui s'intéressent à notre démarche.",
-                "Media outlets and information stakeholders who are interested in our approach."
-              )}
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-10">
+      <Section id="supporters" className="bg-aw-surface py-14">
+        <AnimatedSection className="text-center">
+          <p className="overline text-aw-muted mb-7">
+            {t("Ils suivent le projet", "They follow the project")}
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-8">
             <motion.a
               href="https://territoires.media"
               target="_blank"
               rel="noopener noreferrer"
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.05, y: -2 }}
               transition={{ duration: 0.2 }}
-              className="grayscale hover:grayscale-0 opacity-80 hover:opacity-100 transition-all duration-300"
+              className="inline-flex items-center rounded-2xl border border-aw bg-aw-bg px-5 py-3 grayscale hover:grayscale-0 opacity-90 hover:opacity-100 transition-all duration-300"
+              aria-label="Territoire(s) Média"
             >
               <img
                 src="/partners/territoires-media.png"
                 alt="Territoire(s) Média"
-                className="h-12 md:h-16 w-auto object-contain dark:bg-white dark:rounded-lg dark:px-3 dark:py-1"
+                className="h-9 md:h-11 w-auto object-contain dark:bg-white dark:rounded-md dark:px-2 dark:py-1"
               />
             </motion.a>
           </div>
         </AnimatedSection>
       </Section>
 
-      {/* WAITLIST */}
-      <Section className="bg-aw-surface py-24">
-        <div className="max-w-lg mx-auto">
-          <AnimatedSection direction="scale">
-            <WaitlistForm />
-          </AnimatedSection>
-        </div>
+      {/* 05 · REJOINDRE */}
+      <Section className="py-24">
+        <AnimatedSection direction="scale">
+          <div
+            className="relative max-w-4xl mx-auto overflow-hidden rounded-[2rem] px-6 py-14 md:px-16 md:py-20 text-center border border-white/10"
+            style={{ background: "linear-gradient(160deg, #1B3528 0%, #244736 100%)" }}
+          >
+            {/* Halo statique très discret */}
+            <div
+              aria-hidden="true"
+              className="absolute -top-32 left-1/2 -translate-x-1/2 w-[28rem] h-[28rem] rounded-full opacity-[0.07]"
+              style={{ background: "radial-gradient(circle, #A8D5BA, transparent 70%)" }}
+            />
+
+            <div className="relative">
+              <SectionKicker number="05" label={t("Rejoindre", "Join")} center tone="light" className="mb-6" />
+              <h2
+                className="text-3xl md:text-5xl font-bold text-white leading-tight"
+                style={{ fontFamily: '"Platypi", Georgia, serif' }}
+              >
+                {t("Prêt à partager avec preuves ?", "Ready to share with proof?")}
+              </h2>
+              <p className="mt-4 text-white/85 text-lg max-w-xl mx-auto">
+                {t("Sois parmi les premiers à publier, explorer et juger sur ActuWorld. Inscris-toi à la beta.", "Be among the first to publish, explore and judge on ActuWorld. Join the beta.")}
+              </p>
+
+              {/* Formulaire dans un panneau clair */}
+              <div className="mt-8 max-w-xl mx-auto rounded-2xl bg-aw-bg/95 backdrop-blur p-5 md:p-6 shadow-2xl text-left">
+                <WaitlistForm variant="inline" />
+              </div>
+            </div>
+          </div>
+        </AnimatedSection>
       </Section>
     </PageWrapper>
   );

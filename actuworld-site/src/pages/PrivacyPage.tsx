@@ -68,12 +68,24 @@ export default function PrivacyPage() {
 
             <section>
               <h2 className="text-xl font-semibold mb-3">
-                {t("4. Cookies", "4. Cookies")}
+                {t("4. Cookies et mesure d'audience", "4. Cookies and Analytics")}
               </h2>
               <p>
                 {t(
-                  "ActuWorld utilise des cookies techniques strictement nécessaires au fonctionnement (authentification, préférences de langue). Aucun cookie publicitaire ou de tracking tiers n'est utilisé.",
-                  "ActuWorld uses only strictly necessary technical cookies (authentication, language preferences). No advertising or third-party tracking cookies are used."
+                  "ActuWorld utilise des cookies techniques strictement nécessaires au fonctionnement (préférences de langue, thème). Ils ne requièrent pas de consentement.",
+                  "ActuWorld uses strictly necessary technical cookies (language and theme preferences). These do not require consent."
+                )}
+              </p>
+              <p className="mt-3">
+                {t(
+                  "Avec votre accord uniquement, nous utilisons Google Analytics (avec anonymisation de l'adresse IP) pour mesurer l'audience du site. Ces cookies ne sont déposés qu'après votre consentement, donné via notre bandeau cookies. Vous pouvez modifier ou retirer ce choix à tout moment grâce au lien « Cookies » en bas de page.",
+                  "With your consent only, we use Google Analytics (with IP anonymization) to measure site traffic. These cookies are set only after you consent via our cookie banner. You can change or withdraw this choice at any time through the “Cookies” link in the footer."
+                )}
+              </p>
+              <p className="mt-3">
+                {t(
+                  "Nous utilisons également Vercel Analytics, une solution de mesure d'audience sans cookie et sans donnée personnelle identifiante. Aucun cookie publicitaire n'est utilisé.",
+                  "We also use Vercel Analytics, a cookieless analytics solution that collects no personally identifiable data. No advertising cookies are used."
                 )}
               </p>
             </section>

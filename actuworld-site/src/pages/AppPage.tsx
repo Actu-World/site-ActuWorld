@@ -2,11 +2,10 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
   Smartphone, FileText, ThumbsUp, BookOpen, Video, Unlock,
-  Search, Heart, Sparkles, Users,
-  Bell, MessageCircle, Image, X, Check, MoreHorizontal, Home, PenLine, PlaySquare, PlusCircle, Globe2
+  Search, Heart, Sparkles, Users
 } from "lucide-react";
-import phoneImg from "../assets/phone_img_normalized.jpg";
 import { Section } from "../components/Section";
+import { AppPhoneMockup } from "../components/app/AppPhoneMockup";
 import { H2 } from "../components/H2";
 import { Card } from "../components/Card";
 import { PageMeta } from "../components/PageMeta";
@@ -76,120 +75,9 @@ export default function AppPage() {
       {/* SOLUTION ACTUWORLD */}
       <Section id="solution" className="py-12">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Mockup téléphone */}
+          {/* Mockup téléphone — deux affichages réels (Fil visuel / Journal) */}
           <AnimatedSection direction="left" className="relative order-2 lg:order-1">
-            <div className="relative mx-auto w-72 md:w-80 phone-mockup">
-              <motion.div
-                className="relative rounded-[3rem] border-8 border-[#1B3528] bg-[#1B3528] shadow-2xl overflow-hidden"
-                whileHover={{ scale: 1.02, rotateY: 5 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-6 bg-[#1B3528] rounded-b-xl z-10"></div>
-                <div className="aspect-[9/19] bg-aw-bg p-3 pt-7 flex flex-col">
-                  {/* Top bar */}
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="w-7 h-7 rounded-full bg-aw-surface border border-aw"></div>
-                    <span className="text-[13px] font-bold text-aw-primary" style={{fontFamily: 'Georgia, serif', letterSpacing: '0.5px'}}>ActuWorld</span>
-                    <div className="flex items-center gap-1.5">
-                      <div className="relative">
-                        <Bell className="w-4 h-4 text-aw-primary" />
-                        <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full text-[5px] text-white flex items-center justify-center font-bold">1</div>
-                      </div>
-                      <MessageCircle className="w-4 h-4 text-aw-primary" />
-                    </div>
-                  </div>
-
-                  {/* Tab switcher */}
-                  <div className="flex rounded-xl overflow-hidden bg-aw-surface border border-aw mb-2.5">
-                    <div className="flex-1 py-1.5 text-center text-[8px] font-medium bg-aw-success text-aw-primary rounded-xl flex items-center justify-center gap-1">
-                      <Image className="w-3 h-3" /> {t("Fil visuel", "Visual feed")}
-                    </div>
-                    <div className="flex-1 py-1.5 text-center text-[8px] text-aw-muted flex items-center justify-center gap-1">
-                      <FileText className="w-3 h-3" /> {t("Journal", "Journal")}
-                    </div>
-                  </div>
-
-                  {/* Post header */}
-                  <motion.div
-                    className="flex items-center justify-between mb-1"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }}
-                  >
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-6 h-6 rounded-full bg-aw-surface border border-aw"></div>
-                      <span className="text-[10px] font-semibold text-aw-text">ScienceExplorer</span>
-                    </div>
-                    <div className="flex gap-1">
-                      <div className="w-5 h-5 rounded-md border border-red-800/60 flex items-center justify-center">
-                        <X className="w-2.5 h-2.5 text-red-400" />
-                      </div>
-                      <div className="w-5 h-5 rounded-md border border-aw-primary/60 flex items-center justify-center">
-                        <Check className="w-2.5 h-2.5 text-aw-primary" />
-                      </div>
-                    </div>
-                  </motion.div>
-
-                  {/* Vote bar */}
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="flex-1 h-1 bg-aw-surface rounded-full overflow-hidden">
-                      <motion.div
-                        className="h-full bg-amber-500 rounded-full"
-                        initial={{ width: 0 }}
-                        animate={{ width: "50%" }}
-                        transition={{ delay: 0.8, duration: 0.6 }}
-                      />
-                    </div>
-                    <span className="text-[7px] text-aw-muted">2 votes</span>
-                  </div>
-
-                  {/* Large image */}
-                  <motion.div
-                    className="flex-1 rounded-2xl overflow-hidden relative mb-1.5 min-h-0"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.6, duration: 0.4 }}
-                  >
-                    <img src={phoneImg} alt="Capture d'écran du fil d'actualités ActuWorld avec un post sourcé" className="w-full h-full object-cover" loading="lazy" width={4000} height={3000} />
-                    <div className="absolute top-2 right-2 flex gap-1">
-                      <div className="w-5 h-5 rounded-full bg-black/50 flex items-center justify-center text-[7px] text-white font-medium">2</div>
-                      <div className="w-5 h-5 rounded-full bg-black/50 flex items-center justify-center">
-                        <MoreHorizontal className="w-3 h-3 text-white" />
-                      </div>
-                    </div>
-                    <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-black/40 rounded-full text-[7px] text-white flex items-center gap-1">
-                      <PenLine className="w-2.5 h-2.5" /> Nature
-                    </div>
-                  </motion.div>
-
-                  {/* Post title */}
-                  <p className="text-[10px] font-semibold text-aw-text mb-1.5">{t("Les cascades cachées de la biodiversité", "Hidden cascades of biodiversity")}</p>
-
-                  {/* Bottom nav */}
-                  <div className="flex items-center justify-around py-1.5 border-t border-aw mt-auto">
-                    <div className="flex flex-col items-center gap-0.5">
-                      <Home className="w-3.5 h-3.5 text-aw-primary" />
-                      <span className="text-[5px] text-aw-primary font-medium">Home</span>
-                    </div>
-                    <div className="flex flex-col items-center gap-0.5">
-                      <PlaySquare className="w-3.5 h-3.5 text-aw-muted" />
-                      <span className="text-[5px] text-aw-muted">Reel</span>
-                    </div>
-                    <PlusCircle className="w-5 h-5 text-aw-primary" />
-                    <div className="flex flex-col items-center gap-0.5">
-                      <Search className="w-3.5 h-3.5 text-aw-muted" />
-                      <span className="text-[5px] text-aw-muted">Search</span>
-                    </div>
-                    <div className="flex flex-col items-center gap-0.5">
-                      <Globe2 className="w-3.5 h-3.5 text-aw-muted" />
-                      <span className="text-[5px] text-aw-muted">ActuWorld</span>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-              <div className="absolute -z-10 -top-8 -right-8 w-40 h-40 bg-aw-secondary rounded-full blur-2xl opacity-40"></div>
-              <div className="absolute -z-10 -bottom-8 -left-8 w-32 h-32 bg-aw-accent rounded-full blur-2xl opacity-30"></div>
-            </div>
+            <AppPhoneMockup />
           </AnimatedSection>
 
           {/* Features list */}

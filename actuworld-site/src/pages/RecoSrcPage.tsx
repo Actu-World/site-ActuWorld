@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Sparkles, Video, Brain, Shield, ShieldCheck, Globe2,
   FileText, AlertTriangle, CheckCircle2, ChevronRight,
-  Database, Users, Zap
+  Database, Users
 } from "lucide-react";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
@@ -55,35 +55,6 @@ export default function RecoSrcPage() {
     { name: "Fiabilité de la source", icon: Database, desc: "ASV vérifie si la source provient d'un site reconnu : média, institution, revue scientifique ou organisme officiel." },
     { name: "Avis de la communauté", icon: Users, desc: "Les utilisateurs d'ActuWorld évaluent les contenus. Leurs votes renforcent ou questionnent la fiabilité d'un post." },
     { name: "Sécurité du site", icon: Shield, desc: "ASV s'assure que le site source est sûr, actif et transparent : pas de site frauduleux ni de source douteuse." },
-  ];
-
-  const dbHighlights = [
-    { label: "Sources reconnues", desc: "Médias, revues scientifiques, institutions officielles : ASV s'appuie sur des centaines de sources vérifiées." },
-    { label: "Sites à risque identifiés", desc: "Les sites peu fiables sont repérés et signalés automatiquement pour plus de transparence." },
-    { label: "Base en constante évolution", desc: "La communauté et notre équipe enrichissent la base chaque jour pour couvrir toujours plus de sources." },
-  ];
-
-  const usps = [
-    {
-      title: "Analyse de TOUS les posts et articles",
-      desc: "ASV passe derrière chaque post et article pour vérifier automatiquement les sources ET le contenu cité.",
-      icon: Zap
-    },
-    {
-      title: "Vérification complète : sources + contenu",
-      desc: <>On ne checke pas juste si la source existe. On vérifie que ce qui a été dit correspond réellement à la source (détection du <Tooltip text="Le cherry-picking consiste à sélectionner uniquement les données ou faits qui soutiennent son argument, en ignorant ceux qui le contredisent.">cherry-picking</Tooltip>).</>,
-      icon: Brain
-    },
-    {
-      title: "Vidéos et multimédia inclus",
-      desc: "Analyse des vidéos pour extraire les sources citées, transcrire le contenu et le comparer avec les affirmations de l'auteur.",
-      icon: Video
-    },
-    {
-      title: "Interface visuelle pour guider",
-      desc: "L'API fournit une info visuelle claire sur chaque article et post. Une première base que l'utilisateur peut développer avec son esprit critique.",
-      icon: CheckCircle2
-    },
   ];
 
   return (
@@ -145,43 +116,6 @@ export default function RecoSrcPage() {
               </motion.div>
             ))}
           </motion.div>
-        </motion.div>
-      </Section>
-
-      {/* USPs vs NewsGuard */}
-      <Section className="py-16">
-        <AnimatedSection>
-          <div className="text-center mb-12">
-            <H2 kicker="Avantages" center>
-              {isEnglish ? <>What <span className="gradient-text">ASV</span> does for you</> : <>Ce que fait <span className="gradient-text">ASV</span> pour vous</>}
-            </H2>
-          </div>
-        </AnimatedSection>
-
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={staggerContainer}
-          className="grid md:grid-cols-2 lg:grid-cols-4 gap-6"
-        >
-          {usps.map((usp, i) => (
-            <motion.div
-              key={i}
-              variants={fadeInUp}
-              whileHover={{ y: -8, scale: 1.02 }}
-              className="card card-hover p-6"
-            >
-              <motion.div
-                className="w-12 h-12 rounded-xl bg-aw-success flex items-center justify-center mb-4"
-                whileHover={{ scale: 1.1, rotate: 5 }}
-              >
-                <usp.icon className="w-6 h-6 text-aw-primary" />
-              </motion.div>
-              <h3 className="body-semi text-lg mb-2">{usp.title}</h3>
-              <p className="text-aw-muted text-sm">{usp.desc}</p>
-            </motion.div>
-          ))}
         </motion.div>
       </Section>
 
@@ -277,42 +211,8 @@ export default function RecoSrcPage() {
         </div>
       </Section>
 
-      {/* DATABASE */}
-      <Section className="bg-aw-surface py-24">
-        <AnimatedSection>
-          <div className="text-center mb-12">
-            <H2 kicker="Sources fiables" center>
-              {isEnglish ? <>A database of <span className="gradient-text">verified sources</span></> : <>Une base de <span className="gradient-text">sources vérifiées</span></>}
-            </H2>
-            <p className="text-aw-muted mt-4 max-w-2xl mx-auto">
-              {t("ASV s'appuie sur une base de données de sources fiables, enrichie en continu par notre équipe et la communauté.", "ASV relies on a trusted source database, continuously enriched by our team and the community.")}
-            </p>
-          </div>
-        </AnimatedSection>
-
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={staggerContainer}
-          className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto"
-        >
-          {dbHighlights.map((item, i) => (
-            <motion.div
-              key={i}
-              variants={fadeInUp}
-              whileHover={{ y: -8, scale: 1.02 }}
-              className="card card-hover p-6 text-center"
-            >
-              <h4 className="body-semi text-lg mb-2">{item.label}</h4>
-              <p className="text-aw-muted text-sm">{item.desc}</p>
-            </motion.div>
-          ))}
-        </motion.div>
-      </Section>
-
       {/* CHERRY-PICKING DETECTION */}
-      <Section className="py-24">
+      <Section className="bg-aw-surface py-24">
         <div className="max-w-4xl mx-auto">
           <AnimatedSection>
             <div className="text-center mb-12">
@@ -375,7 +275,7 @@ export default function RecoSrcPage() {
       </Section>
 
       {/* USE CASES */}
-      <Section className="bg-aw-surface py-24">
+      <Section className="py-24">
         <AnimatedSection>
           <div className="text-center mb-16">
             <H2 kicker="Cas d'usage" center>
@@ -441,19 +341,19 @@ export default function RecoSrcPage() {
       </Section>
 
       {/* CTA */}
-      <Section className="py-24">
+      <Section className="bg-aw-surface py-24">
         <AnimatedSection direction="scale">
           <div className="text-center">
             <h3 className="text-2xl font-bold mb-4">{t("Prêt à vérifier vos sources ?", "Ready to verify your sources?")}</h3>
             <p className="text-aw-muted mb-8 max-w-xl mx-auto">
-              {t("Rejoignez la beta et soyez parmi les premiers à utiliser ASV.", "Join the beta and be among the first to use ASV.")}
+              {t("Médias, journalistes, créateurs : discutons de l'API ASV. Ou rejoignez la beta dès maintenant.", "Media, journalists, creators: let's talk about the ASV API. Or join the beta now.")}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/pricing" className="btn-primary glow-hover">
-                {t("Voir les tarifs", "See pricing")} <ChevronRight className="w-5 h-5 ml-2" />
+              <Link to="/contact" className="btn-primary glow-hover">
+                {t("Nous contacter", "Contact us")} <ChevronRight className="w-5 h-5 ml-2" />
               </Link>
-              <Link to="/contact" className="btn-outline">
-                {t("Nous contacter", "Contact us")}
+              <Link to="/app" className="btn-outline">
+                {t("Découvrir l'app", "Discover the app")}
               </Link>
             </div>
           </div>

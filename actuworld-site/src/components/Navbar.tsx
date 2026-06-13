@@ -1,36 +1,48 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Globe2, Mail, Menu, X, Sun, Moon } from 'lucide-react';
+import { Mail, Menu, X, Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../i18n/LanguageContext';
+import { Logo } from './Logo';
 
 export const Navbar: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const { language, setLanguage, isEnglish } = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const navLinks = [
     { href: "/app", label: isEnglish ? "App" : "L'App" },
     { href: "/reco-src", label: "ASV" },
-    { href: "/pricing", label: isEnglish ? "Pricing" : "Tarifs" },
     { href: "/faq", label: "FAQ" },
   ];
 
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <header className="sticky top-0 z-40 glass border-b border-aw" role="banner">
+    <header
+      className={`sticky top-0 z-40 glass border-b transition-all duration-300 ${
+        scrolled ? 'border-aw shadow-[0_4px_24px_rgba(0,0,0,0.06)]' : 'border-transparent'
+      }`}
+      role="banner"
+    >
       <div className="max-w-7xl mx-auto container-px h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 font-bold text-lg md:text-xl" aria-label={isEnglish ? 'ActuWorld home' : 'Accueil ActuWorld'}>
-          <motion.span
-            className="inline-flex items-center justify-center w-8 h-8 rounded-md bg-aw-primary"
-            whileHover={{ scale: 1.1, rotate: 5 }}
-          >
-            <Globe2 className="w-5 h-5 text-white" aria-hidden="true" />
-          </motion.span>
-          <span className="text-aw-text">ActuWorld</span>
+        <Link to="/" aria-label={isEnglish ? 'ActuWorld home' : 'Accueil ActuWorld'}>
+          <Logo
+            size={36}
+            withText
+            orbit
+            textClassName="text-lg md:text-xl text-aw-text"
+          />
         </Link>
 
         {/* Desktop nav */}

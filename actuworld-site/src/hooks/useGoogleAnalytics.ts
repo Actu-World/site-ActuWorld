@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useCookieConsent } from './useCookieConsent';
 
 type GtagParam = string | Date | Record<string, unknown>;
 
@@ -20,11 +21,14 @@ declare global {
 
 export const useGoogleAnalytics = () => {
   const { pathname } = useLocation();
+  const { consent } = useCookieConsent();
 
   useEffect(() => {
-    // Initialiser GA au premier chargement uniquement
+    // RGPD : ne charger GA qu'après consentement explicite
+    if (consent !== 'accepted') return;
+
     const gaId = import.meta.env.VITE_GA_ID;
-    
+
     if (!gaId) {
       console.warn('⚠️ VITE_GA_ID not configured - Google Analytics disabled');
       return;
@@ -54,16 +58,16 @@ export const useGoogleAnalytics = () => {
 
       console.log('✅ Google Analytics initialized:', gaId);
     }
-  }, []);
+  }, [consent]);
 
   // Tracker chaque changement de page (SPA route changes)
   useEffect(() => {
-    if (window.gtag) {
+    if (consent === 'accepted' && window.gtag) {
       window.gtag('event', 'page_view', {
         page_path: pathname,
         page_title: document.title,
       });
       console.log('✅ Page tracked:', pathname);
     }
-  }, [pathname]);
+  }, [pathname, consent]);
 };

@@ -17,72 +17,42 @@ export default function FaqPage() {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
 
-  const generalFaq = [
+  const faqs = [
     {
       q: t("Pourquoi le sourcing est-il obligatoire ?", "Why is source citation mandatory?"),
       a: t("C'est le principe fondateur d'ActuWorld. Avant de publier, tu montres d'où vient ton information. Ça donne du poids à ce que tu partages et de la clarté à ceux qui te lisent.", "This is ActuWorld's founding principle. Before publishing, you show where your information comes from. It gives weight to what you share and clarity to those who read you.")
     },
     {
       q: t("Comment fonctionne le système de confiance ?", "How does the trust system work?"),
-      a: t("Les utilisateurs votent sur la qualité et fiabilité des posts. Ces votes construisent un score de confiance pour chaque créateur, visible sur leur profil. C'est le jugement communautaire qui rend la confiance plus claire.", "Users vote on post quality and reliability. These votes build a trust score for each creator, visible on their profile. It's community judgment that makes trust clearer.")
+      a: t("Les utilisateurs votent sur la fiabilité des posts. Ces votes construisent un score de confiance pour chaque créateur, visible sur son profil. C'est le jugement communautaire qui rend la confiance plus claire.", "Users vote on post reliability. These votes build a trust score for each creator, visible on their profile. It's community judgment that makes trust clearer.")
     },
     {
       q: t("ASV remplace-t-il les fact-checkers ?", "Does ASV replace fact-checkers?"),
       a: t("Non. ASV (ActuWorld Source Verification) vérifie automatiquement si la source est cohérente avec le contenu et détecte les détournements de contexte. C'est un outil qui donne à chacun les moyens de juger par soi-même.", "No. ASV (ActuWorld Source Verification) automatically checks if the source is consistent with the content and detects context distortions. It's a tool that empowers everyone to judge for themselves.")
     },
     {
+      q: t("Comment ASV trouve-t-il les sources ?", "How does ASV identify sources?"),
+      a: t("ASV analyse les posts, articles et vidéos pour extraire les sources citées, les note, et compare ce qui a été dit avec le contenu réel de la source pour détecter le cherry-picking.", "ASV analyzes posts, articles, and videos to extract cited sources, rates them, and compares claims with the actual source content to detect cherry-picking.")
+    },
+    {
       q: t("Pourquoi la lecture est-elle gratuite ?", "Why is reading free?"),
-      a: t("L'accès au savoir ne doit pas dépendre du portefeuille. Notre modèle repose sur les créateurs pro, les dons et la publicité ciblée.", "Access to knowledge should not depend on income. Our model relies on pro creators, donations, and targeted advertising.")
+      a: t("L'accès au savoir ne doit pas dépendre du portefeuille. La lecture est et restera gratuite.", "Access to knowledge should not depend on income. Reading is and will remain free.")
     },
     {
       q: t("Qui peut devenir créateur ?", "Who can become a creator?"),
-      a: t("Tout le monde ! Que tu sois passionné de sport, de sciences, de culture ou d'actualité locale, tu peux publier. Les nouveaux créateurs passent par une phase de modération, puis accèdent à la publication automatique selon leur score de confiance.", "Anyone! Whether you're passionate about sports, science, culture, or local news, you can publish. New creators go through a moderation phase, then gain automatic publishing based on their trust score.")
+      a: t("Tout le monde ! Sport, sciences, culture, actualité locale… tu peux publier. Les nouveaux créateurs passent par une phase de modération, puis accèdent à la publication automatique selon leur score de confiance.", "Anyone! Sports, science, culture, local news… you can publish. New creators go through a moderation phase, then gain automatic publishing based on their trust score.")
     },
     {
       q: t("Quand ActuWorld sera-t-il disponible ?", "When will ActuWorld be available?"),
       a: t("Nous finalisons actuellement la bêta fermée. Rejoins notre liste d'attente pour être parmi les premiers à tester et donner ton avis !", "We are currently finalizing the closed beta. Join our waitlist to be among the first to test and share feedback!")
     },
     {
-      q: t("Comment rejoindre le programme bêta ?", "How can I join the beta program?"),
-      a: t("Consulte la page de contact ou inscris-toi à notre liste d'attente. Les bêta-testeurs sont sélectionnés en fonction de leur profil et de leur intérêt pour ActuWorld.", "Visit the contact page or sign up for our waitlist. Beta testers are selected based on profile and interest in ActuWorld.")
+      q: t("Comment rejoindre la bêta ?", "How can I join the beta?"),
+      a: t("Inscris-toi à notre liste d'attente depuis la page d'accueil, ou contacte-nous directement. Les bêta-testeurs sont sélectionnés selon leur profil et leur intérêt pour ActuWorld.", "Sign up for our waitlist from the homepage, or contact us directly. Beta testers are selected based on profile and interest in ActuWorld.")
     },
   ];
 
-  const recoSrcFaq = [
-    {
-      q: t("Quelle est la précision de ASV ?", "What is ASV's current accuracy?"),
-      a: t("Actuellement, ASV atteint 60-70% de précision sur le contenu français. Notre objectif est d'atteindre 80%+ dans les prochains mois.", "Currently, ASV reaches 60-70% accuracy on French content. Our goal is to reach 80%+ over the coming months.")
-    },
-    {
-      q: t("Quels formats sont supportés ?", "Which formats are supported?"),
-      a: t("ASV analyse les vidéos (MP4, WebM) et les fichiers audio (MP3, WAV). Les podcasts et vidéos YouTube peuvent être analysés via leur URL.", "ASV analyzes videos (MP4, WebM) and audio files (MP3, WAV). Podcasts and YouTube videos can be analyzed via URL.")
-    },
-    {
-      q: t("Comment sont trouvées les sources ?", "How are sources identified?"),
-      a: t("ASV analyse les posts, articles et vidéos pour extraire et identifier les sources citées. Il les note et compare ce qui a été dit avec le contenu réel de la source pour détecter le cherry-picking.", "ASV analyzes posts, articles, and videos to extract and identify cited sources. It rates them and compares claims with source content to detect cherry-picking.")
-    },
-  ];
-
-  const creatorsFaq = [
-    {
-      q: t("Comment recevoir des dons ?", "How can I receive donations?"),
-      a: t("Les lecteurs peuvent vous soutenir directement via ActuWorld. Vous recevez 90% du don, les 10% restants maintiennent la plateforme.", "Readers can support you directly through ActuWorld. You receive 90% of each donation, and 10% supports platform operations.")
-    },
-    {
-      q: t("Quels sont les avantages du plan Pro ?", "What are the benefits of the Pro plan?"),
-      a: t("Analyses détaillées ASV, badge vérifié, statistiques avancées et support prioritaire. Idéal pour les créateurs qui publient régulièrement et veulent des insights approfondis.", "Detailed ASV analytics, verified badge, advanced stats, and priority support. Ideal for creators who publish frequently and need deeper insights.")
-    },
-    {
-      q: t("Comment augmenter mon score de confiance ?", "How do I increase my trust score?"),
-      a: t("Publiez du contenu bien sourcé et de qualité. Les votes positifs de la communauté augmentent progressivement votre score.", "Publish high-quality, well-sourced content. Positive community votes gradually increase your score.")
-    },
-    {
-      q: t("Comment fonctionne le système de votes ?", "How does the voting system work?"),
-      a: t("Les lecteurs votent 'Fiable', 'Neutre' ou 'Douteuse' sur chaque post. Ces votes construisent un score agrégé visible dans les profils et les classements.", "Readers vote 'Reliable', 'Neutral', or 'Questionable' on each post. These votes create an aggregate score visible in profiles and rankings.")
-    },
-  ];
-
-  const FaqSection = ({ title, items }: { title: string; items: { q: string; a: string }[] }) => (
+  const FaqList = ({ items }: { items: { q: string; a: string }[] }) => (
     <motion.div
       initial="hidden"
       whileInView="visible"
@@ -90,7 +60,6 @@ export default function FaqPage() {
       variants={staggerContainer}
       className="space-y-4"
     >
-      <h3 className="text-xl font-bold text-aw-primary mb-6">{title}</h3>
       {items.map((item, i) => (
         <motion.div
           key={i}
@@ -141,24 +110,10 @@ export default function FaqPage() {
         </motion.div>
       </Section>
 
-      {/* GENERAL FAQ */}
+      {/* FAQ */}
       <Section className="py-12">
         <div className="max-w-3xl mx-auto">
-          <FaqSection title={t("Général", "General")} items={generalFaq} />
-        </div>
-      </Section>
-
-      {/* ASV FAQ */}
-      <Section className="bg-aw-surface py-12">
-        <div className="max-w-3xl mx-auto">
-          <FaqSection title="ASV" items={recoSrcFaq} />
-        </div>
-      </Section>
-
-      {/* CREATORS FAQ */}
-      <Section className="py-12">
-        <div className="max-w-3xl mx-auto">
-          <FaqSection title={t("Créateurs", "Creators")} items={creatorsFaq} />
+          <FaqList items={faqs} />
         </div>
       </Section>
 
