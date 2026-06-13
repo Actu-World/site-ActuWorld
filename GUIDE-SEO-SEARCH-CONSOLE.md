@@ -6,15 +6,19 @@
 ---
 
 ## 0. Pré-requis (déjà fait côté code ✅)
-- Pré-rendu activé en production (le HTML contient le contenu + les balises SEO de chaque page).
-- `og-image.png` (aperçu de partage) créé.
+- `index.html` enrichi : titre, description, canonical, Open Graph + Twitter (en français)
+  → la page d'accueil et les aperçus de liens sont corrects sans JavaScript.
+- `og-image.png` (aperçu de partage 1200×630) créé.
 - `robots.txt`, `sitemap.xml`, `llms.txt` à jour.
 - Données structurées Organization + WebSite (avec lien Instagram) dans `index.html`.
+- Site servi en SPA (fallback `vercel.json`) ; Google rend le JavaScript pour indexer les
+  sous-pages et leurs balises propres.
 
-> ⚠️ **Important après déploiement :** vérifie que le build Vercel réussit avec le pré-rendu.
-> Si le build échoue (Chrome introuvable), ajoute la variable d'environnement
-> `DISABLE_PRERENDER=true` dans Vercel pour revenir à la SPA, et préviens-moi (on
-> branchera une autre méthode de pré-rendu).
+> ℹ️ **Pré-rendu :** désactivé sur Vercel (l'environnement de build n'a pas les bibliothèques
+> système requises par Chrome). Le SEO repose sur les balises statiques de `index.html` + le
+> rendu JS de Google — suffisant pour un site de cette taille. Pour générer du HTML pré-rendu
+> plus tard, lancer le build avec `ENABLE_PRERENDER=true` dans un environnement disposant de
+> Chrome et de ses dépendances.
 
 ---
 
