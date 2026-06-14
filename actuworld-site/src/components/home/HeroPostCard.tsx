@@ -80,7 +80,7 @@ const BackCard: React.FC<{
   </div>
 );
 
-export const HeroPostCard: React.FC = () => {
+export const HeroPostCard: React.FC<{ float?: boolean; compact?: boolean }> = ({ float = true, compact = false }) => {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
 
@@ -97,7 +97,7 @@ export const HeroPostCard: React.FC = () => {
       />
 
       <motion.div
-        animate={{ y: [0, -10, 0] }}
+        animate={float ? { y: [0, -10, 0] } : undefined}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         className="relative mx-auto"
         style={{ width: 340, maxWidth: "100%", aspectRatio: "3 / 4" }}
@@ -105,7 +105,7 @@ export const HeroPostCard: React.FC = () => {
         {/* ── Post en éventail (arrière, gauche) ── */}
         <motion.div
           initial={{ opacity: 0, rotate: 0, x: 0, y: 0 }}
-          animate={{ opacity: 1, rotate: -7, x: -26, y: 14 }}
+          animate={{ opacity: 1, rotate: compact ? -5 : -7, x: compact ? -14 : -26, y: compact ? 9 : 14 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.35 }}
           className="absolute inset-0 origin-bottom"
           style={{ zIndex: 10 }}
@@ -122,7 +122,7 @@ export const HeroPostCard: React.FC = () => {
         {/* ── Post en éventail (arrière, droite) ── */}
         <motion.div
           initial={{ opacity: 0, rotate: 0, x: 0, y: 0 }}
-          animate={{ opacity: 1, rotate: 6, x: 22, y: 8 }}
+          animate={{ opacity: 1, rotate: compact ? 5 : 6, x: compact ? 12 : 22, y: compact ? 6 : 8 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.25 }}
           className="absolute inset-0 origin-bottom"
           style={{ zIndex: 20 }}

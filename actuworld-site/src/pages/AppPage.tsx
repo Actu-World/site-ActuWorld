@@ -112,7 +112,7 @@ export default function AppPage() {
       </Section>
 
       {/* EXEMPLE UTILISATEUR EMMA */}
-      <Section id="example" className="bg-aw-surface py-24">
+      <Section id="example" className="bg-aw-surface py-16 md:py-24">
         <AnimatedSection>
           <div className="text-center mb-12">
             <H2 kicker="En pratique" center>
@@ -161,7 +161,7 @@ export default function AppPage() {
       </Section>
 
       {/* DIFFÉRENCIATEURS */}
-      <Section id="why" className="py-24 relative overflow-hidden">
+      <Section id="why" className="py-16 md:py-24 relative overflow-hidden">
         <Parallax offset={40} className="absolute inset-0 pointer-events-none">
           <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-aw-accent/10 rounded-full blur-3xl" />
         </Parallax>

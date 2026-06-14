@@ -120,7 +120,7 @@ export default function RecoSrcPage() {
       </Section>
 
       {/* CORE FEATURES */}
-      <Section className="bg-aw-surface py-24">
+      <Section className="bg-aw-surface py-16 md:py-24">
         <AnimatedSection>
           <div className="text-center mb-16">
             <H2 kicker="Fonctionnalités" center>
@@ -167,7 +167,7 @@ export default function RecoSrcPage() {
       </Section>
 
       {/* SCORING SYSTEM */}
-      <Section className="py-24 relative overflow-hidden">
+      <Section className="py-16 md:py-24 relative overflow-hidden">
         <Parallax offset={30} className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/3 left-0 w-80 h-80 bg-aw-secondary/10 rounded-full blur-3xl" />
         </Parallax>
@@ -212,7 +212,7 @@ export default function RecoSrcPage() {
       </Section>
 
       {/* CHERRY-PICKING DETECTION */}
-      <Section className="bg-aw-surface py-24">
+      <Section className="bg-aw-surface py-16 md:py-24">
         <div className="max-w-4xl mx-auto">
           <AnimatedSection>
             <div className="text-center mb-12">
@@ -275,7 +275,7 @@ export default function RecoSrcPage() {
       </Section>
 
       {/* USE CASES */}
-      <Section className="py-24">
+      <Section className="py-16 md:py-24">
         <AnimatedSection>
           <div className="text-center mb-16">
             <H2 kicker="Cas d'usage" center>
@@ -341,7 +341,7 @@ export default function RecoSrcPage() {
       </Section>
 
       {/* CTA */}
-      <Section className="bg-aw-surface py-24">
+      <Section className="bg-aw-surface py-16 md:py-24">
         <AnimatedSection direction="scale">
           <div className="text-center">
             <h3 className="text-2xl font-bold mb-4">{t("Prêt à vérifier vos sources ?", "Ready to verify your sources?")}</h3>

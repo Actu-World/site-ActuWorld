@@ -108,7 +108,7 @@ export default function ContactPage() {
       </Section>
 
       {/* MAIN CTA */}
-      <Section className="bg-aw-surface py-24">
+      <Section className="bg-aw-surface py-16 md:py-24">
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -127,7 +127,7 @@ export default function ContactPage() {
             >
               <Globe2 className="w-10 h-10 text-white" />
             </motion.div>
-            <h3 className="text-3xl font-bold mb-4">{t("Explore avec nous", "Explore with us")}</h3>
+            <h3 className="text-2xl md:text-3xl font-bold mb-4">{t("Explore avec nous", "Explore with us")}</h3>
             <p className="text-aw-muted text-lg mb-8">
               {t("ActuWorld est en développement. Contacte-nous pour être informé du lancement et faire partie des premiers à publier, explorer et partager avec preuves.", "ActuWorld is in development. Contact us to get launch updates and be among the first to publish, explore, and share with proof.")}
             </p>
@@ -139,7 +139,7 @@ export default function ContactPage() {
       </Section>
 
       {/* WHAT WE'RE LOOKING FOR */}
-      <Section className="py-24">
+      <Section className="py-16 md:py-24">
         <AnimatedSection>
           <div className="text-center mb-12">
             <H2 kicker="On recherche" center>

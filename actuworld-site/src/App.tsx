@@ -56,7 +56,7 @@ export default function App() {
       <ScrollProgress />
       <ScrollToTop />
       <Navbar />
-      <main>
+      <main className="overflow-x-clip">
         <Suspense fallback={<PageLoader isLoading={true} />}>
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>

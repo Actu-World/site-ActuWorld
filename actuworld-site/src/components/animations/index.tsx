@@ -121,18 +121,27 @@ export const AnimatedSection = ({
     scale: scaleUp
   };
 
-  return (
+  const inner = (
     <motion.div
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-100px" }}
       variants={variants[direction]}
       transition={{ delay }}
-      className={className}
+      className={direction === "left" || direction === "right" ? "" : className}
     >
       {children}
     </motion.div>
   );
+
+  // Les entrées horizontales démarrent décalées de ±40px : sur petit écran
+  // cela déborde et coupe le contenu. On enveloppe dans un conteneur qui rogne
+  // ce débordement le temps de l'animation, sans rien changer au rendu final.
+  if (direction === "left" || direction === "right") {
+    return <div className={`overflow-x-clip ${className}`}>{inner}</div>;
+  }
+
+  return inner;
 };
 
 // Parallax wrapper

@@ -63,7 +63,7 @@ export default function AboutPage() {
       </Section>
 
       {/* MISSION */}
-      <Section className="bg-aw-surface py-20">
+      <Section className="bg-aw-surface py-14 md:py-20">
         <AnimatedSection className="max-w-3xl mx-auto text-center">
           <SectionKicker number="01" label={t("Notre mission", "Our mission")} center className="mb-6" />
           <p className="text-2xl md:text-3xl font-bold leading-snug" style={{ fontFamily: '"Platypi", Georgia, serif' }}>
@@ -82,7 +82,7 @@ export default function AboutPage() {
       </Section>
 
       {/* VALEURS */}
-      <Section className="py-20">
+      <Section className="py-14 md:py-20">
         <AnimatedSection className="text-center mb-12 flex flex-col items-center">
           <SectionKicker number="02" label={t("Nos valeurs", "Our values")} center className="mb-5" />
           <H2 center>
@@ -118,7 +118,7 @@ export default function AboutPage() {
       </Section>
 
       {/* SOUTIEN / PARTENAIRES */}
-      <Section className="bg-aw-surface py-20">
+      <Section className="bg-aw-surface py-14 md:py-20">
         <AnimatedSection className="max-w-3xl mx-auto text-center">
           <SectionKicker number="03" label={t("Soutenir le projet", "Support the project")} center className="mb-5" />
           <H2 center>

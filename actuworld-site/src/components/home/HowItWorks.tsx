@@ -182,7 +182,7 @@ export const HowItWorks: React.FC = () => {
   ];
 
   return (
-    <Section id="how" className="py-24 relative">
+    <Section id="how" className="py-16 md:py-24 relative">
       <div className="flex flex-col items-center text-center mb-12 lg:mb-20">
         <SectionKicker number="02" label={t("Comment ça marche", "How it works")} center className="mb-5" />
         <H2 center>
@@ -207,11 +207,15 @@ export const HowItWorks: React.FC = () => {
             <motion.div
               key={i}
               data-step={i}
-              className="lg:min-h-[58vh] flex flex-col justify-center py-8 lg:py-0"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="lg:min-h-[58vh] flex flex-col justify-center py-8 lg:py-0 max-lg:text-center max-lg:items-center max-lg:card max-lg:p-6 max-lg:mb-6"
             >
-              <div className="flex items-center gap-4 mb-4">
+              <div className="flex items-center gap-4 mb-4 max-lg:justify-center">
                 <span
-                  className="flex items-center justify-center w-12 h-12 rounded-2xl text-white shrink-0 transition-all"
+                  className="how-badge flex items-center justify-center w-12 h-12 rounded-2xl shrink-0 transition-all max-lg:shadow-lg"
                   style={{
                     background: active === i
                       ? "linear-gradient(135deg, var(--aw-primary), var(--aw-accent))"
@@ -221,17 +225,23 @@ export const HowItWorks: React.FC = () => {
                 >
                   <s.icon className="w-6 h-6" />
                 </span>
-                <span className="text-5xl font-black tabular-nums text-aw-primary/15" style={{ fontFamily: '"Platypi", serif' }}>
+                <span className="text-4xl lg:text-5xl font-black tabular-nums text-aw-primary/15" style={{ fontFamily: '"Platypi", serif' }}>
                   0{i + 1}
                 </span>
               </div>
-              <h3 className="text-2xl md:text-3xl font-bold mb-3">{s.title}</h3>
-              <p className="text-aw-muted text-lg leading-relaxed max-w-md">{s.desc}</p>
+              <h3 className="text-xl md:text-2xl lg:text-3xl font-bold mb-3">{s.title}</h3>
+              <p className="text-aw-muted text-base lg:text-lg leading-relaxed max-w-md max-lg:mx-auto">{s.desc}</p>
 
-              {/* Visuel inline (mobile) */}
-              <div className="lg:hidden mt-8">
+              {/* Visuel inline (mobile) — animé à l'entrée, plus compact */}
+              <motion.div
+                className="lg:hidden mt-7 w-full max-w-[260px] mx-auto"
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.5, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+              >
                 <HowVisual active={i} />
-              </div>
+              </motion.div>
             </motion.div>
           ))}
         </div>

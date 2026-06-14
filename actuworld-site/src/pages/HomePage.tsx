@@ -1,6 +1,6 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Link } from "react-router-dom";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ChevronRight, FileText, Unlock, ThumbsUp, Sparkles,
   AlertTriangle, Search, TrendingDown, Users, Quote
@@ -37,6 +37,17 @@ export default function HomePage() {
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 150]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
+  // Sur mobile on coupe parallax + animations décoratives continues
+  // pour garder un scroll parfaitement fluide.
+  const [isDesktop, setIsDesktop] = useState(true);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
   const problems = [
     {
       icon: AlertTriangle,
@@ -68,31 +79,31 @@ export default function HomePage() {
         path="/"
       />
       {/* HERO */}
-      <Section id="hero" container={false} className="relative overflow-hidden pt-16 md:pt-24 pb-20">
-        {/* Animated blobs — tailles réduites sur mobile via classes responsive */}
-        <motion.div
-          className="aw-blob w-[20rem] h-[20rem] md:w-[40rem] md:h-[40rem] bg-[#94C9AA] -top-32 -right-32"
-          animate={{
-            scale: [1, 1.1, 1],
-            rotate: [0, 180, 360],
-          }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        />
-        <motion.div
-          className="aw-blob w-[16rem] h-[16rem] md:w-[32rem] md:h-[32rem] bg-[#00A896] -bottom-32 -left-32"
-          animate={{
-            scale: [1.1, 1, 1.1],
-            rotate: [360, 180, 0],
-          }}
-          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-        />
-        <Floating duration={6} y={20}>
-          <div className="aw-blob w-[10rem] h-[10rem] md:w-[20rem] md:h-[20rem] bg-[#2E5F4A] top-1/2 left-1/3 opacity-20" />
-        </Floating>
+      <Section id="hero" container={false} className="relative pt-16 md:pt-24 pb-20">
+        {/* Calque décoratif : SEUL ce calque masque le débordement (les blobs).
+            Le contenu (texte + carte) n'est plus rogné. */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+          {/* Blobs décoratifs — animés sur ordi, figés sur mobile (fluidité) */}
+          <motion.div
+            className="aw-blob w-[20rem] h-[20rem] md:w-[40rem] md:h-[40rem] bg-[#94C9AA] -top-32 -right-32"
+            animate={isDesktop ? { scale: [1, 1.1, 1], rotate: [0, 180, 360] } : undefined}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          />
+          <motion.div
+            className="aw-blob w-[16rem] h-[16rem] md:w-[32rem] md:h-[32rem] bg-[#00A896] -bottom-32 -left-32"
+            animate={isDesktop ? { scale: [1.1, 1, 1.1], rotate: [360, 180, 0] } : undefined}
+            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+          />
+          {isDesktop && (
+            <Floating duration={6} y={20}>
+              <div className="aw-blob w-[10rem] h-[10rem] md:w-[20rem] md:h-[20rem] bg-[#2E5F4A] top-1/2 left-1/3 opacity-20" />
+            </Floating>
+          )}
+        </div>
 
         <motion.div
           ref={heroRef}
-          style={{ y: heroY, opacity: heroOpacity }}
+          style={isDesktop ? { y: heroY, opacity: heroOpacity } : undefined}
           className="max-w-7xl mx-auto container-px relative"
         >
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
@@ -170,21 +181,21 @@ export default function HomePage() {
               </motion.div>
             </motion.div>
 
-            {/* Colonne visuel produit */}
+            {/* Colonne visuel produit — visible aussi sur mobile, sans flottement */}
             <motion.div
               initial={{ opacity: 0, scale: 0.92, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-              className="hidden md:block"
+              className="mt-6 lg:mt-0 max-w-[250px] sm:max-w-none mx-auto w-full"
             >
-              <HeroPostCard />
+              <HeroPostCard float={isDesktop} compact={!isDesktop} />
             </motion.div>
           </div>
         </motion.div>
       </Section>
 
       {/* 01 · LE CONSTAT */}
-      <Section id="problem" className="bg-aw-surface py-24">
+      <Section id="problem" className="bg-aw-surface py-16 md:py-24">
         <AnimatedSection>
           <div className="flex flex-col items-center text-center mb-16">
             <SectionKicker number="01" label={t("Le constat", "The problem")} center className="mb-5" />
@@ -243,7 +254,7 @@ export default function HomePage() {
       <HowItWorks />
 
       {/* 03 · VISION */}
-      <Section id="vision" className="bg-aw-surface py-24 relative overflow-hidden">
+      <Section id="vision" className="bg-aw-surface py-16 md:py-24 relative overflow-hidden">
         <Parallax offset={30} className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/4 right-0 w-96 h-96 bg-aw-secondary/20 rounded-full blur-3xl" />
           <div className="absolute bottom-1/4 left-0 w-80 h-80 bg-aw-accent/10 rounded-full blur-3xl" />
@@ -276,10 +287,11 @@ export default function HomePage() {
       </Section>
 
       {/* 04 · POURQUOI ACTUWORLD EXISTE */}
-      <Section id="founder" className="py-24">
+      <Section id="founder" className="py-16 md:py-24">
         <div className="max-w-5xl mx-auto grid md:grid-cols-[auto_1fr] gap-10 md:gap-16 items-center">
-          {/* Photo du fondateur */}
-          <AnimatedSection direction="left">
+          {/* Photo du fondateur — fondu vertical (un slide horizontal déborde
+              à droite sur mobile et coupe le texte) */}
+          <AnimatedSection direction="up">
             <div className="relative mx-auto w-56 sm:w-64 md:w-[18rem]">
               {/* Halo + carré d'accent décoratif */}
               <div
@@ -304,11 +316,11 @@ export default function HomePage() {
           </AnimatedSection>
 
           {/* Citation */}
-          <AnimatedSection direction="right">
+          <AnimatedSection direction="up" className="text-center md:text-left">
             <SectionKicker number="04" label={t("Pourquoi ActuWorld existe", "Why ActuWorld exists")} className="mb-6" />
-            <Quote className="w-10 h-10 text-aw-primary/25 mb-2" aria-hidden="true" />
+            <Quote className="w-10 h-10 text-aw-primary/25 mb-2 mx-auto md:mx-0" aria-hidden="true" />
             <p
-              className="text-2xl md:text-3xl font-bold leading-snug text-aw-text"
+              className="font-bold leading-snug text-aw-text whitespace-nowrap text-[clamp(11px,3.45vw,16px)] md:whitespace-normal md:text-3xl"
               style={{ fontFamily: '"Platypi", Georgia, serif' }}
             >
               {t("« J'ai construit l'outil dont j'avais besoin. »", "“I built the tool I needed.”")}
@@ -321,7 +333,7 @@ export default function HomePage() {
             </p>
 
             {/* Signature */}
-            <div className="mt-6 flex items-center gap-3">
+            <div className="mt-6 flex items-center gap-3 justify-center md:justify-start">
               <div className="h-px w-8 bg-aw-primary/40" aria-hidden="true" />
               <div>
                 <div className="font-bold text-aw-text">Maxence Allier</div>
@@ -371,7 +383,7 @@ export default function HomePage() {
       </Section>
 
       {/* 05 · REJOINDRE */}
-      <Section className="py-24">
+      <Section className="py-16 md:py-24">
         <AnimatedSection direction="scale">
           <div
             className="relative max-w-4xl mx-auto overflow-hidden rounded-[2rem] px-6 py-14 md:px-16 md:py-20 text-center border border-white/10"
@@ -387,7 +399,7 @@ export default function HomePage() {
             <div className="relative">
               <SectionKicker number="05" label={t("Rejoindre", "Join")} center tone="light" className="mb-6" />
               <h2
-                className="text-3xl md:text-5xl font-bold text-white leading-tight"
+                className="text-2xl md:text-5xl font-bold text-white leading-tight"
                 style={{ fontFamily: '"Platypi", Georgia, serif' }}
               >
                 {t("Prêt à partager avec preuves ?", "Ready to share with proof?")}

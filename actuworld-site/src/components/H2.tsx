@@ -16,7 +16,7 @@ export const H2: React.FC<Props> = ({ kicker, children, center, as = 'h2' }) => 
           {kicker}
         </p>
       )}
-      <Tag className="text-3xl md:text-4xl font-bold leading-tight">
+      <Tag className="text-2xl md:text-4xl font-bold leading-tight">
         {children}
       </Tag>
     </div>

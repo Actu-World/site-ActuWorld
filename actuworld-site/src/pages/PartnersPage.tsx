@@ -89,7 +89,7 @@ export default function PartnersPage() {
       </Section>
 
       {/* QUI ON CHERCHE */}
-      <Section className="bg-aw-surface py-20">
+      <Section className="bg-aw-surface py-14 md:py-20">
         <AnimatedSection className="text-center mb-12 flex flex-col items-center">
           <SectionKicker number="01" label={t("Qui on cherche", "Who we're looking for")} center className="mb-5" />
           <H2 center>
@@ -125,7 +125,7 @@ export default function PartnersPage() {
       </Section>
 
       {/* CE QUE ÇA APPORTE */}
-      <Section className="py-20">
+      <Section className="py-14 md:py-20">
         <AnimatedSection className="text-center mb-12 flex flex-col items-center">
           <SectionKicker number="02" label={t("Ce que ça apporte", "What you get")} center className="mb-5" />
           <H2 center>
@@ -172,7 +172,7 @@ export default function PartnersPage() {
       </Section>
 
       {/* CTA CONTACT */}
-      <Section className="py-24">
+      <Section className="py-16 md:py-24">
         <AnimatedSection direction="scale">
           <div
             className="relative max-w-4xl mx-auto overflow-hidden rounded-[2rem] px-6 py-14 md:px-16 md:py-20 text-center border border-white/10"
@@ -185,7 +185,7 @@ export default function PartnersPage() {
             />
             <div className="relative">
               <Sparkles className="w-8 h-8 text-[#A8D5BA] mx-auto mb-4" />
-              <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight" style={{ fontFamily: '"Platypi", Georgia, serif' }}>
+              <h2 className="text-2xl md:text-4xl font-bold text-white leading-tight" style={{ fontFamily: '"Platypi", Georgia, serif' }}>
                 {t("Discutons de votre soutien", "Let's talk about your support")}
               </h2>
               <p className="mt-4 text-white/85 text-lg max-w-xl mx-auto">
