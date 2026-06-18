@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:        # permet de relancer le déploiement à la main depuis l'onglet Actions
 
 jobs:
   # Garde-fou : le déploiement n'a lieu que si le build Vite passe.
@@ -42,7 +43,9 @@ jobs:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: rm -rf "${{ env.DEPLOY_DIR }}/actuworld-site/src" "${{ env.DEPLOY_DIR }}/actuworld-site/public"
+          script: |
+            mkdir -p "${{ env.DEPLOY_DIR }}"
+            rm -rf "${{ env.DEPLOY_DIR }}/actuworld-site/src" "${{ env.DEPLOY_DIR }}/actuworld-site/public"
 
       - name: Copy files via SSH
         uses: appleboy/scp-action@v1.0.0
