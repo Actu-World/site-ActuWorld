@@ -1,0 +1,21 @@
+# Site vitrine ActuWorld — servi en interne sur app-network, exposé au public
+# via Nginx Proxy Manager (proxy host actuworld.fr -> site-actuworld:80).
+# Pas de "ports:" publié : seul NPM est en frontal (comme l'API et RECO-SRC).
+services:
+  site:
+    container_name: ${SITE_CONTAINER_NAME:-site-actuworld}
+    build:
+      context: ./actuworld-site
+      dockerfile: Dockerfile
+      args:
+        VITE_GA_ID: ${VITE_GA_ID:-}
+        VITE_BREVO_API_KEY: ${VITE_BREVO_API_KEY:-}
+    restart: always
+    networks:
+      app-network:
+        aliases:
+          - ${SITE_NETWORK_ALIAS:-site-actuworld}
+
+networks:
+  app-network:
+    external: true
