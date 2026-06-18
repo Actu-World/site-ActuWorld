@@ -98,7 +98,27 @@ export default function PrivacyPage() {
 
             <section>
               <h2 className="text-xl font-semibold mb-3">
-                {t("6. Contact", "6. Contact")}
+                {t("6. Durées de conservation", "6. Data Retention")}
+              </h2>
+              <p>
+                {t(
+                  "Nous ne conservons vos données que le temps nécessaire :",
+                  "We only keep your data for as long as necessary:"
+                )}
+              </p>
+              <ul className="mt-3 list-disc pl-6 space-y-1">
+                <li>{t("Compte et contenus publiés : tant que votre compte est actif.", "Account and published content: as long as your account is active.")}</li>
+                <li>{t("Comptes inactifs : anonymisés après 24 mois sans connexion (un e-mail d'avertissement est envoyé au préalable).", "Inactive accounts: anonymized after 24 months without sign-in (a warning email is sent beforehand).")}</li>
+                <li>{t("Messages privés : 12 mois.", "Private messages: 12 months.")}</li>
+                <li>{t("Données de modération (signalements, actions) : 12 mois, hors sanctions en cours.", "Moderation data (reports, actions): 12 months, excluding ongoing sanctions.")}</li>
+                <li>{t("Notifications : 90 jours.", "Notifications: 90 days.")}</li>
+                <li>{t("Sur demande de suppression de compte : vos données personnelles sont anonymisées immédiatement.", "On account deletion request: your personal data is anonymized immediately.")}</li>
+              </ul>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mb-3">
+                {t("7. Contact", "7. Contact")}
               </h2>
               <p>
                 {t(
