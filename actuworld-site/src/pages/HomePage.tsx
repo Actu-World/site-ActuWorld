@@ -327,8 +327,8 @@ export default function HomePage() {
             </p>
             <p className="text-aw-muted leading-relaxed mt-5 text-lg">
               {t(
-                "Quand je lisais des informations, j'avais toujours ce doute : est-ce fiable ? Il manquait un endroit où partager ce qui nous intéresse tout en montrant d'où ça vient — un espace où vérifier avant de croire devient naturel. ActuWorld est né de ce besoin.",
-                "When I read information, I always had that doubt: is this reliable? I was missing a place to share what interests me while showing where it comes from — a space where verifying before believing becomes natural. ActuWorld was born from that need."
+                "Quand je lisais des informations, j'avais toujours ce doute: est-ce que tout ce qui est dit est vrai ? Il manquait ce petit outil qui permette de prendre du recul, de faire une vraie auto-critique avant de croire ou de partager. ActuWorld est né de ce besoin.",
+                "When I read information, I always had that doubt: is everything being said really true? I was missing a simple tool to step back and self-check before believing or sharing. ActuWorld was born from that need."
               )}
             </p>
 
