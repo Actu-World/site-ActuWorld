@@ -60,8 +60,8 @@ export default function PrivacyPage() {
               </h2>
               <p>
                 {t(
-                  "Les données sont hébergées sur des serveurs sécurisés (Supabase, Vercel). Les communications sont chiffrées via HTTPS. Les mots de passe sont hashés et ne sont jamais stockés en clair.",
-                  "Data is hosted on secure servers (Supabase, Vercel). Communications are encrypted via HTTPS. Passwords are hashed and never stored in plain text."
+                  "Vos données sont hébergées au sein de l'Union européenne : bases de données chez Supabase, Inc. (Paris, France et Francfort, Allemagne) et API sur un serveur OVHcloud à Gravelines (France). Le site vitrine est servi par Vercel (États-Unis) et ne traite pas de données de compte. Les communications sont chiffrées via HTTPS ; les mots de passe sont hashés et ne sont jamais stockés en clair.",
+                  "Your data is hosted within the European Union: databases on Supabase, Inc. (Paris, France and Frankfurt, Germany) and API on an OVHcloud server in Gravelines (France). The showcase website is served by Vercel (USA) and does not process account data. Communications are encrypted via HTTPS; passwords are hashed and never stored in plain text."
                 )}
               </p>
             </section>

@@ -68,8 +68,8 @@ export default function LegalNoticePage() {
               </h2>
               <p>
                 {t(
-                  "Le site est hébergé par Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis (vercel.com). Les données applicatives sont hébergées par Supabase, Inc. (supabase.com), au sein de l'Union européenne.",
-                  "The website is hosted by Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, USA (vercel.com). Application data is hosted by Supabase, Inc. (supabase.com), within the European Union."
+                  "Le site vitrine est hébergé par Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis (vercel.com). L'API et les traitements applicatifs sont opérés sur un serveur OVHcloud (OVH SAS, 2 rue Kellermann, 59100 Roubaix, France), localisé au datacenter de Gravelines (France). Les bases de données sont hébergées par Supabase, Inc. (supabase.com) au sein de l'Union européenne : Paris (France) pour l'application, et Francfort (Allemagne) pour le service de vérification des sources.",
+                  "The showcase website is hosted by Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, USA (vercel.com). The API and application processing run on an OVHcloud server (OVH SAS, 2 rue Kellermann, 59100 Roubaix, France), located in the Gravelines datacenter (France). Databases are hosted by Supabase, Inc. (supabase.com) within the European Union: Paris (France) for the app, and Frankfurt (Germany) for the source-verification service."
                 )}
               </p>
             </section>
