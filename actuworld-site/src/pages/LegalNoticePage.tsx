@@ -40,11 +40,11 @@ export default function LegalNoticePage() {
                   "The ActuWorld website is published by Maxence Allier, sole proprietor."
                 )}
                 <br />
-                {t("Statut juridique : ", "Legal status: ")}<strong>[À COMPLÉTER — ex. entrepreneur individuel / micro-entreprise]</strong>
+                {t("Statut juridique : ", "Legal status: ")}<strong>{t("Micro-entreprise (entrepreneur individuel)", "Micro-enterprise (sole proprietor)")}</strong>
                 <br />
                 {t("Adresse : ", "Address: ")}<strong>[À COMPLÉTER — adresse postale]</strong>
                 <br />
-                {t("SIRET : ", "Company ID: ")}<strong>[À COMPLÉTER — n° SIRET si immatriculé]</strong>
+                {t("SIRET : ", "Company ID: ")}<strong>99507068700018</strong>
                 <br />
                 {t("E-mail : ", "Email: ")}actuworld.app@outlook.fr
               </p>
