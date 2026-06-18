@@ -67,6 +67,6 @@ Une fois `https://actuworld.fr` servi par le VPS et vérifié, supprimer le proj
 ---
 
 ## Points d'attention
-- **`@vercel/analytics`** ne fonctionne **que** sur l'hébergement Vercel. Hors Vercel il ne collecte plus rien (inoffensif). Si tu veux de la mesure d'audience hors Vercel, garder Google Analytics (`VITE_GA_ID`) ou passer à une solution sans cookie auto-hébergée — et ajuster la politique de confidentialité en conséquence.
+- **`@vercel/analytics`** a été **retiré** du code (`main.tsx`) car il ne fonctionne que sur Vercel — et la mention correspondante a été retirée de la politique de confidentialité. La mesure d'audience repose désormais sur **Google Analytics** (`VITE_GA_ID`, déposé après consentement via le bandeau cookies). Le package reste dans `package.json` (inoffensif, non importé) ; tu peux le retirer proprement plus tard avec `npm uninstall @vercel/analytics`.
 - **Pré-rendu SEO** : laissé désactivé (pas de Chrome dans l'image de build), comme sur Vercel aujourd'hui. Pour l'activer un jour, builder avec `ENABLE_PRERENDER=true` dans une image contenant Chrome + libs.
 - **`vercel.json`** devient inutile une fois hors Vercel (ses règles SPA/headers sont reprises dans `nginx.conf`). On peut le laisser ou le supprimer.
