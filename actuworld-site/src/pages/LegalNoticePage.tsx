@@ -42,7 +42,7 @@ export default function LegalNoticePage() {
                 <br />
                 {t("Statut juridique : ", "Legal status: ")}<strong>{t("Micro-entreprise (entrepreneur individuel)", "Micro-enterprise (sole proprietor)")}</strong>
                 <br />
-                {t("Adresse : ", "Address: ")}<strong>[À COMPLÉTER — adresse postale]</strong>
+                {t("Adresse : ", "Address: ")}<strong>11 allée des Roses, 97441 Sainte-Suzanne, La Réunion (France)</strong>
                 <br />
                 {t("SIRET : ", "Company ID: ")}<strong>99507068700018</strong>
                 <br />
