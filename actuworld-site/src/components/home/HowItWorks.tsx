@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link2, ShieldCheck, Star, Users, CheckCircle2, AlertCircle } from "lucide-react";
 import phoneImg from "../../assets/phone_img_opt.webp";
 import { Section } from "../Section";
@@ -143,16 +143,29 @@ export const HowItWorks: React.FC = () => {
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
   const [active, setActive] = useState(0);
 
-  // Pilotage déterministe du visuel sticky par la progression de scroll
+  // Pilotage du visuel sticky : l'étape « active » est celle dont le bloc croise
+  // le centre de l'écran. Un IntersectionObserver avec une zone réduite à la
+  // ligne médiane (-50% haut/bas) est plus fiable que la mesure de progression
+  // de scroll d'un conteneur sticky (qui laissait `active` bloqué à 0).
   const stepsRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: stepsRef,
-    offset: ["start center", "end center"],
-  });
-  useMotionValueEvent(scrollYProgress, "change", (v) => {
-    const next = Math.min(2, Math.max(0, Math.floor(v * 3)));
-    setActive((prev) => (prev === next ? prev : next));
-  });
+  useEffect(() => {
+    const container = stepsRef.current;
+    if (!container) return;
+    const items = Array.from(container.querySelectorAll<HTMLElement>("[data-step]"));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const idx = Number(entry.target.getAttribute("data-step"));
+            setActive((prev) => (prev === idx ? prev : idx));
+          }
+        });
+      },
+      { rootMargin: "-50% 0px -50% 0px", threshold: 0 }
+    );
+    items.forEach((it) => observer.observe(it));
+    return () => observer.disconnect();
+  }, []);
 
   const steps = [
     {
