@@ -22,7 +22,18 @@ export default defineConfig(() => {
               prerender({
                 routes: ['/', '/about', '/app', '/reco-src', '/faq', '/partenaires', '/contact', '/pricing', '/privacy', '/terms', '/mentions-legales', '/press'],
                 renderer: new PuppeteerRenderer({
-                  renderAfterTime: 3000,
+                  // Attente DÉTERMINISTE : le composant <PageMeta>, rendu par CHAQUE
+                  // page à l'intérieur de son chunk lazy, émet l'événement
+                  // 'prerender-ready' une fois le contenu de la route monté. On
+                  // capture le HTML à ce moment précis. Évite de figer l'écran de
+                  // chargement (fallback Suspense) comme le faisait l'attente par
+                  // temps fixe — critique pour la home (plus gros chunk).
+                  renderAfterDocumentEvent: 'prerender-ready',
+                  timeout: 20000,
+                  // --no-sandbox : requis quand le build tourne en root (Docker).
+                  args: ['--no-sandbox', '--disable-setuid-sandbox'],
+                  // Borne la concurrence pour éviter un pic mémoire en CI/conteneur.
+                  maxConcurrentRoutes: 4,
                 }),
               }),
             ]

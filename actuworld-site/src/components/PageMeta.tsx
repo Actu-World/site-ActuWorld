@@ -41,6 +41,15 @@ export function PageMeta({ title, description, path, image = '/og-image.png' }: 
       link.href = `https://www.actuworld.fr${path}`;
       document.head.appendChild(link);
     }
+
+    // Signal au pré-rendu (build ENABLE_PRERENDER) que le contenu de la route est
+    // monté et que les balises <head> sont à jour : le renderer Puppeteer capture
+    // le HTML sur cet événement (voir vite.config.ts -> renderAfterDocumentEvent).
+    // requestAnimationFrame garantit un premier paint avant la capture.
+    const raf = requestAnimationFrame(() => {
+      document.dispatchEvent(new Event('prerender-ready'));
+    });
+    return () => cancelAnimationFrame(raf);
   }, [title, description, path, image]);
 
   return null;
