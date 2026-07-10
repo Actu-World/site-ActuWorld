@@ -65,7 +65,28 @@ export default function AccountDeletionPage() {
 
             <section>
               <h2 className="text-xl font-semibold mb-3">
-                {t("3. Données supprimées et données conservées", "3. Deleted and retained data")}
+                {t(
+                  "3. Supprimer certaines données sans supprimer votre compte",
+                  "3. Delete some data without deleting your account"
+                )}
+              </h2>
+              <p>
+                {t(
+                  "Vous pouvez à tout moment supprimer vos contenus individuellement depuis l'application ActuWorld : vos publications, vos commentaires et vos messages (option « Supprimer » sur chaque contenu). Vous pouvez aussi modifier ou effacer les informations de votre profil (photo, biographie, localisation) dans Profil → Modifier le profil.",
+                  "You can delete your content individually at any time from the ActuWorld app: your posts, comments and messages (“Delete” option on each item). You can also edit or clear your profile information (photo, bio, location) in Profile → Edit profile."
+                )}
+              </p>
+              <p className="mt-3">
+                {t(
+                  "Pour toute autre demande de suppression partielle (par exemple l'historique lié à votre compte), écrivez-nous à actuworld.app@outlook.fr : nous traitons la demande sous 30 jours, sans que vous ayez à supprimer votre compte.",
+                  "For any other partial deletion request (for example account-related history), write to actuworld.app@outlook.fr: we process requests within 30 days, without requiring you to delete your account."
+                )}
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mb-3">
+                {t("4. Données supprimées et données conservées", "4. Deleted and retained data")}
               </h2>
               <p>
                 {t(
@@ -96,7 +117,7 @@ export default function AccountDeletionPage() {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">{t("4. Contact", "4. Contact")}</h2>
+              <h2 className="text-xl font-semibold mb-3">{t("5. Contact", "5. Contact")}</h2>
               <p>
                 {t(
                   "Pour toute question relative à la suppression de vos données, écrivez-nous à actuworld.app@outlook.fr.",
