@@ -20,7 +20,7 @@ export default defineConfig(() => {
         plugins: shouldPrerender
           ? [
               prerender({
-                routes: ['/', '/about', '/app', '/reco-src', '/faq', '/partenaires', '/contact', '/pricing', '/privacy', '/terms', '/mentions-legales', '/press'],
+                routes: ['/', '/about', '/app', '/reco-src', '/faq', '/partenaires', '/contact', '/pricing', '/privacy', '/terms', '/mentions-legales', '/press', '/suppression-compte'],
                 renderer: new PuppeteerRenderer({
                   // Attente DÉTERMINISTE : le composant <PageMeta>, rendu par CHAQUE
                   // page à l'intérieur de son chunk lazy, émet l'événement
