@@ -94,6 +94,14 @@ export default function PrivacyPage() {
                   "Under GDPR, you have the right to access, rectify, delete and port your data. For any request, contact us at actuworld.app@outlook.fr."
                 )}
               </p>
+              <p className="mt-3">
+                <a href="/suppression-compte" className="underline">
+                  {t(
+                    "Comment supprimer votre compte ou vos données →",
+                    "How to delete your account or your data →"
+                  )}
+                </a>
+              </p>
             </section>
 
             <section>

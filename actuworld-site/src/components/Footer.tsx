@@ -29,6 +29,7 @@ export const Footer: React.FC = () => {
             <Link to="/privacy" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Privacy' : 'Confidentialité'}</Link>
             <Link to="/terms" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Terms' : 'Conditions'}</Link>
             <Link to="/mentions-legales" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Legal' : 'Mentions légales'}</Link>
+            <Link to="/suppression-compte" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Delete account' : 'Suppression de compte'}</Link>
             <button onClick={() => resetConsent()} className="hover:text-aw-primary transition-colors">Cookies</button>
             <Link to="/press" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Press' : 'Presse'}</Link>
           </div>
