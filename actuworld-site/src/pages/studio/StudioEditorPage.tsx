@@ -494,9 +494,10 @@ export default function StudioEditorPage() {
                 </div>
               </div>
             ) : (
-              /* ── Éditeur (mise en page miroir du composer mobile) ── */
-              <>
-                <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
+              /* ── Éditeur (mise en page miroir du composer mobile), encadré par
+                   des doubles filets verticaux façon colonne de journal ── */
+              <div className="border-x-[3px] border-double border-aw px-4 sm:px-8 pb-6">
+                <div className="flex items-center justify-between gap-3 mb-4 flex-wrap pt-1">
                   <div>
                     <h1 className="text-xl font-bold text-aw-primary">
                       {editingDraftId ? t('Brouillon', 'Draft') : t('Nouvel article', 'New article')}
@@ -688,7 +689,7 @@ export default function StudioEditorPage() {
                     onClose={() => setShowPreview(false)}
                   />
                 )}
-              </>
+              </div>
             )}
           </motion.div>
         </div>
