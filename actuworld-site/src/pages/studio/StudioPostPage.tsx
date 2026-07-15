@@ -302,7 +302,7 @@ export default function StudioPostPage() {
       />
 
       <Section className="pt-24 pb-16">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
             {/* Barre de session */}
             <div className="card p-4 flex items-center justify-between gap-4 mb-8">
@@ -385,50 +385,57 @@ export default function StudioPostPage() {
                     <TagsInput tags={tags} onChange={setTags} />
                   </div>
 
-                  {/* Cartes — format carte de l'app (image 3:4 en haut, champs dessous),
-                      en grille côte à côte pour le grand écran */}
+                  {/* Cartes — liste verticale pensée grand écran : image 3:4 à taille
+                      raisonnable à gauche, champs confortables à droite */}
                   <input ref={fileInputRef} type="file" accept="image/*" className="hidden"
                     onChange={(e) => void handleFileSelected(e.target.files?.[0])} />
-                  <div className="grid sm:grid-cols-2 gap-5 items-start">
+                  <div className="space-y-5">
                     {cards.map((card, index) => (
-                      <div key={index} className="card p-3">
-                        {/* Image (ou zone d'upload) + badge numéro + actions en surimpression */}
-                        <div className="relative">
-                          {card.image_url ? (
-                            <img src={card.image_url} alt="" className="w-full aspect-[3/4] object-cover rounded-xl" />
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={() => pickImageFor(index)}
-                              disabled={isUploading}
-                              className="w-full aspect-[3/4] rounded-xl border-2 border-dashed border-aw text-aw-muted
-                                         hover:text-aw-primary hover:border-aw-primary flex flex-col items-center
-                                         justify-center gap-2 disabled:opacity-50"
-                            >
-                              <ImagePlus className="w-7 h-7" />
-                              <span className="text-sm">
-                                {isUploading ? t('Upload en cours…', 'Uploading…') : t("Choisir l'image *", 'Pick the image *')}
-                              </span>
-                            </button>
-                          )}
-                          <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/60 text-white text-xs">
-                            {index + 1}{index === 0 ? ` · ${t('titre du post', 'post title')}` : ''}
-                          </span>
-                          <div className="absolute top-2 right-2 flex gap-1">
+                      <div key={index} className="card p-4 flex flex-col sm:flex-row gap-5">
+                        {/* Colonne image : visuel + badge + actions dessous */}
+                        <div className="w-full sm:w-44 shrink-0">
+                          <div className="relative">
+                            {card.image_url ? (
+                              <img src={card.image_url} alt="" className="w-full aspect-[3/4] object-cover rounded-xl" />
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => pickImageFor(index)}
+                                disabled={isUploading}
+                                className="w-full aspect-[3/4] rounded-xl border-2 border-dashed border-aw text-aw-muted
+                                           hover:text-aw-primary hover:border-aw-primary flex flex-col items-center
+                                           justify-center gap-2 disabled:opacity-50"
+                              >
+                                <ImagePlus className="w-6 h-6" />
+                                <span className="text-xs px-2 text-center">
+                                  {isUploading ? t('Upload en cours…', 'Uploading…') : t("Choisir l'image *", 'Pick the image *')}
+                                </span>
+                              </button>
+                            )}
+                            <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/60 text-white text-xs">
+                              {index + 1}{index === 0 ? ` · ${t('titre', 'title')}` : ''}
+                            </span>
+                          </div>
+                          <div className="flex justify-center gap-1.5 mt-2">
                             <button type="button" onClick={() => moveCard(index, -1)} disabled={index === 0}
-                              className="p-1.5 rounded-lg bg-black/60 text-white hover:bg-black/80 disabled:opacity-30"
-                              aria-label={t('Reculer la carte', 'Move card back')}><ArrowUp className="w-3.5 h-3.5 -rotate-90" /></button>
+                              className="p-1.5 rounded-lg bg-aw-surface text-aw-muted hover:text-aw-primary disabled:opacity-30"
+                              aria-label={t('Reculer la carte', 'Move card back')}><ArrowUp className="w-4 h-4 -rotate-90" /></button>
                             <button type="button" onClick={() => moveCard(index, 1)} disabled={index === cards.length - 1}
-                              className="p-1.5 rounded-lg bg-black/60 text-white hover:bg-black/80 disabled:opacity-30"
-                              aria-label={t('Avancer la carte', 'Move card forward')}><ArrowDown className="w-3.5 h-3.5 -rotate-90" /></button>
+                              className="p-1.5 rounded-lg bg-aw-surface text-aw-muted hover:text-aw-primary disabled:opacity-30"
+                              aria-label={t('Avancer la carte', 'Move card forward')}><ArrowDown className="w-4 h-4 -rotate-90" /></button>
+                            {card.image_url && (
+                              <button type="button" onClick={() => pickImageFor(index)}
+                                className="p-1.5 rounded-lg bg-aw-surface text-aw-muted hover:text-aw-primary"
+                                aria-label={t("Changer l'image", 'Change image')}><ImagePlus className="w-4 h-4" /></button>
+                            )}
                             <button type="button" onClick={() => removeCard(index)}
-                              className="p-1.5 rounded-lg bg-black/60 text-red-400 hover:bg-black/80"
-                              aria-label={t('Supprimer la carte', 'Delete card')}><Trash2 className="w-3.5 h-3.5" /></button>
+                              className="p-1.5 rounded-lg bg-aw-surface text-red-500 hover:text-red-600"
+                              aria-label={t('Supprimer la carte', 'Delete card')}><Trash2 className="w-4 h-4" /></button>
                           </div>
                         </div>
 
-                        {/* Champs — compacts, sous l'image comme dans l'app */}
-                        <div className="space-y-2 mt-3">
+                        {/* Champs — aérés, à droite de l'image */}
+                        <div className="flex-1 min-w-0 space-y-2.5">
                           <input type="text" value={card.subject ?? ''} maxLength={POST_SUBJECT_MAX}
                             onChange={(e) => replaceCard(index, { ...card, subject: e.target.value })}
                             placeholder={index === 0 ? t('Sujet — titre du post *', 'Subject — post title *') : t('Sujet de la carte *', 'Card subject *')}
@@ -456,13 +463,14 @@ export default function StudioPostPage() {
                       </div>
                     ))}
 
-                    {/* Tuile d'ajout : crée une carte vide (champs visibles tout de suite, comme l'app) */}
-                    {cards.length < MAX_POST_IMAGES && (
+                    {/* Ajouter une carte : visible seulement quand toutes les cartes ont
+                        leur image (sinon la carte vide en cours fait déjà office d'ajout) */}
+                    {cards.length < MAX_POST_IMAGES && cards.every((c) => !!c.image_url) && (
                       <button type="button"
                         onClick={() => setCards((prev) => (prev.length < MAX_POST_IMAGES ? [...prev, EMPTY_CARD] : prev))}
-                        className="rounded-xl border-2 border-dashed border-aw text-aw-muted hover:text-aw-primary hover:border-aw-primary
-                                   flex flex-col items-center justify-center gap-2 aspect-[3/4] self-stretch">
-                        <ImagePlus className="w-7 h-7" />
+                        className="w-full h-16 rounded-xl border-2 border-dashed border-aw text-aw-muted hover:text-aw-primary
+                                   hover:border-aw-primary flex items-center justify-center gap-2">
+                        <ImagePlus className="w-5 h-5" />
                         <span className="text-sm">
                           {t(`Ajouter une carte (${cards.length}/${MAX_POST_IMAGES})`, `Add a card (${cards.length}/${MAX_POST_IMAGES})`)}
                         </span>
