@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import type { ReactNode } from 'react';
-import { X, Link2 } from 'lucide-react';
+import { X, Link2, Signal, Wifi, BatteryFull } from 'lucide-react';
 import type { JournalBlock, JournalSource } from '../../types/journal';
 import { journalImageUrl } from '../../lib/studio/images';
 import { hostFromUrl } from '../../lib/studio/journal';
@@ -60,21 +60,34 @@ export function ArticlePreview({ title, dek, coverPath, blocks, sources, onClose
       aria-label={t("Aperçu de l'article", 'Article preview')}
       onClick={onClose}
     >
+      {/* Bouton fermer, hors du téléphone */}
+      <button
+        type="button"
+        onClick={onClose}
+        className="absolute top-4 right-4 p-2 rounded-full bg-white/10 text-white hover:bg-white/20"
+        aria-label={t('Fermer', 'Close')}
+      >
+        <X className="w-6 h-6" />
+      </button>
+
+      {/* ── Mockup téléphone : châssis + écran ── */}
       <div
-        className="bg-aw-bg text-aw-text rounded-3xl shadow-2xl w-full max-w-[400px] max-h-[90vh] flex flex-col overflow-hidden border border-aw"
+        className="rounded-[52px] bg-neutral-900 p-[10px] shadow-[0_25px_80px_rgba(0,0,0,0.55)] ring-1 ring-white/10 select-none"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-4 py-3 border-b border-aw shrink-0">
-          <p className="text-aw-muted text-xs uppercase tracking-wide">
-            {t('Aperçu mobile', 'Mobile preview')}
-          </p>
-          <button type="button" onClick={onClose} className="p-1.5 rounded-lg text-aw-muted hover:text-aw-text"
-            aria-label={t('Fermer', 'Close')}>
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+        <div className="relative bg-aw-bg text-aw-text rounded-[42px] overflow-hidden w-[375px] max-w-[calc(100vw-4rem)] h-[min(85vh,780px)] flex flex-col">
+          {/* Barre de statut + Dynamic Island */}
+          <div className="relative shrink-0 flex items-center justify-between px-8 pt-3 pb-1">
+            <span className="text-[13px] font-semibold tabular-nums">9:41</span>
+            <div className="absolute left-1/2 -translate-x-1/2 top-2.5 w-[110px] h-[26px] rounded-full bg-black" />
+            <span className="flex items-center gap-1.5">
+              <Signal className="w-3.5 h-3.5" />
+              <Wifi className="w-4 h-4" />
+              <BatteryFull className="w-5 h-5" />
+            </span>
+          </div>
 
-        <div className="overflow-y-auto">
+          <div className="overflow-y-auto flex-1">
           {coverPath && (
             <img src={journalImageUrl(coverPath)} alt="" className="w-full aspect-[3/2] object-cover" />
           )}
@@ -184,6 +197,12 @@ export function ArticlePreview({ title, dek, coverPath, blocks, sources, onClose
                 </ul>
               </div>
             )}
+          </div>
+          </div>
+
+          {/* Barre home */}
+          <div className="shrink-0 flex justify-center py-2">
+            <div className="w-32 h-1 rounded-full bg-aw-text/30" />
           </div>
         </div>
       </div>
