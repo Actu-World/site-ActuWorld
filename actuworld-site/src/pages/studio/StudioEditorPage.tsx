@@ -3,7 +3,7 @@ import { Link, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   AlertCircle, AlertTriangle, CheckCircle2, Cloud, CloudOff, Eye, FileText,
-  Loader2, LogOut, Maximize2, Minimize2, Redo2, Send, Smartphone, Trash2, Undo2,
+  Info, Loader2, LogOut, Maximize2, Minimize2, Redo2, Send, Smartphone, Trash2, Undo2,
 } from 'lucide-react';
 import { Section } from '../../components/Section';
 import { PageMeta } from '../../components/PageMeta';
@@ -13,7 +13,7 @@ import { TagsInput } from '../../components/studio/TagsInput';
 import { DraftList } from '../../components/studio/DraftList';
 import { ArticlePreview } from '../../components/studio/ArticlePreview';
 import { PublishedList } from '../../components/studio/PublishedList';
-import { PreflightChecklist } from '../../components/studio/PreflightChecklist';
+import { WritingHelpModal } from '../../components/studio/WritingHelpModal';
 import { SourceLibrary } from '../../components/studio/SourceLibrary';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { supabase } from '../../lib/studio/supabase';
@@ -101,6 +101,9 @@ export default function StudioEditorPage() {
 
   // ── Mode focus (écriture plein écran) ──
   const [focusMode, setFocusMode] = useState(false);
+
+  // ── Aide à l'écriture (checklist + conseils, derrière l'icône info) ──
+  const [showHelp, setShowHelp] = useState(false);
 
   // ── Historique annuler/rétablir (structure + texte, granularité ~400 ms) ──
   type EditorSnapshot = {
@@ -501,7 +504,8 @@ export default function StudioEditorPage() {
     undo,
     redo,
     escape: () => {
-      if (!showPreview && focusMode) setFocusMode(false);
+      // L'aperçu et l'aide gèrent leur propre Échap ; ici : sortir du focus.
+      if (!showPreview && !showHelp && focusMode) setFocusMode(false);
     },
   };
   useEffect(() => {
@@ -675,6 +679,15 @@ export default function StudioEditorPage() {
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
+                      onClick={() => setShowHelp(true)}
+                      className="p-2 rounded-lg border border-aw text-aw-muted hover:text-aw-primary"
+                      aria-label={t("Aide à l'écriture", 'Writing help')}
+                      title={t("Aide à l'écriture", 'Writing help')}
+                    >
+                      <Info className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
                       onClick={undo}
                       className="p-2 rounded-lg border border-aw text-aw-muted hover:text-aw-primary"
                       aria-label={t('Annuler (Ctrl+Z)', 'Undo (Ctrl+Z)')}
@@ -829,14 +842,6 @@ export default function StudioEditorPage() {
                     />
                   </div>
 
-                  {/* Pré-vol ASV */}
-                  <PreflightChecklist
-                    title={title}
-                    bodyLength={bodyLength}
-                    primaryTheme={primaryTheme}
-                    sources={sources}
-                  />
-
                   {/* Envoi */}
                   <div className="card p-5">
                     {sendError && (
@@ -889,6 +894,17 @@ export default function StudioEditorPage() {
                     blocks={blocks}
                     sources={sources}
                     onClose={() => setShowPreview(false)}
+                  />
+                )}
+
+                {/* Aide à l'écriture (checklist + conseils) */}
+                {showHelp && (
+                  <WritingHelpModal
+                    title={title}
+                    bodyLength={bodyLength}
+                    primaryTheme={primaryTheme}
+                    sources={sources}
+                    onClose={() => setShowHelp(false)}
                   />
                 )}
               </div>
