@@ -33,6 +33,16 @@ type StudioProfile = {
 
 const AUTOSAVE_DELAY_MS = 2500;
 
+// Carte vide : comme dans l'app, une carte existe AVANT son image — tous les
+// champs sont visibles d'emblée, la zone image sert de bouton d'upload.
+const EMPTY_CARD: PostDraftImage = {
+  image_url: '', subject: '', description: '', back_description: '', source: { url: '', title: '' },
+};
+
+const cardHasContent = (card: PostDraftImage): boolean =>
+  !!card.image_url || !!card.subject?.trim() || !!card.description?.trim() ||
+  !!card.back_description?.trim() || !!card.source?.url?.trim();
+
 const inputClass =
   'w-full rounded-lg border border-aw bg-aw-bg px-3 py-2.5 text-aw-text text-sm placeholder:text-aw-muted focus:outline-none focus:ring-2 focus:ring-aw-primary';
 
@@ -52,9 +62,11 @@ export default function StudioPostPage() {
   const [editingDraftId, setEditingDraftId] = useState<string | null>(null);
   const [primaryTheme, setPrimaryTheme] = useState('');
   const [tags, setTags] = useState<string[]>([]);
-  const [cards, setCards] = useState<PostDraftImage[]>([]);
+  const [cards, setCards] = useState<PostDraftImage[]>([EMPTY_CARD]);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  // Index de la carte qui recevra le fichier choisi
+  const pendingCardIndexRef = useRef(0);
 
   // ── Sauvegarde continue / envoi ──
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
@@ -104,12 +116,15 @@ export default function StudioPostPage() {
   const buildPayload = () => ({
     primary_theme: primaryTheme || null,
     tags: tags.length > 0 ? tags : undefined,
-    images: cards,
+    // Les cartes entièrement vides ne sont pas enregistrées.
+    images: cards.filter(cardHasContent),
   });
 
-  // Sauvegarde serveur continue dès qu'il y a au moins une carte.
+  const hasAnyContent = cards.some(cardHasContent);
+
+  // Sauvegarde serveur continue dès qu'il y a du contenu réel.
   useEffect(() => {
-    if (!userId || sentTitle || isSending || cards.length === 0) return;
+    if (!userId || sentTitle || isSending || !hasAnyContent) return;
     const payload = buildPayload();
     const snapshot = JSON.stringify(payload);
     if (snapshot === lastSavedSnapshotRef.current) return;
@@ -143,7 +158,7 @@ export default function StudioPostPage() {
     setEditingDraftId(null);
     setPrimaryTheme('');
     setTags([]);
-    setCards([]);
+    setCards([EMPTY_CARD]);
     setSendError('');
     setSentTitle(null);
     setSaveState('idle');
@@ -164,15 +179,25 @@ export default function StudioPostPage() {
     });
   };
 
-  const removeCard = (index: number) => setCards((prev) => prev.filter((_, i) => i !== index));
+  const removeCard = (index: number) =>
+    setCards((prev) => {
+      const next = prev.filter((_, i) => i !== index);
+      return next.length > 0 ? next : [EMPTY_CARD]; // toujours au moins une carte
+    });
+
+  const pickImageFor = (index: number) => {
+    pendingCardIndexRef.current = index;
+    fileInputRef.current?.click();
+  };
 
   const handleFileSelected = async (file: File | undefined) => {
-    if (!file || isUploading || cards.length >= MAX_POST_IMAGES) return;
+    if (!file || isUploading) return;
     setIsUploading(true);
     setSendError('');
     try {
       const url = await uploadPostImage(file);
-      setCards((prev) => [...prev, { image_url: url, subject: '', description: '', back_description: '', source: { url: '', title: '' } }]);
+      const target = pendingCardIndexRef.current;
+      setCards((prev) => prev.map((c, i) => (i === target ? { ...c, image_url: url } : c)));
     } catch (err: unknown) {
       setSendError(isNetworkError(err) ? apiUnreachableMsg
         : err instanceof Error ? err.message : t("L'upload de l'image a échoué.", 'Image upload failed.'));
@@ -186,15 +211,20 @@ export default function StudioPostPage() {
     if (isSending || !userId || sentTitle) return;
     setSendError('');
 
-    if (cards.length === 0) {
-      setSendError(t('Ajoute au moins une image — un post rapide est un empilement de cartes visuelles.', 'Add at least one image — a quick post is a stack of visual cards.'));
+    const filledCards = cards.filter(cardHasContent);
+    if (filledCards.length === 0) {
+      setSendError(t('Ajoute au moins une carte avec une image — un post rapide est un empilement de cartes visuelles.', 'Add at least one card with an image — a quick post is a stack of visual cards.'));
       return;
     }
-    if (!cards[0].subject?.trim()) {
+    if (filledCards.some((c) => !c.image_url)) {
+      setSendError(t('Chaque carte doit avoir son image.', 'Each card needs its image.'));
+      return;
+    }
+    if (!filledCards[0].subject?.trim()) {
       setSendError(t('Donne un sujet à la première carte : c\'est le titre du post.', 'Give the first card a subject: it is the post title.'));
       return;
     }
-    const badSource = cards.some((c) => c.source?.url?.trim() && !isValidSourceUrl(c.source.url));
+    const badSource = filledCards.some((c) => c.source?.url?.trim() && !isValidSourceUrl(c.source.url));
     if (badSource) {
       setSendError(t('Une des sources a une URL invalide (http:// ou https:// requis).', 'One of the sources has an invalid URL (http:// or https:// required).'));
       return;
@@ -208,7 +238,7 @@ export default function StudioPostPage() {
       } else {
         await createPostDraft(payload);
       }
-      setSentTitle(cards[0].subject?.trim() || t('(Sans titre)', '(Untitled)'));
+      setSentTitle(filledCards[0].subject?.trim() || t('(Sans titre)', '(Untitled)'));
       lastSavedSnapshotRef.current = null;
       setSaveState('idle');
       setLastSavedAt(null);
@@ -225,7 +255,7 @@ export default function StudioPostPage() {
     setEditingDraftId(draft.id);
     setPrimaryTheme(draft.payload.primary_theme ?? '');
     setTags(draft.payload.tags ?? []);
-    setCards(draft.payload.images ?? []);
+    setCards(draft.payload.images?.length ? draft.payload.images : [EMPTY_CARD]);
     setSentTitle(null);
     setSendError('');
     setSaveState('saved');
@@ -362,9 +392,25 @@ export default function StudioPostPage() {
                   <div className="grid sm:grid-cols-2 gap-5 items-start">
                     {cards.map((card, index) => (
                       <div key={index} className="card p-3">
-                        {/* Image + badge numéro + actions en surimpression */}
+                        {/* Image (ou zone d'upload) + badge numéro + actions en surimpression */}
                         <div className="relative">
-                          <img src={card.image_url} alt="" className="w-full aspect-[3/4] object-cover rounded-xl" />
+                          {card.image_url ? (
+                            <img src={card.image_url} alt="" className="w-full aspect-[3/4] object-cover rounded-xl" />
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => pickImageFor(index)}
+                              disabled={isUploading}
+                              className="w-full aspect-[3/4] rounded-xl border-2 border-dashed border-aw text-aw-muted
+                                         hover:text-aw-primary hover:border-aw-primary flex flex-col items-center
+                                         justify-center gap-2 disabled:opacity-50"
+                            >
+                              <ImagePlus className="w-7 h-7" />
+                              <span className="text-sm">
+                                {isUploading ? t('Upload en cours…', 'Uploading…') : t("Choisir l'image *", 'Pick the image *')}
+                              </span>
+                            </button>
+                          )}
                           <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/60 text-white text-xs">
                             {index + 1}{index === 0 ? ` · ${t('titre du post', 'post title')}` : ''}
                           </span>
@@ -385,11 +431,11 @@ export default function StudioPostPage() {
                         <div className="space-y-2 mt-3">
                           <input type="text" value={card.subject ?? ''} maxLength={POST_SUBJECT_MAX}
                             onChange={(e) => replaceCard(index, { ...card, subject: e.target.value })}
-                            placeholder={index === 0 ? t('Sujet — titre du post', 'Subject — post title') : t('Sujet de la carte', 'Card subject')}
+                            placeholder={index === 0 ? t('Sujet — titre du post *', 'Subject — post title *') : t('Sujet de la carte *', 'Card subject *')}
                             className={`${inputClass} font-semibold`} />
                           <textarea value={card.description ?? ''} maxLength={POST_DESC_MAX} rows={2}
                             onChange={(e) => replaceCard(index, { ...card, description: e.target.value })}
-                            placeholder={t('Excerpt court (sur la carte)', 'Short excerpt (on the card)')}
+                            placeholder={t('Excerpt court (sur la carte) *', 'Short excerpt (on the card) *')}
                             className={inputClass} />
                           <textarea value={card.back_description ?? ''} maxLength={POST_BACK_DESC_MAX} rows={3}
                             onChange={(e) => replaceCard(index, { ...card, back_description: e.target.value })}
@@ -399,7 +445,7 @@ export default function StudioPostPage() {
                             <Link2 className="w-3.5 h-3.5 text-aw-primary absolute left-3 top-3" />
                             <input type="url" value={card.source?.url ?? ''} maxLength={POST_SOURCE_URL_MAX}
                               onChange={(e) => replaceCard(index, { ...card, source: { url: e.target.value, title: card.source?.title ?? '' } })}
-                              placeholder={t('Source — https://…', 'Source — https://…')}
+                              placeholder={t('Source de la carte — https://… *', 'Card source — https://… *')}
                               className={`${inputClass} pl-9 ${card.source?.url?.trim() && !isValidSourceUrl(card.source.url) ? 'border-red-500' : ''}`} />
                           </div>
                           <input type="text" value={card.source?.title ?? ''} maxLength={POST_SOURCE_TITLE_MAX}
@@ -410,15 +456,15 @@ export default function StudioPostPage() {
                       </div>
                     ))}
 
-                    {/* Tuile d'ajout — même gabarit qu'une carte */}
+                    {/* Tuile d'ajout : crée une carte vide (champs visibles tout de suite, comme l'app) */}
                     {cards.length < MAX_POST_IMAGES && (
-                      <button type="button" onClick={() => fileInputRef.current?.click()} disabled={isUploading}
+                      <button type="button"
+                        onClick={() => setCards((prev) => (prev.length < MAX_POST_IMAGES ? [...prev, EMPTY_CARD] : prev))}
                         className="rounded-xl border-2 border-dashed border-aw text-aw-muted hover:text-aw-primary hover:border-aw-primary
-                                   flex flex-col items-center justify-center gap-2 disabled:opacity-50 aspect-[3/4] self-stretch">
+                                   flex flex-col items-center justify-center gap-2 aspect-[3/4] self-stretch">
                         <ImagePlus className="w-7 h-7" />
                         <span className="text-sm">
-                          {isUploading ? t('Upload en cours…', 'Uploading…')
-                            : t(`Ajouter une carte (${cards.length}/${MAX_POST_IMAGES})`, `Add a card (${cards.length}/${MAX_POST_IMAGES})`)}
+                          {t(`Ajouter une carte (${cards.length}/${MAX_POST_IMAGES})`, `Add a card (${cards.length}/${MAX_POST_IMAGES})`)}
                         </span>
                       </button>
                     )}
