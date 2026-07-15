@@ -114,15 +114,22 @@ export default function StudioEditorPage() {
       ? 'text-amber-500'
       : 'text-aw-muted';
 
-  // Profil pour la barre de session
+  // Profil pour la barre de session (1 retry : le premier appel peut tomber
+  // pendant le refresh de session au retour du magic link)
   useEffect(() => {
     if (!userId) return;
     let isMounted = true;
-    studioApi
-      .get<StudioProfile>(`/profiles/id/${userId}`)
-      .then((data) => { if (isMounted) setProfile(data); })
-      .catch(() => { /* non bloquant */ });
-    return () => { isMounted = false; };
+    let retryTimer: ReturnType<typeof setTimeout> | undefined;
+    const load = (attempt: number) => {
+      studioApi
+        .get<StudioProfile>(`/profiles/id/${userId}`)
+        .then((data) => { if (isMounted) setProfile(data); })
+        .catch(() => {
+          if (isMounted && attempt === 0) retryTimer = setTimeout(() => load(1), 2000);
+        });
+    };
+    load(0);
+    return () => { isMounted = false; clearTimeout(retryTimer); };
   }, [userId]);
 
   // Restauration du brouillon local (une fois par utilisateur)
@@ -419,7 +426,12 @@ export default function StudioEditorPage() {
     );
   }
 
-  const displayName = profile?.display_name || profile?.username || session.user.email || '';
+  // Nom affiché : profil API, sinon métadonnées de session (le JWT contient
+  // display_name), l'email en tout dernier recours.
+  const metadataName = typeof session.user.user_metadata?.display_name === 'string'
+    ? session.user.user_metadata.display_name
+    : null;
+  const displayName = profile?.display_name || profile?.username || metadataName || session.user.email || '';
   const avatarSrc = resolveAvatarUrl(profile?.avatar_url, profile?.avatar_updated_at);
 
   return (
