@@ -1,20 +1,25 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { AlertTriangle, CheckCircle2, LogOut, PenLine, Send, Smartphone } from 'lucide-react';
+import {
+  AlertCircle, AlertTriangle, CheckCircle2, FileText, LogOut, PenLine, Send, Smartphone, Trash2,
+} from 'lucide-react';
 import { Section } from '../../components/Section';
-import { H2 } from '../../components/H2';
 import { PageMeta } from '../../components/PageMeta';
 import { BlockListEditor } from '../../components/studio/BlockListEditor';
 import { SourceListEditor } from '../../components/studio/SourceListEditor';
+import { TagsInput } from '../../components/studio/TagsInput';
 import { DraftList } from '../../components/studio/DraftList';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { supabase } from '../../lib/studio/supabase';
 import { studioApi } from '../../lib/studio/api';
 import { useStudioSession } from '../../hooks/useStudioSession';
 import { STUDIO_THEMES } from '../../lib/studio/themes';
+import { journalImageUrl, uploadJournalImage } from '../../lib/studio/images';
 import {
-  cleanBlocks, cleanSources, createDraft, deleteDraft, isValidSourceUrl, listMyDrafts, updateDraft,
+  BODY_MAX, DEK_MAX, TITLE_MAX,
+  blockBodyLen, cleanBlocks, cleanSources, createDraft, deleteDraft,
+  isValidSourceUrl, listMyDrafts, updateDraft,
 } from '../../lib/studio/journal';
 import { clearLocalDraft, loadLocalDraft, saveLocalDraft } from '../../lib/studio/draftStorage';
 import type { JournalBlock, JournalSource, StudioDraftRow } from '../../types/journal';
@@ -28,8 +33,10 @@ type StudioProfile = {
 
 const AUTOSAVE_DELAY_MS = 800;
 
-const inputClass =
-  'w-full rounded-xl border border-aw bg-aw-bg px-4 py-3 text-aw-text placeholder:text-aw-muted focus:outline-none focus:ring-2 focus:ring-aw-primary';
+const bareTitleClass =
+  'w-full bg-transparent text-2xl font-bold text-aw-text placeholder:text-aw-muted focus:outline-none';
+const bareDekClass =
+  'w-full bg-transparent text-base text-aw-text placeholder:text-aw-muted focus:outline-none resize-none';
 
 function readAuthErrorFromHash(): string | null {
   const hash = window.location.hash;
@@ -51,16 +58,18 @@ export default function StudioEditorPage() {
   const [profile, setProfile] = useState<StudioProfile>(null);
   const authError = useMemo(readAuthErrorFromHash, []);
 
-  // ── État de l'éditeur ──
+  // ── État de l'éditeur (parité composer mobile) ──
   const [editingDraftId, setEditingDraftId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [dek, setDek] = useState('');
   const [primaryTheme, setPrimaryTheme] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
+  const [coverPath, setCoverPath] = useState<string | null>(null);
   const [blocks, setBlocks] = useState<JournalBlock[]>([{ type: 'paragraph', text: '' }]);
-  const [sources, setSources] = useState<JournalSource[]>([
-    { url: '', title: '', publisher: '', published_at: null },
-  ]);
+  const [sources, setSources] = useState<JournalSource[]>([{ url: '', title: '' }]);
   const [restoredNotice, setRestoredNotice] = useState(false);
+  const [isCoverUploading, setIsCoverUploading] = useState(false);
+  const coverInputRef = useRef<HTMLInputElement>(null);
 
   // ── Envoi ──
   const [isSending, setIsSending] = useState(false);
@@ -77,9 +86,19 @@ export default function StudioEditorPage() {
   const restoredForUser = useRef<string | null>(null);
 
   const apiUnreachableMsg = t(
-    "Impossible de joindre le serveur ActuWorld (l'accès depuis le site est peut-être en cours d'activation). Ton texte est sauvegardé dans ce navigateur — réessaie plus tard.",
-    'Cannot reach the ActuWorld server (access from the website may still be rolling out). Your text is saved in this browser — try again later.'
+    "Impossible de joindre le serveur ActuWorld. Ton texte est sauvegardé dans ce navigateur — réessaie plus tard.",
+    'Cannot reach the ActuWorld server. Your text is saved in this browser — try again later.'
   );
+
+  // ── Budget de corps (BODY_MAX, comme l'app) ──
+  const bodyLength = blocks.reduce((sum, block) => sum + blockBodyLen(block), 0);
+  const budgetFor = (currentLen: number) => currentLen + Math.max(0, BODY_MAX - bodyLength);
+  const bodyAtLimit = bodyLength >= BODY_MAX;
+  const bodyCounterClass = bodyAtLimit
+    ? 'text-red-500'
+    : bodyLength > BODY_MAX * 0.9
+      ? 'text-amber-500'
+      : 'text-aw-muted';
 
   // Profil pour la barre de session
   useEffect(() => {
@@ -99,16 +118,19 @@ export default function StudioEditorPage() {
     const local = loadLocalDraft(userId);
     if (!local) return;
     const hasContent =
-      local.title.trim() || local.dek.trim() ||
-      local.blocks.some((b) => b.type !== 'divider' && 'text' in b && b.text.trim()) ||
+      local.title.trim() || local.dek.trim() || local.coverPath ||
+      (local.tags ?? []).length > 0 ||
+      local.blocks.some((b) => b.type !== 'divider' && ('text' in b ? b.text.trim() : true)) ||
       local.sources.some((s) => s.url.trim());
     if (!hasContent) return;
     setEditingDraftId(local.editingDraftId);
     setTitle(local.title);
     setDek(local.dek);
     setPrimaryTheme(local.primaryTheme);
+    setTags(local.tags ?? []);
+    setCoverPath(local.coverPath ?? null);
     setBlocks(local.blocks.length > 0 ? local.blocks : [{ type: 'paragraph', text: '' }]);
-    setSources(local.sources.length > 0 ? local.sources : [{ url: '', title: '', publisher: '', published_at: null }]);
+    setSources(local.sources.length > 0 ? local.sources : [{ url: '', title: '' }]);
     setRestoredNotice(true);
   }, [userId]);
 
@@ -116,10 +138,10 @@ export default function StudioEditorPage() {
   useEffect(() => {
     if (!userId || sentDraftTitle) return;
     const timer = setTimeout(() => {
-      saveLocalDraft(userId, { editingDraftId, title, dek, primaryTheme, blocks, sources });
+      saveLocalDraft(userId, { editingDraftId, title, dek, primaryTheme, tags, coverPath, blocks, sources });
     }, AUTOSAVE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [userId, editingDraftId, title, dek, primaryTheme, blocks, sources, sentDraftTitle]);
+  }, [userId, editingDraftId, title, dek, primaryTheme, tags, coverPath, blocks, sources, sentDraftTitle]);
 
   // Chargement des brouillons Supabase
   const refreshDrafts = useCallback(async () => {
@@ -146,11 +168,48 @@ export default function StudioEditorPage() {
     setTitle('');
     setDek('');
     setPrimaryTheme('');
+    setTags([]);
+    setCoverPath(null);
     setBlocks([{ type: 'paragraph', text: '' }]);
-    setSources([{ url: '', title: '', publisher: '', published_at: null }]);
+    setSources([{ url: '', title: '' }]);
     setSendError('');
     setSentDraftTitle(null);
     setRestoredNotice(false);
+  };
+
+  // « Supprimer le brouillon » local — même geste que l'app (reset, le brouillon
+  // serveur éventuellement chargé n'est pas supprimé).
+  const hasDraftContent =
+    title.trim().length > 0 || dek.trim().length > 0 || coverPath !== null ||
+    primaryTheme !== '' || tags.length > 0 ||
+    blocks.some((b) => (b.type === 'image' || b.type === 'image_text') ? !!b.uri : b.type !== 'divider' && b.text.trim().length > 0) ||
+    sources.some((s) => !!s.url?.trim() || !!s.title?.trim());
+
+  const handleResetDraft = () => {
+    const confirmed = window.confirm(t(
+      "Tout l'article en cours (titre, chapeau, image, blocs, sources) sera effacé. Action irréversible.",
+      'The whole article in progress (title, dek, image, blocks, sources) will be cleared. This cannot be undone.'
+    ));
+    if (!confirmed) return;
+    if (userId) clearLocalDraft(userId);
+    resetEditor();
+  };
+
+  const handlePickCover = () => coverInputRef.current?.click();
+
+  const handleCoverSelected = async (file: File | undefined) => {
+    if (!file || isCoverUploading) return;
+    setIsCoverUploading(true);
+    setSendError('');
+    try {
+      setCoverPath(await uploadJournalImage(file));
+    } catch (err: unknown) {
+      setSendError(isNetworkError(err) ? apiUnreachableMsg
+        : err instanceof Error ? err.message : t("L'upload de la cover a échoué.", 'Cover upload failed.'));
+    } finally {
+      setIsCoverUploading(false);
+      if (coverInputRef.current) coverInputRef.current.value = '';
+    }
   };
 
   const handleSend = async () => {
@@ -178,6 +237,8 @@ export default function StudioEditorPage() {
         blocks: cleanBlocks(blocks),
         sources: cleanSources(sources),
         primary_theme: primaryTheme || null,
+        tags: tags.length > 0 ? tags : undefined,
+        cover_url: coverPath,
       };
       if (editingDraftId) {
         await updateDraft(editingDraftId, payload);
@@ -201,8 +262,10 @@ export default function StudioEditorPage() {
     setTitle(draft.title ?? '');
     setDek(draft.dek ?? '');
     setPrimaryTheme(draft.primary_theme ?? '');
+    setTags(draft.tags ?? []);
+    setCoverPath(draft.cover_url ?? null);
     setBlocks(draft.blocks && draft.blocks.length > 0 ? draft.blocks : [{ type: 'paragraph', text: '' }]);
-    setSources(draft.sources && draft.sources.length > 0 ? draft.sources : [{ url: '', title: '', publisher: '', published_at: null }]);
+    setSources(draft.sources && draft.sources.length > 0 ? draft.sources.slice(0, 2) : [{ url: '', title: '' }]);
     setSentDraftTitle(null);
     setSendError('');
     setRestoredNotice(false);
@@ -280,7 +343,7 @@ export default function StudioEditorPage() {
         <div className="max-w-3xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
             {/* Barre de session */}
-            <div className="card p-4 flex items-center justify-between gap-4 mb-10">
+            <div className="card p-4 flex items-center justify-between gap-4 mb-8">
               <div className="flex items-center gap-3 min-w-0">
                 {profile?.avatar_url ? (
                   <img src={profile.avatar_url} alt="" className="w-10 h-10 rounded-full object-cover shrink-0" />
@@ -325,16 +388,25 @@ export default function StudioEditorPage() {
                 </div>
               </div>
             ) : (
-              /* ── Éditeur ── */
+              /* ── Éditeur (mise en page miroir du composer mobile) ── */
               <>
-                <H2 kicker="Studio" as="h1">
-                  {editingDraftId
-                    ? t('Reprendre le brouillon', 'Resume draft')
-                    : t('Écrire un article', 'Write an article')}
-                </H2>
+                <div className="flex items-center justify-between mb-4">
+                  <h1 className="text-xl font-bold text-aw-primary">
+                    {editingDraftId ? t('Brouillon', 'Draft') : t('Nouvel article', 'New article')}
+                  </h1>
+                  {hasDraftContent && (
+                    <button
+                      type="button"
+                      onClick={handleResetDraft}
+                      className="inline-flex items-center gap-1.5 text-sm text-red-500 border border-red-500/50 rounded-lg px-2.5 py-1.5 hover:bg-red-500/10"
+                    >
+                      <Trash2 className="w-4 h-4" /> {t('Supprimer le brouillon', 'Delete draft')}
+                    </button>
+                  )}
+                </div>
 
                 {restoredNotice && (
-                  <p className="text-aw-muted text-sm mt-3" role="status">
+                  <p className="text-aw-muted text-sm mb-4" role="status">
                     {t(
                       'Ton texte en cours a été restauré depuis ce navigateur.',
                       'Your work in progress was restored from this browser.'
@@ -342,61 +414,93 @@ export default function StudioEditorPage() {
                   </p>
                 )}
 
-                <div className="space-y-8 mt-8">
-                  {/* Infos générales */}
-                  <div className="card p-6 space-y-4">
-                    <div>
-                      <label htmlFor="studio-title" className="body-semi block mb-2">
-                        {t('Titre', 'Title')} <span className="text-aw-primary">*</span>
-                      </label>
-                      <input id="studio-title" type="text" value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        placeholder={t("Le titre de ton article", 'Your article title')}
-                        className={`${inputClass} text-lg font-semibold`} />
-                    </div>
-                    <div>
-                      <label htmlFor="studio-dek" className="body-semi block mb-2">
-                        {t('Chapeau (sous-titre)', 'Dek (subtitle)')}
-                      </label>
-                      <textarea id="studio-dek" value={dek} onChange={(e) => setDek(e.target.value)}
-                        placeholder={t('Résumé en une ou deux phrases (optionnel)', 'One or two sentence summary (optional)')}
-                        rows={2} className={inputClass} />
-                    </div>
-                    <div className="sm:w-2/3">
-                      <label htmlFor="studio-theme" className="body-semi block mb-2">
-                        {t('Thème principal', 'Main theme')}
-                      </label>
-                      <select id="studio-theme" value={primaryTheme}
-                        onChange={(e) => setPrimaryTheme(e.target.value)}
-                        className={inputClass}>
-                        <option value="">{t('— Choisir un thème —', '— Pick a theme —')}</option>
-                        {STUDIO_THEMES.map((theme) => (
-                          <option key={theme.key} value={theme.key}>
-                            {isEnglish ? theme.en : theme.fr}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                <div className="space-y-5">
+                  {/* Thème + tags — pendant du ThemeTagsField de l'app */}
+                  <div className="card p-4 space-y-3">
+                    <select
+                      value={primaryTheme}
+                      onChange={(e) => setPrimaryTheme(e.target.value)}
+                      className="w-full rounded-lg border border-aw bg-aw-bg px-3 py-2.5 text-aw-text text-sm focus:outline-none focus:ring-2 focus:ring-aw-primary"
+                      aria-label={t('Thème principal', 'Main theme')}
+                    >
+                      <option value="">{t('— Thème principal —', '— Main theme —')}</option>
+                      {STUDIO_THEMES.map((theme) => (
+                        <option key={theme.key} value={theme.key}>
+                          {isEnglish ? theme.en : theme.fr}
+                        </option>
+                      ))}
+                    </select>
+                    <TagsInput tags={tags} onChange={setTags} />
                   </div>
 
-                  {/* Contenu */}
-                  <div>
-                    <h2 className="body-semi text-lg mb-4">{t('Contenu', 'Content')}</h2>
-                    <BlockListEditor blocks={blocks} onChange={setBlocks} />
+                  {/* Cover — même geste que l'app (clic pour choisir) */}
+                  <input
+                    ref={coverInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => void handleCoverSelected(e.target.files?.[0])}
+                  />
+                  <button
+                    type="button"
+                    onClick={handlePickCover}
+                    disabled={isCoverUploading}
+                    className="w-full h-72 rounded-xl border border-aw bg-aw-surface overflow-hidden flex items-center justify-center disabled:opacity-60"
+                  >
+                    {coverPath ? (
+                      <img src={journalImageUrl(coverPath)} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-aw-muted text-sm">
+                        {isCoverUploading
+                          ? t('Upload en cours…', 'Uploading…')
+                          : t('Ajouter une image de couverture', 'Add a cover image')}
+                      </span>
+                    )}
+                  </button>
+
+                  {/* Titre + chapeau — champs nus comme l'app */}
+                  <div className="px-1 space-y-2">
+                    <input
+                      type="text"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      placeholder={t("Titre de l'article", 'Article title')}
+                      maxLength={TITLE_MAX}
+                      className={bareTitleClass}
+                    />
+                    <textarea
+                      value={dek}
+                      onChange={(e) => setDek(e.target.value)}
+                      placeholder={t('Chapeau (optionnel)', 'Dek (optional)')}
+                      maxLength={DEK_MAX}
+                      rows={2}
+                      className={bareDekClass}
+                    />
                   </div>
 
-                  {/* Sources */}
-                  <div>
-                    <h2 className="body-semi text-lg mb-4">{t('Sources', 'Sources')}</h2>
-                    <SourceListEditor sources={sources} onChange={setSources} />
+                  {/* Blocs + barre d'ajout */}
+                  <BlockListEditor
+                    blocks={blocks}
+                    onChange={setBlocks}
+                    budgetFor={budgetFor}
+                    onUploadError={(message) => setSendError(message)}
+                  />
+
+                  {/* Compteur corps — budget ≈ 2 pages, comme l'app */}
+                  <div className={`flex items-center justify-end gap-1.5 text-xs ${bodyCounterClass}`}>
+                    {bodyAtLimit ? <AlertCircle className="w-3.5 h-3.5" /> : <FileText className="w-3.5 h-3.5" />}
+                    {bodyLength} / {BODY_MAX}
                   </div>
+
+                  {/* Sources (min 1 pour publier, max 2) */}
+                  <SourceListEditor sources={sources} onChange={setSources} />
 
                   {/* Envoi */}
-                  <div className="card p-6">
+                  <div className="card p-5">
                     {sendError && (
                       <p className="text-red-500 text-sm mb-4" role="alert">{sendError}</p>
                     )}
-                    <button type="button" onClick={() => void handleSend()} disabled={isSending}
+                    <button type="button" onClick={() => void handleSend()} disabled={isSending || isCoverUploading}
                       className="btn-primary w-full inline-flex items-center justify-center disabled:opacity-60">
                       <Send className="w-5 h-5 mr-2" />
                       {isSending
@@ -415,7 +519,7 @@ export default function StudioEditorPage() {
                 </div>
 
                 {/* Brouillons existants */}
-                <div className="mt-14">
+                <div className="mt-12">
                   <h2 className="body-semi text-lg mb-4">{t('Mes brouillons', 'My drafts')}</h2>
                   <DraftList
                     drafts={drafts}

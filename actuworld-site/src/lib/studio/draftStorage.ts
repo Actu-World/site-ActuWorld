@@ -9,6 +9,8 @@ export type StudioLocalDraft = {
   title: string;
   dek: string;
   primaryTheme: string;
+  tags?: string[];
+  coverPath?: string | null;
   blocks: JournalBlock[];
   sources: JournalSource[];
   savedAt: string;

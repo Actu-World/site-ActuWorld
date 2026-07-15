@@ -4,12 +4,24 @@ import type { JournalBlock, JournalSource, StudioDraftRow } from '../../types/jo
 // Appels journal du Studio. Le Studio n'envoie JAMAIS status:'published' :
 // la publication (et le déclenchement ASV) reste exclusivement dans l'app.
 
+// Limites IDENTIQUES au composer mobile (journal/compose.tsx) — même budget,
+// même expérience, aucune troncature silencieuse côté app.
+export const TITLE_MAX = 120;
+export const DEK_MAX = 200;
+export const BODY_MAX = 4000;
+export const MAX_SOURCES = 2;
+export const MAX_TAGS = 3;
+export const SOURCE_URL_MAX = 2000;
+export const SOURCE_TITLE_MAX = 150;
+
 export type StudioDraftPayload = {
   title: string;
   dek: string | null;
   blocks: JournalBlock[];
   sources: JournalSource[];
   primary_theme: string | null;
+  tags?: string[];
+  cover_url: string | null;
 };
 
 /** Miroir de hasValidSource côté API : URL http/https non vide. */
@@ -17,27 +29,59 @@ export function isValidSourceUrl(url: string): boolean {
   return /^https?:\/\//i.test(url.trim());
 }
 
-/** Nettoie les sources pour l'envoi : URLs trimées, vides écartées, order_index recalculé. */
-export function cleanSources(sources: JournalSource[]): JournalSource[] {
-  return sources
-    .filter((source) => source.url.trim().length > 0)
-    .map((source, index) => ({
-      url: source.url.trim(),
-      title: source.title?.trim() || null,
-      publisher: source.publisher?.trim() || null,
-      published_at: source.published_at || null,
-      order_index: index,
-    }));
+/** Éditeur d'une source déduit du domaine (même logique que le composer mobile). */
+export function hostFromUrl(url: string): string | null {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return null;
+  }
 }
 
-/** Écarte les blocs texte vides (un divider n'a pas de texte, il est toujours gardé). */
+/**
+ * Nettoie les sources pour l'envoi, comme le composer mobile : URLs trimées,
+ * vides écartées, éditeur auto-déduit du domaine (alimente le scoring ASV de
+ * diversité), order_index recalculé, plafond MAX_SOURCES.
+ */
+export function cleanSources(sources: JournalSource[]): JournalSource[] {
+  return sources
+    .map((source, index) => {
+      const url = (source.url || '').trim();
+      return {
+        url,
+        title: source.title?.trim() || null,
+        publisher: source.publisher?.trim() || hostFromUrl(url),
+        published_at: source.published_at ?? null,
+        order_index: index,
+      };
+    })
+    .filter((source) => source.url.length > 0)
+    .slice(0, MAX_SOURCES);
+}
+
+/** Écarte les blocs texte vides (divider et blocs image toujours gardés). */
 export function cleanBlocks(blocks: JournalBlock[]): JournalBlock[] {
   return blocks.filter((block) => block.type === 'divider' || 'uri' in block || block.text.trim().length > 0);
 }
 
+/** Longueur « corps » d'un bloc — même règle de budget que le composer mobile. */
+export function blockBodyLen(block: JournalBlock): number {
+  switch (block.type) {
+    case 'heading':
+    case 'paragraph':
+    case 'quote':
+      return block.text.length;
+    case 'image_text':
+      return block.text.length + (block.caption?.length ?? 0);
+    case 'image':
+      return block.caption?.length ?? 0;
+    default:
+      return 0; // divider
+  }
+}
+
 export function createDraft(payload: StudioDraftPayload): Promise<{ id: string }> {
-  // `origin: 'web'` : ignoré par l'API tant que le Lot 3 n'est pas déployé,
-  // puis alimente le badge « Reçu du web » dans l'app.
+  // `origin: 'web'` alimente le badge « Reçu du web » dans l'app.
   return studioApi.post<{ id: string }>('/journal', { ...payload, status: 'draft', origin: 'web' });
 }
 
