@@ -37,9 +37,42 @@ export async function uploadJournalImage(file: File): Promise<string> {
   return result.path;
 }
 
+function storagePublicUrl(path: string, bucket: string): string {
+  if (/^https?:\/\//i.test(path)) return path; // déjà absolue
+  const encoded = path.split('/').map(encodeURIComponent).join('/');
+  return `${STUDIO_SUPABASE_URL}/storage/v1/object/public/${bucket}/${encoded}`;
+}
+
 /** URL publique d'une image du bucket journal (accepte un path ou une URL déjà absolue). */
 export function journalImageUrl(path: string): string {
-  if (/^https?:\/\//i.test(path)) return path;
-  const encoded = path.split('/').map(encodeURIComponent).join('/');
-  return `${STUDIO_SUPABASE_URL}/storage/v1/object/public/journal/${encoded}`;
+  return storagePublicUrl(path, 'journal');
+}
+
+/**
+ * URL d'avatar prête pour <img> — miroir de utils/avatar.ts de l'app :
+ * path storage → bucket `avatars`, + cache-busting `?v=` basé sur
+ * avatar_updated_at (le fichier garde le même chemin quand la photo change).
+ */
+export function resolveAvatarUrl(
+  pathOrUrl?: string | null,
+  avatarUpdatedAt?: string | null
+): string | null {
+  if (!pathOrUrl) return null;
+  let url = storagePublicUrl(pathOrUrl, 'avatars');
+  if (avatarUpdatedAt) {
+    const version = new Date(avatarUpdatedAt).getTime();
+    if (!Number.isNaN(version)) {
+      url += `${url.includes('?') ? '&' : '?'}v=${version}`;
+    }
+  }
+  return url;
+}
+
+/** Initiales pour l'avatar de secours (2 lettres max), comme dans l'app. */
+export function initialsFromName(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '•';
+  const first = parts[0][0] ?? '';
+  const last = parts.length > 1 ? parts[parts.length - 1][0] : '';
+  return (first + last).toUpperCase();
 }

@@ -3,7 +3,7 @@ import { Link, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   AlertCircle, AlertTriangle, CheckCircle2, Cloud, CloudOff, Eye, FileText,
-  Loader2, LogOut, PenLine, Send, Smartphone, Trash2,
+  Loader2, LogOut, Send, Smartphone, Trash2,
 } from 'lucide-react';
 import { Section } from '../../components/Section';
 import { PageMeta } from '../../components/PageMeta';
@@ -18,7 +18,7 @@ import { supabase } from '../../lib/studio/supabase';
 import { studioApi } from '../../lib/studio/api';
 import { useStudioSession } from '../../hooks/useStudioSession';
 import { STUDIO_THEMES } from '../../lib/studio/themes';
-import { journalImageUrl, uploadJournalImage } from '../../lib/studio/images';
+import { initialsFromName, journalImageUrl, resolveAvatarUrl, uploadJournalImage } from '../../lib/studio/images';
 import {
   BODY_MAX, DEK_MAX, TITLE_MAX,
   blockBodyLen, cleanBlocks, cleanSources, createDraft, deleteDraft,
@@ -32,6 +32,7 @@ type StudioProfile = {
   username: string | null;
   display_name: string | null;
   avatar_url: string | null;
+  avatar_updated_at?: string | null;
 } | null;
 
 const AUTOSAVE_DELAY_MS = 800;
@@ -419,6 +420,7 @@ export default function StudioEditorPage() {
   }
 
   const displayName = profile?.display_name || profile?.username || session.user.email || '';
+  const avatarSrc = resolveAvatarUrl(profile?.avatar_url, profile?.avatar_updated_at);
 
   return (
     <div className="min-h-screen bg-aw-bg text-aw-text">
@@ -437,11 +439,11 @@ export default function StudioEditorPage() {
             {/* Barre de session */}
             <div className="card p-4 flex items-center justify-between gap-4 mb-8">
               <div className="flex items-center gap-3 min-w-0">
-                {profile?.avatar_url ? (
-                  <img src={profile.avatar_url} alt="" className="w-10 h-10 rounded-full object-cover shrink-0" />
+                {avatarSrc ? (
+                  <img src={avatarSrc} alt="" className="w-10 h-10 rounded-full object-cover shrink-0 bg-aw-surface" />
                 ) : (
                   <div className="w-10 h-10 rounded-full bg-aw-primary flex items-center justify-center shrink-0">
-                    <PenLine className="w-5 h-5 text-white" />
+                    <span className="text-white text-sm font-semibold">{initialsFromName(displayName)}</span>
                   </div>
                 )}
                 <div className="min-w-0">
@@ -541,19 +543,24 @@ export default function StudioEditorPage() {
                 <div className="space-y-5">
                   {/* Thème + tags — pendant du ThemeTagsField de l'app */}
                   <div className="card p-4 space-y-3">
-                    <select
-                      value={primaryTheme}
-                      onChange={(e) => setPrimaryTheme(e.target.value)}
-                      className="w-full rounded-lg border border-aw bg-aw-bg px-3 py-2.5 text-aw-text text-sm focus:outline-none focus:ring-2 focus:ring-aw-primary"
-                      aria-label={t('Thème principal', 'Main theme')}
-                    >
-                      <option value="">{t('— Thème principal —', '— Main theme —')}</option>
-                      {STUDIO_THEMES.map((theme) => (
-                        <option key={theme.key} value={theme.key}>
-                          {isEnglish ? theme.en : theme.fr}
-                        </option>
-                      ))}
-                    </select>
+                    <div>
+                      <label htmlFor="studio-theme" className="text-aw-muted text-xs block mb-1.5">
+                        {t('Thème principal', 'Main theme')}
+                      </label>
+                      <select
+                        id="studio-theme"
+                        value={primaryTheme}
+                        onChange={(e) => setPrimaryTheme(e.target.value)}
+                        className="w-full rounded-lg border border-aw bg-aw-bg px-3 py-2.5 text-aw-text text-sm focus:outline-none focus:ring-2 focus:ring-aw-primary"
+                      >
+                        <option value="">{t('— Choisir un thème —', '— Pick a theme —')}</option>
+                        {STUDIO_THEMES.map((theme) => (
+                          <option key={theme.key} value={theme.key}>
+                            {isEnglish ? theme.en : theme.fr}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                     <TagsInput tags={tags} onChange={setTags} />
                   </div>
 
