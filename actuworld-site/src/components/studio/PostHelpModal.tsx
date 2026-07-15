@@ -4,9 +4,9 @@ import type { PostDraftImage } from '../../types/post';
 import { isValidSourceUrl } from '../../lib/studio/journal';
 import { useLanguage } from '../../i18n/LanguageContext';
 
-// Aide à l'écriture de la dépêche : pendant du WritingHelpModal de l'article.
-// Checklist live (mêmes règles que la publication dans l'app : image + sujet
-// carte 1 + une source par carte) + conseils adaptés au format cartes.
+// Info dépêche : pendant du WritingHelpModal de l'article. Checklist live
+// (mêmes règles que la publication dans l'app) + règles du format cartes —
+// uniquement du factuel, pas de conseils de rédaction ni de scoring.
 
 interface PostHelpModalProps {
   cards: PostDraftImage[];
@@ -37,55 +37,47 @@ export function PostHelpModal({ cards, primaryTheme, onClose }: PostHelpModalPro
   const checks: Array<{ ok: boolean; fr: string; en: string }> = [
     {
       ok: filled.length > 0 && filled.every((c) => !!c.image_url),
-      fr: 'Chaque carte a son image (au moins une carte)',
-      en: 'Each card has its image (at least one card)',
+      fr: 'Une image par carte (obligatoire)',
+      en: 'One image per card (required)',
     },
     {
       ok: !!filled[0]?.subject?.trim(),
-      fr: 'La carte 1 a un sujet — c\'est le titre de la dépêche',
-      en: 'Card 1 has a subject — it is the dispatch title',
+      fr: 'Un sujet sur la carte 1 (obligatoire — c\'est le titre de la dépêche)',
+      en: 'A subject on card 1 (required — it is the dispatch title)',
     },
     {
       ok: filled.every((c) => !!c.description?.trim()),
-      fr: 'Chaque carte a son excerpt court (lu sur l\'image)',
-      en: 'Each card has its short excerpt (read on the image)',
+      fr: 'Un excerpt court par carte (obligatoire)',
+      en: 'A short excerpt per card (required)',
     },
     {
       ok: filled.length > 0 && filled.every((c) => !!c.source?.url?.trim() && isValidSourceUrl(c.source.url)),
-      fr: 'Chaque carte a une source valide (requise pour publier)',
-      en: 'Each card has a valid source (required to publish)',
+      fr: 'Au moins une source valide par carte (obligatoire pour publier)',
+      en: 'At least one valid source per card (required to publish)',
     },
     {
       ok: !!primaryTheme,
-      fr: 'Un thème principal est choisi',
-      en: 'A main theme is chosen',
+      fr: 'Un thème principal choisi',
+      en: 'A main theme selected',
     },
   ];
 
-  const tips: Array<[string, string]> = [
+  const rules: Array<[string, string]> = [
     [
-      'Une idée par carte : le sujet et l\'excerpt court se lisent sur l\'image, la description longue au dos de la carte.',
-      'One idea per card: the subject and short excerpt are read on the image, the long description on the back of the card.',
+      'Une dépêche = 1 à 4 cartes visuelles. La carte 1 porte le titre.',
+      'A dispatch = 1 to 4 visual cards. Card 1 carries the title.',
     ],
     [
-      'Le sujet de la carte 1 est le titre de la dépêche : factuel et direct plutôt que sensationnel — le sensationnalisme pèse négativement dans le score ASV.',
-      'Card 1\'s subject is the dispatch title: factual and direct over sensational — sensationalism weighs negatively in the ASV score.',
+      'Par carte : sujet (80 caractères max), excerpt court (150 max), description longue optionnelle (600 max) et une source.',
+      'Per card: subject (80 characters max), short excerpt (150 max), optional long description (600 max) and a source.',
     ],
     [
-      'Choisis des images nettes au format portrait (3:4) : la carte occupe tout l\'écran dans le feed.',
-      'Pick sharp portrait (3:4) images: the card fills the whole screen in the feed.',
+      "Le recto affiche l'image, le sujet et l'excerpt ; la description longue et la source sont au dos de la carte.",
+      'The front shows the image, subject and excerpt; the long description and source are on the back of the card.',
     ],
     [
-      "Sources : vise l'article précis (pas la page d'accueil), et privilégie les sources primaires — étude, rapport, communiqué — quand elles existent.",
-      'Sources: link the exact article (not a homepage), and prefer primary sources — study, report, statement — when they exist.',
-    ],
-    [
-      "Des médias différents entre les cartes valent mieux qu'un seul média partout : l'ASV valorise la diversité des sources.",
-      'Different outlets across cards beat one outlet everywhere: ASV rewards source diversity.',
-    ],
-    [
-      "Vérifie le rendu dans l'Aperçu : recto (image + titre) et verso (description + source), carte par carte.",
-      'Check the result in the Preview: front (image + title) and back (description + source), card by card.',
+      "Le brouillon s'envoie dans l'app ; la publication et la vérification des sources se font depuis l'app.",
+      'The draft is sent to the app; publishing and source verification happen from the app.',
     ],
   ];
 
@@ -103,7 +95,7 @@ export function PostHelpModal({ cards, primaryTheme, onClose }: PostHelpModalPro
         <div className="flex items-center justify-between px-5 py-4 border-b border-aw sticky top-0 bg-aw-bg">
           <h2 className="body-semi inline-flex items-center gap-2">
             <BookOpenCheck className="w-4 h-4 text-aw-primary" />
-            {t('Bien composer ta dépêche', 'Composing a great dispatch')}
+            {t('Les règles de la dépêche', 'Dispatch rules')}
           </h2>
           <button type="button" onClick={onClose} className="p-1.5 rounded-lg text-aw-muted hover:text-aw-text"
             aria-label={t('Fermer', 'Close')}>
@@ -129,14 +121,14 @@ export function PostHelpModal({ cards, primaryTheme, onClose }: PostHelpModalPro
             </ul>
           </div>
 
-          {/* Conseils de composition */}
+          {/* Règles du format */}
           <div>
             <p className="body-semi text-sm mb-2 inline-flex items-center gap-1.5">
               <Lightbulb className="w-4 h-4 text-aw-primary" />
-              {t('Conseils', 'Tips')}
+              {t('À savoir', 'Good to know')}
             </p>
             <ul className="space-y-2">
-              {tips.map(([fr, en], index) => (
+              {rules.map(([fr, en], index) => (
                 <li key={index} className="text-sm text-aw-muted leading-relaxed pl-3 border-l-2 border-aw">
                   {t(fr, en)}
                 </li>

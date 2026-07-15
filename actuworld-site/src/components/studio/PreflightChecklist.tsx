@@ -1,11 +1,10 @@
 import { CheckCircle2, Circle, ShieldCheck } from 'lucide-react';
 import type { JournalSource } from '../../types/journal';
-import { hostFromUrl, isValidSourceUrl } from '../../lib/studio/journal';
+import { isValidSourceUrl } from '../../lib/studio/journal';
 import { useLanguage } from '../../i18n/LanguageContext';
 
-// « Pré-vol ASV » : traduit les règles connues du scoring en conseils AVANT
-// l'envoi — heuristiques locales uniquement, aucun calcul de vérification
-// (l'ASV reste seul juge à la publication).
+// Checklist factuelle avant envoi : uniquement les règles du produit
+// (obligatoire / renseigné), pas de conseils ni de scoring.
 
 interface PreflightChecklistProps {
   title: string;
@@ -21,25 +20,19 @@ type CheckItem = {
   en: string;
 };
 
-/** URL d'article précis (un chemin), pas une simple page d'accueil. */
-function isDeepUrl(url: string): boolean {
-  try {
-    return new URL(url).pathname.replace(/\/+$/, '').length > 1;
-  } catch {
-    return false;
-  }
-}
-
 export function PreflightChecklist({ title, bodyLength, primaryTheme, sources }: PreflightChecklistProps) {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
 
   const validSources = sources.filter((s) => isValidSourceUrl(s.url));
-  const distinctPublishers = new Set(
-    validSources.map((s) => hostFromUrl(s.url)).filter(Boolean)
-  ).size;
 
   const items: CheckItem[] = [
+    {
+      ok: title.trim().length > 0,
+      required: true,
+      fr: 'Un titre (obligatoire pour envoyer)',
+      en: 'A title (required to send)',
+    },
     {
       ok: validSources.length >= 1,
       required: true,
@@ -47,29 +40,14 @@ export function PreflightChecklist({ title, bodyLength, primaryTheme, sources }:
       en: 'At least one valid source (required to publish)',
     },
     {
-      ok: distinctPublishers >= 2,
-      fr: "Deux médias différents — la diversité des sources améliore le score ASV",
-      en: 'Two different outlets — source diversity improves the ASV score',
-    },
-    {
-      ok: validSources.length > 0 && validSources.every((s) => isDeepUrl(s.url)),
-      fr: "Des articles précis, pas des pages d'accueil",
-      en: 'Exact articles, not homepages',
+      ok: bodyLength > 0,
+      fr: 'Un corps de texte rédigé',
+      en: 'A written body',
     },
     {
       ok: primaryTheme !== '',
-      fr: 'Thème principal choisi',
-      en: 'Main theme selected',
-    },
-    {
-      ok: bodyLength >= 300,
-      fr: 'Corps développé (au moins 300 caractères)',
-      en: 'Substantial body (at least 300 characters)',
-    },
-    {
-      ok: title.trim().length > 0 && title.trim().length <= 80,
-      fr: 'Titre renseigné et concis (≤ 80 caractères)',
-      en: 'Title present and concise (≤ 80 characters)',
+      fr: 'Un thème principal choisi',
+      en: 'A main theme selected',
     },
   ];
 
@@ -98,8 +76,8 @@ export function PreflightChecklist({ title, bodyLength, primaryTheme, sources }:
       </ul>
       <p className="text-aw-muted text-xs mt-3">
         {t(
-          "Conseils indicatifs : la vérification ASV réelle se fait à la publication, dans l'app.",
-          'Indicative tips: the real ASV verification runs at publish time, in the app.'
+          "La publication et la vérification des sources se font depuis l'app.",
+          'Publishing and source verification happen from the app.'
         )}
       </p>
     </div>

@@ -4,9 +4,9 @@ import type { JournalSource } from '../../types/journal';
 import { PreflightChecklist } from './PreflightChecklist';
 import { useLanguage } from '../../i18n/LanguageContext';
 
-// Aide à l'écriture : ouverte depuis l'icône info de la barre d'outils.
-// Contient la checklist « Prêt à publier ? » (live) + des conseils de
-// rédaction alignés sur ce que l'ASV valorise.
+// Info article : ouverte depuis l'icône info de la barre d'outils.
+// Contient la checklist « Prêt à publier ? » (live) + les règles du format —
+// uniquement du factuel, pas de conseils de rédaction ni de scoring.
 
 interface WritingHelpModalProps {
   title: string;
@@ -32,30 +32,22 @@ export function WritingHelpModal({ title, bodyLength, primaryTheme, sources, onC
     };
   }, [onClose]);
 
-  const tips: Array<[string, string]> = [
+  const rules: Array<[string, string]> = [
     [
-      'Structure : un chapeau qui résume, des titres de section toutes les 3-4 idées, des paragraphes courts.',
-      'Structure: a dek that summarizes, section headings every 3-4 ideas, short paragraphs.',
+      'Un article = un titre (120 caractères max), un chapeau optionnel (200 max) et un corps de 4000 caractères max.',
+      'An article = a title (120 characters max), an optional dek (200 max) and a body of up to 4000 characters.',
     ],
     [
-      "Sources : vise l'article précis (pas la page d'accueil), et privilégie les sources primaires — étude, rapport, communiqué — quand elles existent.",
-      'Sources: link the exact article (not a homepage), and prefer primary sources — study, report, statement — when they exist.',
+      'Une image de couverture optionnelle et des blocs libres : titres, paragraphes, citations, images, séparateurs.',
+      'An optional cover image and free-form blocks: headings, paragraphs, quotes, images, dividers.',
     ],
     [
-      "Deux médias différents valent mieux que deux articles du même média : l'ASV valorise la diversité des sources.",
-      'Two different outlets beat two articles from the same outlet: ASV rewards source diversity.',
+      '1 à 2 sources, avec une URL commençant par http:// ou https://. Au moins une source valide (obligatoire pour publier).',
+      '1 to 2 sources, with a URL starting with http:// or https://. At least one valid source (required to publish).',
     ],
     [
-      "Reste fidèle à tes sources : l'ASV compare ce que tu écris à ce qu'elles disent réellement (note de fidélité).",
-      'Stay faithful to your sources: ASV compares what you write to what they actually say (faithfulness score).',
-    ],
-    [
-      'Titre factuel plutôt que sensationnel : le sensationnalisme pèse négativement dans le score.',
-      'Factual title over sensational: sensationalism weighs negatively in the score.',
-    ],
-    [
-      "Relis dans l'Aperçu mobile avant d'envoyer : c'est exactement ce que verront les lecteurs.",
-      'Proofread in the mobile Preview before sending: it is exactly what readers will see.',
+      "Le brouillon s'envoie dans l'app ; la publication et la vérification des sources se font depuis l'app.",
+      'The draft is sent to the app; publishing and source verification happen from the app.',
     ],
   ];
 
@@ -73,7 +65,7 @@ export function WritingHelpModal({ title, bodyLength, primaryTheme, sources, onC
         <div className="flex items-center justify-between px-5 py-4 border-b border-aw sticky top-0 bg-aw-bg">
           <h2 className="body-semi inline-flex items-center gap-2">
             <BookOpenCheck className="w-4 h-4 text-aw-primary" />
-            {t('Bien écrire ton article', 'Writing a great article')}
+            {t("Les règles de l'article", 'Article rules')}
           </h2>
           <button type="button" onClick={onClose} className="p-1.5 rounded-lg text-aw-muted hover:text-aw-text"
             aria-label={t('Fermer', 'Close')}>
@@ -90,14 +82,14 @@ export function WritingHelpModal({ title, bodyLength, primaryTheme, sources, onC
             sources={sources}
           />
 
-          {/* Conseils de rédaction */}
+          {/* Règles du format */}
           <div>
             <p className="body-semi text-sm mb-2 inline-flex items-center gap-1.5">
               <Lightbulb className="w-4 h-4 text-aw-primary" />
-              {t('Conseils', 'Tips')}
+              {t('À savoir', 'Good to know')}
             </p>
             <ul className="space-y-2">
-              {tips.map(([fr, en], index) => (
+              {rules.map(([fr, en], index) => (
                 <li key={index} className="text-sm text-aw-muted leading-relaxed pl-3 border-l-2 border-aw">
                   {t(fr, en)}
                 </li>

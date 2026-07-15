@@ -3,7 +3,7 @@ import { Link, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   AlertCircle, AlertTriangle, CheckCircle2, Cloud, CloudOff, Eye, FilePlus2, FileText,
-  Info, Loader2, LogOut, Maximize2, Minimize2, Redo2, Send, Smartphone, Trash2, Undo2,
+  Info, Loader2, Maximize2, Minimize2, Redo2, Send, Smartphone, Trash2, Undo2,
 } from 'lucide-react';
 import { Section } from '../../components/Section';
 import { PageMeta } from '../../components/PageMeta';
@@ -17,12 +17,12 @@ import { WritingHelpModal } from '../../components/studio/WritingHelpModal';
 import { SourceLibrary } from '../../components/studio/SourceLibrary';
 import { StudioTabs } from '../../components/studio/StudioTabs';
 import { PaperSheet } from '../../components/studio/PaperSheet';
+import { StudioByline } from '../../components/studio/StudioByline';
 import { useLanguage } from '../../i18n/LanguageContext';
-import { supabase } from '../../lib/studio/supabase';
 import { studioApi } from '../../lib/studio/api';
 import { useStudioSession } from '../../hooks/useStudioSession';
 import { STUDIO_THEMES } from '../../lib/studio/themes';
-import { initialsFromName, journalImageUrl, resolveAvatarUrl, uploadJournalImage } from '../../lib/studio/images';
+import { journalImageUrl, resolveAvatarUrl, uploadJournalImage } from '../../lib/studio/images';
 import {
   BODY_MAX, DEK_MAX, MAX_SOURCES, TITLE_MAX,
   blockBodyLen, cleanBlocks, cleanSources, createDraft, deleteDraft,
@@ -612,27 +612,9 @@ export default function StudioEditorPage() {
       <Section className="pt-24 pb-16">
         <div className="max-w-3xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-            {/* Barre de session (masquée en mode focus) */}
+            {/* Signature de session façon post (masquée en mode focus) */}
             {!focusMode && (
-            <div className="card p-4 flex items-center justify-between gap-4 mb-8">
-              <div className="flex items-center gap-3 min-w-0">
-                {avatarSrc ? (
-                  <img src={avatarSrc} alt="" className="w-10 h-10 rounded-full object-cover shrink-0 bg-aw-surface" />
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-aw-primary flex items-center justify-center shrink-0">
-                    <span className="text-white text-sm font-semibold">{initialsFromName(displayName)}</span>
-                  </div>
-                )}
-                <div className="min-w-0">
-                  <p className="body-semi truncate">{t('Connecté en tant que', 'Signed in as')} {displayName}</p>
-                  {profile?.username && <p className="text-aw-muted text-sm truncate">@{profile.username}</p>}
-                </div>
-              </div>
-              <button type="button" onClick={() => void supabase.auth.signOut()}
-                className="btn-outline inline-flex items-center shrink-0">
-                <LogOut className="w-4 h-4 mr-2" /> {t('Se déconnecter', 'Sign out')}
-              </button>
-            </div>
+              <StudioByline displayName={displayName} username={profile?.username} avatarSrc={avatarSrc} />
             )}
 
             {!focusMode && <StudioTabs active="article" />}
