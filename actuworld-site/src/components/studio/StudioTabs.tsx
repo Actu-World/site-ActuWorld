@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Images, Newspaper } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
 
-// Bascule Article / Post rapide — même langage visuel que la barre d'onglets
+// Bascule Article / Dépêche — même langage visuel que la barre d'onglets
 // des composers de l'app : libellés centrés + fin soulignement coloré sous
 // l'onglet actif (bleu ciel = article, vert = post, comme dans l'app).
 
@@ -25,7 +25,7 @@ export function StudioTabs({ active }: { active: 'article' | 'post' }) {
             <Newspaper className="w-4 h-4" /> {t('Article', 'Article')}
           </Link>
           <Link to="/studio/post" className={label(active === 'post')}>
-            <Images className="w-4 h-4" /> {t('Post rapide', 'Quick post')}
+            <Images className="w-4 h-4" /> {t('Dépêche', 'Dispatch')}
           </Link>
         </div>
         {/* ligne de fond + indicateur coloré sous l'onglet actif */}

@@ -2,14 +2,16 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  ArrowDown, ArrowUp, CheckCircle2, Cloud, CloudOff, FileImage, FilePlus2, ImagePlus,
-  Link2, Loader2, LogOut, PenLine, Send, Smartphone, Trash2,
+  ArrowDown, ArrowUp, CheckCircle2, Cloud, CloudOff, Eye, FileImage, FilePlus2, ImagePlus,
+  Info, Link2, Loader2, LogOut, PenLine, Redo2, Send, Smartphone, Trash2, Undo2,
 } from 'lucide-react';
 import { Section } from '../../components/Section';
 import { PageMeta } from '../../components/PageMeta';
 import { TagsInput } from '../../components/studio/TagsInput';
 import { StudioTabs } from '../../components/studio/StudioTabs';
 import { PaperSheet } from '../../components/studio/PaperSheet';
+import { PostPreview } from '../../components/studio/PostPreview';
+import { PostHelpModal } from '../../components/studio/PostHelpModal';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { supabase } from '../../lib/studio/supabase';
 import { studioApi } from '../../lib/studio/api';
@@ -83,6 +85,24 @@ export default function StudioPostPage() {
   const [draftsError, setDraftsError] = useState<string | null>(null);
   const [busyDraftId, setBusyDraftId] = useState<string | null>(null);
 
+  // ── Aperçu mobile ──
+  const [showPreview, setShowPreview] = useState(false);
+
+  // ── Aide à l'écriture (checklist + conseils, derrière l'icône info) ──
+  const [showHelp, setShowHelp] = useState(false);
+
+  // ── Historique annuler/rétablir (même mécanique que l'éditeur d'articles) ──
+  type PostSnapshot = {
+    editingDraftId: string | null;
+    primaryTheme: string;
+    tags: string[];
+    cards: PostDraftImage[];
+  };
+  const historyRef = useRef<PostSnapshot[]>([]);
+  const redoStackRef = useRef<PostSnapshot[]>([]);
+  const skipHistoryRef = useRef(false);
+  const HISTORY_MAX = 60;
+
   const userId = session?.user.id;
 
   const apiUnreachableMsg = t(
@@ -113,6 +133,60 @@ export default function StudioPostPage() {
   useEffect(() => {
     if (userId) void refreshDrafts();
   }, [userId, refreshDrafts]);
+
+  // ── Annuler / rétablir ──
+  const makeSnapshot = (): PostSnapshot => ({ editingDraftId, primaryTheme, tags, cards });
+  const applySnapshot = (snap: PostSnapshot) => {
+    skipHistoryRef.current = true;
+    setEditingDraftId(snap.editingDraftId);
+    setPrimaryTheme(snap.primaryTheme);
+    setTags(snap.tags);
+    setCards(snap.cards);
+  };
+
+  // Enregistrement de l'historique (coalescé à 400 ms de silence)
+  useEffect(() => {
+    if (sentTitle) return;
+    if (skipHistoryRef.current) {
+      skipHistoryRef.current = false;
+      return;
+    }
+    const timer = setTimeout(() => {
+      const snap = makeSnapshot();
+      const last = historyRef.current[historyRef.current.length - 1];
+      if (last && JSON.stringify(last) === JSON.stringify(snap)) return;
+      historyRef.current.push(snap);
+      if (historyRef.current.length > HISTORY_MAX) historyRef.current.shift();
+      redoStackRef.current = [];
+    }, 400);
+    return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editingDraftId, primaryTheme, tags, cards, sentTitle]);
+
+  const undo = () => {
+    if (sentTitle) return;
+    const history = historyRef.current;
+    if (history.length === 0) return;
+    const current = makeSnapshot();
+    const currentJson = JSON.stringify(current);
+    let target = history[history.length - 1];
+    if (JSON.stringify(target) === currentJson) {
+      if (history.length < 2) return;
+      history.pop();
+      target = history[history.length - 1];
+    }
+    redoStackRef.current.push(current);
+    applySnapshot(target);
+  };
+
+  const redo = () => {
+    if (sentTitle) return;
+    const snap = redoStackRef.current.pop();
+    if (!snap) return;
+    historyRef.current.push(makeSnapshot());
+    if (historyRef.current.length > HISTORY_MAX) historyRef.current.shift();
+    applySnapshot(snap);
+  };
 
   const buildPayload = () => ({
     primary_theme: primaryTheme || null,
@@ -214,7 +288,7 @@ export default function StudioPostPage() {
 
     const filledCards = cards.filter(cardHasContent);
     if (filledCards.length === 0) {
-      setSendError(t('Ajoute au moins une carte avec une image — un post rapide est un empilement de cartes visuelles.', 'Add at least one card with an image — a quick post is a stack of visual cards.'));
+      setSendError(t('Ajoute au moins une carte avec une image — une dépêche est un empilement de cartes visuelles.', 'Add at least one card with an image — a dispatch is a stack of visual cards.'));
       return;
     }
     if (filledCards.some((c) => !c.image_url)) {
@@ -222,7 +296,7 @@ export default function StudioPostPage() {
       return;
     }
     if (!filledCards[0].subject?.trim()) {
-      setSendError(t('Donne un sujet à la première carte : c\'est le titre du post.', 'Give the first card a subject: it is the post title.'));
+      setSendError(t('Donne un sujet à la première carte : c\'est le titre de la dépêche.', 'Give the first card a subject: it is the dispatch title.'));
       return;
     }
     const badSource = filledCards.some((c) => c.source?.url?.trim() && !isValidSourceUrl(c.source.url));
@@ -281,6 +355,27 @@ export default function StudioPostPage() {
     }
   };
 
+  // « Supprimer le brouillon » : même geste que la page article — efface le
+  // post en cours et supprime aussi le brouillon serveur (sinon fantômes).
+  const handleResetDraft = () => {
+    const confirmed = window.confirm(editingDraftId
+      ? t(
+          'Toute la dépêche en cours sera effacée et le brouillon supprimé de tes brouillons. Action irréversible.',
+          'The whole dispatch in progress will be cleared and the draft removed from your drafts. This cannot be undone.'
+        )
+      : t(
+          'Toute la dépêche en cours (cartes, thème, tags) sera effacée. Action irréversible.',
+          'The whole dispatch in progress (cards, theme, tags) will be cleared. This cannot be undone.'
+        ));
+    if (!confirmed) return;
+    if (editingDraftId) {
+      deletePostDraft(editingDraftId)
+        .then(() => refreshDrafts())
+        .catch(() => { /* best-effort : le brouillon restera dans la liste */ });
+    }
+    resetEditor();
+  };
+
   const handleResume = (draft: PostDraftRow) => {
     setEditingDraftId(draft.id);
     setPrimaryTheme(draft.payload.primary_theme ?? '');
@@ -309,6 +404,29 @@ export default function StudioPostPage() {
     }
   };
 
+  // Raccourcis clavier : Ctrl/Cmd+Entrée = envoyer, Ctrl/Cmd+Z = annuler,
+  // Ctrl/Cmd+Maj+Z ou Ctrl/Cmd+Y = rétablir (l'aperçu gère son propre Échap).
+  const keyActionsRef = useRef({ send: () => {}, undo: () => {}, redo: () => {} });
+  keyActionsRef.current = { send: () => { void handleSend(); }, undo, redo };
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const actions = keyActionsRef.current;
+      const mod = event.ctrlKey || event.metaKey;
+      if (mod && event.key === 'Enter') {
+        event.preventDefault();
+        actions.send();
+      } else if (mod && !event.shiftKey && event.key.toLowerCase() === 'z') {
+        event.preventDefault();
+        actions.undo();
+      } else if (mod && (event.key.toLowerCase() === 'y' || (event.shiftKey && event.key.toLowerCase() === 'z'))) {
+        event.preventDefault();
+        actions.redo();
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, []);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-aw-bg flex items-center justify-center">
@@ -326,8 +444,8 @@ export default function StudioPostPage() {
   return (
     <div className="min-h-screen bg-aw-bg text-aw-text">
       <PageMeta
-        title={t('Studio — Post rapide', 'Studio — Quick post')}
-        description={t("Compose un post rapide (cartes visuelles sourcées) et envoie-le en brouillon dans l'app.", 'Compose a quick post (sourced visual cards) and send it as a draft to the app.')}
+        title={t('Studio — Dépêche', 'Studio — Dispatch')}
+        description={t("Compose une dépêche (cartes visuelles sourcées) et envoie-la en brouillon dans l'app.", 'Compose a dispatch (sourced visual cards) and send it as a draft to the app.')}
         path="/studio/post"
       />
 
@@ -362,14 +480,14 @@ export default function StudioPostPage() {
                 <CheckCircle2 className="w-10 h-10 text-aw-primary mx-auto mb-4" />
                 <h1 className="text-2xl font-bold mb-2">{t('Brouillon envoyé !', 'Draft sent!')}</h1>
                 <p className="text-aw-muted max-w-md mx-auto mb-2">
-                  {t(`« ${sentTitle} » t'attend dans le composer de posts de l'app.`, `“${sentTitle}” is waiting in the app's post composer.`)}
+                  {t(`« ${sentTitle} » t'attend dans le composer de dépêches de l'app.`, `“${sentTitle}” is waiting in the app's dispatch composer.`)}
                 </p>
                 <p className="text-aw-muted text-sm max-w-md mx-auto mb-8 inline-flex items-center justify-center">
                   <Smartphone className="w-4 h-4 mr-1.5 shrink-0" />
                   {t('Relis-le sur ton téléphone puis publie — la vérification ASV se lance à ce moment-là.', 'Review it on your phone then publish — ASV verification runs at that moment.')}
                 </p>
                 <button type="button" onClick={resetEditor} className="btn-primary">
-                  {t('Composer un autre post', 'Compose another post')}
+                  {t('Composer une autre dépêche', 'Compose another dispatch')}
                 </button>
               </div>
             ) : (
@@ -379,7 +497,7 @@ export default function StudioPostPage() {
                 <div className="flex items-center justify-between gap-3 mb-4 flex-wrap pt-1">
                   <div>
                     <h1 className="text-xl font-bold text-aw-primary inline-flex items-center gap-2">
-                      <PenLine className="w-5 h-5" /> {t('Nouveau post rapide', 'New quick post')}
+                      <PenLine className="w-5 h-5" /> {t('Nouvelle dépêche', 'New dispatch')}
                     </h1>
                     <p className="text-xs mt-0.5 min-h-[1rem]" aria-live="polite">
                       {saveState === 'saving' && (
@@ -393,26 +511,75 @@ export default function StudioPostPage() {
                       )}
                     </p>
                   </div>
-                  {hasAnyContent && (
+                  <div className="flex items-center gap-2">
                     <button
                       type="button"
-                      onClick={() => void handleNewPost()}
-                      disabled={isSending || isUploading}
-                      className="btn-outline inline-flex items-center text-sm disabled:opacity-50"
-                      title={t(
-                        'Garder le post en cours dans mes brouillons et en composer un nouveau',
-                        'Keep the current post in my drafts and compose a new one'
-                      )}
+                      onClick={() => setShowHelp(true)}
+                      className="p-2 rounded-lg border border-aw text-aw-muted hover:text-aw-primary"
+                      aria-label={t("Aide à l'écriture", 'Writing help')}
+                      title={t("Aide à l'écriture", 'Writing help')}
                     >
-                      <FilePlus2 className="w-4 h-4 mr-1.5" /> {t('Nouveau', 'New')}
+                      <Info className="w-4 h-4" />
                     </button>
-                  )}
+                    <button
+                      type="button"
+                      onClick={undo}
+                      className="p-2 rounded-lg border border-aw text-aw-muted hover:text-aw-primary"
+                      aria-label={t('Annuler (Ctrl+Z)', 'Undo (Ctrl+Z)')}
+                      title={t('Annuler (Ctrl+Z)', 'Undo (Ctrl+Z)')}
+                    >
+                      <Undo2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={redo}
+                      className="p-2 rounded-lg border border-aw text-aw-muted hover:text-aw-primary"
+                      aria-label={t('Rétablir (Ctrl+Maj+Z)', 'Redo (Ctrl+Shift+Z)')}
+                      title={t('Rétablir (Ctrl+Maj+Z)', 'Redo (Ctrl+Shift+Z)')}
+                    >
+                      <Redo2 className="w-4 h-4" />
+                    </button>
+                    {hasAnyContent && (
+                      <button
+                        type="button"
+                        onClick={() => void handleNewPost()}
+                        disabled={isSending || isUploading}
+                        className="btn-outline inline-flex items-center text-sm disabled:opacity-50"
+                        title={t(
+                          'Garder la dépêche en cours dans mes brouillons et en composer une nouvelle',
+                          'Keep the current dispatch in my drafts and compose a new one'
+                        )}
+                      >
+                        <FilePlus2 className="w-4 h-4 mr-1.5" /> {t('Nouveau', 'New')}
+                      </button>
+                    )}
+                    {hasAnyContent && (
+                      <button
+                        type="button"
+                        onClick={() => setShowPreview(true)}
+                        className="btn-outline inline-flex items-center text-sm"
+                      >
+                        <Eye className="w-4 h-4 mr-1.5" /> {t('Aperçu', 'Preview')}
+                      </button>
+                    )}
+                    {hasAnyContent && (
+                      <button
+                        type="button"
+                        onClick={handleResetDraft}
+                        className="p-2 rounded-lg border border-red-500/50 text-red-500 hover:bg-red-500/10"
+                        aria-label={t('Supprimer le brouillon', 'Delete draft')}
+                        title={t('Supprimer le brouillon', 'Delete draft')}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 <p className="text-aw-muted text-sm mb-5">
                   {t(
-                    `Un post rapide = 1 à ${MAX_POST_IMAGES} cartes visuelles. La carte 1 porte le titre du post ; chaque carte doit avoir sa source pour être publiée.`,
-                    `A quick post = 1 to ${MAX_POST_IMAGES} visual cards. Card 1 carries the post title; each card needs its source to be published.`
+                    `Une dépêche = 1 à ${MAX_POST_IMAGES} cartes visuelles. La carte 1 porte le titre de la dépêche ; chaque carte doit avoir sa source pour être publiée.`,
+                    `A dispatch = 1 to ${MAX_POST_IMAGES} visual cards. Card 1 carries the dispatch title; each card needs its source to be published.`
                   )}
                 </p>
 
@@ -458,7 +625,7 @@ export default function StudioPostPage() {
                             </button>
                           )}
                           <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/60 text-white text-xs">
-                            {index + 1}{index === 0 ? ` · ${t('titre du post', 'post title')}` : ''}
+                            {index + 1}{index === 0 ? ` · ${t('titre de la dépêche', 'dispatch title')}` : ''}
                           </span>
                           <div className="absolute top-2 right-2 flex gap-1">
                             <button type="button" onClick={() => moveCard(index, -1)} disabled={index === 0}
@@ -482,7 +649,7 @@ export default function StudioPostPage() {
                         <div className="max-w-2xl mx-auto space-y-2.5 mt-4">
                           <input type="text" value={card.subject ?? ''} maxLength={POST_SUBJECT_MAX}
                             onChange={(e) => replaceCard(index, { ...card, subject: e.target.value })}
-                            placeholder={index === 0 ? t('Sujet — titre du post *', 'Subject — post title *') : t('Sujet de la carte *', 'Card subject *')}
+                            placeholder={index === 0 ? t('Sujet — titre de la dépêche *', 'Subject — dispatch title *') : t('Sujet de la carte *', 'Card subject *')}
                             className={`${inputClass} font-semibold`} />
                           <textarea value={card.description ?? ''} maxLength={POST_DESC_MAX} rows={2}
                             onChange={(e) => replaceCard(index, { ...card, description: e.target.value })}
@@ -538,7 +705,7 @@ export default function StudioPostPage() {
 
                 {/* Brouillons de posts */}
                 <div className="mt-12">
-                  <h2 className="body-semi text-lg mb-4">{t('Mes brouillons de posts', 'My post drafts')}</h2>
+                  <h2 className="body-semi text-lg mb-4">{t('Mes brouillons de dépêches', 'My dispatch drafts')}</h2>
                   {draftsError && <p className="text-aw-muted text-sm">{draftsError}</p>}
                   {!draftsError && drafts.length === 0 && (
                     <p className="text-aw-muted text-sm">{t('Aucun brouillon pour le moment.', 'No drafts yet.')}</p>
@@ -574,6 +741,26 @@ export default function StudioPostPage() {
                     ))}
                   </ul>
                 </div>
+
+                {/* Aperçu mobile (cartes recto/verso comme dans le feed) */}
+                {showPreview && (
+                  <PostPreview
+                    cards={cards.filter(cardHasContent)}
+                    tags={tags}
+                    authorName={displayName}
+                    avatarSrc={avatarSrc}
+                    onClose={() => setShowPreview(false)}
+                  />
+                )}
+
+                {/* Aide à l'écriture (checklist + conseils) */}
+                {showHelp && (
+                  <PostHelpModal
+                    cards={cards}
+                    primaryTheme={primaryTheme}
+                    onClose={() => setShowHelp(false)}
+                  />
+                )}
               </PaperSheet>
             )}
           </motion.div>
