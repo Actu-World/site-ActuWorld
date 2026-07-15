@@ -33,10 +33,18 @@ export default function StudioLoginPage() {
     setSendState('sending');
     setErrorMessage('');
 
+    // URL de retour CANONIQUE : quelle que soit la variante visitée (www ou non),
+    // on renvoie toujours vers actuworld.fr — une seule entrée d'allowlist Supabase
+    // à maintenir, et pas de retombée silencieuse sur la Site URL si la variante
+    // manque. L'origine locale est conservée pour le dev (localhost).
+    const redirectBase = window.location.hostname.endsWith('actuworld.fr')
+      ? 'https://actuworld.fr'
+      : window.location.origin;
+
     const { error } = await supabase.auth.signInWithOtp({
       email: trimmedEmail,
       options: {
-        emailRedirectTo: `${window.location.origin}/studio/editeur`,
+        emailRedirectTo: `${redirectBase}/studio/editeur`,
         // Le Studio connecte des créateurs existants, il ne crée pas de comptes.
         shouldCreateUser: false,
       },
