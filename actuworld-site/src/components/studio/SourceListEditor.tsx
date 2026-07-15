@@ -11,6 +11,10 @@ interface SourceListEditorProps {
 const inputClass =
   'w-full rounded-xl border border-aw bg-aw-bg px-3 py-2.5 text-aw-text text-sm placeholder:text-aw-muted focus:outline-none focus:ring-2 focus:ring-aw-primary';
 
+// Même limite que le composer mobile (MAX_SOURCES dans journal/compose.tsx) :
+// au-delà, l'app tronquerait silencieusement à la publication.
+const MAX_SOURCES = 2;
+
 export function SourceListEditor({ sources, onChange }: SourceListEditorProps) {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
@@ -95,13 +99,19 @@ export function SourceListEditor({ sources, onChange }: SourceListEditorProps) {
         );
       })}
 
-      <button
-        type="button"
-        className="btn-outline inline-flex items-center text-sm"
-        onClick={() => onChange([...sources, { url: '', title: '', publisher: '', published_at: null }])}
-      >
-        <Plus className="w-4 h-4 mr-1.5" /> {t('Ajouter une source', 'Add a source')}
-      </button>
+      {sources.length < MAX_SOURCES ? (
+        <button
+          type="button"
+          className="btn-outline inline-flex items-center text-sm"
+          onClick={() => onChange([...sources, { url: '', title: '', publisher: '', published_at: null }])}
+        >
+          <Plus className="w-4 h-4 mr-1.5" /> {t('Ajouter une source', 'Add a source')}
+        </button>
+      ) : (
+        <p className="text-aw-muted text-xs">
+          {t(`${MAX_SOURCES} sources maximum par article.`, `${MAX_SOURCES} sources max per article.`)}
+        </p>
+      )}
     </div>
   );
 }
