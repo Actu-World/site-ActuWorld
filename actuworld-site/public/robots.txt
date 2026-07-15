@@ -1,14 +1,18 @@
 User-agent: *
 Allow: /
+Disallow: /studio
 
 # AI Crawlers
 User-agent: GPTBot
 Allow: /
+Disallow: /studio
 
 User-agent: ClaudeBot
 Allow: /
+Disallow: /studio
 
 User-agent: PerplexityBot
 Allow: /
+Disallow: /studio
 
 Sitemap: https://www.actuworld.fr/sitemap.xml
