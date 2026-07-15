@@ -2,24 +2,43 @@ import { Link } from 'react-router-dom';
 import { Images, Newspaper } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
 
-// Bascule entre les deux formats du Studio : article (journal) et post rapide.
+// Bascule Article / Post rapide — même langage visuel que la barre d'onglets
+// des composers de l'app : libellés centrés + fin soulignement coloré sous
+// l'onglet actif (bleu ciel = article, vert = post, comme dans l'app).
+
+const ARTICLE_ACCENT = '#0EA5E9'; // bleu ciel journal (page de création de l'app)
 
 export function StudioTabs({ active }: { active: 'article' | 'post' }) {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
 
-  const base = 'inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm transition-colors';
-  const on = 'bg-aw-primary text-white body-semi';
-  const off = 'border border-aw text-aw-muted hover:text-aw-primary';
+  const label = (isActive: boolean) =>
+    `flex-1 inline-flex items-center justify-center gap-2 py-2.5 text-sm transition-colors ${
+      isActive ? 'text-aw-text body-semi' : 'text-aw-muted hover:text-aw-text'
+    }`;
 
   return (
-    <nav className="flex gap-2 mb-6" aria-label="Studio">
-      <Link to="/studio/editeur" className={`${base} ${active === 'article' ? on : off}`}>
-        <Newspaper className="w-4 h-4" /> {t('Article', 'Article')}
-      </Link>
-      <Link to="/studio/post" className={`${base} ${active === 'post' ? on : off}`}>
-        <Images className="w-4 h-4" /> {t('Post rapide', 'Quick post')}
-      </Link>
+    <nav className="flex justify-center mb-8" aria-label="Studio">
+      <div className="relative w-[340px] max-w-full">
+        <div className="flex">
+          <Link to="/studio/editeur" className={label(active === 'article')}>
+            <Newspaper className="w-4 h-4" /> {t('Article', 'Article')}
+          </Link>
+          <Link to="/studio/post" className={label(active === 'post')}>
+            <Images className="w-4 h-4" /> {t('Post rapide', 'Quick post')}
+          </Link>
+        </div>
+        {/* ligne de fond + indicateur coloré sous l'onglet actif */}
+        <div className="absolute inset-x-0 bottom-0 h-[2px] rounded-full bg-aw-text/10" aria-hidden />
+        <div
+          aria-hidden
+          className="absolute bottom-0 h-[2px] w-1/2 rounded-full transition-transform duration-300 ease-out"
+          style={{
+            transform: active === 'post' ? 'translateX(100%)' : 'translateX(0)',
+            backgroundColor: active === 'article' ? ARTICLE_ACCENT : 'var(--aw-primary)',
+          }}
+        />
+      </div>
     </nav>
   );
 }

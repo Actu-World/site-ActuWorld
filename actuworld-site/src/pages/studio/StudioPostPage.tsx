@@ -355,73 +355,74 @@ export default function StudioPostPage() {
                     <TagsInput tags={tags} onChange={setTags} />
                   </div>
 
-                  {/* Cartes */}
-                  {cards.map((card, index) => (
-                    <div key={index} className="card p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-aw-muted text-xs uppercase tracking-wide inline-flex items-center gap-1.5">
-                          <FileImage className="w-3.5 h-3.5" />
-                          {t('Carte', 'Card')} {index + 1}{index === 0 ? ` — ${t('titre du post', 'post title')}` : ''}
-                        </span>
-                        <div className="flex items-center gap-1">
-                          <button type="button" onClick={() => moveCard(index, -1)} disabled={index === 0}
-                            className="p-1.5 rounded-lg bg-aw-surface text-aw-muted hover:text-aw-primary disabled:opacity-30"
-                            aria-label={t('Monter la carte', 'Move card up')}><ArrowUp className="w-4 h-4" /></button>
-                          <button type="button" onClick={() => moveCard(index, 1)} disabled={index === cards.length - 1}
-                            className="p-1.5 rounded-lg bg-aw-surface text-aw-muted hover:text-aw-primary disabled:opacity-30"
-                            aria-label={t('Descendre la carte', 'Move card down')}><ArrowDown className="w-4 h-4" /></button>
-                          <button type="button" onClick={() => removeCard(index)}
-                            className="p-1.5 rounded-lg bg-aw-surface text-red-500 hover:text-red-600"
-                            aria-label={t('Supprimer la carte', 'Delete card')}><Trash2 className="w-4 h-4" /></button>
+                  {/* Cartes — format carte de l'app (image 3:4 en haut, champs dessous),
+                      en grille côte à côte pour le grand écran */}
+                  <input ref={fileInputRef} type="file" accept="image/*" className="hidden"
+                    onChange={(e) => void handleFileSelected(e.target.files?.[0])} />
+                  <div className="grid sm:grid-cols-2 gap-5 items-start">
+                    {cards.map((card, index) => (
+                      <div key={index} className="card p-3">
+                        {/* Image + badge numéro + actions en surimpression */}
+                        <div className="relative">
+                          <img src={card.image_url} alt="" className="w-full aspect-[3/4] object-cover rounded-xl" />
+                          <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/60 text-white text-xs">
+                            {index + 1}{index === 0 ? ` · ${t('titre du post', 'post title')}` : ''}
+                          </span>
+                          <div className="absolute top-2 right-2 flex gap-1">
+                            <button type="button" onClick={() => moveCard(index, -1)} disabled={index === 0}
+                              className="p-1.5 rounded-lg bg-black/60 text-white hover:bg-black/80 disabled:opacity-30"
+                              aria-label={t('Reculer la carte', 'Move card back')}><ArrowUp className="w-3.5 h-3.5 -rotate-90" /></button>
+                            <button type="button" onClick={() => moveCard(index, 1)} disabled={index === cards.length - 1}
+                              className="p-1.5 rounded-lg bg-black/60 text-white hover:bg-black/80 disabled:opacity-30"
+                              aria-label={t('Avancer la carte', 'Move card forward')}><ArrowDown className="w-3.5 h-3.5 -rotate-90" /></button>
+                            <button type="button" onClick={() => removeCard(index)}
+                              className="p-1.5 rounded-lg bg-black/60 text-red-400 hover:bg-black/80"
+                              aria-label={t('Supprimer la carte', 'Delete card')}><Trash2 className="w-3.5 h-3.5" /></button>
+                          </div>
                         </div>
-                      </div>
 
-                      <div className="flex flex-col sm:flex-row gap-4">
-                        <img src={card.image_url} alt="" className="w-full sm:w-44 aspect-[3/4] object-cover rounded-xl border border-aw shrink-0" />
-                        <div className="flex-1 space-y-2.5 min-w-0">
+                        {/* Champs — compacts, sous l'image comme dans l'app */}
+                        <div className="space-y-2 mt-3">
                           <input type="text" value={card.subject ?? ''} maxLength={POST_SUBJECT_MAX}
                             onChange={(e) => replaceCard(index, { ...card, subject: e.target.value })}
                             placeholder={index === 0 ? t('Sujet — titre du post', 'Subject — post title') : t('Sujet de la carte', 'Card subject')}
                             className={`${inputClass} font-semibold`} />
                           <textarea value={card.description ?? ''} maxLength={POST_DESC_MAX} rows={2}
                             onChange={(e) => replaceCard(index, { ...card, description: e.target.value })}
-                            placeholder={t('Excerpt court (affiché sur la carte)', 'Short excerpt (shown on the card)')}
+                            placeholder={t('Excerpt court (sur la carte)', 'Short excerpt (on the card)')}
                             className={inputClass} />
                           <textarea value={card.back_description ?? ''} maxLength={POST_BACK_DESC_MAX} rows={3}
                             onChange={(e) => replaceCard(index, { ...card, back_description: e.target.value })}
                             placeholder={t('Description longue (dos de la carte)', 'Long description (back of the card)')}
                             className={inputClass} />
-                          <div className="grid sm:grid-cols-[1fr_auto] gap-2 items-start">
-                            <div className="space-y-2">
-                              <div className="relative">
-                                <Link2 className="w-3.5 h-3.5 text-aw-primary absolute left-3 top-3" />
-                                <input type="url" value={card.source?.url ?? ''} maxLength={POST_SOURCE_URL_MAX}
-                                  onChange={(e) => replaceCard(index, { ...card, source: { url: e.target.value, title: card.source?.title ?? '' } })}
-                                  placeholder={t('Source de cette carte — https://…', 'Source for this card — https://…')}
-                                  className={`${inputClass} pl-9 ${card.source?.url?.trim() && !isValidSourceUrl(card.source.url) ? 'border-red-500' : ''}`} />
-                              </div>
-                              <input type="text" value={card.source?.title ?? ''} maxLength={POST_SOURCE_TITLE_MAX}
-                                onChange={(e) => replaceCard(index, { ...card, source: { url: card.source?.url ?? '', title: e.target.value } })}
-                                placeholder={t('Titre de la source (optionnel)', 'Source title (optional)')}
-                                className={inputClass} />
-                            </div>
+                          <div className="relative">
+                            <Link2 className="w-3.5 h-3.5 text-aw-primary absolute left-3 top-3" />
+                            <input type="url" value={card.source?.url ?? ''} maxLength={POST_SOURCE_URL_MAX}
+                              onChange={(e) => replaceCard(index, { ...card, source: { url: e.target.value, title: card.source?.title ?? '' } })}
+                              placeholder={t('Source — https://…', 'Source — https://…')}
+                              className={`${inputClass} pl-9 ${card.source?.url?.trim() && !isValidSourceUrl(card.source.url) ? 'border-red-500' : ''}`} />
                           </div>
+                          <input type="text" value={card.source?.title ?? ''} maxLength={POST_SOURCE_TITLE_MAX}
+                            onChange={(e) => replaceCard(index, { ...card, source: { url: card.source?.url ?? '', title: e.target.value } })}
+                            placeholder={t('Titre de la source (optionnel)', 'Source title (optional)')}
+                            className={inputClass} />
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
 
-                  {/* Ajouter une carte */}
-                  <input ref={fileInputRef} type="file" accept="image/*" className="hidden"
-                    onChange={(e) => void handleFileSelected(e.target.files?.[0])} />
-                  {cards.length < MAX_POST_IMAGES && (
-                    <button type="button" onClick={() => fileInputRef.current?.click()} disabled={isUploading}
-                      className="w-full h-32 rounded-xl border border-dashed border-aw text-aw-muted hover:text-aw-primary hover:border-aw-primary flex items-center justify-center gap-2 disabled:opacity-50">
-                      <ImagePlus className="w-5 h-5" />
-                      {isUploading ? t('Upload en cours…', 'Uploading…')
-                        : t(`Ajouter une carte (${cards.length}/${MAX_POST_IMAGES})`, `Add a card (${cards.length}/${MAX_POST_IMAGES})`)}
-                    </button>
-                  )}
+                    {/* Tuile d'ajout — même gabarit qu'une carte */}
+                    {cards.length < MAX_POST_IMAGES && (
+                      <button type="button" onClick={() => fileInputRef.current?.click()} disabled={isUploading}
+                        className="rounded-xl border-2 border-dashed border-aw text-aw-muted hover:text-aw-primary hover:border-aw-primary
+                                   flex flex-col items-center justify-center gap-2 disabled:opacity-50 aspect-[3/4] self-stretch">
+                        <ImagePlus className="w-7 h-7" />
+                        <span className="text-sm">
+                          {isUploading ? t('Upload en cours…', 'Uploading…')
+                            : t(`Ajouter une carte (${cards.length}/${MAX_POST_IMAGES})`, `Add a card (${cards.length}/${MAX_POST_IMAGES})`)}
+                        </span>
+                      </button>
+                    )}
+                  </div>
 
                   {/* Envoi */}
                   <div className="card p-5">
