@@ -15,6 +15,7 @@ import { ArticlePreview } from '../../components/studio/ArticlePreview';
 import { PublishedList } from '../../components/studio/PublishedList';
 import { WritingHelpModal } from '../../components/studio/WritingHelpModal';
 import { SourceLibrary } from '../../components/studio/SourceLibrary';
+import { StudioTabs } from '../../components/studio/StudioTabs';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { supabase } from '../../lib/studio/supabase';
 import { studioApi } from '../../lib/studio/api';
@@ -609,6 +610,8 @@ export default function StudioEditorPage() {
               </button>
             </div>
             )}
+
+            {!focusMode && <StudioTabs active="article" />}
 
             {sentDraftTitle ? (
               /* ── Confirmation d'envoi ── */

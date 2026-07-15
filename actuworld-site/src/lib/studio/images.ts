@@ -37,6 +37,16 @@ export async function uploadJournalImage(file: File): Promise<string> {
   return result.path;
 }
 
+/** Upload une image de post rapide, renvoie l'URL PUBLIQUE (convention app : posts stockent l'URL). */
+export async function uploadPostImage(file: File): Promise<string> {
+  const blob = await compressImage(file);
+  const formData = new FormData();
+  formData.append('file', blob, `post-${Date.now()}.jpg`);
+  formData.append('bucket', 'post-images');
+  const result = await studioApi.postForm<{ url: string }>('/storage/upload/image', formData);
+  return result.url;
+}
+
 function storagePublicUrl(path: string, bucket: string): string {
   if (/^https?:\/\//i.test(path)) return path; // déjà absolue
   const encoded = path.split('/').map(encodeURIComponent).join('/');
