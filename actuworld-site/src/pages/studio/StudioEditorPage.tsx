@@ -3,7 +3,7 @@ import { Link, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   AlertCircle, AlertTriangle, CheckCircle2, Cloud, CloudOff, Eye, FileText,
-  Loader2, LogOut, Send, Smartphone, Trash2,
+  Loader2, LogOut, Maximize2, Minimize2, Redo2, Send, Smartphone, Trash2, Undo2,
 } from 'lucide-react';
 import { Section } from '../../components/Section';
 import { PageMeta } from '../../components/PageMeta';
@@ -13,6 +13,8 @@ import { TagsInput } from '../../components/studio/TagsInput';
 import { DraftList } from '../../components/studio/DraftList';
 import { ArticlePreview } from '../../components/studio/ArticlePreview';
 import { PublishedList } from '../../components/studio/PublishedList';
+import { PreflightChecklist } from '../../components/studio/PreflightChecklist';
+import { SourceLibrary } from '../../components/studio/SourceLibrary';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { supabase } from '../../lib/studio/supabase';
 import { studioApi } from '../../lib/studio/api';
@@ -20,7 +22,7 @@ import { useStudioSession } from '../../hooks/useStudioSession';
 import { STUDIO_THEMES } from '../../lib/studio/themes';
 import { initialsFromName, journalImageUrl, resolveAvatarUrl, uploadJournalImage } from '../../lib/studio/images';
 import {
-  BODY_MAX, DEK_MAX, TITLE_MAX,
+  BODY_MAX, DEK_MAX, MAX_SOURCES, TITLE_MAX,
   blockBodyLen, cleanBlocks, cleanSources, createDraft, deleteDraft,
   isValidSourceUrl, listMyJournal, updateDraft,
 } from '../../lib/studio/journal';
@@ -97,6 +99,21 @@ export default function StudioEditorPage() {
   // ── Aperçu mobile ──
   const [showPreview, setShowPreview] = useState(false);
 
+  // ── Mode focus (écriture plein écran) ──
+  const [focusMode, setFocusMode] = useState(false);
+
+  // ── Historique annuler/rétablir (structure + texte, granularité ~400 ms) ──
+  type EditorSnapshot = {
+    editingDraftId: string | null;
+    title: string; dek: string; primaryTheme: string;
+    tags: string[]; coverPath: string | null;
+    blocks: JournalBlock[]; sources: JournalSource[];
+  };
+  const historyRef = useRef<EditorSnapshot[]>([]);
+  const redoStackRef = useRef<EditorSnapshot[]>([]);
+  const skipHistoryRef = useRef(false);
+  const HISTORY_MAX = 60;
+
   // ── Sauvegarde serveur continue ──
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
@@ -127,6 +144,76 @@ export default function StudioEditorPage() {
     : bodyLength > BODY_MAX * 0.9
       ? 'text-amber-500'
       : 'text-aw-muted';
+
+  // ── Compteur de mots + temps de lecture (~200 mots/min) ──
+  const wordCount = blocks.reduce((count, block) => {
+    const text =
+      block.type === 'heading' || block.type === 'paragraph' || block.type === 'quote' || block.type === 'image_text'
+        ? block.text
+        : '';
+    return count + (text.trim() ? text.trim().split(/\s+/).length : 0);
+  }, 0);
+  const readMinutes = Math.max(1, Math.round(wordCount / 200));
+
+  // ── Annuler / rétablir ──
+  const makeSnapshot = (): EditorSnapshot => ({
+    editingDraftId, title, dek, primaryTheme, tags, coverPath, blocks, sources,
+  });
+  const applySnapshot = (snap: EditorSnapshot) => {
+    skipHistoryRef.current = true;
+    setEditingDraftId(snap.editingDraftId);
+    setTitle(snap.title);
+    setDek(snap.dek);
+    setPrimaryTheme(snap.primaryTheme);
+    setTags(snap.tags);
+    setCoverPath(snap.coverPath);
+    setBlocks(snap.blocks);
+    setSources(snap.sources);
+  };
+
+  // Enregistrement de l'historique (coalescé à 400 ms de silence)
+  useEffect(() => {
+    if (sentDraftTitle) return;
+    if (skipHistoryRef.current) {
+      skipHistoryRef.current = false;
+      return;
+    }
+    const timer = setTimeout(() => {
+      const snap = makeSnapshot();
+      const last = historyRef.current[historyRef.current.length - 1];
+      if (last && JSON.stringify(last) === JSON.stringify(snap)) return;
+      historyRef.current.push(snap);
+      if (historyRef.current.length > HISTORY_MAX) historyRef.current.shift();
+      redoStackRef.current = [];
+    }, 400);
+    return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editingDraftId, title, dek, primaryTheme, tags, coverPath, blocks, sources, sentDraftTitle]);
+
+  const undo = () => {
+    if (sentDraftTitle) return;
+    const history = historyRef.current;
+    if (history.length === 0) return;
+    const current = makeSnapshot();
+    const currentJson = JSON.stringify(current);
+    let target = history[history.length - 1];
+    if (JSON.stringify(target) === currentJson) {
+      if (history.length < 2) return;
+      history.pop();
+      target = history[history.length - 1];
+    }
+    redoStackRef.current.push(current);
+    applySnapshot(target);
+  };
+
+  const redo = () => {
+    if (sentDraftTitle) return;
+    const snap = redoStackRef.current.pop();
+    if (!snap) return;
+    historyRef.current.push(makeSnapshot());
+    if (historyRef.current.length > HISTORY_MAX) historyRef.current.shift();
+    applySnapshot(snap);
+  };
 
   // Profil pour la barre de session (1 retry : le premier appel peut tomber
   // pendant le refresh de session au retour du magic link)
@@ -390,14 +477,48 @@ export default function StudioEditorPage() {
     }
   };
 
-  // Ctrl/Cmd + Entrée = « Envoyer vers l'app » (le raccourci du geste final)
-  const handleSendRef = useRef(handleSend);
-  handleSendRef.current = handleSend;
+  // Réutiliser une source de la bibliothèque : remplit la première ligne vide,
+  // sinon ajoute une ligne (dans la limite MAX_SOURCES).
+  const canAddLibrarySource =
+    sources.some((s) => !s.url.trim()) || sources.length < MAX_SOURCES;
+  const addLibrarySource = (source: JournalSource) => {
+    setSources((prev) => {
+      const emptyIndex = prev.findIndex((s) => !s.url.trim());
+      if (emptyIndex !== -1) return prev.map((s, i) => (i === emptyIndex ? source : s));
+      if (prev.length < MAX_SOURCES) return [...prev, source];
+      return prev;
+    });
+  };
+
+  // Raccourcis clavier : Ctrl/Cmd+Entrée = envoyer, Ctrl/Cmd+Z = annuler,
+  // Ctrl/Cmd+Maj+Z ou Ctrl/Cmd+Y = rétablir, Échap = quitter le mode focus
+  // (l'aperçu gère son propre Échap).
+  const keyActionsRef = useRef({
+    send: () => {}, undo: () => {}, redo: () => {}, escape: () => {},
+  });
+  keyActionsRef.current = {
+    send: () => { void handleSend(); },
+    undo,
+    redo,
+    escape: () => {
+      if (!showPreview && focusMode) setFocusMode(false);
+    },
+  };
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+      const actions = keyActionsRef.current;
+      const mod = event.ctrlKey || event.metaKey;
+      if (mod && event.key === 'Enter') {
         event.preventDefault();
-        void handleSendRef.current();
+        actions.send();
+      } else if (mod && !event.shiftKey && event.key.toLowerCase() === 'z') {
+        event.preventDefault();
+        actions.undo();
+      } else if (mod && (event.key.toLowerCase() === 'y' || (event.shiftKey && event.key.toLowerCase() === 'z'))) {
+        event.preventDefault();
+        actions.redo();
+      } else if (event.key === 'Escape') {
+        actions.escape();
       }
     };
     document.addEventListener('keydown', onKeyDown);
@@ -462,7 +583,8 @@ export default function StudioEditorPage() {
       <Section className="pt-24 pb-16">
         <div className="max-w-3xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-            {/* Barre de session */}
+            {/* Barre de session (masquée en mode focus) */}
+            {!focusMode && (
             <div className="card p-4 flex items-center justify-between gap-4 mb-8">
               <div className="flex items-center gap-3 min-w-0">
                 {avatarSrc ? (
@@ -482,6 +604,7 @@ export default function StudioEditorPage() {
                 <LogOut className="w-4 h-4 mr-2" /> {t('Se déconnecter', 'Sign out')}
               </button>
             </div>
+            )}
 
             {sentDraftTitle ? (
               /* ── Confirmation d'envoi ── */
@@ -511,7 +634,11 @@ export default function StudioEditorPage() {
               /* ── Éditeur (mise en page miroir du composer mobile), encadré par
                    des filets « Scotch rule » (épais + fin, gris, fondu aux
                    extrémités) — le trait vertical classique de la presse papier ── */
-              <div className="relative px-5 sm:px-9 pb-6 pt-1" style={PAPER_BACKGROUND}>
+              <div className={focusMode ? 'fixed inset-0 z-40 overflow-y-auto bg-aw-bg py-8 px-4' : ''}>
+              <div
+                className={`relative px-5 sm:px-9 pb-6 pt-1 ${focusMode ? 'max-w-3xl mx-auto' : ''}`}
+                style={PAPER_BACKGROUND}
+              >
                 <div aria-hidden className="absolute inset-y-0 left-0 flex gap-[3px]">
                   <div style={{ width: '2.5px', background: SCOTCH_RULE }} />
                   <div style={{ width: '1px', background: SCOTCH_RULE }} />
@@ -546,6 +673,33 @@ export default function StudioEditorPage() {
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={undo}
+                      className="p-2 rounded-lg border border-aw text-aw-muted hover:text-aw-primary"
+                      aria-label={t('Annuler (Ctrl+Z)', 'Undo (Ctrl+Z)')}
+                      title={t('Annuler (Ctrl+Z)', 'Undo (Ctrl+Z)')}
+                    >
+                      <Undo2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={redo}
+                      className="p-2 rounded-lg border border-aw text-aw-muted hover:text-aw-primary"
+                      aria-label={t('Rétablir (Ctrl+Maj+Z)', 'Redo (Ctrl+Shift+Z)')}
+                      title={t('Rétablir (Ctrl+Maj+Z)', 'Redo (Ctrl+Shift+Z)')}
+                    >
+                      <Redo2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFocusMode((f) => !f)}
+                      className="p-2 rounded-lg border border-aw text-aw-muted hover:text-aw-primary"
+                      aria-label={focusMode ? t('Quitter le mode focus (Échap)', 'Exit focus mode (Esc)') : t('Mode focus', 'Focus mode')}
+                      title={focusMode ? t('Quitter le mode focus (Échap)', 'Exit focus mode (Esc)') : t('Mode focus', 'Focus mode')}
+                    >
+                      {focusMode ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                    </button>
                     {hasDraftContent && (
                       <button
                         type="button"
@@ -653,14 +807,35 @@ export default function StudioEditorPage() {
                     onUploadError={(message) => setSendError(message)}
                   />
 
-                  {/* Compteur corps — budget ≈ 2 pages, comme l'app */}
+                  {/* Compteurs : mots · temps de lecture · budget caractères */}
                   <div className={`flex items-center justify-end gap-1.5 text-xs ${bodyCounterClass}`}>
                     {bodyAtLimit ? <AlertCircle className="w-3.5 h-3.5" /> : <FileText className="w-3.5 h-3.5" />}
+                    {wordCount > 0 && (
+                      <span>
+                        {wordCount} {t('mots', 'words')} · ~{readMinutes} {t('min de lecture', 'min read')} ·{' '}
+                      </span>
+                    )}
                     {bodyLength} / {BODY_MAX}
                   </div>
 
-                  {/* Sources (min 1 pour publier, max 2) */}
-                  <SourceListEditor sources={sources} onChange={setSources} />
+                  {/* Sources (min 1 pour publier, max 2) + bibliothèque personnelle */}
+                  <div>
+                    <SourceListEditor sources={sources} onChange={setSources} />
+                    <SourceLibrary
+                      rows={[...drafts, ...published]}
+                      currentSources={sources}
+                      canAdd={canAddLibrarySource}
+                      onPick={addLibrarySource}
+                    />
+                  </div>
+
+                  {/* Pré-vol ASV */}
+                  <PreflightChecklist
+                    title={title}
+                    bodyLength={bodyLength}
+                    primaryTheme={primaryTheme}
+                    sources={sources}
+                  />
 
                   {/* Envoi */}
                   <div className="card p-5">
@@ -685,21 +860,25 @@ export default function StudioEditorPage() {
                   </div>
                 </div>
 
-                {/* Brouillons existants */}
-                <div className="mt-12">
-                  <h2 className="body-semi text-lg mb-4">{t('Mes brouillons', 'My drafts')}</h2>
-                  <DraftList
-                    drafts={drafts}
-                    isLoading={draftsLoading}
-                    loadError={draftsError}
-                    busyDraftId={busyDraftId}
-                    onResume={handleResume}
-                    onDelete={(draft) => void handleDelete(draft)}
-                  />
-                </div>
+                {/* Brouillons + publiés (masqués en mode focus) */}
+                {!focusMode && (
+                  <>
+                    <div className="mt-12">
+                      <h2 className="body-semi text-lg mb-4">{t('Mes brouillons', 'My drafts')}</h2>
+                      <DraftList
+                        drafts={drafts}
+                        isLoading={draftsLoading}
+                        loadError={draftsError}
+                        busyDraftId={busyDraftId}
+                        onResume={handleResume}
+                        onDelete={(draft) => void handleDelete(draft)}
+                      />
+                    </div>
 
-                {/* Boucle de retour ASV (lecture seule) */}
-                <PublishedList articles={published} />
+                    {/* Boucle de retour ASV (lecture seule) */}
+                    <PublishedList articles={published} />
+                  </>
+                )}
 
                 {/* Aperçu mobile */}
                 {showPreview && (
@@ -712,6 +891,7 @@ export default function StudioEditorPage() {
                     onClose={() => setShowPreview(false)}
                   />
                 )}
+              </div>
               </div>
             )}
           </motion.div>
