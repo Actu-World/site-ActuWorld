@@ -37,6 +37,20 @@ type StudioProfile = {
 
 const AUTOSAVE_DELAY_MS = 800;
 
+// Filet vertical gris façon presse : couleur dérivée du texte du thème
+// (s'adapte clair/sombre), avec fondu doux en haut et en bas.
+const SCOTCH_RULE_COLOR = 'color-mix(in srgb, var(--aw-text) 26%, transparent)';
+const SCOTCH_RULE =
+  `linear-gradient(180deg, transparent 0, ${SCOTCH_RULE_COLOR} 64px, ${SCOTCH_RULE_COLOR} calc(100% - 64px), transparent 100%)`;
+
+// « Papier mâché » : grain de papier (bruit SVG inline, aucune ressource
+// externe) sur une teinte légèrement décalée du fond — feuille de journal.
+const PAPER_NOISE =
+  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncA type='linear' slope='0.05'/></feComponentTransfer></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")";
+const PAPER_BACKGROUND = {
+  backgroundImage: `${PAPER_NOISE}, linear-gradient(color-mix(in srgb, var(--aw-text) 4%, var(--aw-bg)), color-mix(in srgb, var(--aw-text) 4%, var(--aw-bg)))`,
+} as const;
+
 const bareTitleClass =
   'w-full bg-transparent text-2xl font-bold text-aw-text placeholder:text-aw-muted focus:outline-none';
 const bareDekClass =
@@ -495,18 +509,17 @@ export default function StudioEditorPage() {
               </div>
             ) : (
               /* ── Éditeur (mise en page miroir du composer mobile), encadré par
-                   des barres verticales dégradées aux couleurs de l'app ── */
-              <div className="relative px-4 sm:px-8 pb-6">
-                <div
-                  aria-hidden
-                  className="absolute inset-y-0 left-0 w-[3px] rounded-full opacity-80"
-                  style={{ background: 'linear-gradient(180deg, var(--aw-primary), var(--aw-accent), var(--aw-primary))' }}
-                />
-                <div
-                  aria-hidden
-                  className="absolute inset-y-0 right-0 w-[3px] rounded-full opacity-80"
-                  style={{ background: 'linear-gradient(180deg, var(--aw-primary), var(--aw-accent), var(--aw-primary))' }}
-                />
+                   des filets « Scotch rule » (épais + fin, gris, fondu aux
+                   extrémités) — le trait vertical classique de la presse papier ── */
+              <div className="relative px-5 sm:px-9 pb-6 pt-1" style={PAPER_BACKGROUND}>
+                <div aria-hidden className="absolute inset-y-0 left-0 flex gap-[3px]">
+                  <div style={{ width: '2.5px', background: SCOTCH_RULE }} />
+                  <div style={{ width: '1px', background: SCOTCH_RULE }} />
+                </div>
+                <div aria-hidden className="absolute inset-y-0 right-0 flex gap-[3px]">
+                  <div style={{ width: '1px', background: SCOTCH_RULE }} />
+                  <div style={{ width: '2.5px', background: SCOTCH_RULE }} />
+                </div>
                 <div className="flex items-center justify-between gap-3 mb-4 flex-wrap pt-1">
                   <div>
                     <h1 className="text-xl font-bold text-aw-primary">
