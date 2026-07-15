@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  AlertCircle, AlertTriangle, CheckCircle2, Cloud, CloudOff, Eye, FileText,
+  AlertCircle, AlertTriangle, CheckCircle2, Cloud, CloudOff, Eye, FilePlus2, FileText,
   Info, Loader2, LogOut, Maximize2, Minimize2, Redo2, Send, Smartphone, Trash2, Undo2,
 } from 'lucide-react';
 import { Section } from '../../components/Section';
@@ -371,6 +371,43 @@ export default function StudioEditorPage() {
     resetEditor();
   };
 
+  // « Nouveau » : met de côté l'article en cours (sauvegarde serveur immédiate,
+  // il rejoint « Mes brouillons ») puis ouvre un éditeur vierge — permet de
+  // travailler plusieurs articles en parallèle sans passer par l'envoi.
+  const handleNewArticle = async () => {
+    if (isSending || isAutosavingRef.current) return;
+    if (!hasDraftContent) {
+      resetEditor();
+      return;
+    }
+    if (!title.trim()) {
+      setSendError(t(
+        "Ajoute un titre à l'article en cours pour le garder en brouillon avant d'en commencer un nouveau.",
+        'Add a title to the current article to keep it as a draft before starting a new one.'
+      ));
+      return;
+    }
+    isAutosavingRef.current = true; // bloque l'autosave pendant la mise de côté
+    setSaveState('saving');
+    try {
+      const payload = buildPayload();
+      if (editingDraftId) {
+        await updateDraft(editingDraftId, payload);
+      } else {
+        await createDraft(payload);
+      }
+      if (userId) clearLocalDraft(userId);
+      resetEditor();
+      void refreshJournal();
+    } catch (err: unknown) {
+      setSaveState('error');
+      setSendError(isNetworkError(err) ? apiUnreachableMsg
+        : err instanceof Error ? err.message : t('La mise de côté a échoué.', 'Setting the draft aside failed.'));
+    } finally {
+      isAutosavingRef.current = false;
+    }
+  };
+
   const handlePickCover = () => coverInputRef.current?.click();
 
   const handleCoverSelected = async (file: File | undefined) => {
@@ -694,6 +731,20 @@ export default function StudioEditorPage() {
                     {hasDraftContent && (
                       <button
                         type="button"
+                        onClick={() => void handleNewArticle()}
+                        disabled={isSending}
+                        className="btn-outline inline-flex items-center text-sm disabled:opacity-50"
+                        title={t(
+                          "Garder l'article en cours dans mes brouillons et en commencer un nouveau",
+                          'Keep the current article in my drafts and start a new one'
+                        )}
+                      >
+                        <FilePlus2 className="w-4 h-4 mr-1.5" /> {t('Nouveau', 'New')}
+                      </button>
+                    )}
+                    {hasDraftContent && (
+                      <button
+                        type="button"
                         onClick={() => setShowPreview(true)}
                         className="btn-outline inline-flex items-center text-sm"
                       >
@@ -704,9 +755,11 @@ export default function StudioEditorPage() {
                       <button
                         type="button"
                         onClick={handleResetDraft}
-                        className="inline-flex items-center gap-1.5 text-sm text-red-500 border border-red-500/50 rounded-lg px-2.5 py-1.5 hover:bg-red-500/10"
+                        className="p-2 rounded-lg border border-red-500/50 text-red-500 hover:bg-red-500/10"
+                        aria-label={t('Supprimer le brouillon', 'Delete draft')}
+                        title={t('Supprimer le brouillon', 'Delete draft')}
                       >
-                        <Trash2 className="w-4 h-4" /> {t('Supprimer le brouillon', 'Delete draft')}
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     )}
                   </div>

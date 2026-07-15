@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  ArrowDown, ArrowUp, CheckCircle2, Cloud, CloudOff, FileImage, ImagePlus,
+  ArrowDown, ArrowUp, CheckCircle2, Cloud, CloudOff, FileImage, FilePlus2, ImagePlus,
   Link2, Loader2, LogOut, PenLine, Send, Smartphone, Trash2,
 } from 'lucide-react';
 import { Section } from '../../components/Section';
@@ -252,6 +252,35 @@ export default function StudioPostPage() {
     }
   };
 
+  // « Nouveau » : met de côté le post en cours (sauvegarde serveur immédiate,
+  // il rejoint « Mes brouillons de posts ») puis ouvre un composer vierge —
+  // permet de travailler plusieurs posts en parallèle sans passer par l'envoi.
+  const handleNewPost = async () => {
+    if (isSending || isUploading || isAutosavingRef.current) return;
+    if (!hasAnyContent) {
+      resetEditor();
+      return;
+    }
+    isAutosavingRef.current = true; // bloque l'autosave pendant la mise de côté
+    setSaveState('saving');
+    try {
+      const payload = buildPayload();
+      if (editingDraftId) {
+        await updatePostDraft(editingDraftId, payload);
+      } else {
+        await createPostDraft(payload);
+      }
+      resetEditor();
+      void refreshDrafts();
+    } catch (err: unknown) {
+      setSaveState('error');
+      setSendError(isNetworkError(err) ? apiUnreachableMsg
+        : err instanceof Error ? err.message : t('La mise de côté a échoué.', 'Setting the draft aside failed.'));
+    } finally {
+      isAutosavingRef.current = false;
+    }
+  };
+
   const handleResume = (draft: PostDraftRow) => {
     setEditingDraftId(draft.id);
     setPrimaryTheme(draft.payload.primary_theme ?? '');
@@ -364,6 +393,20 @@ export default function StudioPostPage() {
                       )}
                     </p>
                   </div>
+                  {hasAnyContent && (
+                    <button
+                      type="button"
+                      onClick={() => void handleNewPost()}
+                      disabled={isSending || isUploading}
+                      className="btn-outline inline-flex items-center text-sm disabled:opacity-50"
+                      title={t(
+                        'Garder le post en cours dans mes brouillons et en composer un nouveau',
+                        'Keep the current post in my drafts and compose a new one'
+                      )}
+                    >
+                      <FilePlus2 className="w-4 h-4 mr-1.5" /> {t('Nouveau', 'New')}
+                    </button>
+                  )}
                 </div>
 
                 <p className="text-aw-muted text-sm mb-5">
