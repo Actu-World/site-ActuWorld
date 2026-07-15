@@ -90,11 +90,24 @@ export function updateDraft(id: string, payload: StudioDraftPayload): Promise<un
   return studioApi.put(`/journal/${id}`, payload);
 }
 
-export async function listMyDrafts(): Promise<StudioDraftRow[]> {
-  const rows = await studioApi.get<StudioDraftRow[]>('/journal/my');
-  return rows.filter((row) => row.status === 'draft');
+/** Tous mes articles (brouillons + publiés), triés par updated_at desc côté API. */
+export function listMyJournal(): Promise<StudioDraftRow[]> {
+  return studioApi.get<StudioDraftRow[]>('/journal/my');
 }
 
 export function deleteDraft(id: string): Promise<unknown> {
   return studioApi.delete(`/journal/${id}`);
+}
+
+export type UrlMetadata = {
+  reachable: boolean;
+  status: number | null;
+  title: string | null;
+  siteName: string | null;
+  publishedAt: string | null;
+};
+
+/** Métadonnées + accessibilité d'une URL de source (fetch côté API, hors CORS tiers). */
+export function fetchUrlMetadata(url: string): Promise<UrlMetadata> {
+  return studioApi.post<UrlMetadata>('/tools/url-metadata', { url });
 }

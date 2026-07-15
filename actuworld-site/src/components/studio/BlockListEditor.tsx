@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
+import type { ClipboardEvent, DragEvent } from 'react';
 import {
-  AlignLeft, AlignRight, ArrowDown, ArrowUp, Image as ImageIcon,
+  AlignLeft, AlignRight, ArrowDown, ArrowUp, GripVertical, Image as ImageIcon,
   LayoutPanelLeft, Minus, Pilcrow, Quote, Trash2, Type,
 } from 'lucide-react';
 import type { JournalBlock } from '../../types/journal';
@@ -52,12 +53,12 @@ export function BlockListEditor({ blocks, onChange, budgetFor, onUploadError }: 
     fileInputRef.current?.click();
   };
 
-  const handleFileSelected = async (file: File | undefined) => {
-    if (!file || isUploading) return;
+  const uploadAsBlock = async (file: File, kind: 'image' | 'image_text') => {
+    if (isUploading) return;
     setIsUploading(true);
     try {
       const path = await uploadJournalImage(file);
-      if (pendingImageKind.current === 'image') {
+      if (kind === 'image') {
         append({ type: 'image', uri: path, caption: '' });
       } else {
         append({ type: 'image_text', uri: path, text: '', caption: '', align: 'left' });
@@ -70,20 +71,135 @@ export function BlockListEditor({ blocks, onChange, budgetFor, onUploadError }: 
     }
   };
 
+  const handleFileSelected = (file: File | undefined) => {
+    if (file) void uploadAsBlock(file, pendingImageKind.current);
+  };
+
+  // ── Coller / glisser une image n'importe où dans la zone des blocs ──
+  const handlePasteImage = (event: ClipboardEvent<HTMLDivElement>) => {
+    const file = Array.from(event.clipboardData?.files ?? []).find((f) => f.type.startsWith('image/'));
+    if (!file) return; // collage de texte : comportement normal
+    event.preventDefault();
+    void uploadAsBlock(file, 'image');
+  };
+
+  // ── Réordonnancement des blocs par glisser-déposer (poignée) ──
+  const dragBlockIndex = useRef<number | null>(null);
+  const [dropTarget, setDropTarget] = useState<number | null>(null);
+
+  const [isDragOver, setIsDragOver] = useState(false);
+  const handleDropFile = (event: DragEvent<HTMLDivElement>) => {
+    setIsDragOver(false);
+    if (dragBlockIndex.current !== null) return; // réordonnancement interne, pas un fichier
+    const file = Array.from(event.dataTransfer?.files ?? []).find((f) => f.type.startsWith('image/'));
+    if (!file) return;
+    event.preventDefault();
+    void uploadAsBlock(file, 'image');
+  };
+
+  const handleBlockDrop = (targetIndex: number) => {
+    const from = dragBlockIndex.current;
+    dragBlockIndex.current = null;
+    setDropTarget(null);
+    if (from === null || from === targetIndex) return;
+    const next = [...blocks];
+    const [moved] = next.splice(from, 1);
+    next.splice(targetIndex, 0, moved);
+    onChange(next);
+  };
+
+  // ── Collage intelligent : un texte multi-paragraphes devient plusieurs blocs ──
+  const handleParagraphPaste = (
+    index: number,
+    block: Extract<JournalBlock, { type: 'paragraph' }>,
+    event: ClipboardEvent<HTMLTextAreaElement>
+  ) => {
+    const text = event.clipboardData.getData('text/plain');
+    if (!/\n\s*\n/.test(text)) return; // un seul paragraphe : collage natif
+    event.preventDefault();
+
+    // Budget global restant (y compris ce champ) pour ne pas dépasser BODY_MAX.
+    let remaining = Math.max(0, budgetFor(block.text.length) - block.text.length);
+    const parts = text
+      .split(/\n\s*\n+/)
+      .map((part) => part.replace(/\s+\n/g, '\n').trim())
+      .filter(Boolean)
+      .map((part) => {
+        const kept = part.slice(0, remaining);
+        remaining -= kept.length;
+        return kept;
+      })
+      .filter(Boolean);
+    if (parts.length === 0) return;
+
+    const el = event.currentTarget;
+    const before = block.text.slice(0, el.selectionStart ?? block.text.length);
+    const after = block.text.slice(el.selectionEnd ?? block.text.length);
+
+    const firstText = (before + parts[0]).trimStart();
+    const middle = parts.slice(1, -1).map((part): JournalBlock => ({ type: 'paragraph', text: part }));
+    const lastText = parts.length > 1 ? parts[parts.length - 1] + after : null;
+
+    const next = [...blocks];
+    next[index] = { type: 'paragraph', text: lastText === null ? firstText + after : firstText };
+    const tail: JournalBlock[] = lastText === null ? middle : [...middle, { type: 'paragraph', text: lastText }];
+    next.splice(index + 1, 0, ...tail);
+    onChange(next);
+  };
+
   return (
-    <div className="space-y-3">
+    <div
+      className={`space-y-3 rounded-xl transition-colors ${isDragOver ? 'ring-2 ring-aw-primary/50' : ''}`}
+      onPaste={handlePasteImage}
+      onDragOver={(e) => {
+        if (dragBlockIndex.current === null && e.dataTransfer?.types.includes('Files')) {
+          e.preventDefault();
+          setIsDragOver(true);
+        }
+      }}
+      onDragLeave={() => setIsDragOver(false)}
+      onDrop={handleDropFile}
+    >
       <input
         ref={fileInputRef}
         type="file"
         accept="image/*"
         className="hidden"
-        onChange={(e) => void handleFileSelected(e.target.files?.[0])}
+        onChange={(e) => handleFileSelected(e.target.files?.[0])}
       />
 
       {blocks.map((block, index) => (
-        <div key={index}>
-          {/* Mini-toolbar du bloc — même logique que l'app : monter, descendre, supprimer */}
+        <div
+          key={index}
+          onDragOver={(e) => {
+            if (dragBlockIndex.current !== null) {
+              e.preventDefault();
+              setDropTarget(index);
+            }
+          }}
+          onDrop={(e) => {
+            if (dragBlockIndex.current !== null) {
+              e.preventDefault();
+              e.stopPropagation();
+              handleBlockDrop(index);
+            }
+          }}
+          className={dropTarget === index && dragBlockIndex.current !== null ? 'border-t-2 border-aw-primary' : ''}
+        >
+          {/* Mini-toolbar du bloc : poignée de glisser, monter, descendre, supprimer */}
           <div className="flex items-center gap-1.5 mb-1.5">
+            <span
+              draggable
+              onDragStart={(e) => {
+                dragBlockIndex.current = index;
+                e.dataTransfer.effectAllowed = 'move';
+              }}
+              onDragEnd={() => { dragBlockIndex.current = null; setDropTarget(null); }}
+              className="p-1.5 rounded-lg bg-aw-surface text-aw-muted cursor-grab active:cursor-grabbing"
+              aria-label={t('Glisser pour réordonner', 'Drag to reorder')}
+            >
+              <GripVertical className="w-4 h-4" />
+            </span>
             <button type="button" onClick={() => moveBlock(index, -1)} disabled={index === 0}
               className="p-1.5 rounded-lg bg-aw-surface text-aw-muted hover:text-aw-primary disabled:opacity-30"
               aria-label={t('Monter le bloc', 'Move block up')}>
@@ -117,6 +233,7 @@ export function BlockListEditor({ blocks, onChange, budgetFor, onUploadError }: 
             <textarea
               value={block.text}
               onChange={(e) => replaceAt(index, { ...block, text: e.target.value })}
+              onPaste={(e) => handleParagraphPaste(index, block, e)}
               placeholder={`${t('Paragraphe', 'Paragraph')}...`}
               maxLength={budgetFor(block.text.length)}
               rows={Math.max(3, Math.ceil(block.text.length / 90))}

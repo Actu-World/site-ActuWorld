@@ -2,7 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  AlertCircle, AlertTriangle, CheckCircle2, FileText, LogOut, PenLine, Send, Smartphone, Trash2,
+  AlertCircle, AlertTriangle, CheckCircle2, Cloud, CloudOff, Eye, FileText,
+  Loader2, LogOut, PenLine, Send, Smartphone, Trash2,
 } from 'lucide-react';
 import { Section } from '../../components/Section';
 import { PageMeta } from '../../components/PageMeta';
@@ -10,6 +11,8 @@ import { BlockListEditor } from '../../components/studio/BlockListEditor';
 import { SourceListEditor } from '../../components/studio/SourceListEditor';
 import { TagsInput } from '../../components/studio/TagsInput';
 import { DraftList } from '../../components/studio/DraftList';
+import { ArticlePreview } from '../../components/studio/ArticlePreview';
+import { PublishedList } from '../../components/studio/PublishedList';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { supabase } from '../../lib/studio/supabase';
 import { studioApi } from '../../lib/studio/api';
@@ -19,7 +22,7 @@ import { journalImageUrl, uploadJournalImage } from '../../lib/studio/images';
 import {
   BODY_MAX, DEK_MAX, TITLE_MAX,
   blockBodyLen, cleanBlocks, cleanSources, createDraft, deleteDraft,
-  isValidSourceUrl, listMyDrafts, updateDraft,
+  isValidSourceUrl, listMyJournal, updateDraft,
 } from '../../lib/studio/journal';
 import { clearLocalDraft, loadLocalDraft, saveLocalDraft } from '../../lib/studio/draftStorage';
 import type { JournalBlock, JournalSource, StudioDraftRow } from '../../types/journal';
@@ -76,8 +79,18 @@ export default function StudioEditorPage() {
   const [sendError, setSendError] = useState('');
   const [sentDraftTitle, setSentDraftTitle] = useState<string | null>(null);
 
-  // ── Brouillons Supabase ──
+  // ── Aperçu mobile ──
+  const [showPreview, setShowPreview] = useState(false);
+
+  // ── Sauvegarde serveur continue ──
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
+  const lastSavedSnapshotRef = useRef<string | null>(null);
+  const isAutosavingRef = useRef(false);
+
+  // ── Brouillons + publiés Supabase ──
   const [drafts, setDrafts] = useState<StudioDraftRow[]>([]);
+  const [published, setPublished] = useState<StudioDraftRow[]>([]);
   const [draftsLoading, setDraftsLoading] = useState(true);
   const [draftsError, setDraftsError] = useState<string | null>(null);
   const [busyDraftId, setBusyDraftId] = useState<string | null>(null);
@@ -143,12 +156,13 @@ export default function StudioEditorPage() {
     return () => clearTimeout(timer);
   }, [userId, editingDraftId, title, dek, primaryTheme, tags, coverPath, blocks, sources, sentDraftTitle]);
 
-  // Chargement des brouillons Supabase
-  const refreshDrafts = useCallback(async () => {
-    setDraftsLoading(true);
+  // Chargement des brouillons + publiés Supabase
+  const refreshJournal = useCallback(async () => {
     setDraftsError(null);
     try {
-      setDrafts(await listMyDrafts());
+      const rows = await listMyJournal();
+      setDrafts(rows.filter((row) => row.status === 'draft'));
+      setPublished(rows.filter((row) => row.status === 'published').slice(0, 5));
     } catch (err: unknown) {
       setDraftsError(isNetworkError(err) ? apiUnreachableMsg : t(
         'Le chargement des brouillons a échoué.', 'Loading drafts failed.'
@@ -160,8 +174,55 @@ export default function StudioEditorPage() {
   }, [isEnglish]);
 
   useEffect(() => {
-    if (userId) void refreshDrafts();
-  }, [userId, refreshDrafts]);
+    if (userId) void refreshJournal();
+  }, [userId, refreshJournal]);
+
+  // ── Payload partagé autosave / envoi ──
+  const buildPayload = () => ({
+    title: title.trim(),
+    dek: dek.trim() || null,
+    blocks: cleanBlocks(blocks),
+    sources: cleanSources(sources),
+    primary_theme: primaryTheme || null,
+    tags: tags.length > 0 ? tags : undefined,
+    cover_url: coverPath,
+  });
+
+  // ── Sauvegarde serveur continue : dès qu'il y a un titre, le brouillon vit
+  // sur Supabase (création puis PUT silencieux ~2,5 s après la dernière frappe).
+  // L'autosauvegarde locale reste le filet quand l'API est injoignable. ──
+  useEffect(() => {
+    if (!userId || sentDraftTitle || isSending || !title.trim()) return;
+    const payload = buildPayload();
+    const snapshot = JSON.stringify(payload);
+    if (snapshot === lastSavedSnapshotRef.current) return;
+
+    const timer = setTimeout(async () => {
+      if (isAutosavingRef.current) return; // un save à la fois — le prochain changement relancera
+      isAutosavingRef.current = true;
+      setSaveState('saving');
+      try {
+        if (editingDraftId) {
+          await updateDraft(editingDraftId, payload);
+        } else {
+          const { id } = await createDraft(payload);
+          setEditingDraftId(id);
+          void refreshJournal();
+        }
+        lastSavedSnapshotRef.current = snapshot;
+        setSaveState('saved');
+        setLastSavedAt(new Date().toLocaleTimeString(isEnglish ? 'en-GB' : 'fr-FR', {
+          hour: '2-digit', minute: '2-digit',
+        }));
+      } catch {
+        setSaveState('error');
+      } finally {
+        isAutosavingRef.current = false;
+      }
+    }, 2500);
+    return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, editingDraftId, title, dek, primaryTheme, tags, coverPath, blocks, sources, sentDraftTitle, isSending]);
 
   const resetEditor = () => {
     setEditingDraftId(null);
@@ -175,6 +236,9 @@ export default function StudioEditorPage() {
     setSendError('');
     setSentDraftTitle(null);
     setRestoredNotice(false);
+    setSaveState('idle');
+    setLastSavedAt(null);
+    lastSavedSnapshotRef.current = null;
   };
 
   // « Supprimer le brouillon » local — même geste que l'app (reset, le brouillon
@@ -186,12 +250,24 @@ export default function StudioEditorPage() {
     sources.some((s) => !!s.url?.trim() || !!s.title?.trim());
 
   const handleResetDraft = () => {
-    const confirmed = window.confirm(t(
-      "Tout l'article en cours (titre, chapeau, image, blocs, sources) sera effacé. Action irréversible.",
-      'The whole article in progress (title, dek, image, blocks, sources) will be cleared. This cannot be undone.'
-    ));
+    // Avec la sauvegarde continue, le brouillon existe côté serveur : supprimer
+    // le brouillon = le supprimer aussi de Supabase (sinon fantômes).
+    const confirmed = window.confirm(editingDraftId
+      ? t(
+          "Tout l'article en cours sera effacé et le brouillon supprimé de tes brouillons. Action irréversible.",
+          'The whole article in progress will be cleared and the draft removed from your drafts. This cannot be undone.'
+        )
+      : t(
+          "Tout l'article en cours (titre, chapeau, image, blocs, sources) sera effacé. Action irréversible.",
+          'The whole article in progress (title, dek, image, blocks, sources) will be cleared. This cannot be undone.'
+        ));
     if (!confirmed) return;
     if (userId) clearLocalDraft(userId);
+    if (editingDraftId) {
+      deleteDraft(editingDraftId)
+        .then(() => refreshJournal())
+        .catch(() => { /* best-effort : le brouillon restera dans la liste */ });
+    }
     resetEditor();
   };
 
@@ -213,7 +289,7 @@ export default function StudioEditorPage() {
   };
 
   const handleSend = async () => {
-    if (isSending || !userId) return;
+    if (isSending || !userId || sentDraftTitle) return;
     setSendError('');
 
     if (!title.trim()) {
@@ -231,15 +307,7 @@ export default function StudioEditorPage() {
 
     setIsSending(true);
     try {
-      const payload = {
-        title: title.trim(),
-        dek: dek.trim() || null,
-        blocks: cleanBlocks(blocks),
-        sources: cleanSources(sources),
-        primary_theme: primaryTheme || null,
-        tags: tags.length > 0 ? tags : undefined,
-        cover_url: coverPath,
-      };
+      const payload = buildPayload();
       if (editingDraftId) {
         await updateDraft(editingDraftId, payload);
       } else {
@@ -247,7 +315,10 @@ export default function StudioEditorPage() {
       }
       clearLocalDraft(userId);
       setSentDraftTitle(payload.title);
-      void refreshDrafts();
+      setSaveState('idle');
+      setLastSavedAt(null);
+      lastSavedSnapshotRef.current = null;
+      void refreshJournal();
     } catch (err: unknown) {
       setSendError(isNetworkError(err) ? apiUnreachableMsg
         : err instanceof Error ? err.message
@@ -269,6 +340,13 @@ export default function StudioEditorPage() {
     setSentDraftTitle(null);
     setSendError('');
     setRestoredNotice(false);
+    // Le brouillon repris est déjà sauvegardé : indicateur « enregistré » et
+    // snapshot vide (la première frappe déclenchera un PUT, sans doublon).
+    setSaveState('saved');
+    setLastSavedAt(new Date(draft.updated_at).toLocaleTimeString(isEnglish ? 'en-GB' : 'fr-FR', {
+      hour: '2-digit', minute: '2-digit',
+    }));
+    lastSavedSnapshotRef.current = null;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -282,13 +360,27 @@ export default function StudioEditorPage() {
     try {
       await deleteDraft(draft.id);
       if (editingDraftId === draft.id) resetEditor();
-      await refreshDrafts();
+      await refreshJournal();
     } catch (err: unknown) {
       setDraftsError(isNetworkError(err) ? apiUnreachableMsg : t('La suppression a échoué.', 'Deletion failed.'));
     } finally {
       setBusyDraftId(null);
     }
   };
+
+  // Ctrl/Cmd + Entrée = « Envoyer vers l'app » (le raccourci du geste final)
+  const handleSendRef = useRef(handleSend);
+  handleSendRef.current = handleSend;
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+        event.preventDefault();
+        void handleSendRef.current();
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, []);
 
   if (isLoading) {
     return (
@@ -390,19 +482,51 @@ export default function StudioEditorPage() {
             ) : (
               /* ── Éditeur (mise en page miroir du composer mobile) ── */
               <>
-                <div className="flex items-center justify-between mb-4">
-                  <h1 className="text-xl font-bold text-aw-primary">
-                    {editingDraftId ? t('Brouillon', 'Draft') : t('Nouvel article', 'New article')}
-                  </h1>
-                  {hasDraftContent && (
-                    <button
-                      type="button"
-                      onClick={handleResetDraft}
-                      className="inline-flex items-center gap-1.5 text-sm text-red-500 border border-red-500/50 rounded-lg px-2.5 py-1.5 hover:bg-red-500/10"
-                    >
-                      <Trash2 className="w-4 h-4" /> {t('Supprimer le brouillon', 'Delete draft')}
-                    </button>
-                  )}
+                <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
+                  <div>
+                    <h1 className="text-xl font-bold text-aw-primary">
+                      {editingDraftId ? t('Brouillon', 'Draft') : t('Nouvel article', 'New article')}
+                    </h1>
+                    {/* Indicateur de sauvegarde continue */}
+                    <p className="text-xs mt-0.5 min-h-[1rem]" aria-live="polite">
+                      {saveState === 'saving' && (
+                        <span className="text-aw-muted inline-flex items-center gap-1">
+                          <Loader2 className="w-3 h-3 animate-spin" /> {t('Enregistrement…', 'Saving…')}
+                        </span>
+                      )}
+                      {saveState === 'saved' && lastSavedAt && (
+                        <span className="text-aw-muted inline-flex items-center gap-1">
+                          <Cloud className="w-3 h-3" /> {t(`Enregistré à ${lastSavedAt}`, `Saved at ${lastSavedAt}`)}
+                        </span>
+                      )}
+                      {saveState === 'error' && (
+                        <span className="text-amber-500 inline-flex items-center gap-1">
+                          <CloudOff className="w-3 h-3" />
+                          {t('Hors ligne — sauvegardé dans ce navigateur', 'Offline — saved in this browser')}
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {hasDraftContent && (
+                      <button
+                        type="button"
+                        onClick={() => setShowPreview(true)}
+                        className="btn-outline inline-flex items-center text-sm"
+                      >
+                        <Eye className="w-4 h-4 mr-1.5" /> {t('Aperçu', 'Preview')}
+                      </button>
+                    )}
+                    {hasDraftContent && (
+                      <button
+                        type="button"
+                        onClick={handleResetDraft}
+                        className="inline-flex items-center gap-1.5 text-sm text-red-500 border border-red-500/50 rounded-lg px-2.5 py-1.5 hover:bg-red-500/10"
+                      >
+                        <Trash2 className="w-4 h-4" /> {t('Supprimer le brouillon', 'Delete draft')}
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {restoredNotice && (
@@ -530,6 +654,21 @@ export default function StudioEditorPage() {
                     onDelete={(draft) => void handleDelete(draft)}
                   />
                 </div>
+
+                {/* Boucle de retour ASV (lecture seule) */}
+                <PublishedList articles={published} />
+
+                {/* Aperçu mobile */}
+                {showPreview && (
+                  <ArticlePreview
+                    title={title}
+                    dek={dek}
+                    coverPath={coverPath}
+                    blocks={blocks}
+                    sources={sources}
+                    onClose={() => setShowPreview(false)}
+                  />
+                )}
               </>
             )}
           </motion.div>

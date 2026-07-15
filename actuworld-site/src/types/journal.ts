@@ -34,4 +34,8 @@ export type StudioDraftRow = {
   origin?: 'app' | 'web' | null; // colonne ajoutée au Lot 3
   created_at: string;
   updated_at: string;
+  published_at?: string | null;
+  // Colonnes de vérification ASV (lecture seule côté Studio)
+  source_check_status?: string | null;
+  verification_level?: string | number | null;
 };
