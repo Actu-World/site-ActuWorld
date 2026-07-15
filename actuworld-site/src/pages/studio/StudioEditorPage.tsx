@@ -46,9 +46,9 @@ const SCOTCH_RULE =
 // « Papier mâché » : grain de papier (bruit SVG inline, aucune ressource
 // externe) sur une teinte légèrement décalée du fond — feuille de journal.
 const PAPER_NOISE =
-  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncA type='linear' slope='0.05'/></feComponentTransfer></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")";
+  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncA type='linear' slope='0.025'/></feComponentTransfer></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")";
 const PAPER_BACKGROUND = {
-  backgroundImage: `${PAPER_NOISE}, linear-gradient(color-mix(in srgb, var(--aw-text) 4%, var(--aw-bg)), color-mix(in srgb, var(--aw-text) 4%, var(--aw-bg)))`,
+  backgroundImage: `${PAPER_NOISE}, linear-gradient(color-mix(in srgb, var(--aw-text) 1.5%, var(--aw-bg)), color-mix(in srgb, var(--aw-text) 1.5%, var(--aw-bg)))`,
 } as const;
 
 const bareTitleClass =
