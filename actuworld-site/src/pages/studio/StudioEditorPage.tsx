@@ -495,8 +495,18 @@ export default function StudioEditorPage() {
               </div>
             ) : (
               /* ── Éditeur (mise en page miroir du composer mobile), encadré par
-                   des doubles filets verticaux façon colonne de journal ── */
-              <div className="border-x-[3px] border-double border-aw px-4 sm:px-8 pb-6">
+                   des barres verticales dégradées aux couleurs de l'app ── */
+              <div className="relative px-4 sm:px-8 pb-6">
+                <div
+                  aria-hidden
+                  className="absolute inset-y-0 left-0 w-[3px] rounded-full opacity-80"
+                  style={{ background: 'linear-gradient(180deg, var(--aw-primary), var(--aw-accent), var(--aw-primary))' }}
+                />
+                <div
+                  aria-hidden
+                  className="absolute inset-y-0 right-0 w-[3px] rounded-full opacity-80"
+                  style={{ background: 'linear-gradient(180deg, var(--aw-primary), var(--aw-accent), var(--aw-primary))' }}
+                />
                 <div className="flex items-center justify-between gap-3 mb-4 flex-wrap pt-1">
                   <div>
                     <h1 className="text-xl font-bold text-aw-primary">
