@@ -9,6 +9,7 @@ import { Section } from '../../components/Section';
 import { PageMeta } from '../../components/PageMeta';
 import { TagsInput } from '../../components/studio/TagsInput';
 import { StudioTabs } from '../../components/studio/StudioTabs';
+import { PaperSheet } from '../../components/studio/PaperSheet';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { supabase } from '../../lib/studio/supabase';
 import { studioApi } from '../../lib/studio/api';
@@ -302,7 +303,7 @@ export default function StudioPostPage() {
       />
 
       <Section className="pt-24 pb-16">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
             {/* Barre de session */}
             <div className="card p-4 flex items-center justify-between gap-4 mb-8">
@@ -343,8 +344,10 @@ export default function StudioPostPage() {
                 </button>
               </div>
             ) : (
-              <>
-                <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
+              /* ── Éditeur sur la feuille de journal partagée (PaperSheet),
+                   même habillage presse que l'éditeur d'articles ── */
+              <PaperSheet>
+                <div className="flex items-center justify-between gap-3 mb-4 flex-wrap pt-1">
                   <div>
                     <h1 className="text-xl font-bold text-aw-primary inline-flex items-center gap-2">
                       <PenLine className="w-5 h-5" /> {t('Nouveau post rapide', 'New quick post')}
@@ -528,7 +531,7 @@ export default function StudioPostPage() {
                     ))}
                   </ul>
                 </div>
-              </>
+              </PaperSheet>
             )}
           </motion.div>
         </div>
