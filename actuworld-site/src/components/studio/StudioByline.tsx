@@ -10,10 +10,12 @@ import { useLanguage } from '../../i18n/LanguageContext';
 interface StudioBylineProps {
   displayName: string;
   username?: string | null;
+  /** Expertise du profil (ex. « géopolitique ») — fallback « Correspondant ». */
+  expertise?: string | null;
   avatarSrc: string | null;
 }
 
-export function StudioByline({ displayName, username, avatarSrc }: StudioBylineProps) {
+export function StudioByline({ displayName, username, expertise, avatarSrc }: StudioBylineProps) {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
 
@@ -33,7 +35,7 @@ export function StudioByline({ displayName, username, avatarSrc }: StudioBylineP
         <div className="min-w-0 leading-snug">
           <p className="text-[13px] font-bold tracking-[0.6px] uppercase truncate">{displayName}</p>
           <p className="text-aw-muted text-xs truncate">
-            {username ? `@${username} · ` : ''}{t('Correspondant', 'Correspondent')}
+            {username ? `@${username} · ` : ''}{expertise?.trim() || t('Correspondant', 'Correspondent')}
           </p>
         </div>
       </div>

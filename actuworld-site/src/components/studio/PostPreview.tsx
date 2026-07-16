@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   BatteryFull, ChevronLeft, ChevronRight, Images, MessageCircle, Share2, Signal, Tag, Wifi, X,
 } from 'lucide-react';
@@ -17,6 +17,8 @@ interface PostPreviewProps {
   cards: PostDraftImage[];
   tags: string[];
   authorName: string;
+  /** Expertise du profil — fallback « Correspondant » comme dans l'app. */
+  authorExpertise?: string | null;
   avatarSrc: string | null;
   onClose: () => void;
 }
@@ -24,14 +26,28 @@ interface PostPreviewProps {
 const initials = (name: string) =>
   name.split(/\s+/).map((part) => part[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
 
-export function PostPreview({ cards, tags, authorName, avatarSrc, onClose }: PostPreviewProps) {
+export function PostPreview({ cards, tags, authorName, authorExpertise, avatarSrc, onClose }: PostPreviewProps) {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
   const [currentPage, setCurrentPage] = useState(0);
+  const totalPages = cards.length * 2;
+
+  // Navigation au clic (façon stories) : moitié gauche/droite de l'écran du
+  // mockup, flèches ←/→ au clavier — en plus du scroll horizontal.
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const currentPageRef = useRef(0);
+  currentPageRef.current = currentPage;
+  const goToPage = useCallback((page: number) => {
+    const el = scrollerRef.current;
+    if (!el || page < 0 || page >= totalPages) return;
+    el.scrollTo({ left: page * el.clientWidth, behavior: 'smooth' });
+  }, [totalPages]);
 
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
+      else if (event.key === 'ArrowRight') goToPage(currentPageRef.current + 1);
+      else if (event.key === 'ArrowLeft') goToPage(currentPageRef.current - 1);
     };
     document.addEventListener('keydown', handleKey);
     document.body.style.overflow = 'hidden';
@@ -39,9 +55,7 @@ export function PostPreview({ cards, tags, authorName, avatarSrc, onClose }: Pos
       document.removeEventListener('keydown', handleKey);
       document.body.style.overflow = '';
     };
-  }, [onClose]);
-
-  const totalPages = cards.length * 2;
+  }, [onClose, goToPage]);
   const postTags = tags.slice(0, 3);
 
   const byline = (avatarSize: string, nameSize: string) => (
@@ -56,7 +70,7 @@ export function PostPreview({ cards, tags, authorName, avatarSrc, onClose }: Pos
       <div className="min-w-0">
         <p className={`text-white ${nameSize} font-bold tracking-[0.6px] truncate`}>{authorName.toUpperCase()}</p>
         <p className="text-white/55 text-[9.5px] font-semibold tracking-[0.4px]">
-          {t('Correspondant', 'Correspondent')} · {t("à l'instant", 'just now')}
+          {authorExpertise?.trim() || t('Correspondant', 'Correspondent')} · {t("à l'instant", 'just now')}
         </p>
       </div>
     </div>
@@ -110,6 +124,22 @@ export function PostPreview({ cards, tags, authorName, avatarSrc, onClose }: Pos
       </div>
 
       <ChevronLeft className="absolute right-2 top-1/2 -mt-2 w-3.5 h-3.5 text-white/50" />
+
+      {/* Clic moitié gauche/droite = page précédente/suivante (façon stories) */}
+      <button
+        type="button"
+        tabIndex={-1}
+        onClick={() => goToPage(idx * 2 - 1)}
+        className="absolute inset-y-0 left-0 w-1/2"
+        aria-label={t('Page précédente', 'Previous page')}
+      />
+      <button
+        type="button"
+        tabIndex={-1}
+        onClick={() => goToPage(idx * 2 + 1)}
+        className="absolute inset-y-0 right-0 w-1/2"
+        aria-label={t('Page suivante', 'Next page')}
+      />
     </div>
   );
 
@@ -187,6 +217,23 @@ export function PostPreview({ cards, tags, authorName, avatarSrc, onClose }: Pos
         </div>
 
         <ChevronRight className="absolute left-2 top-1/2 -mt-2 w-3.5 h-3.5 text-white/50" />
+
+        {/* Bandes de clic sur les bords (le centre reste scrollable verticalement) :
+            gauche = revenir à la cover, droite = carte suivante */}
+        <button
+          type="button"
+          tabIndex={-1}
+          onClick={() => goToPage(idx * 2)}
+          className="absolute left-0 top-0 bottom-20 w-9"
+          aria-label={t('Page précédente', 'Previous page')}
+        />
+        <button
+          type="button"
+          tabIndex={-1}
+          onClick={() => goToPage(idx * 2 + 2)}
+          className="absolute right-0 top-0 bottom-20 w-9"
+          aria-label={t('Page suivante', 'Next page')}
+        />
       </div>
     );
   };
@@ -228,6 +275,7 @@ export function PostPreview({ cards, tags, authorName, avatarSrc, onClose }: Pos
           <div className="flex-1 min-h-0 px-4 py-2.5">
             <div className="relative h-full rounded-[22px] overflow-hidden bg-black shadow-[0_8px_20px_rgba(0,0,0,0.3)]">
               <div
+                ref={scrollerRef}
                 className="flex h-full overflow-x-auto snap-x snap-mandatory"
                 style={{ scrollbarWidth: 'none' }}
                 onScroll={(e) => {

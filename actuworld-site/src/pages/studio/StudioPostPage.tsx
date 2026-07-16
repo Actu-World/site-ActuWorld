@@ -32,6 +32,7 @@ type StudioProfile = {
   display_name: string | null;
   avatar_url: string | null;
   avatar_updated_at?: string | null;
+  expertise?: string | null;
 } | null;
 
 const AUTOSAVE_DELAY_MS = 2500;
@@ -442,7 +443,7 @@ export default function StudioPostPage() {
         <div className="max-w-3xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
             {/* Signature de session façon post */}
-            <StudioByline displayName={displayName} username={profile?.username} avatarSrc={avatarSrc} />
+            <StudioByline displayName={displayName} username={profile?.username} expertise={profile?.expertise} avatarSrc={avatarSrc} />
 
             <StudioTabs active="post" />
 
@@ -738,6 +739,7 @@ export default function StudioPostPage() {
                     cards={cards.filter(cardHasContent)}
                     tags={tags}
                     authorName={displayName}
+                    authorExpertise={profile?.expertise}
                     avatarSrc={avatarSrc}
                     onClose={() => setShowPreview(false)}
                   />
