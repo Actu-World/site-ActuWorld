@@ -265,6 +265,16 @@ export default function StudioPostPage() {
     fileInputRef.current?.click();
   };
 
+  // Glisser-déposer une image sur une carte (zone vide ou remplacement).
+  const [dragOverCard, setDragOverCard] = useState<number | null>(null);
+  const dropImageOn = (index: number, file: File | undefined) => {
+    if (!file) return;
+    pendingCardIndexRef.current = index;
+    void handleFileSelected(file);
+  };
+  const imageFileFrom = (dt: DataTransfer | null) =>
+    Array.from(dt?.files ?? []).find((f) => f.type.startsWith('image/'));
+
   const handleFileSelected = async (file: File | undefined) => {
     if (!file || isUploading) return;
     setIsUploading(true);
@@ -555,8 +565,22 @@ export default function StudioPostPage() {
                   <div className="space-y-5">
                     {cards.map((card, index) => (
                       <div key={index} className="card p-5">
-                        {/* 1. Le visuel — prend l'espace */}
-                        <div className="relative mx-auto w-full max-w-[340px]">
+                        {/* 1. Le visuel — prend l'espace (clic ou glisser-déposer une image) */}
+                        <div
+                          className={`relative mx-auto w-full max-w-[340px] rounded-xl transition-shadow ${dragOverCard === index ? 'ring-2 ring-aw-primary/60' : ''}`}
+                          onDragOver={(e) => {
+                            if (e.dataTransfer?.types.includes('Files')) {
+                              e.preventDefault();
+                              setDragOverCard(index);
+                            }
+                          }}
+                          onDragLeave={() => setDragOverCard((prev) => (prev === index ? null : prev))}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            setDragOverCard(null);
+                            dropImageOn(index, imageFileFrom(e.dataTransfer));
+                          }}
+                        >
                           {card.image_url ? (
                             <img src={card.image_url} alt="" className="w-full aspect-[3/4] object-cover rounded-xl" />
                           ) : (
@@ -629,8 +653,24 @@ export default function StudioPostPage() {
                     {cards.length < MAX_POST_IMAGES && cards.every((c) => !!c.image_url) && (
                       <button type="button"
                         onClick={() => setCards((prev) => (prev.length < MAX_POST_IMAGES ? [...prev, EMPTY_CARD] : prev))}
-                        className="w-full h-16 rounded-xl border-2 border-dashed border-aw text-aw-muted hover:text-aw-primary
-                                   hover:border-aw-primary flex items-center justify-center gap-2">
+                        onDragOver={(e) => {
+                          if (e.dataTransfer?.types.includes('Files')) {
+                            e.preventDefault();
+                            setDragOverCard(cards.length);
+                          }
+                        }}
+                        onDragLeave={() => setDragOverCard((prev) => (prev === cards.length ? null : prev))}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          setDragOverCard(null);
+                          const file = imageFileFrom(e.dataTransfer);
+                          if (!file) return;
+                          // Créer la carte puis y téléverser l'image déposée.
+                          setCards((prev) => [...prev, EMPTY_CARD]);
+                          dropImageOn(cards.length, file);
+                        }}
+                        className={`w-full h-16 rounded-xl border-2 border-dashed border-aw text-aw-muted hover:text-aw-primary
+                                   hover:border-aw-primary flex items-center justify-center gap-2 transition-shadow ${dragOverCard === cards.length ? 'ring-2 ring-aw-primary/60 border-aw-primary text-aw-primary' : ''}`}>
                         <ImagePlus className="w-5 h-5" />
                         <span className="text-sm">
                           {t(`Ajouter une carte (${cards.length}/${MAX_POST_IMAGES})`, `Add a card (${cards.length}/${MAX_POST_IMAGES})`)}

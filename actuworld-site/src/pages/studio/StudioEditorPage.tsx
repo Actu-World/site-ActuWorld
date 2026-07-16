@@ -77,6 +77,7 @@ export default function StudioEditorPage() {
   const [sources, setSources] = useState<JournalSource[]>([{ url: '', title: '' }]);
   const [restoredNotice, setRestoredNotice] = useState(false);
   const [isCoverUploading, setIsCoverUploading] = useState(false);
+  const [isCoverDragOver, setIsCoverDragOver] = useState(false);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
   // ── Envoi ──
@@ -745,7 +746,7 @@ export default function StudioEditorPage() {
                     <TagsInput tags={tags} onChange={setTags} />
                   </div>
 
-                  {/* Cover — même geste que l'app (clic pour choisir) */}
+                  {/* Cover — même geste que l'app (clic pour choisir), ou glisser-déposer une image */}
                   <input
                     ref={coverInputRef}
                     type="file"
@@ -757,7 +758,20 @@ export default function StudioEditorPage() {
                     type="button"
                     onClick={handlePickCover}
                     disabled={isCoverUploading}
-                    className="w-full h-72 rounded-xl border border-aw bg-aw-surface overflow-hidden flex items-center justify-center disabled:opacity-60"
+                    onDragOver={(e) => {
+                      if (e.dataTransfer?.types.includes('Files')) {
+                        e.preventDefault();
+                        setIsCoverDragOver(true);
+                      }
+                    }}
+                    onDragLeave={() => setIsCoverDragOver(false)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setIsCoverDragOver(false);
+                      const file = Array.from(e.dataTransfer?.files ?? []).find((f) => f.type.startsWith('image/'));
+                      if (file) void handleCoverSelected(file);
+                    }}
+                    className={`w-full h-72 rounded-xl border border-aw bg-aw-surface overflow-hidden flex items-center justify-center disabled:opacity-60 transition-colors ${isCoverDragOver ? 'ring-2 ring-aw-primary/50 border-aw-primary' : ''}`}
                   >
                     {coverPath ? (
                       <img src={journalImageUrl(coverPath)} alt="" className="w-full h-full object-cover" />
