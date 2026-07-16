@@ -3,7 +3,7 @@ import { Link, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   AlertCircle, AlertTriangle, CheckCircle2, Cloud, CloudOff, Eye, FilePlus2, FileText,
-  Info, Loader2, Maximize2, Minimize2, Redo2, Send, Smartphone, Trash2, Undo2,
+  Info, Loader2, Maximize2, Minimize2, Redo2, Send, Smartphone, Undo2,
 } from 'lucide-react';
 import { Section } from '../../components/Section';
 import { PageMeta } from '../../components/PageMeta';
@@ -341,35 +341,11 @@ export default function StudioEditorPage() {
     lastSavedSnapshotRef.current = null;
   };
 
-  // « Supprimer le brouillon » local — même geste que l'app (reset, le brouillon
-  // serveur éventuellement chargé n'est pas supprimé).
   const hasDraftContent =
     title.trim().length > 0 || dek.trim().length > 0 || coverPath !== null ||
     primaryTheme !== '' || tags.length > 0 ||
     blocks.some((b) => (b.type === 'image' || b.type === 'image_text') ? !!b.uri : b.type !== 'divider' && b.text.trim().length > 0) ||
     sources.some((s) => !!s.url?.trim() || !!s.title?.trim());
-
-  const handleResetDraft = () => {
-    // Avec la sauvegarde continue, le brouillon existe côté serveur : supprimer
-    // le brouillon = le supprimer aussi de Supabase (sinon fantômes).
-    const confirmed = window.confirm(editingDraftId
-      ? t(
-          "Tout l'article en cours sera effacé et le brouillon supprimé de tes brouillons. Action irréversible.",
-          'The whole article in progress will be cleared and the draft removed from your drafts. This cannot be undone.'
-        )
-      : t(
-          "Tout l'article en cours (titre, chapeau, image, blocs, sources) sera effacé. Action irréversible.",
-          'The whole article in progress (title, dek, image, blocks, sources) will be cleared. This cannot be undone.'
-        ));
-    if (!confirmed) return;
-    if (userId) clearLocalDraft(userId);
-    if (editingDraftId) {
-      deleteDraft(editingDraftId)
-        .then(() => refreshJournal())
-        .catch(() => { /* best-effort : le brouillon restera dans la liste */ });
-    }
-    resetEditor();
-  };
 
   // « Nouveau » : met de côté l'article en cours (sauvegarde serveur immédiate,
   // il rejoint « Mes brouillons ») puis ouvre un éditeur vierge — permet de
@@ -731,17 +707,6 @@ export default function StudioEditorPage() {
                         className="btn-outline inline-flex items-center text-sm"
                       >
                         <Eye className="w-4 h-4 mr-1.5" /> {t('Aperçu', 'Preview')}
-                      </button>
-                    )}
-                    {hasDraftContent && (
-                      <button
-                        type="button"
-                        onClick={handleResetDraft}
-                        className="p-2 rounded-lg border border-red-500/50 text-red-500 hover:bg-red-500/10"
-                        aria-label={t('Supprimer le brouillon', 'Delete draft')}
-                        title={t('Supprimer le brouillon', 'Delete draft')}
-                      >
-                        <Trash2 className="w-4 h-4" />
                       </button>
                     )}
                   </div>

@@ -355,27 +355,6 @@ export default function StudioPostPage() {
     }
   };
 
-  // « Supprimer le brouillon » : même geste que la page article — efface le
-  // post en cours et supprime aussi le brouillon serveur (sinon fantômes).
-  const handleResetDraft = () => {
-    const confirmed = window.confirm(editingDraftId
-      ? t(
-          'Toute la dépêche en cours sera effacée et le brouillon supprimé de tes brouillons. Action irréversible.',
-          'The whole dispatch in progress will be cleared and the draft removed from your drafts. This cannot be undone.'
-        )
-      : t(
-          'Toute la dépêche en cours (cartes, thème, tags) sera effacée. Action irréversible.',
-          'The whole dispatch in progress (cards, theme, tags) will be cleared. This cannot be undone.'
-        ));
-    if (!confirmed) return;
-    if (editingDraftId) {
-      deletePostDraft(editingDraftId)
-        .then(() => refreshDrafts())
-        .catch(() => { /* best-effort : le brouillon restera dans la liste */ });
-    }
-    resetEditor();
-  };
-
   const handleResume = (draft: PostDraftRow) => {
     setEditingDraftId(draft.id);
     setPrimaryTheme(draft.payload.primary_theme ?? '');
@@ -542,17 +521,6 @@ export default function StudioPostPage() {
                         className="btn-outline inline-flex items-center text-sm"
                       >
                         <Eye className="w-4 h-4 mr-1.5" /> {t('Aperçu', 'Preview')}
-                      </button>
-                    )}
-                    {hasAnyContent && (
-                      <button
-                        type="button"
-                        onClick={handleResetDraft}
-                        className="p-2 rounded-lg border border-red-500/50 text-red-500 hover:bg-red-500/10"
-                        aria-label={t('Supprimer le brouillon', 'Delete draft')}
-                        title={t('Supprimer le brouillon', 'Delete draft')}
-                      >
-                        <Trash2 className="w-4 h-4" />
                       </button>
                     )}
                   </div>
