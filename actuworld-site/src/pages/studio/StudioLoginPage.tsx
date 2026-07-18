@@ -9,6 +9,7 @@ import { PageMeta } from '../../components/PageMeta';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { supabase } from '../../lib/studio/supabase';
 import { useStudioSession } from '../../hooks/useStudioSession';
+import { QrPairingCard } from '../../components/studio/QrPairingCard';
 
 type SendState = 'idle' | 'sending' | 'sent' | 'error';
 
@@ -17,6 +18,11 @@ export default function StudioLoginPage() {
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
 
   const { session, isLoading } = useStudioSession();
+  // Le pairing QR n'est monté que sur écran large : `hidden` CSS masquerait le
+  // composant mais le laisserait poller l'API pour rien depuis un mobile.
+  const [isDesktop] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches
+  );
   const [email, setEmail] = useState('');
   const [sendState, setSendState] = useState<SendState>('idle');
   const [errorMessage, setErrorMessage] = useState('');
@@ -102,6 +108,21 @@ export default function StudioLoginPage() {
                 )}
               </p>
             </div>
+
+            {/* Pairing QR : pertinent uniquement sur un écran d'ordinateur
+                (sur téléphone, on est déjà dans l'app ou à un tap de l'être). */}
+            {isDesktop && (
+            <div className="hidden md:block">
+              <QrPairingCard />
+              <div className="flex items-center gap-3 my-6" aria-hidden="true">
+                <div className="h-px flex-1" style={{ backgroundColor: 'var(--aw-border)' }} />
+                <span className="text-aw-muted text-xs uppercase tracking-wide">
+                  {t('ou par email', 'or by email')}
+                </span>
+                <div className="h-px flex-1" style={{ backgroundColor: 'var(--aw-border)' }} />
+              </div>
+            </div>
+            )}
 
             {sendState === 'sent' ? (
               <div className="card p-8 text-center" role="status">
