@@ -543,7 +543,7 @@ export default function StudioEditorPage() {
   if (!session) {
     return (
       <div className="min-h-screen bg-aw-bg">
-        <Section className="pt-24 pb-16">
+        <Section className="pt-10 pb-16">
           <div className="max-w-lg mx-auto text-center">
             {authError ? (
               <div className="card p-8" role="alert">
@@ -587,7 +587,7 @@ export default function StudioEditorPage() {
         path="/studio/editeur"
       />
 
-      <Section className="pt-24 pb-16">
+      <Section className="pt-10 pb-16">
         <div className="max-w-3xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
             {/* Signature de session façon post (masquée en mode focus) */}

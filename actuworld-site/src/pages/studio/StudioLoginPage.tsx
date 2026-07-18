@@ -87,7 +87,7 @@ export default function StudioLoginPage() {
         path="/studio"
       />
 
-      <Section className="pt-24 pb-16">
+      <Section className="pt-14 pb-16">
         <div className="max-w-lg mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -98,13 +98,13 @@ export default function StudioLoginPage() {
               <div className="w-14 h-14 mx-auto rounded-2xl bg-aw-primary flex items-center justify-center mb-4">
                 <PenLine className="w-7 h-7 text-white" />
               </div>
-              <H2 kicker="Studio" center as="h1" size="sm">
+              <H2 kicker="Studio" center as="h1">
                 {t('Écrire sur ordinateur', 'Write on desktop')}
               </H2>
               <p className="text-aw-muted mt-3">
                 {t(
-                  "Rédige ton article au clavier, il arrivera en brouillon dans l'app — la publication et la vérification des sources restent sur mobile.",
-                  'Write your article on your keyboard; it lands as a draft in the app — publishing and source verification stay on mobile.'
+                  "Installe-toi, écris au clavier sur grand écran, la sauvegarde est automatique. Ton article arrivera en brouillon dans l'app.",
+                  'Settle in and write with a real keyboard on a big screen, autosave has your back. Your article lands as a draft in the app.'
                 )}
               </p>
             </div>

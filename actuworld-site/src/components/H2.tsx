@@ -5,12 +5,10 @@ type Props = {
   children: React.ReactNode;
   center?: boolean;
   as?: 'h1' | 'h2';
-  size?: 'md' | 'sm';
 };
 
-export const H2: React.FC<Props> = ({ kicker, children, center, as = 'h2', size = 'md' }) => {
+export const H2: React.FC<Props> = ({ kicker, children, center, as = 'h2' }) => {
   const Tag = as;
-  const sizeClasses = size === 'sm' ? 'text-xl md:text-3xl' : 'text-2xl md:text-4xl';
   return (
     <div className={center ? 'text-center' : ''}>
       {kicker && (
@@ -18,7 +16,7 @@ export const H2: React.FC<Props> = ({ kicker, children, center, as = 'h2', size 
           {kicker}
         </p>
       )}
-      <Tag className={`${sizeClasses} font-bold leading-tight`}>
+      <Tag className="text-2xl md:text-4xl font-bold leading-tight">
         {children}
       </Tag>
     </div>

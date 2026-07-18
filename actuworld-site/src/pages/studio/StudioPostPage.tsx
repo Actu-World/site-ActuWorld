@@ -439,7 +439,7 @@ export default function StudioPostPage() {
         path="/studio/post"
       />
 
-      <Section className="pt-24 pb-16">
+      <Section className="pt-10 pb-16">
         <div className="max-w-3xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
             {/* Signature de session façon post */}

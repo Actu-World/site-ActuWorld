@@ -2,6 +2,7 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { Navbar } from './components/Navbar';
+import { StudioNavbar } from './components/studio/StudioNavbar';
 import { Footer } from './components/Footer';
 import { PageLoader } from './components/ui/PageLoader';
 import { ScrollProgress } from './components/ui/ScrollProgress';
@@ -42,6 +43,10 @@ export default function App() {
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
 
+  // Environnement Studio : navbar dédiée, pas de footer ni d'habillage
+  // « site vitrine » (barre de progression, retour en haut).
+  const isStudio = location.pathname === '/studio' || location.pathname.startsWith('/studio/');
+
   // Initialize Google Analytics
   useGoogleAnalytics();
 
@@ -57,9 +62,9 @@ export default function App() {
   return (
     <>
       <PageLoader isLoading={isLoading} />
-      <ScrollProgress />
+      {!isStudio && <ScrollProgress />}
       <ScrollToTop />
-      <Navbar />
+      {isStudio ? <StudioNavbar /> : <Navbar />}
       <main className="overflow-x-clip">
         <Suspense fallback={<PageLoader isLoading={true} />}>
         <AnimatePresence mode="wait">
@@ -85,8 +90,8 @@ export default function App() {
         </AnimatePresence>
         </Suspense>
       </main>
-      <Footer />
-      <BackToTop />
+      {!isStudio && <Footer />}
+      {!isStudio && <BackToTop />}
       <CookieBanner />
     </>
   );
