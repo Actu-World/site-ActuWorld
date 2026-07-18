@@ -98,7 +98,7 @@ export default function StudioLoginPage() {
               <div className="w-14 h-14 mx-auto rounded-2xl bg-aw-primary flex items-center justify-center mb-4">
                 <PenLine className="w-7 h-7 text-white" />
               </div>
-              <H2 kicker="Studio" center as="h1">
+              <H2 kicker="Studio" center as="h1" size="sm">
                 {t('Écrire sur ordinateur', 'Write on desktop')}
               </H2>
               <p className="text-aw-muted mt-3">
