@@ -25,6 +25,8 @@ export const Footer: React.FC = () => {
             <Link to="/contact" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'Contact' : 'Contact'}</Link>
           </nav>
 
+          <span className="text-aw-muted/50 select-none" aria-hidden="true">—</span>
+
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 caption text-aw-muted">
             <Link to="/privacy" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Privacy' : 'Confidentialité'}</Link>
             <Link to="/terms" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Terms' : 'Conditions'}</Link>
