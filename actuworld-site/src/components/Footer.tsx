@@ -9,14 +9,15 @@ export const Footer: React.FC = () => {
   return (
     <footer className="py-10 border-t border-aw bg-aw-surface">
       <div className="max-w-7xl mx-auto container-px">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col md:flex-row items-center gap-6">
+          {/* Logo + © calés à gauche ; les liens se centrent dans l'espace restant */}
+          <div className="flex flex-none items-center gap-2">
             <Logo size={28} withText textClassName="body-semi text-aw-text" glow={false} />
             <span className="caption text-aw-muted">© {year}</span>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
-            <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
+          <div className="flex-1 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+            <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm">
               <Link to="/" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'Home' : 'Accueil'}</Link>
               <Link to="/about" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'About' : 'À propos'}</Link>
               <Link to="/app" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'App' : "L'App"}</Link>
@@ -35,7 +36,7 @@ export const Footer: React.FC = () => {
               }}
             />
 
-            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 caption text-aw-muted">
+            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 caption text-aw-muted">
               <Link to="/privacy" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Privacy' : 'Confidentialité'}</Link>
               <Link to="/terms" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Terms' : 'Conditions'}</Link>
               <Link to="/mentions-legales" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Legal' : 'Mentions légales'}</Link>
