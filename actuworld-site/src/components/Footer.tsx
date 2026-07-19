@@ -15,25 +15,27 @@ export const Footer: React.FC = () => {
             <span className="caption text-aw-muted">© {year}</span>
           </div>
 
-          <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
-            <Link to="/" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'Home' : 'Accueil'}</Link>
-            <Link to="/about" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'About' : 'À propos'}</Link>
-            <Link to="/app" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'App' : "L'App"}</Link>
-            <Link to="/reco-src" className="text-aw-muted hover:text-aw-primary transition-colors">ASV</Link>
-            <Link to="/faq" className="text-aw-muted hover:text-aw-primary transition-colors">FAQ</Link>
-            <Link to="/partenaires" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'Partners' : 'Partenaires'}</Link>
-            <Link to="/contact" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'Contact' : 'Contact'}</Link>
-          </nav>
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+            <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
+              <Link to="/" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'Home' : 'Accueil'}</Link>
+              <Link to="/about" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'About' : 'À propos'}</Link>
+              <Link to="/app" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'App' : "L'App"}</Link>
+              <Link to="/reco-src" className="text-aw-muted hover:text-aw-primary transition-colors">ASV</Link>
+              <Link to="/faq" className="text-aw-muted hover:text-aw-primary transition-colors">FAQ</Link>
+              <Link to="/partenaires" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'Partners' : 'Partenaires'}</Link>
+              <Link to="/contact" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'Contact' : 'Contact'}</Link>
+            </nav>
 
-          <span className="text-aw-muted/50 select-none" aria-hidden="true">—</span>
+            <span className="text-aw-muted/50 select-none" aria-hidden="true">—</span>
 
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 caption text-aw-muted">
-            <Link to="/privacy" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Privacy' : 'Confidentialité'}</Link>
-            <Link to="/terms" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Terms' : 'Conditions'}</Link>
-            <Link to="/mentions-legales" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Legal' : 'Mentions légales'}</Link>
-            <Link to="/suppression-compte" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Delete account' : 'Suppression de compte'}</Link>
-            <button onClick={() => resetConsent()} className="hover:text-aw-primary transition-colors">Cookies</button>
-            <Link to="/press" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Press' : 'Presse'}</Link>
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 caption text-aw-muted">
+              <Link to="/privacy" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Privacy' : 'Confidentialité'}</Link>
+              <Link to="/terms" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Terms' : 'Conditions'}</Link>
+              <Link to="/mentions-legales" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Legal' : 'Mentions légales'}</Link>
+              <Link to="/suppression-compte" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Delete account' : 'Suppression de compte'}</Link>
+              <button onClick={() => resetConsent()} className="hover:text-aw-primary transition-colors">Cookies</button>
+              <Link to="/press" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Press' : 'Presse'}</Link>
+            </div>
           </div>
         </div>
       </div>
