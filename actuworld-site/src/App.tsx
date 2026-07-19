@@ -24,6 +24,7 @@ const AboutPage = lazy(() => import('./pages/AboutPage'));
 const LegalNoticePage = lazy(() => import('./pages/LegalNoticePage'));
 const PartnersPage = lazy(() => import('./pages/PartnersPage'));
 const AccountDeletionPage = lazy(() => import('./pages/AccountDeletionPage'));
+const ChildSafetyPage = lazy(() => import('./pages/ChildSafetyPage'));
 const StudioLoginPage = lazy(() => import('./pages/studio/StudioLoginPage'));
 const StudioEditorPage = lazy(() => import('./pages/studio/StudioEditorPage'));
 const StudioPostPage = lazy(() => import('./pages/studio/StudioPostPage'));
@@ -81,6 +82,8 @@ export default function App() {
             <Route path="/about" element={<AboutPage />} />
             <Route path="/mentions-legales" element={<LegalNoticePage />} />
             <Route path="/suppression-compte" element={<AccountDeletionPage />} />
+            <Route path="/securite-enfants" element={<ChildSafetyPage />} />
+            <Route path="/child-safety" element={<ChildSafetyPage />} />
             <Route path="/partenaires" element={<PartnersPage />} />
             <Route path="/studio" element={<StudioLoginPage />} />
             <Route path="/studio/editeur" element={<StudioEditorPage />} />
