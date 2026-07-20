@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { RefreshCw, Smartphone } from 'lucide-react';
+import { RefreshCw, Smartphone, TimerOff, WifiOff } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
 import {
   QR_PAYLOAD_PREFIX,
@@ -130,15 +130,29 @@ export function QrPairingCard() {
         )}
 
         {(state === 'expired' || state === 'error') && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-            <p className="text-sm text-gray-700 bg-white/90 rounded-lg px-3 py-1 text-center">
-              {state === 'expired'
-                ? t('QR code expiré', 'QR code expired')
-                : t('Connexion au serveur impossible', 'Could not reach the server')}
-            </p>
-            <button type="button" onClick={regenerate} className="btn-primary inline-flex items-center">
-              <RefreshCw className="w-4 h-4 mr-2" />
-              {t('Régénérer', 'Regenerate')}
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-2xl bg-white/85 backdrop-blur-[2px] px-4 text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-aw-primary/10">
+              {state === 'expired' ? (
+                <TimerOff className="h-6 w-6 text-aw-primary" />
+              ) : (
+                <WifiOff className="h-6 w-6 text-red-500" />
+              )}
+            </div>
+            <div>
+              <p className="body-semi text-gray-800">
+                {state === 'expired'
+                  ? t('QR code expiré', 'QR code expired')
+                  : t('Connexion impossible', 'Connection failed')}
+              </p>
+              <p className="mt-1 text-xs text-gray-500">
+                {state === 'expired'
+                  ? t('Ce code n’est plus valide.', 'This code is no longer valid.')
+                  : t('Impossible de joindre le serveur.', 'Could not reach the server.')}
+              </p>
+            </div>
+            <button type="button" onClick={regenerate} className="btn-primary btn-sm inline-flex items-center">
+              <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+              {t('Nouveau code', 'New code')}
             </button>
           </div>
         )}

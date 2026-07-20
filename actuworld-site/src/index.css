@@ -219,6 +219,15 @@ h2, .h2 {
   outline-offset: 2px;
 }
 
+/* Variante compacte (double classe → l'emporte sur le padding/font de base) */
+.btn-primary.btn-sm,
+.btn-outline.btn-sm {
+  padding: 8px 14px;
+  font-size: 13px;
+  line-height: 18px;
+  border-radius: 10px;
+}
+
 .btn-outline {
   display: inline-flex;
   align-items: center;
