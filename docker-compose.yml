@@ -9,7 +9,6 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_GA_ID: ${VITE_GA_ID:-}
-        VITE_BREVO_API_KEY: ${VITE_BREVO_API_KEY:-}
     restart: always
     networks:
       app-network:

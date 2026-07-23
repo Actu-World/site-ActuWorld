@@ -23,9 +23,7 @@ COPY . .
 # Variables VITE_ : inlinées au build (site statique). Fournies en build-args
 # par le compose / la CI.
 ARG VITE_GA_ID
-ARG VITE_BREVO_API_KEY
 ENV VITE_GA_ID=$VITE_GA_ID
-ENV VITE_BREVO_API_KEY=$VITE_BREVO_API_KEY
 # ENABLE_PRERENDER=true : génère un index.html par route avec le contenu + les
 # balises <head> propres à chaque page (titres, canonical, description, JSON-LD).
 ENV ENABLE_PRERENDER=true

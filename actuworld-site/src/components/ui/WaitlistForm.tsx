@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, CheckCircle2, Loader2, Sparkles, Instagram } from "lucide-react";
 import { useLanguage } from "../../i18n/LanguageContext";
+import { STUDIO_API_URL } from "../../lib/studio/config";
 
 interface WaitlistFormProps {
   variant?: "inline" | "card";
@@ -26,17 +27,32 @@ export const WaitlistForm = ({ variant = "card", className = "" }: WaitlistFormP
 
     setStatus("loading");
 
-    // Simulation d'envoi (à remplacer par une vraie API)
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const res = await fetch(`${STUDIO_API_URL}/waitlist/join`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.trim(),
+          locale: isEnglish ? "en" : "fr",
+          source: "site_home",
+        }),
+      });
 
-    // Succès simulé
-    setStatus("success");
-    setEmail("");
+      if (!res.ok) {
+        setStatus("error");
+        return;
+      }
 
-    // Reset après 5 secondes
-    setTimeout(() => {
-      setStatus("idle");
-    }, 5000);
+      setStatus("success");
+      setEmail("");
+
+      // Reset après 5 secondes
+      setTimeout(() => {
+        setStatus("idle");
+      }, 5000);
+    } catch {
+      setStatus("error");
+    }
   };
 
   if (variant === "inline") {
@@ -76,6 +92,15 @@ export const WaitlistForm = ({ variant = "card", className = "" }: WaitlistFormP
             )}
           </motion.button>
         </form>
+
+        {status === "error" && (
+          <p className="text-sm text-red-500 text-center" role="alert">
+            {t(
+              "Inscription impossible pour le moment, vérifie ton email ou réessaie plus tard.",
+              "Sign-up failed for now — check your email or try again later."
+            )}
+          </p>
+        )}
 
         {/* Instagram link */}
         <div className="flex items-center justify-center gap-2 text-sm">
