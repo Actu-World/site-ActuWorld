@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { RefreshCw, Smartphone, TimerOff, WifiOff } from 'lucide-react';
+import { QrCode, RefreshCw, Smartphone, TimerOff, WifiOff } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
 import {
   QR_PAYLOAD_PREFIX,
@@ -11,7 +11,7 @@ import {
 
 const POLL_INTERVAL_MS = 2500;
 
-type PairingState = 'loading' | 'active' | 'approving' | 'expired' | 'error';
+type PairingState = 'idle' | 'loading' | 'active' | 'approving' | 'expired' | 'error';
 
 /**
  * Connexion par QR code : affiche un QR à scanner depuis l'app mobile
@@ -22,7 +22,11 @@ export function QrPairingCard() {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
 
-  const [state, setState] = useState<PairingState>('loading');
+  // Sobriété : PAS de start+poll pour chaque visiteur desktop — le cycle de
+  // pairing (pair/start + poll toutes les 2,5 s) ne démarre qu'au clic sur
+  // « Afficher le QR code ».
+  const [started, setStarted] = useState(false);
+  const [state, setState] = useState<PairingState>('idle');
   const [qrValue, setQrValue] = useState('');
   // Générations : incrémenter relance un cycle start+poll et invalide l'ancien.
   const [generation, setGeneration] = useState(0);
@@ -36,6 +40,8 @@ export function QrPairingCard() {
   }, []);
 
   useEffect(() => {
+    if (!started) return;
+
     let cancelled = false;
     let intervalId: ReturnType<typeof setInterval> | undefined;
 
@@ -86,7 +92,7 @@ export function QrPairingCard() {
       cancelled = true;
       if (intervalId) clearInterval(intervalId);
     };
-  }, [generation]);
+  }, [started, generation]);
 
   const regenerate = useCallback(() => setGeneration((n) => n + 1), []);
 
@@ -114,6 +120,19 @@ export function QrPairingCard() {
           className={state === 'active' ? '' : 'blur-sm opacity-40'}
           aria-label={t('QR code de connexion au Studio', 'Studio sign-in QR code')}
         />
+
+        {state === 'idle' && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <button
+              type="button"
+              onClick={() => setStarted(true)}
+              className="btn-primary btn-sm inline-flex items-center"
+            >
+              <QrCode className="mr-1.5 h-4 w-4" />
+              {t('Afficher le QR code', 'Show the QR code')}
+            </button>
+          </div>
+        )}
 
         {state === 'loading' && (
           <div className="absolute inset-0 flex items-center justify-center">

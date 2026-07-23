@@ -31,15 +31,30 @@ export function PageMeta({ title, description, path, image = '/og-image.png' }: 
     updateOrCreateMetaTag('name', 'twitter:description', description);
     updateOrCreateMetaTag('name', 'twitter:image', `https://www.actuworld.fr${image}`);
 
-    // Update canonical URL
+    // /studio* : outil privé (connexion + éditeur), à exclure des moteurs.
+    // On émet un robots noindex et AUCUN canonical pour ces pages ; hors
+    // /studio on retire le noindex (navigation SPA) et on gère le canonical.
+    const isStudio = path.startsWith('/studio');
+    const robotsMeta = document.querySelector('meta[name="robots"]');
     const canonical = document.querySelector('link[rel="canonical"]');
-    if (canonical) {
-      canonical.setAttribute('href', `https://www.actuworld.fr${path}`);
+    if (isStudio) {
+      if (robotsMeta) {
+        robotsMeta.setAttribute('content', 'noindex');
+      } else {
+        updateOrCreateMetaTag('name', 'robots', 'noindex');
+      }
+      if (canonical) canonical.remove();
     } else {
-      const link = document.createElement('link');
-      link.rel = 'canonical';
-      link.href = `https://www.actuworld.fr${path}`;
-      document.head.appendChild(link);
+      if (robotsMeta) robotsMeta.remove();
+      // Update canonical URL
+      if (canonical) {
+        canonical.setAttribute('href', `https://www.actuworld.fr${path}`);
+      } else {
+        const link = document.createElement('link');
+        link.rel = 'canonical';
+        link.href = `https://www.actuworld.fr${path}`;
+        document.head.appendChild(link);
+      }
     }
 
     // Signal au pré-rendu (build ENABLE_PRERENDER) que le contenu de la route est

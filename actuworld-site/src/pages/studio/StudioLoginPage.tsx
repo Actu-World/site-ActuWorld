@@ -110,7 +110,8 @@ export default function StudioLoginPage() {
             </div>
 
             {/* Pairing QR : pertinent uniquement sur un écran d'ordinateur
-                (sur téléphone, on est déjà dans l'app ou à un tap de l'être). */}
+                (sur téléphone, on est déjà dans l'app ou à un tap de l'être).
+                Le cycle start+poll ne démarre qu'au clic dans QrPairingCard. */}
             {isDesktop && (
             <div className="hidden md:block">
               <QrPairingCard />
