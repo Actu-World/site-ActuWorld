@@ -155,27 +155,29 @@ export function ArticlePreview({ title, dek, coverPath, blocks, sources, onClose
                       )}
                     </figure>
                   );
-                case 'image_text':
+                case 'image_text': {
+                  // Habillage « float » : le texte coule à côté de l'image puis
+                  // continue en pleine largeur dessous — miroir du comportement
+                  // mobile (ImageTextFlow dans ArticleRenderer), natif en CSS.
+                  const alignRight = (block.align ?? 'left') === 'right';
                   return (
-                    <div
-                      key={index}
-                      className={`flex gap-3 items-start my-3 ${(block.align ?? 'left') === 'right' ? 'flex-row-reverse' : ''}`}
-                    >
-                      <img
-                        src={journalImageUrl(block.uri)}
-                        alt=""
-                        className="w-[150px] aspect-[3/4] object-cover rounded-[10px] border border-aw shrink-0"
-                      />
-                      <div className="flex-1 min-w-0">
-                        {block.text && (
-                          <p className="text-[15px] leading-6 whitespace-pre-line">{renderInlineBold(block.text)}</p>
-                        )}
+                    <div key={index} className="my-3 flow-root">
+                      <figure className={`w-[150px] mb-1 ${alignRight ? 'float-right ml-3' : 'float-left mr-3'}`}>
+                        <img
+                          src={journalImageUrl(block.uri)}
+                          alt=""
+                          className="w-[150px] aspect-[3/4] object-cover rounded-[10px] border border-aw"
+                        />
                         {block.caption && (
-                          <p className="text-aw-muted text-xs italic mt-1">{block.caption}</p>
+                          <figcaption className="text-aw-muted text-xs italic mt-1">{block.caption}</figcaption>
                         )}
-                      </div>
+                      </figure>
+                      {block.text && (
+                        <p className="text-[15px] leading-6 whitespace-pre-line">{renderInlineBold(block.text)}</p>
+                      )}
                     </div>
                   );
+                }
                 default:
                   return null;
               }
