@@ -36,8 +36,8 @@ export default function PrivacyPage() {
               </h2>
               <p>
                 {t(
-                  "ActuWorld collecte uniquement les données nécessaires au fonctionnement du service : adresse e-mail, nom d'utilisateur, et les contenus que vous publiez (articles, votes, commentaires). Aucune donnée n'est vendue à des tiers.",
-                  "ActuWorld only collects data necessary for the service: email address, username, and content you publish (articles, votes, comments). No data is sold to third parties."
+                  "ActuWorld collecte uniquement les données nécessaires au fonctionnement du service : adresse e-mail, nom d'utilisateur, et les contenus que vous publiez (articles, votes, commentaires). Pour le miroir de lecture de votre profil (visible par vous seul), nous conservons également des statistiques de lecture agrégées par mois, thème et média — jamais la liste des contenus que vous avez consultés. Aucune donnée n'est vendue à des tiers.",
+                  "ActuWorld only collects data necessary for the service: email address, username, and content you publish (articles, votes, comments). For your profile's reading mirror (visible only to you), we also keep reading statistics aggregated by month, theme and outlet — never the list of contents you viewed. No data is sold to third parties."
                 )}
               </p>
             </section>
@@ -120,6 +120,7 @@ export default function PrivacyPage() {
                 <li>{t("Messages privés : 12 mois.", "Private messages: 12 months.")}</li>
                 <li>{t("Données de modération (signalements, actions) : 12 mois, hors sanctions en cours.", "Moderation data (reports, actions): 12 months, excluding ongoing sanctions.")}</li>
                 <li>{t("Notifications : 90 jours.", "Notifications: 90 days.")}</li>
+                <li>{t("Statistiques de lecture agrégées (mois, thème, média — sans historique des contenus consultés) : 12 mois.", "Aggregated reading statistics (month, theme, outlet — no history of viewed contents): 12 months.")}</li>
                 <li>{t("Sur demande de suppression de compte : vos données personnelles sont anonymisées immédiatement.", "On account deletion request: your personal data is anonymized immediately.")}</li>
               </ul>
             </section>
