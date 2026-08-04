@@ -5,9 +5,11 @@ interface PageMetaProps {
   description: string;
   path: string;
   image?: string;
+  /** Pages à exclure des moteurs (ex. atterrissages de liens partagés /post/:id). */
+  noindex?: boolean;
 }
 
-export function PageMeta({ title, description, path, image = '/og-image.png' }: PageMetaProps) {
+export function PageMeta({ title, description, path, image = '/og-image.png', noindex = false }: PageMetaProps) {
   useEffect(() => {
     // Update title
     document.title = `${title} — ActuWorld`;
@@ -34,10 +36,10 @@ export function PageMeta({ title, description, path, image = '/og-image.png' }: 
     // /studio* : outil privé (connexion + éditeur), à exclure des moteurs.
     // On émet un robots noindex et AUCUN canonical pour ces pages ; hors
     // /studio on retire le noindex (navigation SPA) et on gère le canonical.
-    const isStudio = path.startsWith('/studio');
+    const hideFromRobots = path.startsWith('/studio') || noindex;
     const robotsMeta = document.querySelector('meta[name="robots"]');
     const canonical = document.querySelector('link[rel="canonical"]');
-    if (isStudio) {
+    if (hideFromRobots) {
       if (robotsMeta) {
         robotsMeta.setAttribute('content', 'noindex');
       } else {
@@ -65,7 +67,7 @@ export function PageMeta({ title, description, path, image = '/og-image.png' }: 
       document.dispatchEvent(new Event('prerender-ready'));
     });
     return () => cancelAnimationFrame(raf);
-  }, [title, description, path, image]);
+  }, [title, description, path, image, noindex]);
 
   return null;
 }

@@ -25,6 +25,7 @@ const LegalNoticePage = lazy(() => import('./pages/LegalNoticePage'));
 const PartnersPage = lazy(() => import('./pages/PartnersPage'));
 const AccountDeletionPage = lazy(() => import('./pages/AccountDeletionPage'));
 const ChildSafetyPage = lazy(() => import('./pages/ChildSafetyPage'));
+const OpenInAppPage = lazy(() => import('./pages/OpenInAppPage'));
 const StudioLoginPage = lazy(() => import('./pages/studio/StudioLoginPage'));
 const StudioEditorPage = lazy(() => import('./pages/studio/StudioEditorPage'));
 const StudioPostPage = lazy(() => import('./pages/studio/StudioPostPage'));
@@ -85,6 +86,12 @@ export default function App() {
             <Route path="/securite-enfants" element={<ChildSafetyPage />} />
             <Route path="/child-safety" element={<ChildSafetyPage />} />
             <Route path="/partenaires" element={<PartnersPage />} />
+            {/* Atterrissage des liens partagés depuis l'app (deep links actuworld.fr). */}
+            <Route path="/post/:id" element={<OpenInAppPage kind="post" />} />
+            <Route path="/journal/:id" element={<OpenInAppPage kind="journal" />} />
+            <Route path="/messages/:id" element={<OpenInAppPage kind="messages" />} />
+            <Route path="/u/:username" element={<OpenInAppPage kind="user" />} />
+            <Route path="/tag/:slug" element={<OpenInAppPage kind="tag" />} />
             <Route path="/studio" element={<StudioLoginPage />} />
             <Route path="/studio/editeur" element={<StudioEditorPage />} />
             <Route path="/studio/post" element={<StudioPostPage />} />

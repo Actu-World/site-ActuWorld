@@ -1,0 +1,19 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": ["W3K9B7W2MN.com.x8max.actuworld"],
+        "appID": "W3K9B7W2MN.com.x8max.actuworld",
+        "components": [
+          { "/": "/post/*" },
+          { "/": "/journal/*" },
+          { "/": "/messages/*" },
+          { "/": "/u/*" },
+          { "/": "/tag/*" }
+        ],
+        "paths": ["/post/*", "/journal/*", "/messages/*", "/u/*", "/tag/*"]
+      }
+    ]
+  }
+}
