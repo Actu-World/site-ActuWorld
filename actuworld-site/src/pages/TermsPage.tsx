@@ -26,7 +26,7 @@ export default function TermsPage() {
           </H2>
 
           <p className="text-aw-muted mt-4 text-center text-sm">
-            {t("Dernière mise à jour : janvier 2025", "Last updated: January 2025")}
+            {t("Dernière mise à jour : août 2026", "Last updated: August 2026")}
           </p>
 
           <div className="mt-12 space-y-8 text-aw-text/80">
@@ -68,12 +68,12 @@ export default function TermsPage() {
 
             <section>
               <h2 className="text-xl font-semibold mb-3">
-                {t("4. Contenu interdit", "4. Prohibited Content")}
+                {t("4. Contenu interdit et modération", "4. Prohibited Content & Moderation")}
               </h2>
               <p>
                 {t(
-                  "Sont interdits : la désinformation volontaire, les contenus haineux, le harcèlement, les contenus illégaux, le spam, et toute atteinte aux droits d'auteur. ActuWorld se réserve le droit de supprimer tout contenu contrevenant.",
-                  "Prohibited: deliberate misinformation, hateful content, harassment, illegal content, spam, and any copyright infringement. ActuWorld reserves the right to remove any violating content."
+                  "Tolérance zéro. Sont strictement interdits : la désinformation volontaire, les contenus haineux, le harcèlement, les contenus illégaux, le spam et toute atteinte aux droits d'auteur. ActuWorld applique une politique de tolérance zéro envers les contenus offensants et les utilisateurs abusifs. Chaque publication et chaque utilisateur peuvent être signalés ou bloqués directement dans l'application. ActuWorld s'engage à examiner les signalements et à retirer les contenus contrevenants sous 24 heures, et à exclure les utilisateurs responsables.",
+                  "Zero tolerance. The following are strictly prohibited: deliberate misinformation, hateful content, harassment, illegal content, spam, and any copyright infringement. ActuWorld enforces a zero-tolerance policy toward objectionable content and abusive users. Every post and every user can be reported or blocked directly within the app. ActuWorld commits to reviewing reports and removing violating content within 24 hours, and to ejecting the users responsible."
                 )}
               </p>
             </section>
