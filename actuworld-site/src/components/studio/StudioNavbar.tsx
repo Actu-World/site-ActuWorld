@@ -20,9 +20,11 @@ export const StudioNavbar: React.FC = () => {
         <Link
           to="/studio/editeur"
           aria-label="ActuWorld Studio"
-          className="inline-flex items-center gap-2.5 min-w-0"
+          className="inline-flex items-center gap-2 min-w-0 shrink"
         >
-          <Logo size={32} withText textClassName="text-lg text-aw-text" />
+          {/* Le wordmark « ActuWorld » est masqué sous sm : sur mobile on garde
+              le sigle + le badge STUDIO (identité claire, sans déborder). */}
+          <Logo size={32} withText textClassName="hidden sm:inline text-lg text-aw-text" />
           <span
             className="px-2 py-0.5 rounded-md text-[11px] font-bold tracking-[1.5px] uppercase bg-aw-primary text-on-primary shrink-0"
             style={{ fontFamily: '"Platypi", Georgia, serif' }}
@@ -31,7 +33,7 @@ export const StudioNavbar: React.FC = () => {
           </span>
         </Link>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           {/* Retour discret vers le site vitrine */}
           <Link
             to="/"

@@ -21,7 +21,7 @@ import { StudioByline } from '../../components/studio/StudioByline';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { studioApi } from '../../lib/studio/api';
 import { useStudioSession } from '../../hooks/useStudioSession';
-import { STUDIO_THEMES } from '../../lib/studio/themes';
+import { ThemeSelect } from '../../components/studio/ThemeSelect';
 import { journalImageUrl, resolveAvatarUrl, uploadJournalImage } from '../../lib/studio/images';
 import {
   BODY_MAX, DEK_MAX, MAX_SOURCES, TITLE_MAX,
@@ -725,25 +725,9 @@ export default function StudioEditorPage() {
 
                 <div className="space-y-5">
                   {/* Thème + tags — pendant du ThemeTagsField de l'app */}
-                  <div className="card p-4 space-y-3">
-                    <div>
-                      <label htmlFor="studio-theme" className="text-aw-muted text-xs block mb-1.5">
-                        {t('Thème principal', 'Main theme')}
-                      </label>
-                      <select
-                        id="studio-theme"
-                        value={primaryTheme}
-                        onChange={(e) => setPrimaryTheme(e.target.value)}
-                        className="w-full rounded-lg border border-aw bg-aw-bg px-3 py-2.5 text-aw-text text-sm focus:outline-none focus:ring-2 focus:ring-aw-primary"
-                      >
-                        <option value="">{t('— Choisir un thème —', '— Pick a theme —')}</option>
-                        {STUDIO_THEMES.map((theme) => (
-                          <option key={theme.key} value={theme.key}>
-                            {isEnglish ? theme.en : theme.fr}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                  <div className="card p-4 space-y-4">
+                    <ThemeSelect id="studio-theme" value={primaryTheme} onChange={setPrimaryTheme} />
+                    <div className="h-px bg-aw" />
                     <TagsInput tags={tags} onChange={setTags} />
                   </div>
 
