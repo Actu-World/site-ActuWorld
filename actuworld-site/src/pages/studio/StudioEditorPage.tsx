@@ -3,7 +3,7 @@ import { Link, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   AlertCircle, AlertTriangle, CheckCircle2, Cloud, CloudOff, Eye, FilePlus2, FileText,
-  Info, Loader2, Maximize2, Minimize2, Redo2, Send, Smartphone, Undo2,
+  Globe, Info, Loader2, Maximize2, Minimize2, Redo2, Send, Smartphone, Undo2,
 } from 'lucide-react';
 import { Section } from '../../components/Section';
 import { PageMeta } from '../../components/PageMeta';
@@ -26,7 +26,7 @@ import { journalImageUrl, resolveAvatarUrl, uploadJournalImage } from '../../lib
 import {
   BODY_MAX, DEK_MAX, MAX_SOURCES, TITLE_MAX,
   blockBodyLen, cleanBlocks, cleanSources, createDraft, deleteDraft,
-  isValidSourceUrl, listMyJournal, updateDraft,
+  isValidSourceUrl, listMyJournal, publishArticle, updateDraft,
 } from '../../lib/studio/journal';
 import { clearLocalDraft, loadLocalDraft, saveLocalDraft } from '../../lib/studio/draftStorage';
 import type { JournalBlock, JournalSource, StudioDraftRow } from '../../types/journal';
@@ -81,10 +81,13 @@ export default function StudioEditorPage() {
   const [isCoverDragOver, setIsCoverDragOver] = useState(false);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
-  // ── Envoi ──
+  // ── Envoi (brouillon) et publication directe ──
   const [isSending, setIsSending] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
   const [sendError, setSendError] = useState('');
   const [sentDraftTitle, setSentDraftTitle] = useState<string | null>(null);
+  // Écran de confirmation : brouillon envoyé vers l'app, ou article publié.
+  const [sentMode, setSentMode] = useState<'draft' | 'published'>('draft');
 
   // ── Aperçu mobile ──
   const [showPreview, setShowPreview] = useState(false);
@@ -294,7 +297,7 @@ export default function StudioEditorPage() {
   // sur Supabase (création puis PUT silencieux ~2,5 s après la dernière frappe).
   // L'autosauvegarde locale reste le filet quand l'API est injoignable. ──
   useEffect(() => {
-    if (!userId || sentDraftTitle || isSending || !title.trim()) return;
+    if (!userId || sentDraftTitle || isSending || isPublishing || !title.trim()) return;
     const payload = buildPayload();
     const snapshot = JSON.stringify(payload);
     if (snapshot === lastSavedSnapshotRef.current) return;
@@ -324,7 +327,7 @@ export default function StudioEditorPage() {
     }, 2500);
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, editingDraftId, title, dek, primaryTheme, tags, coverPath, blocks, sources, sentDraftTitle, isSending]);
+  }, [userId, editingDraftId, title, dek, primaryTheme, tags, coverPath, blocks, sources, sentDraftTitle, isSending, isPublishing]);
 
   const resetEditor = () => {
     setEditingDraftId(null);
@@ -353,7 +356,7 @@ export default function StudioEditorPage() {
   // il rejoint « Mes brouillons ») puis ouvre un éditeur vierge — permet de
   // travailler plusieurs articles en parallèle sans passer par l'envoi.
   const handleNewArticle = async () => {
-    if (isSending || isAutosavingRef.current) return;
+    if (isSending || isPublishing || isAutosavingRef.current) return;
     if (!hasDraftContent) {
       resetEditor();
       return;
@@ -404,7 +407,7 @@ export default function StudioEditorPage() {
   };
 
   const handleSend = async () => {
-    if (isSending || !userId || sentDraftTitle) return;
+    if (isSending || isPublishing || !userId || sentDraftTitle) return;
     setSendError('');
 
     if (!title.trim()) {
@@ -429,6 +432,7 @@ export default function StudioEditorPage() {
         await createDraft(payload);
       }
       clearLocalDraft(userId);
+      setSentMode('draft');
       setSentDraftTitle(payload.title);
       setSaveState('idle');
       setLastSavedAt(null);
@@ -440,6 +444,50 @@ export default function StudioEditorPage() {
         : t("L'envoi a échoué.", 'Sending failed.'));
     } finally {
       setIsSending(false);
+    }
+  };
+
+  // ── Publication directe : mêmes gardes que le bouton Publier de l'app
+  // (titre + au moins une source valide), confirmation explicite car l'article
+  // devient public immédiatement et la vérification ASV se lance. ──
+  const handlePublish = async () => {
+    if (isSending || isPublishing || !userId || sentDraftTitle) return;
+    setSendError('');
+
+    if (!title.trim()) {
+      setSendError(t('Un titre est requis pour publier.', 'A title is required to publish.'));
+      return;
+    }
+    const payload = buildPayload();
+    if (!payload.sources.some((s) => isValidSourceUrl(s.url))) {
+      setSendError(t(
+        'Au moins une source valide (http:// ou https://) est requise pour publier.',
+        'At least one valid source (http:// or https://) is required to publish.'
+      ));
+      return;
+    }
+    const confirmed = window.confirm(t(
+      `Publier « ${payload.title} » ?\n\nL'article sera visible par tout le monde dans l'app et la vérification des sources (ASV) se lancera immédiatement.`,
+      `Publish “${payload.title}”?\n\nThe article will be visible to everyone in the app and source verification (ASV) will start immediately.`
+    ));
+    if (!confirmed) return;
+
+    setIsPublishing(true);
+    try {
+      await publishArticle(editingDraftId, payload);
+      clearLocalDraft(userId);
+      setSentMode('published');
+      setSentDraftTitle(payload.title);
+      setSaveState('idle');
+      setLastSavedAt(null);
+      lastSavedSnapshotRef.current = null;
+      void refreshJournal();
+    } catch (err: unknown) {
+      setSendError(isNetworkError(err) ? apiUnreachableMsg
+        : err instanceof Error ? err.message
+        : t('La publication a échoué.', 'Publishing failed.'));
+    } finally {
+      setIsPublishing(false);
     }
   };
 
@@ -581,8 +629,8 @@ export default function StudioEditorPage() {
       <PageMeta
         title={t('Studio — Éditeur', 'Studio — Editor')}
         description={t(
-          "Éditeur web ActuWorld : écris ton article et envoie-le comme brouillon dans l'app.",
-          'ActuWorld web editor: write your article and send it as a draft to the app.'
+          "Éditeur web ActuWorld : écris ton article, publie-le directement ou envoie-le comme brouillon dans l'app.",
+          'ActuWorld web editor: write your article, publish it directly or send it as a draft to the app.'
         )}
         path="/studio/editeur"
       />
@@ -598,23 +646,47 @@ export default function StudioEditorPage() {
             {!focusMode && <StudioTabs active="article" />}
 
             {sentDraftTitle ? (
-              /* ── Confirmation d'envoi ── */
+              /* ── Confirmation : article publié ou brouillon envoyé ── */
               <div className="card p-10 text-center" role="status">
                 <CheckCircle2 className="w-10 h-10 text-aw-primary mx-auto mb-4" />
-                <h1 className="text-2xl font-bold mb-2">{t('Brouillon envoyé !', 'Draft sent!')}</h1>
-                <p className="text-aw-muted max-w-md mx-auto mb-2">
-                  {t(
-                    `« ${sentDraftTitle} » t'attend dans l'app ActuWorld, section Brouillons de la page de création.`,
-                    `“${sentDraftTitle}” is waiting for you in the ActuWorld app, in the Drafts section of the compose page.`
-                  )}
-                </p>
-                <p className="text-aw-muted text-sm max-w-md mx-auto mb-8 inline-flex items-center justify-center">
-                  <Smartphone className="w-4 h-4 mr-1.5 shrink-0" />
-                  {t(
-                    'Relis-le sur ton téléphone puis appuie sur Publier — la vérification des sources (ASV) se lance à ce moment-là.',
-                    'Review it on your phone then tap Publish — source verification (ASV) runs at that moment.'
-                  )}
-                </p>
+                <h1 className="text-2xl font-bold mb-2">
+                  {sentMode === 'published'
+                    ? t('Article publié !', 'Article published!')
+                    : t('Brouillon envoyé !', 'Draft sent!')}
+                </h1>
+                {sentMode === 'published' ? (
+                  <>
+                    <p className="text-aw-muted max-w-md mx-auto mb-2">
+                      {t(
+                        `« ${sentDraftTitle} » est en ligne dans l'app ActuWorld.`,
+                        `“${sentDraftTitle}” is now live in the ActuWorld app.`
+                      )}
+                    </p>
+                    <p className="text-aw-muted text-sm max-w-md mx-auto mb-8 inline-flex items-center justify-center">
+                      <Globe className="w-4 h-4 mr-1.5 shrink-0" />
+                      {t(
+                        'La vérification des sources (ASV) est en cours — son résultat apparaîtra sur l’article et dans « Mes articles publiés » ci-dessous.',
+                        'Source verification (ASV) is running — its result will appear on the article and in “My published articles” below.'
+                      )}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-aw-muted max-w-md mx-auto mb-2">
+                      {t(
+                        `« ${sentDraftTitle} » t'attend dans l'app ActuWorld, section Brouillons de la page de création.`,
+                        `“${sentDraftTitle}” is waiting for you in the ActuWorld app, in the Drafts section of the compose page.`
+                      )}
+                    </p>
+                    <p className="text-aw-muted text-sm max-w-md mx-auto mb-8 inline-flex items-center justify-center">
+                      <Smartphone className="w-4 h-4 mr-1.5 shrink-0" />
+                      {t(
+                        'Relis-le sur ton téléphone puis appuie sur Publier — la vérification des sources (ASV) se lance à ce moment-là.',
+                        'Review it on your phone then tap Publish — source verification (ASV) runs at that moment.'
+                      )}
+                    </p>
+                  </>
+                )}
                 <div>
                   <button type="button" onClick={resetEditor} className="btn-primary">
                     {t('Écrire un autre article', 'Write another article')}
@@ -819,24 +891,33 @@ export default function StudioEditorPage() {
                     />
                   </div>
 
-                  {/* Envoi */}
+                  {/* Publication directe + envoi en brouillon vers l'app */}
                   <div className="card p-5">
                     {sendError && (
                       <p className="text-red-500 text-sm mb-4" role="alert">{sendError}</p>
                     )}
-                    <button type="button" onClick={() => void handleSend()} disabled={isSending || isCoverUploading}
-                      className="btn-primary w-full inline-flex items-center justify-center disabled:opacity-60">
-                      <Send className="w-5 h-5 mr-2" />
-                      {isSending
-                        ? t('Envoi en cours…', 'Sending…')
-                        : editingDraftId
-                          ? t('Mettre à jour le brouillon', 'Update the draft')
-                          : t("Envoyer vers l'app", 'Send to the app')}
-                    </button>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <button type="button" onClick={() => void handlePublish()}
+                        disabled={isSending || isPublishing || isCoverUploading}
+                        className="btn-primary flex-1 inline-flex items-center justify-center disabled:opacity-60">
+                        <Globe className="w-5 h-5 mr-2" />
+                        {isPublishing ? t('Publication…', 'Publishing…') : t('Publier', 'Publish')}
+                      </button>
+                      <button type="button" onClick={() => void handleSend()}
+                        disabled={isSending || isPublishing || isCoverUploading}
+                        className="btn-outline flex-1 inline-flex items-center justify-center disabled:opacity-60">
+                        <Send className="w-5 h-5 mr-2" />
+                        {isSending
+                          ? t('Envoi en cours…', 'Sending…')
+                          : editingDraftId
+                            ? t('Mettre à jour le brouillon', 'Update the draft')
+                            : t("Envoyer vers l'app", 'Send to the app')}
+                      </button>
+                    </div>
                     <p className="text-aw-muted text-xs mt-3 text-center">
                       {t(
-                        "Le brouillon reste privé : la publication et la vérification ASV se font depuis l'app.",
-                        'The draft stays private: publishing and ASV verification happen from the app.'
+                        'Publier met l’article en ligne immédiatement (vérification ASV automatique). Le brouillon, lui, reste privé pour être relu et publié depuis l’app.',
+                        'Publish puts the article online immediately (automatic ASV verification). The draft stays private, to be reviewed and published from the app.'
                       )}
                     </p>
                   </div>

@@ -1,8 +1,10 @@
 import { studioApi } from './api';
 import type { JournalBlock, JournalSource, StudioDraftRow } from '../../types/journal';
 
-// Appels journal du Studio. Le Studio n'envoie JAMAIS status:'published' :
-// la publication (et le déclenchement ASV) reste exclusivement dans l'app.
+// Appels journal du Studio : brouillons + publication directe. La publication
+// applique les mêmes gardes que l'app (titre requis, au moins une source
+// http(s) valide) ; la vérification ASV se déclenche côté API au passage
+// en status:'published'.
 
 // Limites IDENTIQUES au composer mobile (journal/compose.tsx) — même budget,
 // même expérience, aucune troncature silencieuse côté app.
@@ -88,6 +90,16 @@ export function createDraft(payload: StudioDraftPayload): Promise<{ id: string }
 export function updateDraft(id: string, payload: StudioDraftPayload): Promise<unknown> {
   // Pas de champ `status` : le brouillon reste un brouillon.
   return studioApi.put(`/journal/${id}`, payload);
+}
+
+/**
+ * Publication directe depuis le Studio. Met à jour le brouillon existant si
+ * `id` est fourni (PUT status:'published' — même passage draft→published que
+ * le bouton Publier de l'app), sinon crée l'article déjà publié.
+ */
+export function publishArticle(id: string | null, payload: StudioDraftPayload): Promise<unknown> {
+  if (id) return studioApi.put(`/journal/${id}`, { ...payload, status: 'published' });
+  return studioApi.post<{ id: string }>('/journal', { ...payload, status: 'published', origin: 'web' });
 }
 
 /** Tous mes articles (brouillons + publiés), triés par updated_at desc côté API. */
