@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react';
-import type { ClipboardEvent, DragEvent } from 'react';
+import type { ClipboardEvent, DragEvent, KeyboardEvent } from 'react';
 import {
-  AlignLeft, AlignRight, ArrowDown, ArrowUp, GripVertical, Image as ImageIcon,
-  LayoutPanelLeft, Minus, Pilcrow, Quote, Trash2, Type,
+  AlignLeft, AlignRight, ArrowDown, ArrowUp, Bold, GripVertical, Image as ImageIcon,
+  Italic, LayoutPanelLeft, Minus, Pilcrow, Quote, Trash2, Type,
 } from 'lucide-react';
 import type { JournalBlock } from '../../types/journal';
 import { journalImageUrl, uploadJournalImage } from '../../lib/studio/images';
@@ -10,7 +10,12 @@ import { useLanguage } from '../../i18n/LanguageContext';
 
 // Blocs strictement alignés sur le composer mobile (journal/compose.tsx) :
 // paragraphe, titre (niveau 2), image + légende, img+texte (align g/d),
-// citation (sans auteur), séparateur. Pas de gras/italique.
+// citation (sans auteur), séparateur. Gras/italique en marqueurs inline
+// **…** / *…* sur paragraphe et img+texte — même convention que l'app
+// (renderInlineBold), boutons B/I + Ctrl+B / Ctrl+I.
+
+/** Bloc dont le texte accepte les marqueurs gras/italique (rendus par l'app). */
+type FormattableBlock = Extract<JournalBlock, { type: 'paragraph' | 'image_text' }>;
 
 interface BlockListEditorProps {
   blocks: JournalBlock[];
@@ -39,6 +44,37 @@ export function BlockListEditor({ blocks, onChange, budgetFor, onUploadError }: 
     onChange(blocks.map((current, i) => (i === index ? block : current)));
   const removeAt = (index: number) => onChange(blocks.filter((_, i) => i !== index));
   const append = (block: JournalBlock) => onChange([...blocks, block]);
+
+  // ── Gras / italique inline ──
+  // Réfs des champs formatables pour lire la sélection au clic sur B/I
+  // (les boutons gardent le focus du champ via onMouseDown preventDefault).
+  const textFieldRefs = useRef<Record<number, HTMLTextAreaElement | null>>({});
+
+  const applyInlineMark = (index: number, block: FormattableBlock, marker: '**' | '*') => {
+    const el = textFieldRefs.current[index];
+    const text = block.text;
+    const start = el?.selectionStart ?? text.length;
+    const end = el?.selectionEnd ?? text.length;
+    const selected = text.slice(start, end);
+    replaceAt(index, { ...block, text: text.slice(0, start) + marker + selected + marker + text.slice(end) });
+    // Curseur : entre les marqueurs si rien n'était sélectionné, sinon après
+    // la fermeture — même comportement que applyBold/applyItalic de l'app.
+    const caret = selected ? end + marker.length * 2 : start + marker.length;
+    requestAnimationFrame(() => {
+      const field = textFieldRefs.current[index];
+      if (!field) return;
+      field.focus();
+      field.setSelectionRange(caret, caret);
+    });
+  };
+
+  const handleFormatKeys = (index: number, block: FormattableBlock, event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (!(event.ctrlKey || event.metaKey) || event.shiftKey || event.altKey) return;
+    const key = event.key.toLowerCase();
+    if (key !== 'b' && key !== 'i') return;
+    event.preventDefault();
+    applyInlineMark(index, block, key === 'b' ? '**' : '*');
+  };
 
   const moveBlock = (index: number, direction: -1 | 1) => {
     const target = index + direction;
@@ -227,13 +263,39 @@ export function BlockListEditor({ blocks, onChange, budgetFor, onUploadError }: 
                   : <AlignRight className="w-4 h-4" />}
               </button>
             )}
+            {(block.type === 'paragraph' || block.type === 'image_text') && (
+              <>
+                <button
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => applyInlineMark(index, block, '**')}
+                  className="p-1.5 rounded-lg bg-aw-surface text-aw-muted hover:text-aw-primary"
+                  aria-label={t('Gras (Ctrl+B)', 'Bold (Ctrl+B)')}
+                  title={t('Gras (Ctrl+B)', 'Bold (Ctrl+B)')}
+                >
+                  <Bold className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => applyInlineMark(index, block, '*')}
+                  className="p-1.5 rounded-lg bg-aw-surface text-aw-muted hover:text-aw-primary"
+                  aria-label={t('Italique (Ctrl+I)', 'Italic (Ctrl+I)')}
+                  title={t('Italique (Ctrl+I)', 'Italic (Ctrl+I)')}
+                >
+                  <Italic className="w-4 h-4" />
+                </button>
+              </>
+            )}
           </div>
 
           {block.type === 'paragraph' && (
             <textarea
+              ref={(el) => { textFieldRefs.current[index] = el; }}
               value={block.text}
               onChange={(e) => replaceAt(index, { ...block, text: e.target.value })}
               onPaste={(e) => handleParagraphPaste(index, block, e)}
+              onKeyDown={(e) => handleFormatKeys(index, block, e)}
               placeholder={`${t('Paragraphe', 'Paragraph')}...`}
               maxLength={budgetFor(block.text.length)}
               rows={Math.max(3, Math.ceil(block.text.length / 90))}
@@ -301,8 +363,10 @@ export function BlockListEditor({ blocks, onChange, budgetFor, onUploadError }: 
                 />
               </div>
               <textarea
+                ref={(el) => { textFieldRefs.current[index] = el; }}
                 value={block.text}
                 onChange={(e) => replaceAt(index, { ...block, text: e.target.value })}
+                onKeyDown={(e) => handleFormatKeys(index, block, e)}
                 placeholder={`${t('Texte', 'Text')}...`}
                 maxLength={budgetFor(block.text.length)}
                 rows={6}

@@ -10,7 +10,7 @@ import { useLanguage } from '../../i18n/LanguageContext';
 // de la page article mobile (components/journal/ArticleRenderer.tsx) — mêmes
 // tailles, mêmes espacements : titre 22/28, chapeau 15/22, paragraphes 15/24
 // marge 12, lettrine sur le 1er paragraphe, citation avec barre primaire,
-// image latérale 150px, gras inline **…**.
+// image latérale 150px, gras/italique inline **…** / *…*.
 
 interface ArticlePreviewProps {
   title: string;
@@ -21,13 +21,69 @@ interface ArticlePreviewProps {
   onClose: () => void;
 }
 
-/** Rendu du gras inline **texte** (miroir de renderInlineBold de l'app). */
-function renderInlineBold(text: string): ReactNode[] {
-  return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
-    part.startsWith('**') && part.endsWith('**')
-      ? <strong key={i}>{part.slice(2, -2)}</strong>
-      : <span key={i}>{part}</span>
-  );
+/**
+ * Rendu inline — miroir de renderInlineBold de l'app (common/RichText.tsx) :
+ * gras **…** ou __…__, italique *…* ou _…_, italique imbriqué dans le gras.
+ */
+function renderInline(text: string, keyPrefix = 'rt-'): ReactNode[] {
+  const renderItalic = (s: string, kPref: string): ReactNode[] => {
+    const out: ReactNode[] = [];
+    let i = 0;
+    let buf = '';
+    const pushBuf = () => { if (buf) { out.push(buf); buf = ''; } };
+    while (i < s.length) {
+      const ch = s[i];
+      const next = s[i + 1];
+      // Ne pas traiter un marqueur double (gras) comme de l'italique
+      if ((ch === '*' || ch === '_') && next !== ch) {
+        const end = s.indexOf(ch, i + 1);
+        if (end > i + 1) {
+          pushBuf();
+          out.push(<em key={`${kPref}i-${i}`}>{s.slice(i + 1, end)}</em>);
+          i = end + 1;
+          continue;
+        }
+      }
+      buf += ch;
+      i += 1;
+    }
+    pushBuf();
+    return out;
+  };
+
+  const nodes: ReactNode[] = [];
+  let i = 0;
+  let buffer = '';
+  const pushBuffer = () => { if (buffer) { nodes.push(buffer); buffer = ''; } };
+  while (i < text.length) {
+    const two = text.slice(i, i + 2);
+    if (two === '**' || two === '__') {
+      const end = text.indexOf(two, i + 2);
+      if (end > i + 2) {
+        pushBuffer();
+        nodes.push(
+          <strong key={`${keyPrefix}b-${i}`}>{renderItalic(text.slice(i + 2, end), `${keyPrefix}bi-${i}-`)}</strong>
+        );
+        i = end + 2;
+        continue;
+      }
+    }
+    const ch = text[i];
+    const next = text[i + 1];
+    if ((ch === '*' || ch === '_') && next !== ch) {
+      const end = text.indexOf(ch, i + 1);
+      if (end > i + 1) {
+        pushBuffer();
+        nodes.push(<em key={`${keyPrefix}i-${i}`}>{text.slice(i + 1, end)}</em>);
+        i = end + 1;
+        continue;
+      }
+    }
+    buffer += text[i];
+    i += 1;
+  }
+  pushBuffer();
+  return nodes;
 }
 
 const headingSizePx = (level?: 1 | 2 | 3) => (level === 3 ? 18 : level === 2 ? 22 : 26);
@@ -123,13 +179,13 @@ export function ArticlePreview({ title, dek, coverPath, blocks, sources, onClose
                     return (
                       <p key={index} className="text-[15px] leading-6 mb-3 whitespace-pre-line">
                         <span className="text-[28px] leading-7 font-bold">{block.text.slice(0, 1)}</span>
-                        {renderInlineBold(block.text.slice(1))}
+                        {renderInline(block.text.slice(1), `p-${index}-`)}
                       </p>
                     );
                   }
                   return (
                     <p key={index} className="text-[15px] leading-6 mb-3 whitespace-pre-line">
-                      {renderInlineBold(block.text)}
+                      {renderInline(block.text, `p-${index}-`)}
                     </p>
                   );
                 }
@@ -173,7 +229,7 @@ export function ArticlePreview({ title, dek, coverPath, blocks, sources, onClose
                         )}
                       </figure>
                       {block.text && (
-                        <p className="text-[15px] leading-6 whitespace-pre-line">{renderInlineBold(block.text)}</p>
+                        <p className="text-[15px] leading-6 whitespace-pre-line">{renderInline(block.text, `it-${index}-`)}</p>
                       )}
                     </div>
                   );
