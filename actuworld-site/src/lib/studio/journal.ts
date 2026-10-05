@@ -22,6 +22,7 @@ export type StudioDraftPayload = {
   blocks: JournalBlock[];
   sources: JournalSource[];
   primary_theme: string | null;
+  format?: string;
   tags?: string[];
   cover_url: string | null;
 };

@@ -9,6 +9,8 @@ export type StudioLocalDraft = {
   title: string;
   dek: string;
   primaryTheme: string;
+  /** Absent des brouillons locaux antérieurs au format → « info ». */
+  format?: string;
   tags?: string[];
   coverPath?: string | null;
   blocks: JournalBlock[];

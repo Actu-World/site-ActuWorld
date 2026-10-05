@@ -22,6 +22,8 @@ import { useLanguage } from '../../i18n/LanguageContext';
 import { studioApi } from '../../lib/studio/api';
 import { useStudioSession } from '../../hooks/useStudioSession';
 import { ThemeSelect } from '../../components/studio/ThemeSelect';
+import { FormatSelect } from '../../components/studio/FormatSelect';
+import { DEFAULT_STUDIO_FORMAT, normalizeStudioFormat, type StudioJournalFormat } from '../../lib/studio/formats';
 import { journalImageUrl, resolveAvatarUrl, uploadJournalImage } from '../../lib/studio/images';
 import {
   BODY_MAX, DEK_MAX, MAX_SOURCES, TITLE_MAX,
@@ -72,6 +74,7 @@ export default function StudioEditorPage() {
   const [title, setTitle] = useState('');
   const [dek, setDek] = useState('');
   const [primaryTheme, setPrimaryTheme] = useState('');
+  const [format, setFormat] = useState<StudioJournalFormat>(DEFAULT_STUDIO_FORMAT);
   const [tags, setTags] = useState<string[]>([]);
   const [coverPath, setCoverPath] = useState<string | null>(null);
   const [blocks, setBlocks] = useState<JournalBlock[]>([{ type: 'paragraph', text: '' }]);
@@ -101,7 +104,7 @@ export default function StudioEditorPage() {
   // ── Historique annuler/rétablir (structure + texte, granularité ~400 ms) ──
   type EditorSnapshot = {
     editingDraftId: string | null;
-    title: string; dek: string; primaryTheme: string;
+    title: string; dek: string; primaryTheme: string; format: StudioJournalFormat;
     tags: string[]; coverPath: string | null;
     blocks: JournalBlock[]; sources: JournalSource[];
   };
@@ -153,7 +156,7 @@ export default function StudioEditorPage() {
 
   // ── Annuler / rétablir ──
   const makeSnapshot = (): EditorSnapshot => ({
-    editingDraftId, title, dek, primaryTheme, tags, coverPath, blocks, sources,
+    editingDraftId, title, dek, primaryTheme, format, tags, coverPath, blocks, sources,
   });
   const applySnapshot = (snap: EditorSnapshot) => {
     skipHistoryRef.current = true;
@@ -161,6 +164,7 @@ export default function StudioEditorPage() {
     setTitle(snap.title);
     setDek(snap.dek);
     setPrimaryTheme(snap.primaryTheme);
+    setFormat(snap.format);
     setTags(snap.tags);
     setCoverPath(snap.coverPath);
     setBlocks(snap.blocks);
@@ -184,7 +188,7 @@ export default function StudioEditorPage() {
     }, 400);
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editingDraftId, title, dek, primaryTheme, tags, coverPath, blocks, sources, sentDraftTitle]);
+  }, [editingDraftId, title, dek, primaryTheme, format, tags, coverPath, blocks, sources, sentDraftTitle]);
 
   const undo = () => {
     if (sentDraftTitle) return;
@@ -245,6 +249,7 @@ export default function StudioEditorPage() {
     setTitle(local.title);
     setDek(local.dek);
     setPrimaryTheme(local.primaryTheme);
+    setFormat(normalizeStudioFormat(local.format));
     setTags(local.tags ?? []);
     setCoverPath(local.coverPath ?? null);
     setBlocks(local.blocks.length > 0 ? local.blocks : [{ type: 'paragraph', text: '' }]);
@@ -256,10 +261,10 @@ export default function StudioEditorPage() {
   useEffect(() => {
     if (!userId || sentDraftTitle) return;
     const timer = setTimeout(() => {
-      saveLocalDraft(userId, { editingDraftId, title, dek, primaryTheme, tags, coverPath, blocks, sources });
+      saveLocalDraft(userId, { editingDraftId, title, dek, primaryTheme, format, tags, coverPath, blocks, sources });
     }, AUTOSAVE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [userId, editingDraftId, title, dek, primaryTheme, tags, coverPath, blocks, sources, sentDraftTitle]);
+  }, [userId, editingDraftId, title, dek, primaryTheme, format, tags, coverPath, blocks, sources, sentDraftTitle]);
 
   // Chargement des brouillons + publiés Supabase
   const refreshJournal = useCallback(async () => {
@@ -289,6 +294,7 @@ export default function StudioEditorPage() {
     blocks: cleanBlocks(blocks),
     sources: cleanSources(sources),
     primary_theme: primaryTheme || null,
+    format,
     tags: tags.length > 0 ? tags : undefined,
     cover_url: coverPath,
   });
@@ -327,13 +333,14 @@ export default function StudioEditorPage() {
     }, 2500);
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, editingDraftId, title, dek, primaryTheme, tags, coverPath, blocks, sources, sentDraftTitle, isSending, isPublishing]);
+  }, [userId, editingDraftId, title, dek, primaryTheme, format, tags, coverPath, blocks, sources, sentDraftTitle, isSending, isPublishing]);
 
   const resetEditor = () => {
     setEditingDraftId(null);
     setTitle('');
     setDek('');
     setPrimaryTheme('');
+    setFormat(DEFAULT_STUDIO_FORMAT);
     setTags([]);
     setCoverPath(null);
     setBlocks([{ type: 'paragraph', text: '' }]);
@@ -496,6 +503,7 @@ export default function StudioEditorPage() {
     setTitle(draft.title ?? '');
     setDek(draft.dek ?? '');
     setPrimaryTheme(draft.primary_theme ?? '');
+    setFormat(normalizeStudioFormat(draft.format));
     setTags(draft.tags ?? []);
     setCoverPath(draft.cover_url ?? null);
     setBlocks(draft.blocks && draft.blocks.length > 0 ? draft.blocks : [{ type: 'paragraph', text: '' }]);
@@ -796,8 +804,10 @@ export default function StudioEditorPage() {
                 )}
 
                 <div className="space-y-5">
-                  {/* Thème + tags — pendant du ThemeTagsField de l'app */}
+                  {/* Format + thème + tags — pendants du FormatSelector et du ThemeTagsField de l'app */}
                   <div className="card p-4 space-y-4">
+                    <FormatSelect value={format} onChange={setFormat} />
+                    <div className="h-px bg-aw" />
                     <ThemeSelect id="studio-theme" value={primaryTheme} onChange={setPrimaryTheme} />
                     <div className="h-px bg-aw" />
                     <TagsInput tags={tags} onChange={setTags} />

@@ -29,6 +29,7 @@ export type StudioDraftRow = {
   blocks: JournalBlock[] | null;
   sources: JournalSource[] | null;
   primary_theme: string | null;
+  format?: string | null;
   tags: string[] | null;
   cover_url: string | null;
   origin?: 'app' | 'web' | null; // colonne ajoutée au Lot 3
