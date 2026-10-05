@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { KeyboardEvent } from 'react';
 import { X, Tag, Plus } from 'lucide-react';
 import { MAX_TAGS } from '../../lib/studio/journal';
+import { normalizeTag, hasTag } from '../../lib/studio/tags';
 import { useLanguage } from '../../i18n/LanguageContext';
 
 // Tags — pendant web du ThemeTagsField de l'app : en-tête « Tags » + compteur,
@@ -22,8 +23,8 @@ export function TagsInput({ tags, onChange }: TagsInputProps) {
   const canAdd = !!inputValue.trim() && tags.length < MAX_TAGS;
 
   const commit = (raw: string) => {
-    const tag = raw.replace(/\s+/g, ' ').trim();
-    if (!tag || tags.includes(tag) || tags.length >= MAX_TAGS) return;
+    const tag = normalizeTag(raw);
+    if (!tag || hasTag(tags, tag) || tags.length >= MAX_TAGS) return;
     onChange([...tags, tag]);
   };
 
