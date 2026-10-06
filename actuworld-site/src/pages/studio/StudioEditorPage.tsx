@@ -31,6 +31,7 @@ import {
   isValidSourceUrl, listMyJournal, publishArticle, updateDraft,
 } from '../../lib/studio/journal';
 import { clearLocalDraft, loadLocalDraft, saveLocalDraft } from '../../lib/studio/draftStorage';
+import { wantsRedactionReturn } from '../../lib/studio/redaction';
 import type { JournalBlock, JournalSource, StudioDraftRow } from '../../types/journal';
 
 type StudioProfile = {
@@ -623,6 +624,9 @@ export default function StudioEditorPage() {
       </div>
     );
   }
+
+  // Connexion lancée depuis la page Rédaction : on y retourne.
+  if (wantsRedactionReturn()) return <Navigate to="/studio/redaction" replace />;
 
   // Nom affiché : profil API, sinon métadonnées de session (le JWT contient
   // display_name), l'email en tout dernier recours.

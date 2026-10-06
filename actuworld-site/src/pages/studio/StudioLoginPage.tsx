@@ -10,6 +10,7 @@ import { useLanguage } from '../../i18n/LanguageContext';
 import { supabase } from '../../lib/studio/supabase';
 import { useStudioSession } from '../../hooks/useStudioSession';
 import { QrPairingCard } from '../../components/studio/QrPairingCard';
+import { wantsRedactionReturn } from '../../lib/studio/redaction';
 
 type SendState = 'idle' | 'sending' | 'sent' | 'error';
 
@@ -28,7 +29,7 @@ export default function StudioLoginPage() {
   const [errorMessage, setErrorMessage] = useState('');
 
   if (!isLoading && session) {
-    return <Navigate to="/studio/editeur" replace />;
+    return <Navigate to={wantsRedactionReturn() ? '/studio/redaction' : '/studio/editeur'} replace />;
   }
 
   const handleSubmit = async (event: FormEvent) => {

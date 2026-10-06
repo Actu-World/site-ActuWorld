@@ -10,7 +10,7 @@ import { useStudioSession } from '../../hooks/useStudioSession';
 import { journalImageUrl, resolveAvatarUrl } from '../../lib/studio/images';
 import { STUDIO_THEME_BY_KEY } from '../../lib/studio/themes';
 import {
-  PLAN_STEPS, getEditorialPlan, hasText, imageCount, itemTitle,
+  PLAN_STEPS, clearRedactionReturn, getEditorialPlan, hasText, imageCount, itemTitle, rememberRedactionReturn,
   type PlanAccount, type PlanItem,
 } from '../../lib/studio/redaction';
 import type { PostDraftImage } from '../../types/post';
@@ -170,7 +170,9 @@ export default function StudioRedactionPage() {
   };
 
   useEffect(() => {
-    if (session) load();
+    if (!session) return;
+    clearRedactionReturn();
+    load();
   }, [session]);
 
   const countByAccount = useMemo(() => {
@@ -186,7 +188,10 @@ export default function StudioRedactionPage() {
       </div>
     );
   }
-  if (!session) return <Navigate to="/studio" replace />;
+  if (!session) {
+    rememberRedactionReturn();
+    return <Navigate to="/studio" replace />;
+  }
 
   const account =
     accounts.find((a) => a.slug === activeSlug) ??

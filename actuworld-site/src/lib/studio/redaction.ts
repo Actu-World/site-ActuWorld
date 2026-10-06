@@ -59,7 +59,21 @@ export function getEditorialPlan(): Promise<{ accounts: PlanAccount[]; items: Pl
   return studioApi.get('/studio/redaction');
 }
 
-export const PLAN_STEPS = ['proposé', 'validé', 'rédigé', 'images', 'brouillon', 'publié'] as const;
+// Retour vers la page Rédaction après le lien magique (qui atterrit toujours sur
+// /studio/editeur, seule URL de retour autorisée côté Supabase).
+const NEXT_KEY = 'studio-next';
+
+export function rememberRedactionReturn(): void {
+  try { localStorage.setItem(NEXT_KEY, 'redaction'); } catch { /* stockage indisponible */ }
+}
+export function wantsRedactionReturn(): boolean {
+  try { return localStorage.getItem(NEXT_KEY) === 'redaction'; } catch { return false; }
+}
+export function clearRedactionReturn(): void {
+  try { localStorage.removeItem(NEXT_KEY); } catch { /* stockage indisponible */ }
+}
+
+export const PLAN_STEPS =['proposé', 'validé', 'rédigé', 'images', 'brouillon', 'publié'] as const;
 
 /** Une dépêche ou un article a-t-il du texte rédigé ? */
 export function hasText(item: PlanItem): boolean {
