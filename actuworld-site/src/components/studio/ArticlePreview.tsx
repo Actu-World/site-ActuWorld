@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import type { ReactNode } from 'react';
-import { X, Link2, Signal, Wifi, BatteryFull } from 'lucide-react';
+import { X, Link2, Signal, Wifi, BatteryFull, ImageOff } from 'lucide-react';
 import type { JournalBlock, JournalSource } from '../../types/journal';
 import { journalImageUrl } from '../../lib/studio/images';
 import { hostFromUrl } from '../../lib/studio/journal';
@@ -19,6 +19,8 @@ interface ArticlePreviewProps {
   blocks: JournalBlock[];
   sources: JournalSource[];
   onClose: () => void;
+  /** Page Rédaction : signale l'image ou le texte pas encore fournis. */
+  showMissing?: boolean;
 }
 
 /**
@@ -88,7 +90,7 @@ function renderInline(text: string, keyPrefix = 'rt-'): ReactNode[] {
 
 const headingSizePx = (level?: 1 | 2 | 3) => (level === 3 ? 18 : level === 2 ? 22 : 26);
 
-export function ArticlePreview({ title, dek, coverPath, blocks, sources, onClose }: ArticlePreviewProps) {
+export function ArticlePreview({ title, dek, coverPath, blocks, sources, onClose, showMissing = false }: ArticlePreviewProps) {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
 
@@ -144,14 +146,19 @@ export function ArticlePreview({ title, dek, coverPath, blocks, sources, onClose
           </div>
 
           <div className="overflow-y-auto flex-1">
-          {coverPath && (
+          {coverPath ? (
             <img src={journalImageUrl(coverPath)} alt="" className="w-full aspect-[3/2] object-cover" />
+          ) : showMissing && (
+            <div className="w-full aspect-[3/2] flex flex-col items-center justify-center gap-2 bg-aw-surface text-aw-muted">
+              <ImageOff className="w-8 h-8" />
+              <span className="text-sm font-semibold">{t("Pas encore d'image", 'No image yet')}</span>
+            </div>
           )}
 
           {/* En-tête article : paddingHorizontal 20, titre 22/28, chapeau 15/22 */}
           <div className="px-5 pt-4">
             <h1 className="text-[22px] leading-7 font-bold">
-              {title.trim() || t('(Sans titre)', '(Untitled)')}
+              {title.trim() || (showMissing ? t('Pas encore de texte', 'No text yet') : t('(Sans titre)', '(Untitled)'))}
             </h1>
             {dek.trim() && (
               <p className="text-aw-muted text-[15px] leading-[22px] mt-2">{dek}</p>
@@ -160,6 +167,9 @@ export function ArticlePreview({ title, dek, coverPath, blocks, sources, onClose
 
           {/* Corps : container paddingHorizontal 12, paddingVertical 10 */}
           <div className="px-3 py-2.5 mt-2">
+            {showMissing && firstParaIndex === -1 && (
+              <p className="text-aw-muted text-[15px] leading-6 italic">{t('Pas encore de texte.', 'No text yet.')}</p>
+            )}
             {blocks.map((block, index) => {
               switch (block.type) {
                 case 'heading':

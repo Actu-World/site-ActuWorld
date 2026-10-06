@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Sun, Moon, ArrowLeft } from 'lucide-react';
+import { Sun, Moon, ArrowLeft, Newspaper } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../hooks/useTheme';
 import { useLanguage } from '../../i18n/LanguageContext';
@@ -34,6 +34,15 @@ export const StudioNavbar: React.FC = () => {
         </Link>
 
         <div className="flex items-center gap-2 shrink-0">
+          {/* Plan éditorial des comptes officiels (réservé à la rédaction) */}
+          <Link
+            to="/studio/redaction"
+            className="inline-flex items-center gap-1.5 text-sm text-aw-muted hover:text-aw-primary transition-colors mr-1"
+          >
+            <Newspaper className="w-4 h-4" aria-hidden="true" />
+            <span className="hidden sm:inline">{isEnglish ? 'Newsroom' : 'Rédaction'}</span>
+          </Link>
+
           {/* Retour discret vers le site vitrine */}
           <Link
             to="/"

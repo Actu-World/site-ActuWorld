@@ -29,6 +29,7 @@ const OpenInAppPage = lazy(() => import('./pages/OpenInAppPage'));
 const StudioLoginPage = lazy(() => import('./pages/studio/StudioLoginPage'));
 const StudioEditorPage = lazy(() => import('./pages/studio/StudioEditorPage'));
 const StudioPostPage = lazy(() => import('./pages/studio/StudioPostPage'));
+const StudioRedactionPage = lazy(() => import('./pages/studio/StudioRedactionPage'));
 
 // Scroll to top on route change
 function ScrollToTop() {
@@ -95,6 +96,7 @@ export default function App() {
             <Route path="/studio" element={<StudioLoginPage />} />
             <Route path="/studio/editeur" element={<StudioEditorPage />} />
             <Route path="/studio/post" element={<StudioPostPage />} />
+            <Route path="/studio/redaction" element={<StudioRedactionPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </AnimatePresence>

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  BatteryFull, ChevronLeft, ChevronRight, Images, MessageCircle, Share2, Signal, Tag, Wifi, X,
+  BatteryFull, ChevronLeft, ChevronRight, ImageOff, Images, MessageCircle, Share2, Signal, Tag, Wifi, X,
 } from 'lucide-react';
 import type { PostDraftImage } from '../../types/post';
 import { hostFromUrl } from '../../lib/studio/journal';
@@ -21,16 +21,19 @@ interface PostPreviewProps {
   authorExpertise?: string | null;
   avatarSrc: string | null;
   onClose: () => void;
+  /** Page Rédaction : signale l'image ou le texte pas encore fournis. */
+  showMissing?: boolean;
 }
 
 const initials = (name: string) =>
   name.split(/\s+/).map((part) => part[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
 
-export function PostPreview({ cards, tags, authorName, authorExpertise, avatarSrc, onClose }: PostPreviewProps) {
+export function PostPreview({ cards, tags, authorName, authorExpertise, avatarSrc, onClose, showMissing = false }: PostPreviewProps) {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
   const [currentPage, setCurrentPage] = useState(0);
   const totalPages = cards.length * 2;
+  const untitled = showMissing ? t('Pas encore de texte', 'No text yet') : t('(Sans titre)', '(Untitled)');
 
   // Navigation au clic (façon stories) : moitié gauche/droite de l'écran du
   // mockup, flèches ←/→ au clavier — en plus du scroll horizontal.
@@ -79,8 +82,13 @@ export function PostPreview({ cards, tags, authorName, authorExpertise, avatarSr
   /* ── Recto : image pleine carte, dégradé, titre + excerpt en bas ── */
   const renderCover = (card: PostDraftImage, idx: number) => (
     <div key={`cover-${idx}`} className="relative w-full shrink-0 snap-center overflow-hidden bg-black">
-      {card.image_url && (
+      {card.image_url ? (
         <img src={card.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+      ) : showMissing && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-white/45 bg-neutral-800">
+          <ImageOff className="w-9 h-9" />
+          <span className="text-sm font-semibold">{t("Pas encore d'image", 'No image yet')}</span>
+        </div>
       )}
       <div
         className="absolute inset-0"
@@ -109,7 +117,7 @@ export function PostPreview({ cards, tags, authorName, authorExpertise, avatarSr
       {/* Bas : titre, excerpt, signature */}
       <div className="absolute bottom-0 inset-x-0 px-[22px] pb-[22px] pt-6">
         <h2 className="text-white text-[22px] leading-7 font-black [text-shadow:0_2px_10px_rgba(0,0,0,0.7)] line-clamp-3">
-          {card.subject?.trim() || t('(Sans titre)', '(Untitled)')}
+          {card.subject?.trim() || untitled}
         </h2>
         {!!card.description?.trim() && card.description.trim() !== card.subject?.trim() && (
           <p className="text-white/[0.88] text-sm leading-5 mt-1.5 font-medium [text-shadow:0_1px_5px_rgba(0,0,0,0.5)] line-clamp-2">
@@ -159,7 +167,7 @@ export function PostPreview({ cards, tags, authorName, authorExpertise, avatarSr
         <div className="relative h-full flex flex-col px-[22px] pt-11 pb-3.5">
           <div className="flex-1 overflow-y-auto space-y-2.5">
             <h3 className="text-white text-[19px] leading-[25px] font-extrabold">
-              {card.subject?.trim() || t('(Sans titre)', '(Untitled)')}
+              {card.subject?.trim() || untitled}
             </h3>
             {(card.back_description?.trim() || card.description?.trim()) && (
               <p className="text-white/70 text-[15px] leading-[23px] whitespace-pre-line">
