@@ -69,3 +69,8 @@ jobs:
             export VITE_GA_ID="${{ secrets.VITE_GA_ID }}"
             docker compose build
             docker compose up -d
+            # Nettoyage : images orphelines + cache de build inutilisé depuis 7 j
+            # (le cache partagé du VPS avait atteint 53 Go). Le cache récent est
+            # gardé pour des builds rapides. Un échec ici ne bloque pas le déploiement.
+            docker image prune -f || true
+            docker builder prune -f --filter until=168h || true
