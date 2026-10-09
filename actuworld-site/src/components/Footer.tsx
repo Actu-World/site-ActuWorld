@@ -46,7 +46,7 @@ export const Footer: React.FC = () => {
               href="https://instagram.com/actuworld_fr"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-5 md:mt-4 inline-flex items-center gap-2 text-[15px] font-semibold text-aw-primary rounded-full border border-[var(--aw-border-strong)] px-4 py-2.5 md:border-0 md:p-0 md:rounded-none hover:underline underline-offset-4"
+              className="mt-5 md:mt-4 inline-flex items-center gap-2 text-[15px] font-semibold text-aw-primary rounded-[var(--aw-radius-control)] border border-[var(--aw-border-strong)] px-4 py-2.5 md:border-0 md:p-0 md:rounded-none hover:underline underline-offset-4"
             >
               <Instagram className="w-4 h-4 md:hidden" aria-hidden="true" />
               Instagram @actuworld_fr

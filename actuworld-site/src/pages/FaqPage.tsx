@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Section } from "../components/Section";
@@ -147,6 +147,16 @@ export default function FaqPage() {
     };
   }, [groupIds]);
 
+  // Téléphone : la pastille de la catégorie en cours reste visible dans la barre
+  const chipsRef = useRef<HTMLUListElement>(null);
+  useEffect(() => {
+    const bar = chipsRef.current;
+    const chip = bar?.querySelector<HTMLElement>(`[data-id="${active}"]`);
+    if (!bar || !chip || bar.offsetParent === null) return;
+    const target = chip.offsetLeft - (bar.clientWidth - chip.offsetWidth) / 2;
+    bar.scrollTo({ left: Math.max(0, target), behavior: "smooth" });
+  }, [active]);
+
   return (
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
       <PageMeta
@@ -159,10 +169,10 @@ export default function FaqPage() {
       />
       <JsonLd data={faqSchema} />
 
-      <Section className="pt-20 md:pt-24 pb-10">
-        <AnimatedSection>
+      <Section className="pt-10 md:pt-24 pb-6 md:pb-10">
+        <AnimatedSection className="text-center lg:text-left">
           <H2 as="h1">{t("Questions fréquentes", "Frequently asked questions")}</H2>
-          <p className="lead mt-5">
+          <p className="lead mt-5 mx-auto lg:mx-0">
             {t(
               "Le principe, ASV, la publication et la sortie de l'app. Une question sans réponse ici ? Écris-nous.",
               "The principle, ASV, publishing and the app's launch. A question not answered here? Write to us."
@@ -172,7 +182,32 @@ export default function FaqPage() {
       </Section>
 
       <Section className="pt-4 pb-20 md:pb-28">
-        <div className="grid gap-10 lg:grid-cols-[13rem_1fr] lg:gap-16">
+        <div className="grid gap-6 lg:grid-cols-[13rem_1fr] lg:gap-16">
+          {/* Catégories (téléphone) : pastilles à faire glisser, collées sous l'en-tête */}
+          <nav aria-label={t("Catégories", "Categories")} className="lg:hidden sticky top-16 z-30 -mx-5 md:-mx-8 glass border-b border-aw">
+            <ul
+              ref={chipsRef}
+              className="flex gap-2 overflow-x-auto px-5 md:px-8 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            >
+              {groups.map((g) => (
+                <li key={g.id} className="shrink-0">
+                  <a
+                    href={`#${g.id}`}
+                    data-id={g.id}
+                    aria-current={active === g.id ? "true" : undefined}
+                    className={`block rounded-[10px] border px-4 py-2 text-sm font-semibold transition-colors duration-200 ${
+                      active === g.id
+                        ? "border-transparent bg-aw-primary text-on-primary"
+                        : "border-[var(--aw-border-strong)] text-aw-muted"
+                    }`}
+                  >
+                    {g.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
           {/* Sommaire des catégories (bureau) */}
           <nav aria-label={t("Catégories", "Categories")} className="hidden lg:block">
             <ul className="sticky top-24 space-y-1 border-l border-aw">
@@ -195,23 +230,23 @@ export default function FaqPage() {
             </ul>
           </nav>
 
-          <div className="space-y-14 max-w-3xl">
+          <div className="space-y-10 lg:space-y-14 max-w-3xl">
             {groups.map((g) => (
-              <section key={g.id} id={g.id} aria-labelledby={`${g.id}-title`} className="scroll-mt-24">
-                <h2 id={`${g.id}-title`} className="text-2xl mb-4">
+              <section key={g.id} id={g.id} aria-labelledby={`${g.id}-title`} className="scroll-mt-36 lg:scroll-mt-24">
+                <h2 id={`${g.id}-title`} className="text-xl md:text-2xl mb-3 md:mb-4">
                   {g.title}
                 </h2>
-                <div className="divide-y divide-[var(--aw-border)] border-y border-aw">
+                <div className="divide-y divide-[var(--aw-border)] rounded-[var(--aw-radius-card)] border border-[var(--aw-border)] bg-[var(--aw-surface)] px-5 lg:rounded-none lg:border-x-0 lg:bg-transparent lg:px-0">
                   {g.items.map((item) => (
                     <details key={item.q} className="group">
-                      <summary className="flex cursor-pointer list-none items-start justify-between gap-6 py-5 text-[17px] font-semibold text-aw-text hover:text-aw-primary [&::-webkit-details-marker]:hidden">
+                      <summary className="flex cursor-pointer list-none items-start justify-between gap-4 md:gap-6 py-4 md:py-5 text-base md:text-[17px] font-semibold text-aw-text hover:text-aw-primary [&::-webkit-details-marker]:hidden">
                         <span>{item.q}</span>
                         <ChevronDown
                           className="mt-1 h-5 w-5 shrink-0 text-aw-muted transition-transform duration-200 group-open:rotate-180"
                           aria-hidden="true"
                         />
                       </summary>
-                      <p className="pb-6 pr-10 text-aw-muted leading-relaxed max-w-prose">{item.a}</p>
+                      <p className="pb-5 md:pb-6 pr-2 md:pr-10 text-aw-muted leading-relaxed max-w-prose">{item.a}</p>
                     </details>
                   ))}
                 </div>
@@ -221,15 +256,15 @@ export default function FaqPage() {
         </div>
       </Section>
 
-      <Section className="bg-aw-surface py-16 md:py-20">
-        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+      <Section className="bg-aw-surface py-12 md:py-20">
+        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between text-center md:text-left">
           <div>
             <h2 className="text-2xl">{t("Tu n'as pas trouvé ta réponse ?", "Didn't find your answer?")}</h2>
             <p className="text-aw-muted mt-2">
               {t("On lit chaque message et on te répond.", "We read every message and get back to you.")}
             </p>
           </div>
-          <Link to="/contact" className="btn-primary self-start md:self-auto">
+          <Link to="/contact" className="btn-primary w-full md:w-auto justify-center">
             {t("Nous écrire", "Write to us")} <ChevronRight className="w-4 h-4" aria-hidden="true" />
           </Link>
         </div>
