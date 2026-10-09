@@ -9,7 +9,7 @@ interface PageMetaProps {
   noindex?: boolean;
 }
 
-export function PageMeta({ title, description, path, image = '/og-image.png', noindex = false }: PageMetaProps) {
+export function PageMeta({ title, description, path, image = '/og-image.png?v=2', noindex = false }: PageMetaProps) {
   useEffect(() => {
     // Update title
     document.title = `${title} | ActuWorld`;
