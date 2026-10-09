@@ -32,23 +32,27 @@ export const CookieBanner: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 24 }}
           transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed z-50 bottom-4 inset-x-4 md:inset-x-auto md:right-6 md:max-w-md"
+          className="fixed z-50 bottom-3 inset-x-3 sm:bottom-4 sm:inset-x-4 md:inset-x-auto md:right-6 md:max-w-md"
         >
           {/* Refuser et Accepter ont le même style : poids visuel égal (CNIL) */}
-          <div className="border border-aw-strong bg-aw-bg p-5 rounded-[20px]" style={{ boxShadow: "var(--aw-shadow-lg)" }}>
+          <div className="border border-aw-strong bg-aw-bg p-4 sm:p-5 rounded-[var(--aw-radius-card)]" style={{ boxShadow: "var(--aw-shadow-lg)" }}>
             <div className="flex items-start gap-3">
-              <span className="w-9 h-9 rounded-[10px] bg-aw-success flex items-center justify-center shrink-0" aria-hidden="true">
+              <span className="hidden sm:flex w-9 h-9 rounded-[10px] bg-aw-success items-center justify-center shrink-0" aria-hidden="true">
                 <Cookie className="w-5 h-5 text-aw-primary" />
               </span>
               <div>
-                <p className="font-semibold text-aw-text mb-1">
+                <p className="font-semibold text-aw-text mb-0.5 sm:mb-1">
                   {t("On respecte ta vie privée", "We respect your privacy")}
                 </p>
                 <p className="text-sm text-aw-muted leading-relaxed">
                   {t(
-                    "Nous utilisons des cookies de mesure d'audience (Google Analytics) uniquement avec ton accord. La lecture du site reste possible sans. ",
-                    "We use analytics cookies (Google Analytics) only with your consent. You can browse the site without them. "
+                    "Nous utilisons des cookies de mesure d'audience (Google Analytics) uniquement avec ton accord. ",
+                    "We use analytics cookies (Google Analytics) only with your consent. "
                   )}
+                  {/* Phrase secondaire masquée sur téléphone : la bannière y reste compacte */}
+                  <span className="hidden sm:inline">
+                    {t("La lecture du site reste possible sans. ", "You can browse the site without them. ")}
+                  </span>
                   <Link to="/privacy" className="link">
                     {t("En savoir plus", "Learn more")}
                   </Link>
@@ -56,7 +60,7 @@ export const CookieBanner: React.FC = () => {
                 </p>
               </div>
             </div>
-            <div className="mt-4 flex gap-3">
+            <div className="mt-3 sm:mt-4 flex gap-3">
               <button type="button" onClick={refuse} className="btn-outline btn-sm flex-1">
                 {t("Refuser", "Decline")}
               </button>
