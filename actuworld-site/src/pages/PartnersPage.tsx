@@ -142,7 +142,7 @@ export default function PartnersPage() {
       </Section>
 
       {/* ILS SUIVENT DÉJÀ LE PROJET : logos uniquement */}
-      <Section className="md:border-t md:border-aw py-4 md:py-16">
+      <Section className="md:border-t md:border-[var(--aw-border)] py-4 md:py-16">
         <AnimatedSection className="flex flex-col items-center gap-6 rounded-[var(--aw-radius-card)] border border-[var(--aw-border)] p-6 md:p-0 md:rounded-none md:border-0 md:flex-row md:justify-between md:gap-8">
           <h2 className="text-xl text-aw-text">{t("Ils suivent déjà le projet", "Already following the project")}</h2>
           <a

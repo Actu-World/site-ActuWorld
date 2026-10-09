@@ -123,16 +123,16 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* PRINCIPES : bandeau à filets, sous le hero */}
-      <section aria-label={t("Nos principes", "Our principles")} className="pb-14 sm:pb-0 sm:border-y sm:border-aw">
-        <ul className="max-w-6xl mx-auto container-px grid gap-3 sm:gap-0 sm:grid-cols-3 sm:divide-x divide-[var(--aw-border)]">
+      {/* Trois cartes (empilées sur téléphone, côte à côte dès 768 px) */}
+      <section aria-label={t("Nos principes", "Our principles")} className="pb-14 md:pb-20">
+        <ul className="max-w-6xl mx-auto container-px grid gap-3 md:grid-cols-3 md:gap-4">
           {principles.map((p) => (
             <li
               key={p.label}
-              className="flex items-start gap-4 p-4 sm:px-6 sm:py-6 first:sm:pl-0 last:sm:pr-0 rounded-[var(--aw-radius-card)] border border-[var(--aw-border)] bg-[var(--aw-surface)] sm:rounded-none sm:border-0 sm:bg-transparent"
+              className="flex items-start gap-4 p-4 md:p-6 rounded-[var(--aw-radius-card)] border border-[var(--aw-border)] bg-[var(--aw-surface)]"
             >
-              <span className="w-10 h-10 sm:w-auto sm:h-auto rounded-xl bg-[var(--aw-success)] sm:bg-transparent flex items-center justify-center shrink-0">
-                <p.icon className="w-5 h-5 sm:mt-0.5 text-aw-primary" aria-hidden="true" />
+              <span className="w-10 h-10 rounded-xl bg-[var(--aw-success)] flex items-center justify-center shrink-0">
+                <p.icon className="w-5 h-5 text-aw-primary" aria-hidden="true" />
               </span>
               <span className="flex-1">
                 <span className="block font-semibold text-aw-text">{p.label}</span>
