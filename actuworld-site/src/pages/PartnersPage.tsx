@@ -120,7 +120,7 @@ export default function PartnersPage() {
 
       {/* CE QUE ÇA APPORTE : liste horizontale */}
       <Section>
-        <div className="grid gap-10 lg:grid-cols-[1fr_2fr] lg:gap-16">
+        <div className="grid gap-10 lg:grid-cols-[1fr_2fr] lg:gap-16 lg:items-center">
           <AnimatedSection>
             <H2>{t("Ce que ça t'apporte", "What you get")}</H2>
           </AnimatedSection>

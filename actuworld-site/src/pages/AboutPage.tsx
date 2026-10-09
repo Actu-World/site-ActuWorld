@@ -79,7 +79,7 @@ export default function AboutPage() {
 
       {/* VALEURS : liste éditoriale */}
       <Section>
-        <div className="grid gap-10 lg:grid-cols-[1fr_2fr] lg:gap-16">
+        <div className="grid gap-10 lg:grid-cols-[1fr_2fr] lg:gap-16 lg:items-center">
           <AnimatedSection>
             <H2>{t("Ce qui nous guide", "What guides us")}</H2>
           </AnimatedSection>
