@@ -7,12 +7,14 @@ interface PageMetaProps {
   image?: string;
   /** Pages à exclure des moteurs (ex. atterrissages de liens partagés /post/:id). */
   noindex?: boolean;
+  /** Texte complet de l'onglet, à la place de « titre | ActuWorld » (ex. accueil). */
+  tabTitle?: string;
 }
 
-export function PageMeta({ title, description, path, image = '/og-image.png?v=2', noindex = false }: PageMetaProps) {
+export function PageMeta({ title, description, path, image = '/og-image.png?v=2', noindex = false, tabTitle }: PageMetaProps) {
   useEffect(() => {
     // Update title
-    document.title = `${title} | ActuWorld`;
+    document.title = tabTitle ?? `${title} | ActuWorld`;
 
     // Update meta description
     const metaDescription = document.querySelector('meta[name="description"]');
@@ -67,7 +69,7 @@ export function PageMeta({ title, description, path, image = '/og-image.png?v=2'
       document.dispatchEvent(new Event('prerender-ready'));
     });
     return () => cancelAnimationFrame(raf);
-  }, [title, description, path, image, noindex]);
+  }, [title, description, path, image, noindex, tabTitle]);
 
   return null;
 }

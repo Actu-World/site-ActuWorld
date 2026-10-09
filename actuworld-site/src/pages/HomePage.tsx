@@ -71,6 +71,7 @@ export default function HomePage() {
     <PageWrapper className="text-aw-text">
       <PageMeta
         title={t("Partage ce qui t'intéresse. Prouve pourquoi c'est fiable.", "Share what matters to you. Show why it's reliable.")}
+        tabTitle={t("ActuWorld | L'info créée et vérifiée par vous, pour vous", "ActuWorld | News created and verified by you, for you")}
         description={t(
           "ActuWorld est le réseau de l'information fiable, sur tous les sujets qui te passionnent : source visible, vérification ASV et jugement communautaire.",
           "ActuWorld is the network for reliable information on any topic you care about: visible sources, ASV verification and community judgment."
