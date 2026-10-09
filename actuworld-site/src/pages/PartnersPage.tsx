@@ -75,21 +75,21 @@ export default function PartnersPage() {
       />
 
       {/* EN-TÊTE */}
-      <Section className="pt-20 md:pt-24 pb-16 md:pb-20">
-        <AnimatedSection className="max-w-3xl">
+      <Section className="pt-10 md:pt-24 pb-12 md:pb-20">
+        <AnimatedSection className="max-w-3xl mx-auto lg:mx-0 text-center lg:text-left">
           <p className="eyebrow mb-4">{t("Partenaires", "Partners")}</p>
           <H2 as="h1">{t("Aide-nous à rendre l'information fiable", "Help us make information reliable")}</H2>
-          <p className="lead mt-5">
+          <p className="lead mt-5 mx-auto lg:mx-0">
             {t(
               "ActuWorld est porté par un étudiant déterminé à changer notre rapport à l'information. Pour avancer, j'ai besoin de visibilité, de relais et de soutiens. Et si on construisait ça ensemble ?",
               "ActuWorld is led by a student determined to change our relationship with information. To move forward, I need visibility, reach and support. What if we built this together?"
             )}
           </p>
-          <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
-            <a href={MAILTO} className="btn-primary">
+          <div className="mt-8 flex flex-col sm:flex-row sm:flex-wrap items-center justify-center lg:justify-start gap-x-8 gap-y-3">
+            <a href={MAILTO} className="btn-primary w-full sm:w-auto justify-center">
               {t("Devenir partenaire", "Become a partner")}
             </a>
-            <Link to="/press" className="btn-link">
+            <Link to="/press" className="btn-link py-2">
               {t("Espace presse", "Press room")} <ChevronRight className="w-4 h-4" aria-hidden="true" />
             </Link>
           </div>
@@ -98,13 +98,17 @@ export default function PartnersPage() {
 
       {/* QUI ON CHERCHE : grille 2 × 2 */}
       <Section className="bg-aw-surface">
-        <AnimatedSection className="mb-12">
+        <AnimatedSection className="mb-8 md:mb-12">
           <H2>{t("Les profils qu'on cherche", "Who we're looking for")}</H2>
         </AnimatedSection>
         <AnimatedSection delay={0.1}>
-          <div className="grid gap-px overflow-hidden rounded-[20px] border border-aw bg-[var(--aw-border)] md:grid-cols-2">
+          {/* Téléphone : cartes à faire glisser ; dès 768 px, grille jointe 2 × 2 */}
+          <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory -mx-5 px-5 scroll-px-5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:grid md:grid-cols-2 md:gap-px md:overflow-hidden md:mx-0 md:px-0 md:pb-0 md:rounded-[20px] md:border md:border-[var(--aw-border)] md:bg-[var(--aw-border)]">
             {profiles.map((p) => (
-              <div key={p.title} className="bg-aw-surface p-7 md:p-8 flex gap-5">
+              <div
+                key={p.title}
+                className="snap-start shrink-0 w-[80%] md:w-auto rounded-[var(--aw-radius-card)] border border-[var(--aw-border)] md:rounded-none md:border-0 bg-[var(--aw-bg)] md:bg-[var(--aw-surface)] p-6 md:p-8 flex flex-col md:flex-row gap-4 md:gap-5"
+              >
                 <span className="w-10 h-10 shrink-0 rounded-[10px] bg-aw-success flex items-center justify-center" aria-hidden="true">
                   <p.icon className="w-5 h-5 text-aw-primary" />
                 </span>
@@ -120,14 +124,14 @@ export default function PartnersPage() {
 
       {/* CE QUE ÇA APPORTE : liste horizontale */}
       <Section>
-        <div className="grid gap-10 lg:grid-cols-[1fr_2fr] lg:gap-16 lg:items-center">
+        <div className="grid gap-6 lg:grid-cols-[1fr_2fr] lg:gap-16 lg:items-center">
           <AnimatedSection>
             <H2>{t("Ce que ça t'apporte", "What you get")}</H2>
           </AnimatedSection>
           <AnimatedSection delay={0.1}>
             <dl className="divide-y divide-[var(--aw-border)] border-y border-aw">
               {benefits.map((b) => (
-                <div key={b.title} className="grid gap-1 py-6 md:grid-cols-[12rem_1fr] md:gap-8">
+                <div key={b.title} className="grid gap-1 py-5 md:py-6 md:grid-cols-[12rem_1fr] md:gap-8">
                   <dt className="text-lg font-semibold text-aw-text">{b.title}</dt>
                   <dd className="text-aw-muted leading-relaxed">{b.desc}</dd>
                 </div>
@@ -138,8 +142,8 @@ export default function PartnersPage() {
       </Section>
 
       {/* ILS SUIVENT DÉJÀ LE PROJET : logos uniquement */}
-      <Section className="border-t border-aw py-14 md:py-16">
-        <AnimatedSection className="flex flex-col items-center gap-8 md:flex-row md:justify-between">
+      <Section className="md:border-t md:border-aw py-4 md:py-16">
+        <AnimatedSection className="flex flex-col items-center gap-6 rounded-[var(--aw-radius-card)] border border-[var(--aw-border)] p-6 md:p-0 md:rounded-none md:border-0 md:flex-row md:justify-between md:gap-8">
           <h2 className="text-xl text-aw-text">{t("Ils suivent déjà le projet", "Already following the project")}</h2>
           <a
             href="https://territoires.media"
@@ -160,25 +164,25 @@ export default function PartnersPage() {
       </Section>
 
       {/* CONTACT */}
-      <Section className="pt-4 pb-20 md:pb-28">
+      <Section className="pt-8 md:pt-4 pb-16 md:pb-28">
         <AnimatedSection>
           <div
-            className="rounded-[20px] px-6 py-12 md:px-14 md:py-16 grid gap-8 md:grid-cols-[1.4fr_1fr] md:items-center"
+            className="rounded-[20px] px-6 py-10 md:px-14 md:py-16 grid gap-8 md:grid-cols-[1.4fr_1fr] md:items-center text-center md:text-left"
             style={{ backgroundColor: "#1B3528", boxShadow: "var(--aw-shadow-lg)" }}
           >
             <div>
               <h2 className="text-[clamp(1.75rem,3vw,2.25rem)] leading-tight font-bold text-white">
                 {t("Parlons de ton soutien", "Let's talk about your support")}
               </h2>
-              <p className="mt-4 text-white/80 text-lg max-w-lg">
+              <p className="mt-4 text-white/80 text-lg max-w-lg mx-auto md:mx-0">
                 {t(
                   "Un mot, une idée, une envie de relayer ? Écris-nous, on répond à chaque message.",
                   "A word, an idea, want to spread the word? Write to us, we reply to every message."
                 )}
               </p>
             </div>
-            <div className="flex flex-col items-start gap-4 md:items-end">
-              <a href={MAILTO} className="btn-primary !bg-[#A8D5BA] !text-[#0F1512] hover:!bg-white">
+            <div className="flex flex-col items-center gap-4 md:items-end">
+              <a href={MAILTO} className="btn-primary w-full md:w-auto justify-center !bg-[#A8D5BA] !text-[#0F1512] hover:!bg-white">
                 <Mail className="w-4 h-4" aria-hidden="true" />
                 <span translate="no">{PARTNER_EMAIL}</span>
               </a>
