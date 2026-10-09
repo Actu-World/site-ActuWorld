@@ -27,12 +27,15 @@ export const Navbar: React.FC = () => {
     if (!mobileOpen) return;
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setMobileOpen(false);
     window.addEventListener('keydown', onKey);
-    // Menu plein écran : la page dessous ne défile plus
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    // Menu plein écran : la page dessous ne défile plus. Verrou sur <html> et pas
+    // sur <body> : html a déjà overflow-x: clip, un overflow sur body en ferait un
+    // conteneur de défilement et l'en-tête collant remonterait en haut du document.
+    const root = document.documentElement;
+    const prevOverflow = root.style.overflow;
+    root.style.overflow = 'hidden';
     return () => {
       window.removeEventListener('keydown', onKey);
-      document.body.style.overflow = prevOverflow;
+      root.style.overflow = prevOverflow;
     };
   }, [mobileOpen]);
 
