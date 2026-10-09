@@ -1,218 +1,154 @@
-import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Mail, MessageCircle, Instagram, ChevronRight, Globe2 } from "lucide-react";
+import { Mail, Instagram, ChevronRight } from "lucide-react";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
 import { PageMeta } from "../components/PageMeta";
 import { useLanguage } from "../i18n/LanguageContext";
-import {
-  PageWrapper,
-  AnimatedSection,
-  Floating,
-  staggerContainer,
-  fadeInUp,
-  scaleUp
-} from "../components/animations";
+import { PageWrapper, AnimatedSection } from "../components/animations";
+
+const EMAIL = "actuworld.app@outlook.fr";
 
 export default function ContactPage() {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
 
-  const contactMethods = [
+  const channels = [
     {
       icon: Mail,
-      title: "Email",
-      desc: t("Pour toute question générale", "For any general question"),
-      value: "actuworld.app@outlook.fr",
-      link: "mailto:actuworld.app@outlook.fr"
-    },
-    {
-      icon: MessageCircle,
-      title: t("Support", "Support"),
-      desc: t("Aide technique et assistance", "Technical help and support"),
-      value: "actuworld.app@outlook.fr",
-      link: "mailto:actuworld.app@outlook.fr"
+      label: t("E-mail", "Email"),
+      desc: t("Questions, aide technique, presse, partenariats.", "Questions, technical help, press, partnerships."),
+      value: EMAIL,
+      href: `mailto:${EMAIL}`,
+      external: false,
     },
     {
       icon: Instagram,
-      title: "Instagram",
-      desc: t("Suivez-nous sur les réseaux", "Follow us on social media"),
+      label: "Instagram",
+      desc: t("Les coulisses du projet et les annonces.", "Behind the scenes and announcements."),
       value: "@actuworld_fr",
-      link: "https://instagram.com/actuworld_fr"
+      href: "https://instagram.com/actuworld_fr",
+      external: true,
+    },
+  ];
+
+  const profiles = [
+    {
+      title: t("Créateurs de contenu", "Content creators"),
+      desc: t(
+        "Tu publies déjà sur un sujet qui te passionne ? Ton regard nous aide à affiner l'expérience et ASV.",
+        "Already publishing on a topic you love? Your feedback helps us refine the experience and ASV."
+      ),
+    },
+    {
+      title: t("Médias et journalistes", "Media and journalists"),
+      desc: t("Partenariats autour de la vérification de l'information.", "Partnerships around information verification."),
+    },
+    {
+      title: t("Éducateurs", "Educators"),
+      desc: t("Intégrer ActuWorld dans des parcours d'éducation aux médias.", "Bringing ActuWorld into media-literacy programs."),
+    },
+    {
+      title: t("Investisseurs", "Investors"),
+      desc: t("Financer la suite du développement.", "Funding the next stage of development."),
     },
   ];
 
   return (
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
       <PageMeta
-        title={t("Contact — Rejoindre ActuWorld", "Contact — Join ActuWorld")}
-        description={t("Contactez l'équipe ActuWorld — créateurs, médias, éducateurs ou curieux. Rejoignez la bêta.", "Contact the ActuWorld team — creators, media, educators or curious minds. Join the beta.")}
+        title={t("Contact | Écrire à ActuWorld", "Contact | Write to ActuWorld")}
+        description={t(
+          "Écris à l'équipe ActuWorld : créateurs, médias, éducateurs ou curieux. L'app arrive bientôt sur l'App Store et Google Play.",
+          "Write to the ActuWorld team: creators, media, educators or curious minds. The app is coming soon to the App Store and Google Play."
+        )}
         path="/contact"
       />
-      {/* HEADER */}
-      <Section className="pt-24 pb-12 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#2E5F4A]/10 via-[#94C9AA]/10 to-[#00A896]/10 pointer-events-none"></div>
-        <Floating duration={6} y={10}>
-          <div className="absolute top-20 left-20 w-24 h-24 bg-aw-secondary/30 rounded-full blur-2xl" />
-        </Floating>
-        <Floating duration={8} y={15}>
-          <div className="absolute bottom-10 right-20 w-32 h-32 bg-aw-accent/20 rounded-full blur-2xl" />
-        </Floating>
 
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={staggerContainer}
-          className="text-center relative"
-        >
-          <motion.div variants={scaleUp}>
-            <H2 kicker="Contact" center as="h1">
-              {t("Rejoins l'espace où tes sources parlent pour toi", "Join the space where your sources speak for you")}
-            </H2>
-            <p className="text-aw-muted mt-4 max-w-2xl mx-auto text-lg">
-              {t("Que tu sois passionné, créateur, journaliste ou simplement curieux — contacte-nous pour être parmi les premiers à découvrir ActuWorld.", "Whether you're passionate about a topic, a creator, journalist, or simply curious — contact us to be among the first to discover ActuWorld.")}
+      {/* EN-TÊTE + CANAUX */}
+      <Section className="pt-20 md:pt-24 pb-16 md:pb-20">
+        <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-16 lg:items-end">
+          <AnimatedSection>
+            <p className="eyebrow mb-4">Contact</p>
+            <H2 as="h1">{t("Une question, une idée, une envie de participer ?", "A question, an idea, want to get involved?")}</H2>
+            <p className="lead mt-5">
+              {t(
+                "Que tu sois passionné, créateur, journaliste ou simplement curieux, écris-nous. On lit chaque message.",
+                "Whether you're passionate about a topic, a creator, a journalist or just curious, write to us. We read every message."
+              )}
             </p>
-          </motion.div>
-        </motion.div>
-      </Section>
+          </AnimatedSection>
 
-      {/* CONTACT METHODS */}
-      <Section className="py-12">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={staggerContainer}
-          className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto"
-        >
-          {contactMethods.map((method, i) => (
-            <motion.a
-              key={i}
-              href={method.link}
-              variants={fadeInUp}
-              whileHover={{ y: -10, scale: 1.02 }}
-              className="card card-hover p-6 text-center block"
-            >
-              <motion.div
-                className="w-14 h-14 mx-auto rounded-2xl bg-aw-success flex items-center justify-center mb-4"
-                whileHover={{ scale: 1.1, rotate: 5 }}
-              >
-                <method.icon className="w-7 h-7 text-aw-primary" />
-              </motion.div>
-              <h3 className="body-semi text-lg mb-1">{method.title}</h3>
-              <p className="text-aw-muted text-sm mb-3">{method.desc}</p>
-              <p className="text-aw-primary font-medium">{method.value}</p>
-            </motion.a>
-          ))}
-        </motion.div>
-      </Section>
-
-      {/* MAIN CTA */}
-      <Section className="bg-aw-surface py-16 md:py-24">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={staggerContainer}
-          className="max-w-3xl mx-auto text-center"
-        >
-          <motion.div variants={scaleUp}>
-            <motion.div
-              className="w-20 h-20 mx-auto rounded-2xl bg-aw-primary flex items-center justify-center mb-6"
-              animate={{
-                scale: [1, 1.05, 1],
-                rotate: [0, 5, -5, 0]
-              }}
-              transition={{ duration: 4, repeat: Infinity }}
-            >
-              <Globe2 className="w-10 h-10 text-white" />
-            </motion.div>
-            <h3 className="text-2xl md:text-3xl font-bold mb-4">{t("Explore avec nous", "Explore with us")}</h3>
-            <p className="text-aw-muted text-lg mb-8">
-              {t("ActuWorld est en développement. Contacte-nous pour être informé du lancement et faire partie des premiers à publier, explorer et partager avec preuves.", "ActuWorld is in development. Contact us to get launch updates and be among the first to publish, explore, and share with proof.")}
-            </p>
-            <a href="mailto:actuworld.app@outlook.fr?subject=Rejoindre la beta ActuWorld" className="btn-primary glow-hover inline-flex items-center">
-              <Mail className="w-5 h-5 mr-2" /> {t("Rejoindre la beta", "Join the beta")}
-            </a>
-          </motion.div>
-        </motion.div>
-      </Section>
-
-      {/* WHAT WE'RE LOOKING FOR */}
-      <Section className="py-16 md:py-24">
-        <AnimatedSection>
-          <div className="text-center mb-12">
-            <H2 kicker="On recherche" center>
-              {t("Qui peut nous aider ?", "Who can help us?")}
-            </H2>
-          </div>
-        </AnimatedSection>
-
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={staggerContainer}
-          className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto"
-        >
-          {[
-            {
-              title: t("Créateurs de contenu", "Content creators"),
-              desc: t("Testeurs beta pour valider l'expérience utilisateur et ASV", "Beta testers to validate user experience and ASV")
-            },
-            {
-              title: t("Médias & Journalistes", "Media & journalists"),
-              desc: t("Partenariats pour la vérification d'information", "Partnerships for information verification")
-            },
-            {
-              title: t("Éducateurs", "Educators"),
-              desc: t("Intégration dans les parcours pédagogiques", "Integration into learning pathways")
-            },
-            {
-              title: t("Investisseurs", "Investors"),
-              desc: t("Financement pour accélérer le développement", "Funding to accelerate development")
-            }
-          ].map((item, i) => (
-            <motion.div
-              key={i}
-              variants={fadeInUp}
-              whileHover={{ y: -8, scale: 1.02 }}
-              className="card card-hover p-6"
-            >
-              <h3 className="body-semi text-lg mb-2">{item.title}</h3>
-              <p className="text-aw-muted text-sm">{item.desc}</p>
-            </motion.div>
-          ))}
-        </motion.div>
-      </Section>
-
-      {/* LINKS */}
-      <Section className="bg-aw-surface py-16">
-        <AnimatedSection direction="scale">
-          <div className="text-center">
-            <h3 className="text-xl font-bold mb-6">{t("En savoir plus", "Learn more")}</h3>
-            <motion.div
-              className="flex flex-wrap items-center justify-center gap-4"
-              initial="hidden"
-              whileInView="visible"
-              variants={staggerContainer}
-            >
-              {[
-                { to: "/", label: t("Accueil", "Home") },
-                { to: "/app", label: t("La plateforme", "The platform") },
-                { to: "/reco-src", label: "ASV" },
-                { to: "/faq", label: "FAQ" },
-              ].map((link, i) => (
-                <motion.div key={i} variants={fadeInUp}>
-                  <Link
-                    to={link.to}
-                    className="btn-outline"
+          <AnimatedSection delay={0.1}>
+            <ul className="divide-y divide-[var(--aw-border)] border-y border-aw">
+              {channels.map((c) => (
+                <li key={c.label}>
+                  <a
+                    href={c.href}
+                    {...(c.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    className="group flex items-start gap-4 py-5"
                   >
-                    {link.label} <ChevronRight className="w-4 h-4 ml-1" />
-                  </Link>
-                </motion.div>
+                    <span className="mt-0.5 w-10 h-10 shrink-0 rounded-[10px] bg-aw-success flex items-center justify-center" aria-hidden="true">
+                      <c.icon className="w-5 h-5 text-aw-primary" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-sm font-semibold text-aw-muted">{c.label}</span>
+                      <span className="block text-lg font-semibold text-aw-text group-hover:text-aw-primary break-words" translate="no">
+                        {c.value}
+                      </span>
+                      <span className="block text-[15px] text-aw-muted mt-0.5">{c.desc}</span>
+                    </span>
+                    <ChevronRight className="mt-3 w-5 h-5 shrink-0 text-aw-muted transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                  </a>
+                </li>
               ))}
-            </motion.div>
+            </ul>
+          </AnimatedSection>
+        </div>
+      </Section>
+
+      {/* QUI PEUT NOUS AIDER */}
+      <Section className="bg-aw-surface">
+        <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
+          <AnimatedSection>
+            <H2>{t("Qui peut nous aider", "Who can help us")}</H2>
+            <p className="lead mt-4">
+              {t(
+                "ActuWorld avance avec celles et ceux qui partagent l'envie d'une information vérifiable.",
+                "ActuWorld moves forward with people who want information you can check."
+              )}
+            </p>
+          </AnimatedSection>
+
+          <AnimatedSection delay={0.1}>
+            <dl className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
+              {profiles.map((p) => (
+                <div key={p.title} className="border-t border-aw-strong pt-4">
+                  <dt className="text-lg font-semibold text-aw-text">{p.title}</dt>
+                  <dd className="mt-1.5 text-[15px] text-aw-muted leading-relaxed">{p.desc}</dd>
+                </div>
+              ))}
+            </dl>
+          </AnimatedSection>
+        </div>
+      </Section>
+
+      {/* SORTIE */}
+      <Section>
+        <AnimatedSection className="max-w-2xl">
+          <H2>{t("Bientôt sur l'App Store et Google Play", "Coming soon to the App Store and Google Play")}</H2>
+          <p className="lead mt-4">
+            {t(
+              "La publication sur les stores est en cours. Laisse ton e-mail et on te prévient dès la sortie.",
+              "Store publication is in progress. Leave your email and we'll let you know at launch."
+            )}
+          </p>
+          <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
+            <Link to="/#rejoindre" className="btn-primary">
+              {t("Être prévenu", "Get notified")}
+            </Link>
+            <Link to="/faq" className="btn-link">
+              {t("Lire la FAQ", "Read the FAQ")} <ChevronRight className="w-4 h-4" aria-hidden="true" />
+            </Link>
           </div>
         </AnimatedSection>
       </Section>

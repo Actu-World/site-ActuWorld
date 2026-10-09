@@ -1,135 +1,199 @@
-import { motion } from "framer-motion";
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { HelpCircle, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
 import { PageMeta } from "../components/PageMeta";
+import { JsonLd } from "../components/JsonLd";
 import { useLanguage } from "../i18n/LanguageContext";
-import {
-  PageWrapper,
-  AnimatedSection,
-  staggerContainer,
-  fadeInUp,
-  scaleUp
-} from "../components/animations";
+import { PageWrapper, AnimatedSection } from "../components/animations";
+
+type Faq = { q: string; a: string };
+type Group = { id: string; title: string; items: Faq[] };
 
 export default function FaqPage() {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
 
-  const faqs = [
+  const groups: Group[] = [
     {
-      q: t("Pourquoi le sourcing est-il obligatoire ?", "Why is source citation mandatory?"),
-      a: t("C'est le principe fondateur d'ActuWorld. Avant de publier, tu montres d'où vient ton information. Ça donne du poids à ce que tu partages et de la clarté à ceux qui te lisent.", "This is ActuWorld's founding principle. Before publishing, you show where your information comes from. It gives weight to what you share and clarity to those who read you.")
+      id: "principe",
+      title: t("Le principe", "The principle"),
+      items: [
+        {
+          q: t("Pourquoi la source est-elle obligatoire ?", "Why is a source mandatory?"),
+          a: t(
+            "C'est le principe fondateur d'ActuWorld. Avant de publier, tu montres d'où vient ton information. Et chaque source est un lien : en la touchant, tes lecteurs lisent le texte d'origine, comparent avec ce que tu en dis et se font leur propre avis. C'est la meilleure école de l'esprit critique.",
+            "It's ActuWorld's founding principle. Before publishing, you show where your information comes from. And every source is a link: with one tap, your readers read the original, compare it with what you say and make up their own minds. It's the best training for critical thinking."
+          ),
+        },
+        {
+          q: t("Comment fonctionne le score de confiance ?", "How does the trust score work?"),
+          a: t(
+            "Au verso de chaque dépêche, les lecteurs votent «\u00a0Fiable\u00a0» ou «\u00a0Douteuse\u00a0». La part de votes «\u00a0Fiable\u00a0» donne le score de confiance de la publication, sur 100. Celui d'un créateur est la moyenne de ses publications. Ce score est indépendant d'ASV.",
+            "On the back of every dispatch, readers vote “Reliable” or “Doubtful”. The share of “Reliable” votes gives the post's trust score, out of 100. A creator's score is the average of their posts. This score is independent from ASV."
+          ),
+        },
+        {
+          q: t("Pourquoi la lecture est-elle gratuite ?", "Why is reading free?"),
+          a: t(
+            "L'accès au savoir ne doit pas dépendre du portefeuille. La lecture est et restera gratuite.",
+            "Access to knowledge shouldn't depend on your wallet. Reading is free and will stay free."
+          ),
+        },
+      ],
     },
     {
-      q: t("Comment fonctionne le système de confiance ?", "How does the trust system work?"),
-      a: t("Les utilisateurs votent sur la fiabilité des posts. Ces votes construisent un score de confiance pour chaque créateur, visible sur son profil. C'est le jugement communautaire qui rend la confiance plus claire.", "Users vote on post reliability. These votes build a trust score for each creator, visible on their profile. It's community judgment that makes trust clearer.")
+      id: "asv",
+      title: "ASV",
+      items: [
+        {
+          q: t("ASV remplace-t-il les fact-checkers ?", "Does ASV replace fact-checkers?"),
+          a: t(
+            "Non. ASV (ActuWorld Source Verification) ne dit pas si une info est vraie. Elle évalue qui publie les sources citées et si le post les reprend fidèlement. C'est un outil pour juger par toi-même, pas un verdict.",
+            "No. ASV (ActuWorld Source Verification) doesn't say whether information is true. It rates who publishes the cited sources and whether the post reports them faithfully. It's a tool to judge for yourself, not a verdict."
+          ),
+        },
+        {
+          q: t("Comment ASV analyse-t-il les sources ?", "How does ASV analyze sources?"),
+          a: t(
+            "À la publication, ASV récupère les sources citées et donne deux notes. Éditeur : la transparence du site (ancienneté, mentions légales, auteurs identifiés, registres reconnus…). Fidélité : une IA compare le texte de chaque source avec ce qu'affirme le post, ce qui permet de repérer le cherry-picking et les contradictions.",
+            "When a post is published, ASV fetches the cited sources and gives two scores. Publisher: how transparent the site is (age, legal notice, identified authors, recognised registries…). Faithfulness: an AI compares each source's text with what the post claims, which reveals cherry-picking and contradictions."
+          ),
+        },
+      ],
     },
     {
-      q: t("ASV remplace-t-il les fact-checkers ?", "Does ASV replace fact-checkers?"),
-      a: t("Non. ASV (ActuWorld Source Verification) vérifie automatiquement si la source est cohérente avec le contenu et détecte les détournements de contexte. C'est un outil qui donne à chacun les moyens de juger par soi-même.", "No. ASV (ActuWorld Source Verification) automatically checks if the source is consistent with the content and detects context distortions. It's a tool that empowers everyone to judge for themselves.")
+      id: "publier",
+      title: t("Publier", "Publishing"),
+      items: [
+        {
+          q: t("Qui peut publier ?", "Who can publish?"),
+          a: t(
+            "Tout le monde, dès l'inscription. Sport, sciences, culture, actualité locale : tu publies sur ce qui te passionne, avec au moins une source. La publication est immédiate, puis ASV analyse tes sources. Un contenu signalé plusieurs fois par la communauté est examiné par la modération.",
+            "Everyone, from sign-up. Sports, science, culture, local news: you publish about what you care about, with at least one source. Posts go live immediately, then ASV analyses your sources. Content reported several times by the community is reviewed by moderators."
+          ),
+        },
+      ],
     },
     {
-      q: t("Comment ASV trouve-t-il les sources ?", "How does ASV identify sources?"),
-      a: t("ASV analyse les posts, articles et vidéos pour extraire les sources citées, les note, et compare ce qui a été dit avec le contenu réel de la source pour détecter le cherry-picking.", "ASV analyzes posts, articles, and videos to extract cited sources, rates them, and compares claims with the actual source content to detect cherry-picking.")
-    },
-    {
-      q: t("Pourquoi la lecture est-elle gratuite ?", "Why is reading free?"),
-      a: t("L'accès au savoir ne doit pas dépendre du portefeuille. La lecture est et restera gratuite.", "Access to knowledge should not depend on income. Reading is and will remain free.")
-    },
-    {
-      q: t("Qui peut devenir créateur ?", "Who can become a creator?"),
-      a: t("Tout le monde ! Sport, sciences, culture, actualité locale… tu peux publier. Les nouveaux créateurs passent par une phase de modération, puis accèdent à la publication automatique selon leur score de confiance.", "Anyone! Sports, science, culture, local news… you can publish. New creators go through a moderation phase, then gain automatic publishing based on their trust score.")
-    },
-    {
-      q: t("Quand ActuWorld sera-t-il disponible ?", "When will ActuWorld be available?"),
-      a: t("Nous finalisons actuellement la bêta fermée. Rejoins notre liste d'attente pour être parmi les premiers à tester et donner ton avis !", "We are currently finalizing the closed beta. Join our waitlist to be among the first to test and share feedback!")
-    },
-    {
-      q: t("Comment rejoindre la bêta ?", "How can I join the beta?"),
-      a: t("Inscris-toi à notre liste d'attente depuis la page d'accueil, ou contacte-nous directement. Les bêta-testeurs sont sélectionnés selon leur profil et leur intérêt pour ActuWorld.", "Sign up for our waitlist from the homepage, or contact us directly. Beta testers are selected based on profile and interest in ActuWorld.")
+      id: "disponibilite",
+      title: t("Disponibilité", "Availability"),
+      items: [
+        {
+          q: t("Quand ActuWorld sera-t-il disponible ?", "When will ActuWorld be available?"),
+          a: t(
+            "L'app arrive bientôt sur l'App Store et Google Play. La publication sur les stores est en cours.",
+            "The app is coming soon to the App Store and Google Play. Store publication is in progress."
+          ),
+        },
+        {
+          q: t("Comment être prévenu de la sortie ?", "How do I get notified at launch?"),
+          a: t(
+            "Laisse ton adresse e-mail en bas de la page d'accueil : on t'écrit dès que l'app sort sur les stores.",
+            "Leave your email address at the bottom of the home page: we'll email you as soon as the app is on the stores."
+          ),
+        },
+      ],
     },
   ];
 
-  const FaqList = ({ items }: { items: { q: string; a: string }[] }) => (
-    <motion.div
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true }}
-      variants={staggerContainer}
-      className="space-y-4"
-    >
-      {items.map((item, i) => (
-        <motion.div
-          key={i}
-          variants={fadeInUp}
-          whileHover={{ x: 5, scale: 1.01 }}
-          className="card card-hover p-6"
-        >
-          <div className="flex items-start gap-4">
-            <motion.div
-              className="flex-shrink-0 w-8 h-8 rounded-lg bg-aw-success flex items-center justify-center"
-              whileHover={{ scale: 1.1, rotate: 5 }}
-            >
-              <HelpCircle className="w-4 h-4 text-aw-primary" />
-            </motion.div>
-            <div>
-              <h4 className="body-semi text-lg">{item.q}</h4>
-              <p className="text-aw-muted mt-2">{item.a}</p>
-            </div>
-          </div>
-        </motion.div>
-      ))}
-    </motion.div>
+  const allFaqs = groups.flatMap((g) => g.items);
+  const faqSchema = useMemo(
+    () => ({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      inLanguage: isEnglish ? "en" : "fr",
+      mainEntity: allFaqs.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isEnglish]
   );
 
   return (
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
       <PageMeta
-        title={t("FAQ — Questions fréquentes", "FAQ — Frequently asked questions")}
-        description={t("Trouvez les réponses à vos questions sur ActuWorld, ASV, la disponibilité de la plateforme, et comment rejoindre la bêta.", "Find answers to your questions about ActuWorld, ASV, platform availability, and how to join the beta.")}
+        title={t("FAQ | Questions fréquentes", "FAQ | Frequently asked questions")}
+        description={t(
+          "Les réponses à tes questions sur ActuWorld, ASV, le score de confiance et la sortie de l'app sur les stores.",
+          "Answers to your questions about ActuWorld, ASV, the trust score and the app's store launch."
+        )}
         path="/faq"
       />
-      {/* HEADER */}
-      <Section className="pt-24 pb-12">
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={staggerContainer}
-          className="text-center"
-        >
-          <motion.div variants={scaleUp}>
-            <H2 kicker="FAQ" center as="h1">
-              {t("Questions fréquentes", "Frequently asked questions")}
-            </H2>
-            <p className="text-aw-muted mt-4 max-w-xl mx-auto text-lg">
-              {t("Trouvez les réponses à vos questions sur ActuWorld, ASV (ActuWorld Source Verification) et notre approche.", "Find answers to your questions about ActuWorld, ASV (ActuWorld Source Verification) and our approach.")}
-            </p>
-          </motion.div>
-        </motion.div>
+      <JsonLd data={faqSchema} />
+
+      <Section className="pt-20 md:pt-24 pb-10">
+        <AnimatedSection>
+          <H2 as="h1">{t("Questions fréquentes", "Frequently asked questions")}</H2>
+          <p className="lead mt-5">
+            {t(
+              "Le principe, ASV, la publication et la sortie de l'app. Une question sans réponse ici ? Écris-nous.",
+              "The principle, ASV, publishing and the app's launch. A question not answered here? Write to us."
+            )}
+          </p>
+        </AnimatedSection>
       </Section>
 
-      {/* FAQ */}
-      <Section className="py-12">
-        <div className="max-w-3xl mx-auto">
-          <FaqList items={faqs} />
+      <Section className="pt-4 pb-20 md:pb-28">
+        <div className="grid gap-10 lg:grid-cols-[13rem_1fr] lg:gap-16">
+          {/* Sommaire des catégories (bureau) */}
+          <nav aria-label={t("Catégories", "Categories")} className="hidden lg:block">
+            <ul className="sticky top-24 space-y-1 border-l border-aw">
+              {groups.map((g) => (
+                <li key={g.id}>
+                  <a
+                    href={`#${g.id}`}
+                    className="block -ml-px border-l-2 border-transparent pl-4 py-1.5 text-[15px] text-aw-muted hover:text-aw-text hover:border-aw-primary"
+                  >
+                    {g.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <div className="space-y-14 max-w-3xl">
+            {groups.map((g) => (
+              <section key={g.id} id={g.id} aria-labelledby={`${g.id}-title`} className="scroll-mt-24">
+                <h2 id={`${g.id}-title`} className="text-2xl mb-4">
+                  {g.title}
+                </h2>
+                <div className="divide-y divide-[var(--aw-border)] border-y border-aw">
+                  {g.items.map((item) => (
+                    <details key={item.q} className="group">
+                      <summary className="flex cursor-pointer list-none items-start justify-between gap-6 py-5 text-[17px] font-semibold text-aw-text hover:text-aw-primary [&::-webkit-details-marker]:hidden">
+                        <span>{item.q}</span>
+                        <ChevronDown
+                          className="mt-1 h-5 w-5 shrink-0 text-aw-muted transition-transform duration-200 group-open:rotate-180"
+                          aria-hidden="true"
+                        />
+                      </summary>
+                      <p className="pb-6 pr-10 text-aw-muted leading-relaxed max-w-prose">{item.a}</p>
+                    </details>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
         </div>
       </Section>
 
-      {/* CTA */}
-      <Section className="bg-aw-surface py-16">
-        <AnimatedSection direction="scale">
-          <div className="text-center">
-            <h3 className="text-2xl font-bold mb-4">{t("Vous n'avez pas trouvé votre réponse ?", "Didn't find your answer?")}</h3>
-            <p className="text-aw-muted mb-8 max-w-xl mx-auto">
-              {t("Notre équipe est là pour répondre à toutes vos questions.", "Our team is here to answer all your questions.")}
+      <Section className="bg-aw-surface py-16 md:py-20">
+        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h2 className="text-2xl">{t("Tu n'as pas trouvé ta réponse ?", "Didn't find your answer?")}</h2>
+            <p className="text-aw-muted mt-2">
+              {t("On lit chaque message et on te répond.", "We read every message and get back to you.")}
             </p>
-            <Link to="/contact" className="btn-primary glow-hover">
-              {t("Nous contacter", "Contact us")} <ChevronRight className="w-5 h-5 ml-2" />
-            </Link>
           </div>
-        </AnimatedSection>
+          <Link to="/contact" className="btn-primary self-start md:self-auto">
+            {t("Nous écrire", "Write to us")} <ChevronRight className="w-4 h-4" aria-hidden="true" />
+          </Link>
+        </div>
       </Section>
     </PageWrapper>
   );

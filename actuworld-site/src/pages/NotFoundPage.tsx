@@ -1,135 +1,68 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Home, Search, ArrowLeft, Globe2 } from "lucide-react";
+import { ArrowLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "../i18n/LanguageContext";
-import {
-  PageWrapper,
-  staggerContainer,
-  fadeInUp,
-  scaleUp
-} from "../components/animations";
+import { PageMeta } from "../components/PageMeta";
+import { PageWrapper, staggerContainer, fadeInUp } from "../components/animations";
 
 export default function NotFoundPage() {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
 
   return (
-    <PageWrapper className="min-h-screen bg-aw-bg text-aw-text flex items-center justify-center">
-      <div className="max-w-2xl mx-auto px-4 py-20 text-center">
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={staggerContainer}
-        >
-          {/* Animated 404 */}
-          <motion.div variants={scaleUp} className="mb-8">
-            <motion.div
-              className="relative inline-block"
-              animate={{
-                y: [0, -10, 0],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            >
-              {/* Globe animé */}
-              <motion.div
-                className="w-32 h-32 mx-auto rounded-3xl bg-aw-primary flex items-center justify-center mb-6"
-                animate={{
-                  rotate: [0, 5, -5, 0],
-                  scale: [1, 1.05, 1],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              >
-                <Globe2 className="w-16 h-16 text-white" />
-              </motion.div>
+    <PageWrapper className="min-h-[80vh] bg-aw-bg text-aw-text flex items-center">
+      <PageMeta
+        title={t("Page introuvable", "Page not found")}
+        description={t("Cette page n'existe pas ou a été déplacée.", "This page doesn't exist or has moved.")}
+        path="/404"
+        noindex
+      />
+      <div className="max-w-6xl w-full mx-auto container-px py-20 md:py-28">
+        <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="max-w-xl">
+          <motion.p variants={fadeInUp} className="eyebrow mb-5 tabular">
+            {t("Erreur 404", "Error 404")}
+          </motion.p>
+          <motion.h1 variants={fadeInUp} className="display">
+            {t("Cette page n'a pas de source.", "This page has no source.")}
+          </motion.h1>
+          <motion.p variants={fadeInUp} className="lead mt-6">
+            {t(
+              "Le lien est peut-être incomplet, ou la page a été déplacée. Reprends depuis l'accueil.",
+              "The link may be incomplete, or the page has moved. Start again from the home page."
+            )}
+          </motion.p>
 
-              {/* 404 Text */}
-              <motion.h1
-                className="text-8xl md:text-9xl font-bold gradient-text"
-                animate={{
-                  backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-                }}
-                transition={{
-                  duration: 5,
-                  repeat: Infinity,
-                  ease: "linear",
-                }}
-              >
-                404
-              </motion.h1>
-            </motion.div>
-          </motion.div>
-
-          {/* Message */}
-          <motion.div variants={fadeInUp} className="mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">
-              {t("Page introuvable", "Page not found")}
-            </h2>
-            <p className="text-aw-muted text-lg max-w-md mx-auto">
-              {t("Oups ! La page que vous recherchez semble avoir disparu dans le flux d'informations.", "Oops! The page you are looking for seems to have disappeared in the information flow.")}
-            </p>
-          </motion.div>
-
-          {/* Suggestions */}
-          <motion.div
-            variants={fadeInUp}
-            className="grid sm:grid-cols-2 gap-4 max-w-md mx-auto mb-8"
-          >
-            <Link
-              to="/"
-              className="card card-hover p-4 flex items-center gap-3 text-left"
-            >
-              <div className="w-10 h-10 rounded-xl bg-aw-success flex items-center justify-center flex-shrink-0">
-                <Home className="w-5 h-5 text-aw-primary" />
-              </div>
-              <div>
-                <div className="font-semibold text-sm">{t("Accueil", "Home")}</div>
-                <div className="text-xs text-aw-muted">{t("Retourner à l'accueil", "Go back to home")}</div>
-              </div>
+          <motion.div variants={fadeInUp} className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
+            <Link to="/" className="btn-primary">
+              {t("Retour à l'accueil", "Back to home")}
             </Link>
-
-            <Link
-              to="/app"
-              className="card card-hover p-4 flex items-center gap-3 text-left"
-            >
-              <div className="w-10 h-10 rounded-xl bg-aw-success flex items-center justify-center flex-shrink-0">
-                <Search className="w-5 h-5 text-aw-primary" />
-              </div>
-              <div>
-                <div className="font-semibold text-sm">{t("Explorer", "Explore")}</div>
-                <div className="text-xs text-aw-muted">{t("Découvrir ActuWorld", "Discover ActuWorld")}</div>
-              </div>
-            </Link>
-          </motion.div>
-
-          {/* Back button */}
-          <motion.div variants={fadeInUp}>
-            <button
-              onClick={() => window.history.back()}
-              className="btn-outline inline-flex items-center gap-2"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              {t("Retour à la page précédente", "Back to previous page")}
+            <button type="button" onClick={() => window.history.back()} className="btn-link">
+              <ArrowLeft className="w-4 h-4" aria-hidden="true" />
+              {t("Page précédente", "Previous page")}
             </button>
           </motion.div>
 
-          {/* Fun fact */}
-          <motion.div
+          <motion.nav
             variants={fadeInUp}
-            className="mt-12 p-4 rounded-2xl bg-aw-surface"
+            aria-label={t("Pages utiles", "Useful pages")}
+            className="mt-14 pt-8 border-t border-aw"
           >
-            <p className="text-sm text-aw-muted">
-              <span className="text-aw-primary font-semibold">{t("Le saviez-vous ?", "Did you know?")}</span>{" "}
-              {t("Sur ActuWorld, chaque publication s'appuie sur une source visible. Même nos pages 404 sont transparentes !", "On ActuWorld, every post is backed by a visible source. Even our 404 pages are transparent!")}
-            </p>
-          </motion.div>
+            <ul className="flex flex-wrap gap-x-8 gap-y-3 text-[15px]">
+              {[
+                { to: "/app", label: t("Découvrir l'app", "Discover the app") },
+                { to: "/reco-src", label: t("Comment ASV vérifie", "How ASV verifies") },
+                { to: "/faq", label: "FAQ" },
+                { to: "/contact", label: "Contact" },
+              ].map((l) => (
+                <li key={l.to}>
+                  <Link to={l.to} className="btn-link">
+                    {l.label}
+                    <ChevronRight className="w-4 h-4" aria-hidden="true" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </motion.nav>
         </motion.div>
       </div>
     </PageWrapper>

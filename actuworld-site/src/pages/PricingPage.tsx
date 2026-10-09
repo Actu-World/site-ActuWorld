@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Star, LineChart, Megaphone, CheckCircle2, ChevronRight, Mail, Instagram, X } from "lucide-react";
+import { Star, LineChart, Megaphone, Check, ChevronRight } from "lucide-react";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
 import { PageMeta } from "../components/PageMeta";
@@ -10,308 +9,208 @@ import {
   PageWrapper,
   AnimatedSection,
   staggerContainer,
-  fadeInUp,
-  scaleUp
+  fadeInUp
 } from "../components/animations";
+
+type Plan = {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  price: string;
+  desc: string;
+  points: string[];
+  cta: string;
+  to?: string;
+  mailto?: string;
+  featured: boolean;
+};
 
 export default function PricingPage() {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
-  const [isBetaModalOpen, setIsBetaModalOpen] = useState(false);
 
-  const showBetaNotice = () => {
-    setIsBetaModalOpen(true);
-  };
-
-  const pricing = [
+  const pricing: Plan[] = [
     {
       icon: Star,
       title: t("Lecteur", "Reader"),
-      price: "0€",
+      price: t("0 €", "€0"),
       desc: t("Pour toujours", "Forever"),
       points: [
         t("Lecture illimitée", "Unlimited reading"),
-        t("Accès à toutes les sources", "Access to all sources"),
+        t("Accès à toutes les sources", "Access to every source"),
         t("Votes communautaires", "Community voting"),
-        t("Suivre des créateurs", "Follow creators")
+        t("Suivre des créateurs", "Follow creators"),
       ],
-      cta: t("Commencer gratuitement", "Start for free"),
-      showBetaNotice: true,
-      featured: false
+      cta: t("Être prévenu", "Get notified"),
+      to: "/#rejoindre",
+      featured: false,
     },
     {
       icon: LineChart,
       title: t("Créateur", "Creator"),
-      price: "0€",
+      price: t("0 €", "€0"),
       desc: t("Gratuit pour publier", "Free to publish"),
       points: [
         t("Publication sourcée", "Source-based publishing"),
         t("Vérification des sources intégrée", "Built-in source verification"),
         t("Recevoir des dons", "Receive donations"),
-        t("Statistiques basiques", "Basic analytics")
+        t("Statistiques de base", "Basic analytics"),
       ],
-      cta: t("Devenir créateur", "Become a creator"),
-      showBetaNotice: true,
-      featured: false
+      cta: t("Être prévenu", "Get notified"),
+      to: "/#rejoindre",
+      featured: false,
     },
     {
       icon: Megaphone,
       title: "ASV Pro",
-      price: t("Sur devis", "Custom quote"),
-      period: "",
+      price: t("En préparation", "In preparation"),
       desc: t("Pour les professionnels de l'info", "For information professionals"),
       points: [
-        t("ASV illimité et personnalisable", "Unlimited and customizable ASV"),
-        t("Intégration sur vos outils", "Integration with your tools"),
-        t("Adapté aux médias, entreprises et rédactions", "Designed for media, companies, and newsrooms"),
-        t("Support dédié", "Dedicated support")
+        t("Analyse ASV des sources que tu cites", "ASV analysis of the sources you cite"),
+        t("Intégration à tes outils, en conception", "Integration with your tools, being designed"),
+        t("Pensé pour les médias, rédactions et écoles", "Built for media, newsrooms and schools"),
+        t("Conçu avec les premiers partenaires", "Designed with early partners"),
       ],
-      cta: t("Nous contacter", "Contact us"),
-      showBetaNotice: false,
+      cta: t("En parler", "Let's talk"),
+      mailto: "mailto:actuworld.app@outlook.fr?subject=ASV%20Pro%20%3A%20demande%20d'information",
       featured: true,
-      mailto: "mailto:actuworld.app@outlook.fr?subject=ASV Pro — Demande d'information"
     },
   ];
 
   const faq = [
     {
-      q: t("À qui s'adresse ASV Pro ?", "Who is ASV Pro for?"),
-      a: t("ASV Pro est conçu pour tous les professionnels de l'information : médias, journaux, entreprises, rédactions ou particuliers qui souhaitent intégrer notre IA de vérification dans leurs outils.", "ASV Pro is built for information professionals: media teams, newsrooms, companies, and individuals who want to integrate our verification AI into their workflows.")
+      q: t("À qui s'adresse ASV Pro ?", "Who is ASV Pro for?"),
+      a: t("ASV Pro est l'offre en préparation pour les professionnels de l'information : médias, rédactions, écoles. Elle n'est pas encore disponible. Si tu veux l'utiliser ou nous aider à la concevoir, écris-nous.", "ASV Pro is the upcoming offer for information professionals: media, newsrooms, schools. It isn't available yet. If you'd like to use it or help us shape it, write to us."),
     },
-{
-      q: t("Comment fonctionne le système de dons ?", "How does the donation system work?"),
-      a: t("Les lecteurs peuvent donner directement aux créateurs. ActuWorld prélève une commission de 10% pour maintenir la plateforme.", "Readers can donate directly to creators. ActuWorld takes a 10% fee to maintain the platform.")
-    }
+    {
+      q: t("Comment fonctionnent les dons ?", "How do donations work?"),
+      a: t("Les lecteurs peuvent donner directement aux créateurs. ActuWorld prélève une commission de 10 % pour faire vivre la plateforme.", "Readers can donate directly to creators. ActuWorld takes a 10% fee to keep the platform running."),
+    },
+    {
+      q: t("Quand l'app sera-t-elle disponible ?", "When will the app be available?"),
+      a: t("ActuWorld arrive bientôt sur l'App Store et Google Play. Laisse ton e-mail pour être prévenu à la sortie.", "ActuWorld is coming soon to the App Store and Google Play. Leave your email to be notified at launch."),
+    },
   ];
 
   return (
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
       <PageMeta
-        title={t("Tarifs — Lecture gratuite, création accessible", "Pricing — Free reading, accessible creation")}
-        description={t("La lecture est et restera toujours gratuite. Pas de paywall sur le savoir. Découvrez les plans Lecteur, Créateur et ASV Pro.", "Reading is and will always remain free. No paywall on knowledge. Discover Reader, Creator and ASV Pro plans.")}
+        title={t("Tarifs : lecture gratuite, création accessible", "Pricing: free reading, accessible creation")}
+        description={t("La lecture est et restera gratuite. Pas de paywall sur le savoir. Découvre les offres Lecteur, Créateur et ASV Pro.", "Reading is and will stay free. No paywall on knowledge. Discover the Reader, Creator and ASV Pro plans.")}
         path="/pricing"
       />
-      {/* HEADER */}
-      <Section className="pt-24 pb-12">
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={staggerContainer}
-          className="text-center"
-        >
-          <motion.div variants={scaleUp}>
-            <H2 kicker={t("Tarifs", "Pricing")} center as="h1">
-              {isEnglish ? <>Knowledge accessible to <span className="gradient-text">everyone</span></> : <>Le savoir accessible à <span className="gradient-text">tous</span></>}
-            </H2>
-            <p className="text-aw-muted mt-4 max-w-xl mx-auto text-lg">
-              {t("La lecture est et restera toujours gratuite. Pas de paywall sur le savoir.", "Reading is and will always remain free. No paywall on knowledge.")}
-            </p>
-          </motion.div>
+
+      {/* EN-TÊTE */}
+      <Section className="pt-14 md:pt-20 pb-12">
+        <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="max-w-2xl">
+          <motion.p variants={fadeInUp} className="eyebrow mb-5">{t("Tarifs", "Pricing")}</motion.p>
+          <motion.h1 variants={fadeInUp} className="display">
+            {t("Le savoir accessible à tous", "Knowledge for everyone")}
+          </motion.h1>
+          <motion.p variants={fadeInUp} className="lead mt-6">
+            {t("La lecture est et restera gratuite. Pas de paywall sur le savoir.", "Reading is and will stay free. No paywall on knowledge.")}
+          </motion.p>
         </motion.div>
       </Section>
 
-      {/* PRICING CARDS */}
-      <Section className="py-12">
+      {/* OFFRES */}
+      <Section className="pt-4 pb-20 md:pb-28">
         <motion.div
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: "-80px" }}
           variants={staggerContainer}
-          className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto"
+          className="grid md:grid-cols-3 gap-5"
         >
-          {pricing.map((p, i) => (
+          {pricing.map((p) => (
             <motion.div
-              key={i}
+              key={p.title}
               variants={fadeInUp}
-              whileHover={{ y: -10, scale: 1.02 }}
-              className={`card p-8 relative ${p.featured ? 'ring-2 ring-aw-primary' : ''}`}
+              className={`card p-7 flex flex-col ${p.featured ? "!bg-[color:var(--aw-primary-strong)] !border-transparent text-white dark:!bg-[color:var(--aw-surface)] dark:!border-[color:var(--aw-primary)] dark:text-aw-text" : ""}`}
             >
-              {p.featured && (
-                <motion.div
-                  className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-aw-primary text-on-primary text-xs font-bold rounded-full"
-                  animate={{ scale: [1, 1.05, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
+              <div className="flex items-center gap-3">
+                <span
+                  className={`w-10 h-10 rounded-[10px] flex items-center justify-center ${p.featured ? "bg-white/10 dark:bg-aw-success" : "bg-aw-success"}`}
+                  aria-hidden="true"
                 >
-                  {t("Recommandé", "Recommended")}
-                </motion.div>
-              )}
-              <div className="flex items-center gap-3 mb-4">
-                <motion.div
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center ${p.featured ? 'bg-aw-primary' : 'bg-aw-success'}`}
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                >
-                  <p.icon className={`w-6 h-6 ${p.featured ? 'text-on-primary' : 'text-aw-primary'}`} />
-                </motion.div>
+                  <p.icon className={`w-5 h-5 ${p.featured ? "text-[#A8D5BA] dark:text-aw-primary" : "text-aw-primary"}`} />
+                </span>
                 <div>
-                  <h3 className="body-semi text-xl">{p.title}</h3>
-                  <p className="text-xs text-aw-muted">{p.desc}</p>
+                  <h2 className="text-xl">{p.title}</h2>
+                  <p className={`text-sm ${p.featured ? "text-white/75 dark:text-aw-muted" : "text-aw-muted"}`}>{p.desc}</p>
                 </div>
               </div>
-              <motion.div
-                className="text-4xl font-bold mb-6"
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.2 + i * 0.1 }}
-              >
-                {p.price}
-                {p.period && <span className="text-lg text-aw-muted font-normal">{p.period}</span>}
-              </motion.div>
-              <ul className="space-y-3 text-aw-muted mb-8">
-                {p.points.map((point, idx) => (
-                  <motion.li
-                    key={idx}
-                    className="flex items-center gap-2"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 + idx * 0.05 }}
-                  >
-                    <CheckCircle2 className="w-4 h-4 text-aw-accent flex-shrink-0" />
-                    <span className="text-sm">{point}</span>
-                  </motion.li>
+
+              <p className="font-display text-4xl font-bold mt-6 tabular-nums">{p.price}</p>
+
+              <ul className={`mt-6 mb-8 space-y-3 ${p.featured ? "text-white/85 dark:text-aw-muted" : "text-aw-muted"}`}>
+                {p.points.map((point) => (
+                  <li key={point} className="flex items-start gap-2.5 text-[15px]">
+                    <Check className={`w-4 h-4 mt-1 flex-shrink-0 ${p.featured ? "text-[#A8D5BA] dark:text-aw-primary" : "text-aw-primary"}`} aria-hidden="true" />
+                    <span>{point}</span>
+                  </li>
                 ))}
               </ul>
-              {p.mailto ? (
-                <motion.a
-                  href={p.mailto}
-                  className={`w-full py-3 px-4 rounded-xl font-semibold transition-colors block text-center ${
-                    p.featured
-                      ? 'bg-aw-primary text-on-primary hover:bg-aw-primary/90'
-                      : 'bg-aw-surface border border-aw text-aw-text hover:bg-aw-success'
-                  }`}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {p.cta}
-                </motion.a>
-              ) : (
-                <motion.button
-                  className={`w-full py-3 px-4 rounded-xl font-semibold transition-colors ${
-                    p.featured
-                      ? 'bg-aw-primary text-on-primary hover:bg-aw-primary/90'
-                      : 'bg-aw-surface border border-aw text-aw-text hover:bg-aw-success'
-                  }`}
-                  onClick={p.showBetaNotice ? showBetaNotice : undefined}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {p.cta}
-                </motion.button>
-              )}
+
+              <div className="mt-auto">
+                {p.mailto ? (
+                  <a
+                    href={p.mailto}
+                    className={`w-full ${p.featured ? "btn-primary !bg-[#A8D5BA] !text-[#0F1512] hover:!bg-white dark:!bg-[color:var(--aw-primary)]" : "btn-outline"}`}
+                  >
+                    {p.cta}
+                  </a>
+                ) : (
+                  <Link to={p.to!} className="btn-outline w-full">
+                    {p.cta}
+                  </Link>
+                )}
+              </div>
             </motion.div>
           ))}
         </motion.div>
       </Section>
-
-
-      {isBetaModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-          <button
-            type="button"
-            aria-label={t("Fermer", "Close")}
-            className="absolute inset-0 bg-black/50"
-            onClick={() => setIsBetaModalOpen(false)}
-          />
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            className="relative w-full max-w-lg card p-6 md:p-8 bg-aw-surface border border-aw"
-          >
-            <button
-              type="button"
-              onClick={() => setIsBetaModalOpen(false)}
-              aria-label={t("Fermer", "Close")}
-              className="absolute top-4 right-4 text-aw-muted hover:text-aw-text"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <p className="text-xs uppercase tracking-wider text-aw-primary font-semibold mb-2">
-              {t("Phase bêta", "Beta phase")}
-            </p>
-            <h3 className="text-2xl font-bold mb-3">
-              {t("On arrive bientôt ✨", "We’re launching soon ✨")}
-            </h3>
-            <p className="text-aw-muted mb-6">
-              {t(
-                "ActuWorld est encore en bêta, mais on avance vite 💚 Si tu veux être prévenu(e) du lancement et des nouveautés, laisse-nous un message ou suis-nous sur Insta.",
-                "ActuWorld is still in beta, but we’re moving fast 💚 If you want launch updates and early news, send us a message or follow us on Instagram."
-              )}
-            </p>
-
-            <div className="grid sm:grid-cols-2 gap-3">
-              <a
-                href="mailto:actuworld.app@outlook.fr?subject=Je souhaite rester au courant de la beta ActuWorld"
-                className="btn-primary glow-hover inline-flex items-center justify-center"
-              >
-                <Mail className="w-4 h-4 mr-2" />
-                {t("Me tenir au courant", "Keep me updated")}
-              </a>
-              <a
-                href="https://instagram.com/actuworld_fr"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-outline inline-flex items-center justify-center"
-              >
-                <Instagram className="w-4 h-4 mr-2" />
-                {t("Suivre sur Instagram", "Follow on Instagram")}
-              </a>
-            </div>
-          </motion.div>
-        </div>
-      )}
 
       {/* FAQ */}
-      <Section className="py-16 md:py-24">
-        <AnimatedSection>
-          <div className="text-center mb-12">
-            <H2 kicker="Questions" center>
-              {isEnglish ? <>Questions about <span className="gradient-text">pricing</span></> : <>Questions sur les <span className="gradient-text">tarifs</span></>}
-            </H2>
-          </div>
-        </AnimatedSection>
+      <Section className="bg-aw-surface">
+        <div className="grid md:grid-cols-[5fr_7fr] gap-10 md:gap-16">
+          <AnimatedSection>
+            <H2>{t("Questions sur les tarifs", "Pricing questions")}</H2>
+            <Link to="/faq" className="btn-link mt-6">
+              {t("Voir toute la FAQ", "See the full FAQ")} <ChevronRight className="w-4 h-4" aria-hidden="true" />
+            </Link>
+          </AnimatedSection>
 
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={staggerContainer}
-          className="max-w-3xl mx-auto space-y-4"
-        >
-          {faq.map((item, i) => (
-            <motion.div
-              key={i}
-              variants={fadeInUp}
-              whileHover={{ x: 5 }}
-              className="card card-hover p-6"
-            >
-              <h3 className="body-semi text-lg mb-2">{item.q}</h3>
-              <p className="text-aw-muted">{item.a}</p>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        <AnimatedSection delay={0.3} className="text-center mt-8">
-          <Link to="/faq" className="text-aw-primary hover:underline inline-flex items-center gap-1 link-underline">
-            {t("Voir toutes les FAQ", "See all FAQs")} <ChevronRight className="w-4 h-4" />
-          </Link>
-        </AnimatedSection>
+          <motion.dl
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={staggerContainer}
+            className="divide-y divide-[color:var(--aw-border)]"
+          >
+            {faq.map((item) => (
+              <motion.div key={item.q} variants={fadeInUp} className="py-6 first:pt-0 last:pb-0">
+                <dt className="font-display text-xl font-semibold">{item.q}</dt>
+                <dd className="text-aw-muted mt-2 max-w-prose">{item.a}</dd>
+              </motion.div>
+            ))}
+          </motion.dl>
+        </div>
       </Section>
 
-      {/* CTA */}
-      <Section className="bg-aw-surface py-16">
-        <AnimatedSection direction="scale">
-          <div className="text-center">
-            <h3 className="text-2xl font-bold mb-4">{t("Des questions ?", "Any questions?")}</h3>
-            <p className="text-aw-muted mb-8 max-w-xl mx-auto">
-              {t("Notre équipe est là pour répondre à toutes vos questions sur ActuWorld.", "Our team is here to answer all your questions about ActuWorld.")}
-            </p>
-            <Link to="/contact" className="btn-primary glow-hover">
-              {t("Nous contacter", "Contact us")} <ChevronRight className="w-5 h-5 ml-2" />
+      {/* CONTACT */}
+      <Section>
+        <AnimatedSection className="max-w-2xl">
+          <H2>{t("Une autre question ?", "Another question?")}</H2>
+          <p className="lead mt-4">
+            {t("L'équipe répond à toutes tes questions sur ActuWorld.", "The team answers all your questions about ActuWorld.")}
+          </p>
+          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+            <Link to="/contact" className="btn-primary">
+              {t("Nous écrire", "Write to us")}
             </Link>
-            <div className="flex items-center justify-center gap-6 mt-6 text-sm">
-              <Link to="/app" className="text-aw-muted hover:text-aw-primary transition-colors link-underline">{t("Découvrir la plateforme", "Discover the app")}</Link>
-              <Link to="/reco-src" className="text-aw-muted hover:text-aw-primary transition-colors link-underline">{t("Découvrir ASV", "Discover ASV")}</Link>
-            </div>
+            <Link to="/app" className="btn-link">
+              {t("Découvrir l'app", "Discover the app")} <ChevronRight className="w-4 h-4" aria-hidden="true" />
+            </Link>
           </div>
         </AnimatedSection>
       </Section>

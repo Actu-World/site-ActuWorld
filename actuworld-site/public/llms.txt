@@ -1,8 +1,8 @@
 # ActuWorld
-> Réseau social préventif de partage d'informations fiables, sur tout sujet.
+> Le réseau de l'information fiable, sur tous les sujets.
 
 ## Description
-ActuWorld est une plateforme où chaque publication s'appuie sur une source visible, vérifiée par ASV (ActuWorld Source Verification) qui contrôle la cohérence entre la source et le contenu et détecte le cherry-picking, puis éclairée par un jugement communautaire. La lecture est gratuite.
+ActuWorld est le réseau de l'information où chaque publication s'appuie sur une source visible. ASV (ActuWorld Source Verification) analyse les sources citées : transparence de l'éditeur et fidélité de la reprise, ce qui permet de repérer le cherry-picking. ASV ne juge pas si une information est vraie. Séparément, les lecteurs votent Fiable ou Douteuse, ce qui donne un score de confiance sur 100. La lecture est gratuite. L'app arrive bientôt sur l'App Store et Google Play.
 
 ## Pages principales
 - Accueil : https://www.actuworld.fr/

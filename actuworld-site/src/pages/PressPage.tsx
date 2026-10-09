@@ -1,105 +1,123 @@
+import { Download } from "lucide-react";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
 import { PageMeta } from "../components/PageMeta";
 import { useLanguage } from "../i18n/LanguageContext";
-import { PageWrapper } from "../components/animations";
+import { PageWrapper, AnimatedSection } from "../components/animations";
+
+const PRESS_EMAIL = "actuworld.app@outlook.fr";
 
 export default function PressPage() {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
 
+  const facts = [
+    { label: t("Création", "Founded"), value: "2024" },
+    {
+      label: t("Mission", "Mission"),
+      value: t(
+        "Donner à chacun les outils pour partager avec preuves et explorer avec clarté.",
+        "Give everyone the tools to share with proof and explore with clarity."
+      ),
+    },
+    {
+      label: t("Produit", "Product"),
+      value: t(
+        "Application mobile iOS et Android, bientôt sur l'App Store et Google Play.",
+        "Mobile app for iOS and Android, coming soon to the App Store and Google Play."
+      ),
+    },
+    {
+      label: "ASV",
+      value: t(
+        "ActuWorld Source Verification : contrôle de la cohérence entre la source et le contenu.",
+        "ActuWorld Source Verification: checks that the source matches the content."
+      ),
+    },
+    { label: t("Modèle", "Model"), value: t("Lecture 100 % gratuite, sans paywall.", "100% free reading, no paywall.") },
+  ];
+
   return (
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
       <PageMeta
-        title={t("Presse — Espace médias", "Press — Media Kit")}
+        title={t("Presse | Espace médias", "Press | Media room")}
         description={t(
-          "Espace presse ActuWorld — ressources médias, chiffres clés et contacts pour les journalistes.",
-          "ActuWorld press room — media resources, key figures and journalist contacts."
+          "Espace presse ActuWorld : présentation, repères clés, logo et contact pour les journalistes.",
+          "ActuWorld press room: overview, key facts, logo and contact for journalists."
         )}
         path="/press"
       />
 
-      <Section className="pt-24 pb-16">
-        <div className="max-w-3xl mx-auto">
-          <H2 as="h1" center>
-            {t("Espace Presse", "Press Room")}
-          </H2>
-
-          <p className="text-aw-muted mt-4 text-center">
+      <Section className="pt-20 md:pt-24 pb-12">
+        <AnimatedSection className="max-w-3xl">
+          <H2 as="h1">{t("Espace presse", "Press room")}</H2>
+          <p className="lead mt-5">
             {t(
-              "Ressources et informations pour les médias et journalistes.",
-              "Resources and information for media and journalists."
+              "Présentation, repères clés et ressources pour les médias et les journalistes.",
+              "Overview, key facts and resources for media and journalists."
             )}
           </p>
+        </AnimatedSection>
+      </Section>
 
-          <div className="mt-12 space-y-10">
-            {/* About section */}
-            <section className="bg-aw-surface rounded-2xl p-8">
-              <h2 className="text-xl font-semibold mb-4">
-                {t("À propos d'ActuWorld", "About ActuWorld")}
-              </h2>
-              <p className="text-aw-text/80 leading-relaxed">
+      <Section className="pt-0 pb-20 md:pb-28">
+        <div className="grid gap-14 lg:grid-cols-[1.5fr_1fr] lg:gap-16">
+          <div className="space-y-14">
+            <AnimatedSection>
+              <h2 className="text-2xl mb-4">{t("À propos d'ActuWorld", "About ActuWorld")}</h2>
+              <p className="text-aw-muted text-[17px] leading-relaxed max-w-prose">
                 {t(
-                  "ActuWorld est un réseau social préventif fondé en 2024, dédié au partage d'informations fiables sur tout sujet, selon les passions et les intérêts de chacun. Chaque publication s'appuie sur une source visible obligatoire, vérifiée par ASV (ActuWorld Source Verification) qui contrôle la cohérence entre la source et le contenu. Un jugement communautaire via un score de confiance rend la fiabilité plus claire pour tous.",
-                  "ActuWorld is a preventive social network founded in 2024, dedicated to sharing reliable information on any topic, based on users' passions and interests. Every post requires a mandatory visible source, verified by ASV (ActuWorld Source Verification) which checks source-content consistency. Community judgment through a trust score makes reliability clearer for everyone."
+                  "ActuWorld est un réseau de l'information fondé en 2024, dédié au partage d'informations fiables sur tout sujet, selon les passions et les intérêts de chacun. Chaque publication s'appuie sur une source visible obligatoire, analysée par ASV (ActuWorld Source Verification), qui évalue la transparence de l'éditeur et la fidélité de la reprise. À côté, un score de confiance issu des votes de la communauté rend la fiabilité lisible pour tous.",
+                  "ActuWorld is an information network founded in 2024, dedicated to sharing reliable information on any topic, based on each person's passions and interests. Every post requires a visible source, analysed by ASV (ActuWorld Source Verification), which rates publisher transparency and how faithfully the source is reported. Alongside it, a trust score built from community votes makes reliability readable for everyone."
                 )}
               </p>
-            </section>
+            </AnimatedSection>
 
-            {/* Key figures */}
-            <section className="bg-aw-surface rounded-2xl p-8">
-              <h2 className="text-xl font-semibold mb-4">
-                {t("Chiffres clés", "Key Figures")}
-              </h2>
-              <ul className="space-y-3 text-aw-text/80">
-                <li>📅 {t("Fondé en 2024", "Founded in 2024")}</li>
-                <li>🎯 {t("Mission : donner à chacun les outils pour partager avec preuves et explorer avec clarté", "Mission: give everyone the tools to share with proof and explore with clarity")}</li>
-                <li>📱 {t("Application mobile React Native (iOS & Android)", "React Native mobile app (iOS & Android)")}</li>
-                <li>🔍 {t("ASV (ActuWorld Source Verification) : vérification de la cohérence source-contenu", "ASV (ActuWorld Source Verification): source-content consistency check")}</li>
-                <li>💡 {t("Lecture 100% gratuite, sans paywall", "100% free reading, no paywall")}</li>
-              </ul>
-            </section>
+            <AnimatedSection>
+              <h2 className="text-2xl mb-4">{t("Repères clés", "Key facts")}</h2>
+              <dl className="divide-y divide-[var(--aw-border)] border-y border-aw">
+                {facts.map((f) => (
+                  <div key={f.label} className="grid gap-1 py-4 sm:grid-cols-[9rem_1fr] sm:gap-6">
+                    <dt className="font-semibold text-aw-text">{f.label}</dt>
+                    <dd className="text-aw-muted">{f.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </AnimatedSection>
+          </div>
 
-            {/* Brand assets */}
-            <section className="bg-aw-surface rounded-2xl p-8">
-              <h2 className="text-xl font-semibold mb-4">
-                {t("Ressources de marque", "Brand Assets")}
-              </h2>
-              <p className="text-aw-text/80 mb-4">
-                {t(
-                  "Téléchargez nos logos et visuels pour vos articles :",
-                  "Download our logos and visuals for your articles:"
-                )}
-              </p>
+          <aside className="space-y-6">
+            <AnimatedSection className="card p-7">
+              <h2 className="text-xl mb-4">{t("Logo", "Logo")}</h2>
               <div className="flex items-center gap-4">
-                <div className="bg-aw-primary rounded-xl p-4 flex items-center justify-center">
-                  <img src="/logo.svg" alt="ActuWorld logo" className="w-12 h-12" />
-                </div>
+                <img src="/logo.svg" alt="" width={56} height={56} className="w-14 h-14 rounded-xl" />
                 <div>
-                  <p className="font-medium">ActuWorld</p>
-                  <p className="text-sm text-aw-muted">
-                    {t("Couleur principale : #2E5F4A", "Primary color: #2E5F4A")}
+                  <p className="font-semibold text-aw-text">ActuWorld</p>
+                  <p className="text-sm text-aw-muted tabular">
+                    {t("Couleur principale :", "Primary color:")} <span translate="no">#2E5F4A</span>
                   </p>
                 </div>
               </div>
-            </section>
+              <a href="/logo.svg" download="actuworld-logo.svg" className="btn-outline btn-sm mt-6">
+                <Download className="w-4 h-4" aria-hidden="true" />
+                {t("Télécharger le logo (SVG)", "Download the logo (SVG)")}
+              </a>
+            </AnimatedSection>
 
-            {/* Contact */}
-            <section className="bg-aw-surface rounded-2xl p-8">
-              <h2 className="text-xl font-semibold mb-4">
-                {t("Contact presse", "Press Contact")}
-              </h2>
-              <p className="text-aw-text/80">
-                {t(
-                  "Pour toute demande presse, interview ou partenariat média :",
-                  "For any press inquiry, interview or media partnership:"
-                )}
+            <AnimatedSection className="card p-7">
+              <h2 className="text-xl mb-2">{t("Contact presse", "Press contact")}</h2>
+              <p className="text-aw-muted text-[15px]">
+                {t("Demandes presse, interviews, partenariats médias :", "Press requests, interviews, media partnerships:")}
               </p>
-              <p className="mt-3 font-medium text-aw-primary">
-                actuworld.app@outlook.fr
-              </p>
-            </section>
-          </div>
+              <a
+                href={`mailto:${PRESS_EMAIL}?subject=${encodeURIComponent("Presse ActuWorld")}`}
+                className="mt-3 inline-block font-semibold text-aw-primary break-words hover:underline underline-offset-4"
+                translate="no"
+              >
+                {PRESS_EMAIL}
+              </a>
+            </AnimatedSection>
+          </aside>
         </div>
       </Section>
     </PageWrapper>
