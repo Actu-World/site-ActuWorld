@@ -1,10 +1,9 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
-import { lazy, Suspense, useEffect, useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { lazy, Suspense, useEffect } from 'react';
+import { AnimatePresence, MotionConfig } from 'framer-motion';
 import { Navbar } from './components/Navbar';
 import { StudioNavbar } from './components/studio/StudioNavbar';
 import { Footer } from './components/Footer';
-import { PageLoader } from './components/ui/PageLoader';
 import { ScrollProgress } from './components/ui/ScrollProgress';
 import { BackToTop } from './components/ui/BackToTop';
 import { CookieBanner } from './components/ui/CookieBanner';
@@ -33,18 +32,29 @@ const StudioRedactionPage = lazy(() => import('./pages/studio/StudioRedactionPag
 
 // Scroll to top on route change
 function ScrollToTop() {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [pathname]);
+    if (hash) {
+      // Ancre (ex. /#rejoindre) : on attend que la page lazy soit montée
+      let tries = 0;
+      const id = window.setInterval(() => {
+        const el = document.getElementById(hash.slice(1));
+        if (el || ++tries > 20) {
+          window.clearInterval(id);
+          el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 50);
+      return () => window.clearInterval(id);
+    }
+    window.scrollTo({ top: 0 });
+  }, [pathname, hash]);
 
   return null;
 }
 
 export default function App() {
   const location = useLocation();
-  const [isLoading, setIsLoading] = useState(true);
 
   // Environnement Studio : navbar dédiée, pas de footer ni d'habillage
   // « site vitrine » (barre de progression, retour en haut).
@@ -53,23 +63,18 @@ export default function App() {
   // Initialize Google Analytics
   useGoogleAnalytics();
 
-  // Initial page loader
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
-    <>
-      <PageLoader isLoading={isLoading} />
+    <MotionConfig reducedMotion="user">
+      {!isStudio && (
+        <a href="#main" className="skip-link">
+          Aller au contenu
+        </a>
+      )}
       {!isStudio && <ScrollProgress />}
       <ScrollToTop />
       {isStudio ? <StudioNavbar /> : <Navbar />}
-      <main className="overflow-x-clip">
-        <Suspense fallback={<PageLoader isLoading={true} />}>
+      <main id="main" tabIndex={-1} className="overflow-x-clip outline-none">
+        <Suspense fallback={<div className="min-h-[70vh]" aria-busy="true" />}>
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={<HomePage />} />
@@ -105,6 +110,6 @@ export default function App() {
       {!isStudio && <Footer />}
       {!isStudio && <BackToTop />}
       <CookieBanner />
-    </>
+    </MotionConfig>
   );
 }

@@ -34,9 +34,10 @@ export const CookieBanner: React.FC = () => {
           transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
           className="fixed z-50 bottom-4 inset-x-4 md:inset-x-auto md:right-6 md:max-w-md"
         >
-          <div className="glass-enhanced border border-aw rounded-2xl shadow-2xl p-5">
+          {/* Refuser et Accepter ont le même style : poids visuel égal (CNIL) */}
+          <div className="border border-aw-strong bg-aw-bg p-5 rounded-[20px]" style={{ boxShadow: "var(--aw-shadow-lg)" }}>
             <div className="flex items-start gap-3">
-              <span className="w-9 h-9 rounded-xl bg-aw-success flex items-center justify-center shrink-0">
+              <span className="w-9 h-9 rounded-[10px] bg-aw-success flex items-center justify-center shrink-0" aria-hidden="true">
                 <Cookie className="w-5 h-5 text-aw-primary" />
               </span>
               <div>
@@ -48,7 +49,7 @@ export const CookieBanner: React.FC = () => {
                     "Nous utilisons des cookies de mesure d'audience (Google Analytics) uniquement avec ton accord. La lecture du site reste possible sans. ",
                     "We use analytics cookies (Google Analytics) only with your consent. You can browse the site without them. "
                   )}
-                  <Link to="/privacy" className="text-aw-primary underline">
+                  <Link to="/privacy" className="link">
                     {t("En savoir plus", "Learn more")}
                   </Link>
                   .
@@ -56,10 +57,10 @@ export const CookieBanner: React.FC = () => {
               </div>
             </div>
             <div className="mt-4 flex gap-3">
-              <button onClick={refuse} className="btn-outline flex-1 py-2 text-sm">
+              <button type="button" onClick={refuse} className="btn-outline btn-sm flex-1">
                 {t("Refuser", "Decline")}
               </button>
-              <button onClick={accept} className="btn-primary flex-1 py-2 text-sm">
+              <button type="button" onClick={accept} className="btn-outline btn-sm flex-1">
                 {t("Accepter", "Accept")}
               </button>
             </div>

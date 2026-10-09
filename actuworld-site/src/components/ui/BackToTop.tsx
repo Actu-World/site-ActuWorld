@@ -14,7 +14,7 @@ export const BackToTop = () => {
       }
     };
 
-    window.addEventListener("scroll", toggleVisibility);
+    window.addEventListener("scroll", toggleVisibility, { passive: true });
     return () => window.removeEventListener("scroll", toggleVisibility);
   }, []);
 
@@ -29,16 +29,15 @@ export const BackToTop = () => {
     <AnimatePresence>
       {isVisible && (
         <motion.button
-          initial={{ opacity: 0, scale: 0.5, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.5, y: 20 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 12 }}
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-aw-primary text-on-primary shadow-lg flex items-center justify-center hover:bg-aw-primary/90 transition-colors"
+          className="fixed bottom-6 right-6 z-40 w-11 h-11 rounded-xl border border-aw-strong bg-aw-bg text-aw-text flex items-center justify-center hover:border-aw-primary hover:text-aw-primary"
+          style={{ boxShadow: "var(--aw-shadow-sm)" }}
           aria-label="Retour en haut"
         >
-          <ArrowUp className="w-5 h-5" />
+          <ArrowUp className="w-5 h-5" aria-hidden="true" />
         </motion.button>
       )}
     </AnimatePresence>

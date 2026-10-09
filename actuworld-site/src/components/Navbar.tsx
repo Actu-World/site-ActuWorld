@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Mail, Menu, X, Sun, Moon } from 'lucide-react';
+import { Menu, X, Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -9,6 +9,7 @@ import { Logo } from './Logo';
 export const Navbar: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const { language, setLanguage, isEnglish } = useLanguage();
+  const t = (fr: string, en: string) => (isEnglish ? en : fr);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
@@ -20,185 +21,152 @@ export const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Le menu mobile se referme à chaque navigation et avec Échap
+  useEffect(() => setMobileOpen(false), [location.pathname]);
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setMobileOpen(false);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [mobileOpen]);
+
   const navLinks = [
-    { href: "/app", label: isEnglish ? "App" : "L'App" },
-    { href: "/reco-src", label: "ASV" },
-    { href: "/faq", label: "FAQ" },
-    { href: "/partenaires", label: isEnglish ? "Partners" : "Partenaires" },
+    { href: '/app', label: t("L'app", 'The app') },
+    { href: '/reco-src', label: 'ASV' },
+    { href: '/faq', label: 'FAQ' },
+    { href: '/partenaires', label: t('Partenaires', 'Partners') },
+    { href: '/contact', label: 'Contact' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
+  const themeLabel = theme === 'dark' ? t('Passer en mode clair', 'Switch to light mode') : t('Passer en mode sombre', 'Switch to dark mode');
 
   return (
     <header
-      className={`sticky top-0 z-40 glass border-b transition-all duration-300 ${
-        scrolled ? 'border-aw shadow-[0_4px_24px_rgba(0,0,0,0.06)]' : 'border-transparent'
+      className={`sticky top-0 z-40 glass border-b transition-[border-color,box-shadow] duration-300 ${
+        scrolled ? 'border-aw' : 'border-transparent'
       }`}
-      role="banner"
+      style={scrolled ? { boxShadow: 'var(--aw-shadow-sm)' } : undefined}
     >
-      <div className="max-w-7xl mx-auto container-px h-16 flex items-center justify-between">
-        <Link to="/" aria-label={isEnglish ? 'ActuWorld home' : 'Accueil ActuWorld'}>
-          <Logo
-            size={36}
-            withText
-            orbit
-            textClassName="text-lg md:text-xl text-aw-text"
-          />
+      <div className="max-w-7xl mx-auto container-px h-16 flex items-center justify-between gap-6">
+        <Link to="/" aria-label={t('Accueil ActuWorld', 'ActuWorld home')} className="rounded-lg">
+          <Logo size={34} withText glow={false} textClassName="text-lg md:text-xl text-aw-text" />
         </Link>
 
-        {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-6 text-[15px]" aria-label={isEnglish ? 'Main navigation' : 'Navigation principale'}>
+        {/* Navigation bureau */}
+        <nav className="hidden lg:flex items-center gap-1" aria-label={t('Navigation principale', 'Main navigation')}>
           {navLinks.map((link) => (
             <Link
               key={link.href}
               to={link.href}
-              className={`relative transition-colors font-medium ${
-                isActive(link.href)
-                  ? 'text-aw-primary'
-                  : 'text-aw-muted hover:text-aw-primary'
+              className={`relative px-3 py-2 rounded-lg text-[15px] font-medium ${
+                isActive(link.href) ? 'text-aw-text' : 'text-aw-muted hover:text-aw-text'
               }`}
-              aria-current={isActive(link.href) ? "page" : undefined}
+              aria-current={isActive(link.href) ? 'page' : undefined}
             >
               {link.label}
               {isActive(link.href) && (
-                <motion.div
+                <motion.span
                   layoutId="navbar-indicator"
-                  className="absolute -bottom-1 left-0 right-0 h-0.5 bg-aw-primary rounded-full"
+                  className="absolute left-3 right-3 -bottom-[13px] h-[2px] bg-aw-primary"
                   aria-hidden="true"
                 />
               )}
             </Link>
           ))}
-          <Link to="/contact" className="btn-primary text-sm px-4 py-2" aria-label={isEnglish ? 'Go to contact page' : 'Aller à la page de contact'}>
-            <Mail className="w-4 h-4 mr-2" aria-hidden="true" /> {isEnglish ? 'Contact' : 'Contact'}
-          </Link>
-
-          <div className="ml-1 flex items-center gap-1 rounded-lg border border-aw p-1" role="group" aria-label={isEnglish ? 'Language selector' : 'Sélecteur de langue'}>
-            <button
-              onClick={() => setLanguage('fr')}
-              className={`px-2 py-1 text-xs rounded-md transition-colors ${language === 'fr' ? 'bg-aw-primary text-on-primary' : 'text-aw-muted hover:text-aw-text'}`}
-              aria-pressed={language === 'fr'}
-            >
-              FR
-            </button>
-            <button
-              onClick={() => setLanguage('en')}
-              className={`px-2 py-1 text-xs rounded-md transition-colors ${language === 'en' ? 'bg-aw-primary text-on-primary' : 'text-aw-muted hover:text-aw-text'}`}
-              aria-pressed={language === 'en'}
-            >
-              EN
-            </button>
-          </div>
-
-          {/* Theme toggle */}
-          <motion.button
-            onClick={toggleTheme}
-            className="ml-2 w-9 h-9 rounded-lg border border-aw flex items-center justify-center hover:bg-aw-surface transition-colors"
-            aria-label={theme === 'dark' ? (isEnglish ? 'Switch to light mode' : 'Passer en mode clair') : (isEnglish ? 'Switch to dark mode' : 'Passer en mode sombre')}
-            title={theme === 'dark' ? (isEnglish ? 'Light mode' : 'Mode clair') : (isEnglish ? 'Dark mode' : 'Mode sombre')}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <AnimatePresence mode="wait">
-              {theme === 'dark' ? (
-                <motion.div
-                  key="sun"
-                  initial={{ rotate: -90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  exit={{ rotate: 90, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  aria-hidden="true"
-                >
-                  <Sun className="w-5 h-5" />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="moon"
-                  initial={{ rotate: 90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  exit={{ rotate: -90, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  aria-hidden="true"
-                >
-                  <Moon className="w-5 h-5" />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.button>
         </nav>
 
-        {/* Mobile menu button */}
-        <div className="flex items-center gap-2 md:hidden">
-          <motion.button
-            onClick={toggleTheme}
-            className="p-2 text-aw-text"
-            aria-label={theme === 'dark' ? (isEnglish ? 'Switch to light mode' : 'Passer en mode clair') : (isEnglish ? 'Switch to dark mode' : 'Passer en mode sombre')}
-            whileTap={{ scale: 0.95 }}
-          >
-            {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          </motion.button>
+        <div className="hidden lg:flex items-center gap-2">
+          <div className="flex items-center rounded-[10px] border border-aw p-0.5" role="group" aria-label={t('Langue', 'Language')}>
+            {(['fr', 'en'] as const).map((lng) => (
+              <button
+                key={lng}
+                type="button"
+                onClick={() => setLanguage(lng)}
+                className={`px-2.5 py-1 text-xs font-semibold rounded-lg ${
+                  language === lng ? 'bg-aw-surface text-aw-text' : 'text-aw-muted hover:text-aw-text'
+                }`}
+                aria-pressed={language === lng}
+                lang={lng}
+              >
+                {lng.toUpperCase()}
+              </button>
+            ))}
+          </div>
+
           <button
-            className="px-2 py-1 text-xs rounded border border-aw text-aw-muted"
-            onClick={() => setLanguage(language === 'fr' ? 'en' : 'fr')}
-            aria-label={isEnglish ? 'Change language' : 'Changer la langue'}
+            type="button"
+            onClick={toggleTheme}
+            className="w-9 h-9 rounded-[10px] border border-aw flex items-center justify-center text-aw-muted hover:text-aw-text hover:border-aw-strong"
+            aria-label={themeLabel}
+            title={themeLabel}
           >
-            {language.toUpperCase()}
+            {theme === 'dark' ? <Sun className="w-[18px] h-[18px]" aria-hidden="true" /> : <Moon className="w-[18px] h-[18px]" aria-hidden="true" />}
+          </button>
+
+          <Link to="/#rejoindre" className="btn-primary btn-sm ml-1">
+            {t('Être prévenu', 'Get notified')}
+          </Link>
+        </div>
+
+        {/* Commandes mobiles */}
+        <div className="flex items-center gap-1 lg:hidden">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="w-10 h-10 flex items-center justify-center text-aw-text rounded-lg"
+            aria-label={themeLabel}
+          >
+            {theme === 'dark' ? <Sun className="w-5 h-5" aria-hidden="true" /> : <Moon className="w-5 h-5" aria-hidden="true" />}
           </button>
           <button
-            className="p-2 text-aw-text"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label={isEnglish ? 'Menu' : 'Menu'}
+            type="button"
+            className="h-10 px-2 text-xs font-semibold rounded-lg text-aw-muted"
+            onClick={() => setLanguage(language === 'fr' ? 'en' : 'fr')}
+            aria-label={t('Passer en anglais', 'Switch to French')}
           >
-            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {language === 'fr' ? 'EN' : 'FR'}
+          </button>
+          <button
+            type="button"
+            className="w-10 h-10 flex items-center justify-center text-aw-text rounded-lg"
+            onClick={() => setMobileOpen((o) => !o)}
+            aria-label={mobileOpen ? t('Fermer le menu', 'Close menu') : t('Ouvrir le menu', 'Open menu')}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-nav"
+          >
+            {mobileOpen ? <X className="w-6 h-6" aria-hidden="true" /> : <Menu className="w-6 h-6" aria-hidden="true" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile nav */}
+      {/* Menu mobile */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden glass border-t border-aw overflow-hidden"
+            id="mobile-nav"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="lg:hidden border-t border-aw bg-aw-bg overscroll-contain"
           >
-            <nav className="flex flex-col p-4 space-y-3" aria-label={isEnglish ? 'Mobile navigation' : 'Navigation mobile'}>
-              {navLinks.map((link, i) => (
-                <motion.div
-                  key={link.href}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                >
-                  <Link
-                    to={link.href}
-                    className={`block py-2 transition-colors font-medium ${
-                      isActive(link.href)
-                        ? 'text-aw-primary'
-                        : 'text-aw-muted hover:text-aw-primary'
-                    }`}
-                    onClick={() => setMobileOpen(false)}
-                    aria-current={isActive(link.href) ? "page" : undefined}
-                  >
-                    {link.label}
-                  </Link>
-                </motion.div>
-              ))}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: navLinks.length * 0.05 }}
-              >
+            <nav className="max-w-7xl mx-auto container-px py-4 flex flex-col" aria-label={t('Navigation mobile', 'Mobile navigation')}>
+              {navLinks.map((link) => (
                 <Link
-                  to="/contact"
-                  className="btn-primary text-sm px-4 py-2 text-center block"
-                  onClick={() => setMobileOpen(false)}
-                  aria-label={isEnglish ? 'Go to contact page' : 'Aller à la page de contact'}
+                  key={link.href}
+                  to={link.href}
+                  className={`py-3 text-lg font-medium border-b border-aw last:border-0 ${
+                    isActive(link.href) ? 'text-aw-primary' : 'text-aw-text'
+                  }`}
+                  aria-current={isActive(link.href) ? 'page' : undefined}
                 >
-                  <Mail className="w-4 h-4 mr-2 inline" aria-hidden="true" /> {isEnglish ? 'Contact' : 'Contact'}
+                  {link.label}
                 </Link>
-              </motion.div>
+              ))}
+              <Link to="/#rejoindre" className="btn-primary mt-4">
+                {t('Être prévenu', 'Get notified')}
+              </Link>
             </nav>
           </motion.div>
         )}

@@ -12,7 +12,7 @@ interface PageMetaProps {
 export function PageMeta({ title, description, path, image = '/og-image.png', noindex = false }: PageMetaProps) {
   useEffect(() => {
     // Update title
-    document.title = `${title} — ActuWorld`;
+    document.title = `${title} | ActuWorld`;
 
     // Update meta description
     const metaDescription = document.querySelector('meta[name="description"]');

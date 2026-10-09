@@ -5,47 +5,82 @@ import { resetConsent } from '../hooks/useCookieConsent';
 
 export const Footer: React.FC = () => {
   const { isEnglish } = useLanguage();
+  const t = (fr: string, en: string) => (isEnglish ? en : fr);
   const year = new Date().getFullYear();
+
+  const explore = [
+    { to: '/app', label: t("L'app", 'The app') },
+    { to: '/reco-src', label: 'ASV' },
+    { to: '/about', label: t('À propos', 'About') },
+    { to: '/faq', label: 'FAQ' },
+    { to: '/partenaires', label: t('Partenaires', 'Partners') },
+    { to: '/press', label: t('Presse', 'Press') },
+    { to: '/contact', label: 'Contact' },
+  ];
+
+  const legal = [
+    { to: '/privacy', label: t('Confidentialité', 'Privacy') },
+    { to: '/terms', label: t("Conditions d'utilisation", 'Terms of use') },
+    { to: '/mentions-legales', label: t('Mentions légales', 'Legal notice') },
+    { to: '/securite-enfants', label: t('Sécurité des mineurs', 'Child safety') },
+    { to: '/suppression-compte', label: t('Supprimer mon compte', 'Delete my account') },
+  ];
+
+  const linkCls = 'text-aw-muted hover:text-aw-text';
+
   return (
-    <footer className="py-10 border-t border-aw bg-aw-surface">
-      <div className="max-w-7xl mx-auto container-px">
-        <div className="flex flex-col md:flex-row items-center gap-6">
-          {/* Logo + © calés à gauche ; les liens se centrent dans l'espace restant */}
-          <div className="flex flex-none items-center gap-2">
-            <Logo size={28} withText textClassName="body-semi text-aw-text" glow={false} />
-            <span className="caption text-aw-muted">© {year}</span>
+    <footer className="border-t border-aw bg-aw-surface">
+      <div className="max-w-6xl mx-auto container-px py-14 md:py-16">
+        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
+          <div className="max-w-xs">
+            <Logo size={30} withText glow={false} textClassName="text-lg text-aw-text" />
+            <p className="mt-4 text-[15px] text-aw-muted leading-relaxed">
+              {t(
+                "Le réseau de l'information où chaque source est visible.",
+                'The information network where every source is visible.'
+              )}
+            </p>
+            <a
+              href="https://instagram.com/actuworld_fr"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-block text-[15px] font-semibold text-aw-primary hover:underline underline-offset-4"
+            >
+              Instagram @actuworld_fr
+            </a>
           </div>
 
-          <div className="flex-1 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
-            <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm">
-              <Link to="/" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'Home' : 'Accueil'}</Link>
-              <Link to="/about" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'About' : 'À propos'}</Link>
-              <Link to="/app" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'App' : "L'App"}</Link>
-              <Link to="/reco-src" className="text-aw-muted hover:text-aw-primary transition-colors">ASV</Link>
-              <Link to="/faq" className="text-aw-muted hover:text-aw-primary transition-colors">FAQ</Link>
-              <Link to="/partenaires" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'Partners' : 'Partenaires'}</Link>
-              <Link to="/contact" className="text-aw-muted hover:text-aw-primary transition-colors">{isEnglish ? 'Contact' : 'Contact'}</Link>
-            </nav>
+          <nav aria-label={t('Explorer', 'Explore')}>
+            <h2 className="text-sm font-semibold text-aw-text mb-4" style={{ fontFamily: 'Urbanist, sans-serif' }}>
+              {t('Explorer', 'Explore')}
+            </h2>
+            <ul className="space-y-2.5 text-[15px]">
+              {explore.map((l) => (
+                <li key={l.to}><Link to={l.to} className={linkCls}>{l.label}</Link></li>
+              ))}
+            </ul>
+          </nav>
 
-            <span
-              aria-hidden="true"
-              className="w-px h-5 rounded-full self-center"
-              style={{
-                background:
-                  'linear-gradient(to bottom, transparent, color-mix(in srgb, var(--aw-primary) 60%, transparent), transparent)',
-              }}
-            />
-
-            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 caption text-aw-muted">
-              <Link to="/privacy" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Privacy' : 'Confidentialité'}</Link>
-              <Link to="/terms" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Terms' : 'Conditions'}</Link>
-              <Link to="/mentions-legales" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Legal' : 'Mentions légales'}</Link>
-              <Link to="/suppression-compte" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Delete account' : 'Suppression de compte'}</Link>
-              <button onClick={() => resetConsent()} className="hover:text-aw-primary transition-colors">Cookies</button>
-              <Link to="/press" className="hover:text-aw-primary transition-colors">{isEnglish ? 'Press' : 'Presse'}</Link>
-            </div>
-          </div>
+          <nav aria-label={t('Informations légales', 'Legal')}>
+            <h2 className="text-sm font-semibold text-aw-text mb-4" style={{ fontFamily: 'Urbanist, sans-serif' }}>
+              {t('Légal', 'Legal')}
+            </h2>
+            <ul className="space-y-2.5 text-[15px]">
+              {legal.map((l) => (
+                <li key={l.to}><Link to={l.to} className={linkCls}>{l.label}</Link></li>
+              ))}
+              <li>
+                <button type="button" onClick={() => resetConsent()} className={linkCls}>
+                  {t('Gérer les cookies', 'Cookie settings')}
+                </button>
+              </li>
+            </ul>
+          </nav>
         </div>
+
+        <p className="mt-12 pt-6 border-t border-aw caption text-aw-muted">
+          © {year} ActuWorld
+        </p>
       </div>
     </footer>
   );

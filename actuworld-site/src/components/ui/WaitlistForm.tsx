@@ -1,176 +1,114 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { Mail, CheckCircle2, Loader2, Sparkles, Instagram } from "lucide-react";
+import { useId, useState } from "react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import { useLanguage } from "../../i18n/LanguageContext";
 import { STUDIO_API_URL } from "../../lib/studio/config";
 
 interface WaitlistFormProps {
-  variant?: "inline" | "card";
   className?: string;
+  /** Variante sur fond sombre (panneau vert) */
+  tone?: "default" | "dark";
 }
 
-export const WaitlistForm = ({ variant = "card", className = "" }: WaitlistFormProps) => {
+/**
+ * Inscription à l'alerte de sortie sur les stores.
+ * Réutilise l'endpoint `/waitlist/join` (source `site_home`, inchangée pour le suivi).
+ */
+export const WaitlistForm = ({ className = "", tone = "default" }: WaitlistFormProps) => {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
+  const inputId = useId();
+  const msgId = useId();
 
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error" | "invalid">("idle");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!email || !email.includes("@")) {
-      setStatus("error");
+    const value = email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      setStatus("invalid");
+      document.getElementById(inputId)?.focus();
       return;
     }
 
     setStatus("loading");
-
     try {
       const res = await fetch(`${STUDIO_API_URL}/waitlist/join`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: email.trim(),
-          locale: isEnglish ? "en" : "fr",
-          source: "site_home",
-        }),
+        body: JSON.stringify({ email: value, locale: isEnglish ? "en" : "fr", source: "site_home" }),
       });
-
       if (!res.ok) {
         setStatus("error");
         return;
       }
-
       setStatus("success");
       setEmail("");
-
-      // Reset après 5 secondes
-      setTimeout(() => {
-        setStatus("idle");
-      }, 5000);
     } catch {
       setStatus("error");
     }
   };
 
-  if (variant === "inline") {
+  const dark = tone === "dark";
+  const hasError = status === "invalid" || status === "error";
+
+  if (status === "success") {
     return (
-      <div className={`space-y-4 ${className}`}>
-        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-aw-muted" />
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder={t("Votre adresse email", "Your email address")}
-              className="w-full pl-12 pr-4 py-3 rounded-xl border border-aw bg-aw-bg text-aw-text placeholder:text-aw-muted focus:outline-none focus:ring-2 focus:ring-aw-accent transition-all"
-              disabled={status === "loading" || status === "success"}
-            />
-          </div>
-          <motion.button
-            type="submit"
-            disabled={status === "loading" || status === "success"}
-            className="btn-primary whitespace-nowrap disabled:opacity-70"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            {status === "loading" ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : status === "success" ? (
-              <>
-                <CheckCircle2 className="w-5 h-5 mr-2" />
-                {t("Inscrit !", "Joined!")}
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-5 h-5 mr-2" />
-                {t("Rejoindre la beta", "Join the beta")}
-              </>
-            )}
-          </motion.button>
-        </form>
-
-        {status === "error" && (
-          <p className="text-sm text-red-500 text-center" role="alert">
-            {t(
-              "Inscription impossible pour le moment, vérifie ton email ou réessaie plus tard.",
-              "Sign-up failed for now — check your email or try again later."
-            )}
-          </p>
-        )}
-
-        {/* Instagram link */}
-        <div className="flex items-center justify-center gap-2 text-sm">
-          <span className="text-aw-muted">{t("Suivez-nous sur", "Follow us on")}</span>
-          <motion.a
-            href="https://instagram.com/actuworld_fr"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-aw-primary font-medium hover:underline"
-            whileHover={{ scale: 1.05 }}
-          >
-            <Instagram className="w-4 h-4" />
-            @actuworld_fr
-          </motion.a>
-        </div>
-      </div>
+      <p
+        className={`flex items-center gap-3 text-[17px] font-semibold ${dark ? "text-white" : "text-aw-text"} ${className}`}
+        role="status"
+      >
+        <CheckCircle2 className={`w-6 h-6 shrink-0 ${dark ? "text-[#A8D5BA]" : "text-aw-primary"}`} aria-hidden="true" />
+        {t("C'est noté. On t'écrit dès la sortie.", "Got it. We'll email you at launch.")}
+      </p>
     );
   }
 
   return (
-    <motion.div
-      className={`card p-8 ${className}`}
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-    >
-      <div className="text-center mb-6">
-        <motion.div
-          className="w-14 h-14 mx-auto rounded-2xl bg-aw-success flex items-center justify-center mb-4"
-          whileHover={{ scale: 1.1, rotate: 5 }}
+    <form onSubmit={handleSubmit} noValidate className={className}>
+      <label htmlFor={inputId} className={`block text-sm font-semibold mb-2 ${dark ? "text-white/90" : "text-aw-text"}`}>
+        {t("Ton adresse e-mail", "Your email address")}
+      </label>
+      <div className="flex flex-col sm:flex-row gap-3">
+        <input
+          id={inputId}
+          type="email"
+          name="email"
+          inputMode="email"
+          autoComplete="email"
+          spellCheck={false}
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (hasError) setStatus("idle");
+          }}
+          placeholder={t("prenom@exemple.fr…", "name@example.com…")}
+          aria-invalid={hasError || undefined}
+          aria-describedby={msgId}
+          className={`field flex-1 ${dark ? "!bg-white/95 !text-[#1B3528] !border-transparent" : ""}`}
+        />
+        <button
+          type="submit"
+          disabled={status === "loading"}
+          className={dark ? "btn-primary !bg-[#A8D5BA] !text-[#0F1512] hover:!bg-white" : "btn-primary"}
         >
-          <Mail className="w-7 h-7 text-aw-primary" />
-        </motion.div>
-        <h3 className="text-xl font-bold mb-2">{t("Rejoins la communauté", "Join the community")}</h3>
-        <p className="text-aw-muted text-sm">
-          {t("Sois parmi les premiers à publier, explorer et partager avec preuves sur ActuWorld.", "Be among the first to publish, explore, and share with proof on ActuWorld.")}
-        </p>
+          {status === "loading" ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+              {t("Envoi…", "Sending…")}
+            </>
+          ) : (
+            t("Me prévenir", "Notify me")
+          )}
+        </button>
       </div>
-
-      <div className="text-center">
-        <motion.a
-          href="mailto:actuworld.app@outlook.fr?subject=Rejoindre la beta ActuWorld"
-          className="btn-primary w-full inline-flex items-center justify-center"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          <Sparkles className="w-5 h-5 mr-2" />
-          {t("Rejoindre la beta", "Join the beta")}
-        </motion.a>
-      </div>
-
-      {/* Instagram */}
-      <div className="mt-6 pt-6 border-t border-aw">
-        <motion.a
-          href="https://instagram.com/actuworld_fr"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center gap-3 p-3 rounded-xl bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-orange-500/10 hover:from-purple-500/20 hover:via-pink-500/20 hover:to-orange-500/20 transition-all"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 flex items-center justify-center">
-            <Instagram className="w-5 h-5 text-white" />
-          </div>
-          <div className="text-left">
-            <div className="text-sm font-semibold text-aw-text">{t("Suivez-nous sur Instagram", "Follow us on Instagram")}</div>
-            <div className="text-xs text-aw-muted">@actuworld_fr</div>
-          </div>
-        </motion.a>
-      </div>
-    </motion.div>
+      <p id={msgId} aria-live="polite" className={`mt-2 text-sm min-h-[1.25rem] ${hasError ? (dark ? "text-[#FFB4A8]" : "text-red-700 dark:text-red-400") : dark ? "text-white/70" : "text-aw-muted"}`}>
+        {status === "invalid"
+          ? t("Cette adresse ne semble pas valide. Vérifie-la et réessaie.", "This address doesn't look valid. Check it and try again.")
+          : status === "error"
+            ? t("L'inscription n'a pas abouti. Réessaie dans un instant.", "Sign-up didn't go through. Try again in a moment.")
+            : t("On t'écrit dès que l'app sort sur les stores.", "We'll email you as soon as the app is on the stores.")}
+      </p>
+    </form>
   );
 };

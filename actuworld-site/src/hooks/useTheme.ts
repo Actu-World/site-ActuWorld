@@ -26,7 +26,10 @@ export const useTheme = () => {
       root.classList.remove("dark");
     }
 
-    localStorage.setItem("actuworld-theme", theme);
+    // Barre d'adresse mobile et contrôles natifs alignés sur le fond de page
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute("content", theme === "dark" ? "#0F1512" : "#FAF4EB");
   }, [theme]);
 
   // Listen for system preference changes
@@ -45,8 +48,17 @@ export const useTheme = () => {
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
+  // On ne mémorise que le choix explicite : sans clic, le site suit le système
   const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+    setTheme((prev) => {
+      const next = prev === "light" ? "dark" : "light";
+      try {
+        localStorage.setItem("actuworld-theme", next);
+      } catch {
+        /* stockage indisponible (navigation privée) : le choix vaut pour la session */
+      }
+      return next;
+    });
   };
 
   return { theme, setTheme, toggleTheme };
