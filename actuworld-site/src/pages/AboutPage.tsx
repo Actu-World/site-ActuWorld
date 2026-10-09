@@ -46,11 +46,11 @@ export default function AboutPage() {
       />
 
       {/* EN-TÊTE */}
-      <Section className="pt-20 md:pt-24 pb-16 md:pb-20">
-        <AnimatedSection className="max-w-3xl">
+      <Section className="pt-10 md:pt-24 pb-12 md:pb-20">
+        <AnimatedSection className="max-w-3xl mx-auto lg:mx-0 text-center lg:text-left">
           <p className="eyebrow mb-4">{t("À propos", "About")}</p>
           <H2 as="h1">{t("Partager l'information avec ses preuves", "Sharing information with its proof")}</H2>
-          <p className="lead mt-5">
+          <p className="lead mt-5 mx-auto lg:mx-0">
             {t(
               "ActuWorld est le réseau de l'information où chaque publication s'appuie sur une source visible, analysée par ASV, puis jugée par la communauté.",
               "ActuWorld is the information network where every post is backed by a visible source, checked by ASV, then judged by the community."
@@ -68,7 +68,7 @@ export default function AboutPage() {
               "Give everyone the means to check before believing, and to share what they care about without giving up rigor."
             )}
           </p>
-          <p className="lead mt-8">
+          <p className="lead mt-6 md:mt-8">
             {t(
               "Les plateformes actuelles récompensent le buzz, pas la preuve. Résultat : confusion, perte de confiance et créateurs sérieux invisibles. ActuWorld inverse la logique : ici, ce sont tes sources qui parlent pour toi.",
               "Today's platforms reward hype, not proof. The result: confusion, lost trust and serious creators left invisible. ActuWorld flips the logic: here, your sources speak for you."
@@ -79,15 +79,15 @@ export default function AboutPage() {
 
       {/* VALEURS : liste éditoriale */}
       <Section>
-        <div className="grid gap-10 lg:grid-cols-[1fr_2fr] lg:gap-16 lg:items-center">
+        <div className="grid gap-6 lg:grid-cols-[1fr_2fr] lg:gap-16 lg:items-center">
           <AnimatedSection>
             <H2>{t("Ce qui nous guide", "What guides us")}</H2>
           </AnimatedSection>
           <AnimatedSection delay={0.1}>
             <ul className="divide-y divide-[var(--aw-border)] border-y border-aw">
               {values.map((v) => (
-                <li key={v.title} className="grid gap-2 py-7 md:grid-cols-[14rem_1fr] md:gap-8">
-                  <h3 className="text-xl text-aw-text">{v.title}</h3>
+                <li key={v.title} className="grid gap-1.5 md:gap-2 py-5 md:py-7 md:grid-cols-[14rem_1fr] md:gap-8">
+                  <h3 className="text-lg md:text-xl text-aw-text">{v.title}</h3>
                   <p className="text-aw-muted leading-relaxed max-w-prose">{v.desc}</p>
                 </li>
               ))}
@@ -98,19 +98,19 @@ export default function AboutPage() {
 
       {/* SOUTENIR LE PROJET */}
       <Section className="bg-aw-surface">
-        <AnimatedSection className="max-w-2xl">
+        <AnimatedSection className="max-w-2xl mx-auto lg:mx-0 text-center lg:text-left">
           <H2>{t("Un projet étudiant qui a besoin de toi", "A student project that needs you")}</H2>
-          <p className="lead mt-5">
+          <p className="lead mt-5 mx-auto lg:mx-0">
             {t(
               "ActuWorld est porté par un étudiant déterminé à changer notre rapport à l'information. Média, journaliste, éducateur, investisseur ou simple curieux : ton soutien et ta visibilité font la différence.",
               "ActuWorld is led by a student determined to change our relationship with information. Media, journalist, educator, investor or simply curious: your support and visibility make the difference."
             )}
           </p>
-          <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
-            <Link to="/partenaires" className="btn-primary">
+          <div className="mt-8 flex flex-col sm:flex-row sm:flex-wrap items-center justify-center lg:justify-start gap-x-8 gap-y-3">
+            <Link to="/partenaires" className="btn-primary w-full sm:w-auto justify-center">
               {t("Devenir partenaire", "Become a partner")}
             </Link>
-            <Link to="/press" className="btn-link">
+            <Link to="/press" className="btn-link py-2">
               {t("Espace presse", "Press room")} <ChevronRight className="w-4 h-4" aria-hidden="true" />
             </Link>
           </div>
