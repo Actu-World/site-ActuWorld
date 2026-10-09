@@ -123,16 +123,19 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Trois cartes (empilées sur téléphone, côte à côte dès 768 px) */}
-      <section aria-label={t("Nos principes", "Our principles")} className="pb-14 md:pb-20">
-        <ul className="max-w-6xl mx-auto container-px grid gap-3 md:grid-cols-3 md:gap-4">
+      {/* PRINCIPES : cartes empilées sur téléphone ; dès 768 px, bandeau à filets sous le hero */}
+      <section
+        aria-label={t("Nos principes", "Our principles")}
+        className="pb-14 md:pb-0 md:border-y md:border-[var(--aw-border)]"
+      >
+        <ul className="max-w-6xl mx-auto container-px grid gap-3 md:gap-0 md:grid-cols-3">
           {principles.map((p) => (
             <li
               key={p.label}
-              className="flex items-start gap-4 p-4 md:p-6 rounded-[var(--aw-radius-card)] border border-[var(--aw-border)] bg-[var(--aw-surface)]"
+              className="flex items-start gap-4 p-4 rounded-[var(--aw-radius-card)] border border-[var(--aw-border)] bg-[var(--aw-surface)] md:rounded-none md:border-0 md:bg-transparent md:px-6 md:py-6 md:first:pl-0 md:last:pr-0 md:[&+&]:border-l md:[&+&]:border-[var(--aw-border)]"
             >
-              <span className="w-10 h-10 rounded-xl bg-[var(--aw-success)] flex items-center justify-center shrink-0">
-                <p.icon className="w-5 h-5 text-aw-primary" aria-hidden="true" />
+              <span className="w-10 h-10 rounded-xl bg-[var(--aw-success)] flex items-center justify-center shrink-0 md:w-auto md:h-auto md:bg-transparent">
+                <p.icon className="w-5 h-5 md:mt-0.5 text-aw-primary" aria-hidden="true" />
               </span>
               <span className="flex-1">
                 <span className="block font-semibold text-aw-text">{p.label}</span>
