@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Section } from "../components/Section";
@@ -114,6 +114,39 @@ export default function FaqPage() {
     [isEnglish]
   );
 
+  // Sommaire : la catégorie en cours de lecture est surlignée. Une section est
+  // « active » dès que son titre passe le tiers haut de l'écran ; tout en bas
+  // de page, c'est la dernière (elle n'atteint jamais ce repère).
+  const groupIds = groups.map((g) => g.id).join(",");
+  const [active, setActive] = useState(groups[0].id);
+  useEffect(() => {
+    const ids = groupIds.split(",");
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+      let current = ids[0];
+      if (atBottom) current = ids[ids.length - 1];
+      else
+        for (const id of ids) {
+          const el = document.getElementById(id);
+          if (el && el.getBoundingClientRect().top <= window.innerHeight * 0.33) current = id;
+        }
+      setActive(current);
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [groupIds]);
+
   return (
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
       <PageMeta
@@ -147,7 +180,12 @@ export default function FaqPage() {
                 <li key={g.id}>
                   <a
                     href={`#${g.id}`}
-                    className="block -ml-px border-l-2 border-transparent pl-4 py-1.5 text-[15px] text-aw-muted hover:text-aw-text hover:border-aw-primary"
+                    aria-current={active === g.id ? "true" : undefined}
+                    className={`block -ml-px border-l-2 pl-4 pr-3 py-1.5 rounded-r-lg text-[15px] transition-colors duration-200 ${
+                      active === g.id
+                        ? "border-aw-primary bg-aw-success text-aw-primary font-semibold"
+                        : "border-transparent text-aw-muted hover:text-aw-text hover:border-aw-primary"
+                    }`}
                   >
                     {g.title}
                   </a>
