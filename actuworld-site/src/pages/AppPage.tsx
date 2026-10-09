@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Zap, Newspaper, Unlock, Heart, ChevronRight } from "lucide-react";
+import { Zap, Newspaper, Unlock, Heart, ChevronRight, ChevronDown } from "lucide-react";
 import { Section } from "../components/Section";
 import { PhoneShowcase } from "../components/app/phone/PhoneShowcase";
 import { HowItWorks } from "../components/home/HowItWorks";
@@ -40,12 +41,18 @@ export default function AppPage() {
     },
   ];
 
+  // Les 17 thèmes de l'app (lib/explore/themes.ts), dans le même ordre
   const topics = [
-    t("Géographie", "Geography"), t("Sciences", "Science"), t("Histoire", "History"),
-    t("Politique", "Politics"), t("Économie", "Economy"), t("Technologie", "Technology"),
-    t("Environnement", "Environment"), t("Sport", "Sport"), t("Culture", "Culture"),
-    t("Investigation", "Investigation"),
+    t("Histoire", "History"), t("Sciences", "Science"), t("Technologie & Innovation", "Technology & Innovation"),
+    t("Politique", "Politics"), t("International & Conflits", "World & Conflicts"), t("Économie & Finance", "Economy & Finance"),
+    t("Justice & Faits divers", "Justice & Crime"), t("Musique & Arts", "Music & Arts"), t("Littérature & Philosophie", "Literature & Philosophy"),
+    t("Cinéma & Séries", "Film & TV"), t("Gaming & Esport", "Gaming & Esports"), t("Gastronomie & Cuisine", "Food & Cooking"),
+    t("Voyages & Territoires", "Travel & Places"), t("Environnement & Climat", "Environment & Climate"), t("Société & Social", "Society"),
+    t("Santé & Médecine", "Health & Medicine"), t("Sport", "Sport"),
   ];
+  const TOPICS_PREVIEW = 8;
+  const [showAllTopics, setShowAllTopics] = useState(false);
+  const shownTopics = showAllTopics ? topics : topics.slice(0, TOPICS_PREVIEW);
 
   return (
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
@@ -56,23 +63,23 @@ export default function AppPage() {
       />
 
       {/* HERO : texte à gauche, aperçu de l'app à droite */}
-      <Section className="pt-14 md:pt-20 pb-20">
-        <div className="grid lg:grid-cols-[1.1fr_1fr] gap-14 lg:gap-10 items-center">
-          <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="max-w-xl">
+      <Section className="pt-10 md:pt-20 pb-12 md:pb-20">
+        <div className="grid lg:grid-cols-[1.1fr_1fr] gap-10 lg:gap-10 items-center">
+          <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="max-w-xl mx-auto lg:mx-0 text-center lg:text-left">
             <motion.p variants={fadeInUp} className="eyebrow mb-5">
               {t("Bientôt sur l'App Store et Google Play", "Coming soon to the App Store and Google Play")}
             </motion.p>
             <motion.h1 variants={fadeInUp} className="display">
               {t("ActuWorld, le réseau de l'information", "ActuWorld, the information network")}
             </motion.h1>
-            <motion.p variants={fadeInUp} className="lead mt-6">
+            <motion.p variants={fadeInUp} className="lead mt-5 lg:mt-6 mx-auto lg:mx-0">
               {t("Publie, explore et partage sur tous les sujets, avec des sources visibles et un score de confiance clair.", "Publish, explore and share on any topic, with visible sources and a clear trust score.")}
             </motion.p>
-            <motion.div variants={fadeInUp} className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
-              <Link to="/#rejoindre" className="btn-primary">
+            <motion.div variants={fadeInUp} className="mt-8 flex flex-col sm:flex-row sm:flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-3">
+              <Link to="/#rejoindre" className="btn-primary w-full sm:w-auto justify-center">
                 {t("Être prévenu", "Get notified")}
               </Link>
-              <Link to="/reco-src" className="btn-link">
+              <Link to="/reco-src" className="btn-link py-2">
                 {t("Découvrir ASV", "Discover ASV")} <ChevronRight className="w-4 h-4" aria-hidden="true" />
               </Link>
             </motion.div>
@@ -98,9 +105,9 @@ export default function AppPage() {
             {t("De l'info rapide à l'enquête de fond, sur ce qui te passionne.", "From quick news to in-depth investigation, on what you care about.")}
           </p>
         </AnimatedSection>
-        <div className="mt-12 grid md:grid-cols-2 gap-6">
+        <div className="mt-8 md:mt-12 grid md:grid-cols-2 gap-3 md:gap-6">
           {formats.map((f) => (
-            <AnimatedSection key={f.title} className="card p-7">
+            <AnimatedSection key={f.title} className="card p-6 md:p-7">
               <div className="flex items-center justify-between gap-4">
                 <span className="w-10 h-10 rounded-[10px] bg-aw-success flex items-center justify-center" aria-hidden="true">
                   <f.icon className="w-5 h-5 text-aw-primary" />
@@ -112,18 +119,30 @@ export default function AppPage() {
             </AnimatedSection>
           ))}
         </div>
-        <AnimatedSection className="mt-10">
-          <ul className="flex flex-wrap gap-2" aria-label={t("Exemples de sujets", "Example topics")}>
-            {topics.map((tp) => (
+        <AnimatedSection className="mt-8 md:mt-10">
+          <ul id="app-topics" className="flex flex-wrap gap-2" aria-label={t("Les thèmes de l'app", "The app's topics")}>
+            {shownTopics.map((tp) => (
               <li key={tp} className="rounded-lg border border-aw bg-aw-bg px-3 py-1.5 text-sm font-semibold text-aw-text">{tp}</li>
             ))}
           </ul>
+          <button
+            type="button"
+            onClick={() => setShowAllTopics((v) => !v)}
+            className="btn-link mt-4 py-2"
+            aria-expanded={showAllTopics}
+            aria-controls="app-topics"
+          >
+            {showAllTopics
+              ? t("Voir moins", "Show less")
+              : t(`Voir les ${topics.length} thèmes`, `See all ${topics.length} topics`)}
+            <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showAllTopics ? "rotate-180" : ""}`} aria-hidden="true" />
+          </button>
         </AnimatedSection>
       </Section>
 
       {/* DIFFÉRENCE : affirmation à gauche, deux engagements à droite */}
       <Section id="why" className="bg-aw-surface">
-        <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
           <AnimatedSection>
             <H2>{t("Ce qui nous distingue", "What sets us apart")}</H2>
             <p className="lead mt-4">
@@ -131,7 +150,7 @@ export default function AppPage() {
             </p>
           </AnimatedSection>
 
-          <div className="space-y-5">
+          <div className="space-y-3 md:space-y-5">
             <AnimatedSection className="card p-6">
               <div className="flex items-center gap-3 mb-2">
                 <Unlock className="w-5 h-5 text-aw-primary" aria-hidden="true" />
@@ -162,7 +181,7 @@ export default function AppPage() {
             {t("ASV analyse tes publications, vérifie les sources citées et évalue leur fiabilité. Tu publies en confiance, tes lecteurs jugent en connaissance de cause.", "ASV analyzes your posts, checks the cited sources and rates their reliability. You publish with confidence, your readers judge with full knowledge.")}
           </p>
           <div className="mt-8">
-            <Link to="/reco-src" className="btn-primary">
+            <Link to="/reco-src" className="btn-primary w-full sm:w-auto justify-center">
               {t("Découvrir ASV", "Discover ASV")}
             </Link>
           </div>

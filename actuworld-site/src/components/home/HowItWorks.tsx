@@ -43,7 +43,7 @@ export const HowItWorks: React.FC = () => {
   ];
 
   return (
-    <Section id="how">
+    <Section id="how" className="pt-6 pb-16 md:py-28">
       <AnimatedSection className="max-w-2xl">
         <H2>{t("Comment ça marche", "How it works")}</H2>
         <p className="lead mt-5">
@@ -51,10 +51,10 @@ export const HowItWorks: React.FC = () => {
         </p>
       </AnimatedSection>
 
-      <ol className="mt-12 grid md:grid-cols-3 gap-6">
+      <ol className="mt-8 md:mt-12 grid md:grid-cols-3 gap-3 md:gap-6">
         {steps.map((s, i) => (
           <li key={s.title} className="flex">
-            <AnimatedSection delay={i * 0.08} className="card p-7 flex flex-col w-full">
+            <AnimatedSection delay={i * 0.08} className="card p-6 md:p-7 flex flex-col w-full">
               <div className="flex items-center justify-between gap-4">
                 <span className="w-10 h-10 rounded-[10px] bg-aw-success flex items-center justify-center" aria-hidden="true">
                   <s.icon className="w-5 h-5 text-aw-primary" />

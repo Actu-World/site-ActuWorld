@@ -52,15 +52,16 @@ export const TrustScoreSection: React.FC = () => {
         ? t("Avis partagés", "Opinions split")
         : t("Jugée douteuse", "Seen as doubtful");
 
+  // Paliers du score, du plus bas au plus haut (même ordre que la jauge)
   const legend = [
-    { c: "#16a34a", range: t("70 et plus", "70 and above"), text: t("fiable", "reliable") },
-    { c: "#f59e0b", range: t("De 40 à 69", "40 to 69"), text: t("partagé", "split") },
-    { c: "#ef4444", range: t("Moins de 40", "Below 40"), text: t("douteux", "doubtful") },
+    { range: t("0 à 39", "0 to 39"), text: t("douteux", "doubtful") },
+    { range: t("40 à 69", "40 to 69"), text: t("partagé", "split") },
+    { range: t("70 à 100", "70 to 100"), text: t("fiable", "reliable") },
   ];
 
   return (
     <Section id="confiance" className="bg-aw-surface">
-      <div className="grid lg:grid-cols-[0.8fr_1.2fr] gap-14 items-center">
+      <div className="grid lg:grid-cols-[0.8fr_1.2fr] gap-10 lg:gap-14 items-center">
         <AnimatedSection className="order-2 lg:order-1 flex flex-col items-center">
           <PhoneMockup
             screen="back"
@@ -93,40 +94,55 @@ export const TrustScoreSection: React.FC = () => {
             )}
           </p>
 
-          <ol className="mt-8 space-y-5">
-            <li className="flex gap-4">
-              <span className="w-8 h-8 rounded-lg bg-aw-bg border border-aw flex items-center justify-center text-sm font-bold text-aw-primary shrink-0">1</span>
-              <div>
+          <ol className="mt-8 space-y-3">
+            {/* 1. Le vote : deux pastilles plutôt que des mots colorés dans la phrase */}
+            <li className="rounded-[var(--aw-radius-card)] border border-[var(--aw-border)] bg-[var(--aw-bg)] p-5">
+              <div className="flex items-center gap-3">
+                <span className="w-8 h-8 rounded-lg bg-[var(--aw-success)] flex items-center justify-center text-sm font-bold text-aw-primary shrink-0">1</span>
                 <h3 className="text-lg">{t("Tu votes au verso", "You vote on the back")}</h3>
-                <p className="text-aw-muted mt-1 text-[15px] max-w-prose">
-                  {t("Après avoir lu et ouvert les sources : cette info te paraît", "After reading and opening the sources: does this look")}{" "}
-                  <span className="inline-flex items-center gap-1 font-semibold" style={{ color: "#16a34a" }}>
-                    <CheckCircle2 className="w-4 h-4" aria-hidden="true" /> {t("Fiable", "Reliable")}
-                  </span>{" "}
-                  {t("ou", "or")}{" "}
-                  <span className="inline-flex items-center gap-1 font-semibold" style={{ color: "#ef4444" }}>
-                    <XCircle className="w-4 h-4" aria-hidden="true" /> {t("Douteuse", "Doubtful")}
-                  </span>
-                  {t(" ?", "?")}
-                </p>
+              </div>
+              <p className="text-aw-muted mt-3 text-[15px]">
+                {t("Après avoir lu et ouvert les sources, cette info te paraît :", "After reading and opening the sources, does this look:")}
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <span
+                  className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold"
+                  style={{ color: "#16a34a", background: "rgb(22 163 74 / 0.12)" }}
+                >
+                  <CheckCircle2 className="w-4 h-4" aria-hidden="true" /> {t("Fiable", "Reliable")}
+                </span>
+                <span
+                  className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold"
+                  style={{ color: "#ef4444", background: "rgb(239 68 68 / 0.12)" }}
+                >
+                  <XCircle className="w-4 h-4" aria-hidden="true" /> {t("Douteuse", "Doubtful")}
+                </span>
               </div>
             </li>
-            <li className="flex gap-4">
-              <span className="w-8 h-8 rounded-lg bg-aw-bg border border-aw flex items-center justify-center text-sm font-bold text-aw-primary shrink-0">2</span>
-              <div>
+
+            {/* 2. Le score : texte court + jauge à trois paliers */}
+            <li className="rounded-[var(--aw-radius-card)] border border-[var(--aw-border)] bg-[var(--aw-bg)] p-5">
+              <div className="flex items-center gap-3">
+                <span className="w-8 h-8 rounded-lg bg-[var(--aw-success)] flex items-center justify-center text-sm font-bold text-aw-primary shrink-0">2</span>
                 <h3 className="text-lg">{t("Un score sur 100, sur chaque carte", "A score out of 100, on every card")}</h3>
-                <p className="text-aw-muted mt-1 text-[15px] max-w-prose">
-                  {t(
-                    "C'est la part de votes « Fiable » (50 tant que personne n'a voté). Il s'affiche en chiffre en haut à gauche de la carte, et en barre sur son bord qui monte et descend au fil des votes.",
-                    "It's the share of “Reliable” votes (50 until anyone votes). It shows as a number in the card's top-left corner, and as a bar along its edge that rises and falls as votes come in."
-                  )}
-                </p>
-                <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2" aria-label={t("Couleurs du score", "Score colours")}>
-                  {legend.map((l) => (
-                    <li key={l.range} className="flex items-center gap-2 text-sm">
-                      <span className="w-2.5 h-2.5 rounded-full" style={{ background: l.c }} aria-hidden="true" />
-                      <span className="font-semibold text-aw-text">{l.range}</span>
-                      <span className="text-aw-muted">{l.text}</span>
+              </div>
+              <p className="text-aw-muted mt-3 text-[15px]">
+                {t(
+                  "La part de votes « Fiable », 50 tant que personne n'a voté. Il s'affiche en haut à gauche de la carte, et en barre sur son bord.",
+                  "The share of “Reliable” votes, 50 until anyone votes. It shows in the card's top-left corner, and as a bar along its edge."
+                )}
+              </p>
+              <div className="mt-4" aria-label={t("Couleurs du score", "Score colours")} role="img">
+                <div className="flex h-2 rounded-full overflow-hidden gap-0.5" aria-hidden="true">
+                  <span style={{ flex: 40, background: "#ef4444" }} />
+                  <span style={{ flex: 30, background: "#f59e0b" }} />
+                  <span style={{ flex: 30, background: "#16a34a" }} />
+                </div>
+                <ul className="mt-2 flex text-xs">
+                  {legend.map((l, i) => (
+                    <li key={l.range} style={{ flex: i === 0 ? 40 : 30 }} className={i === 0 ? "" : i === 1 ? "text-center" : "text-right"}>
+                      <span className="block font-semibold text-aw-text tabular-nums">{l.range}</span>
+                      <span className="block text-aw-muted">{l.text}</span>
                     </li>
                   ))}
                 </ul>
