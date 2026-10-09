@@ -1,421 +1,306 @@
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
-import {
-  ChevronRight, FileText, Unlock, ThumbsUp, Sparkles,
-  AlertTriangle, Search, TrendingDown, Users, Quote
-} from "lucide-react";
+import { ChevronRight, Link2, ShieldCheck, Users } from "lucide-react";
 import founderImg from "../assets/max-image-opt.webp";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
 import { PageMeta } from "../components/PageMeta";
-import {
-  PageWrapper,
-  AnimatedSection,
-  Parallax,
-  Floating,
-  staggerContainer,
-  fadeInUp
-} from "../components/animations";
+import { PageWrapper, AnimatedSection, staggerContainer, fadeInUp } from "../components/animations";
 import { WaitlistForm } from "../components/ui/WaitlistForm";
 import { Tooltip } from "../components/ui/Tooltip";
-import { HeroPostCard } from "../components/home/HeroPostCard";
-import { SectionKicker } from "../components/home/SectionKicker";
-import { HowItWorks } from "../components/home/HowItWorks";
+import { LogoMark } from "../components/LogoMark";
 import { useLanguage } from "../i18n/LanguageContext";
+
+const NB = " "; // espace insécable (typographie française)
 
 export default function HomePage() {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
 
-  const heroRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"]
-  });
-
-  const heroY = useTransform(scrollYProgress, [0, 1], [0, 150]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-
-  // Sur mobile on coupe parallax + animations décoratives continues
-  // pour garder un scroll parfaitement fluide.
-  const [isDesktop, setIsDesktop] = useState(true);
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)");
-    const update = () => setIsDesktop(mq.matches);
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, []);
-
-  const problems = [
+  // Sommaire vers les pages qui expliquent en détail (pas de répétition ici)
+  const principles = [
     {
-      icon: AlertTriangle,
-      title: t("Information noyée dans le buzz", "Information drowned in hype"),
-      desc: t("Les algorithmes privilégient l'engagement émotionnel et la viralité. Les contenus de qualité sont invisibles face au clickbait et aux tendances.", "Algorithms prioritize emotional engagement and virality. Quality content becomes invisible against clickbait and trends.")
+      icon: Link2,
+      to: "/app#how",
+      label: t("Des sources que tu peux ouvrir", "Sources you can open"),
+      desc: t("Chaque source est un lien vers le texte d'origine.", "Every source links to the original text."),
     },
     {
-      icon: Search,
-      title: t("Absence de sourcage", "Lack of sourcing"),
-      desc: t("N'importe qui peut affirmer n'importe quoi sans preuve. Aucune plateforme n'exige de montrer ses sources avant de publier.", "Anyone can claim anything without proof. No platform requires showing sources before publishing.")
-    },
-    {
-      icon: TrendingDown,
-      title: t("Contenus sans preuves", "Content without proof"),
-      desc: t("Sans transparence sur les sources, impossible de savoir ce qui mérite confiance. Les utilisateurs naviguent à l'aveugle.", "Without source transparency, it's impossible to know what deserves trust. Users are navigating blind.")
+      icon: ShieldCheck,
+      to: "/reco-src",
+      label: t("ASV analyse chaque source", "ASV analyses every source"),
+      desc: t("Qui publie, et la reprise est-elle fidèle\u00a0?", "Who publishes, and is it quoted faithfully?"),
     },
     {
       icon: Users,
-      title: t("Perte de confiance", "Loss of trust"),
-      desc: t("73% des jeunes cherchent une alternative plus claire. Ils veulent un espace où la preuve précède la publication.", "73% of young people want a clearer alternative. They want a space where proof comes before publishing.")
-    }
+      to: "/app#how",
+      label: t("La communauté donne son avis", "The community weighs in"),
+      desc: t("Un vote «\u00a0Fiable\u00a0» ou «\u00a0Douteuse\u00a0», à part d'ASV.", "A “Reliable” or “Doubtful” vote, separate from ASV."),
+    },
+  ];
+
+  const problems = [
+    {
+      title: t("L'info noyée dans le buzz", "Information drowned in hype"),
+      desc: t(
+        "Les algorithmes misent sur l'émotion et la viralité. Les contenus solides disparaissent derrière le clickbait.",
+        "Algorithms bet on emotion and virality. Solid content disappears behind clickbait."
+      ),
+    },
+    {
+      title: t("Aucune source exigée", "No source required"),
+      desc: t(
+        "N'importe qui peut affirmer n'importe quoi. Aucune grande plateforme ne demande de montrer d'où vient l'info avant de publier.",
+        "Anyone can claim anything. No major platform asks where information comes from before it's published."
+      ),
+    },
+    {
+      title: t("Impossible de trier", "No way to sort it out"),
+      desc: t(
+        "Sans transparence sur les sources, tu ne peux pas savoir ce qui mérite ta confiance. Tu lis à l'aveugle.",
+        "Without transparent sources, you can't tell what deserves your trust. You read blind."
+      ),
+    },
+    {
+      title: t("La confiance s'use", "Trust wears thin"),
+      desc: t(
+        "À force de tout voir passer sans preuve, on finit par ne plus croire personne, y compris les créateurs sérieux.",
+        "When everything goes by without proof, you end up trusting no one, serious creators included."
+      ),
+    },
   ];
 
   return (
-    <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
+    <PageWrapper className="text-aw-text">
       <PageMeta
         title={t("Partage ce qui t'intéresse. Prouve pourquoi c'est fiable.", "Share what matters to you. Show why it's reliable.")}
-        description={t("ActuWorld est un réseau social préventif de partage d'informations fiables sur tout sujet, selon les passions et les intérêts de chacun. Source visible, ASV et jugement communautaire.", "ActuWorld is a preventive social network for sharing reliable information on any topic, based on your passions and interests. Visible sources, ASV and community trust.")}
+        description={t(
+          "ActuWorld est le réseau de l'information fiable, sur tous les sujets qui te passionnent : source visible, vérification ASV et jugement communautaire.",
+          "ActuWorld is the network for reliable information on any topic you care about: visible sources, ASV verification and community judgment."
+        )}
         path="/"
       />
-      {/* HERO */}
-      <Section id="hero" container={false} className="relative pt-16 md:pt-24 pb-20">
-        {/* Calque décoratif : SEUL ce calque masque le débordement (les blobs).
-            Le contenu (texte + carte) n'est plus rogné. */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-          {/* Blobs décoratifs — animés sur ordi, figés sur mobile (fluidité) */}
-          <motion.div
-            className="aw-blob w-[20rem] h-[20rem] md:w-[40rem] md:h-[40rem] bg-[#94C9AA] -top-32 -right-32"
-            animate={isDesktop ? { scale: [1, 1.1, 1], rotate: [0, 180, 360] } : undefined}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          />
-          <motion.div
-            className="aw-blob w-[16rem] h-[16rem] md:w-[32rem] md:h-[32rem] bg-[#00A896] -bottom-32 -left-32"
-            animate={isDesktop ? { scale: [1.1, 1, 1.1], rotate: [360, 180, 0] } : undefined}
-            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          />
-          {isDesktop && (
-            <Floating duration={6} y={20}>
-              <div className="aw-blob w-[10rem] h-[10rem] md:w-[20rem] md:h-[20rem] bg-[#2E5F4A] top-1/2 left-1/3 opacity-20" />
-            </Floating>
-          )}
-        </div>
 
-        <motion.div
-          ref={heroRef}
-          style={isDesktop ? { y: heroY, opacity: heroOpacity } : undefined}
-          className="max-w-7xl mx-auto container-px relative"
-        >
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
-            {/* Colonne texte */}
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={staggerContainer}
-              className="text-center lg:text-left max-w-2xl mx-auto lg:mx-0"
-            >
-              <motion.div variants={fadeInUp} className="flex justify-center lg:justify-start mb-6">
-                <span className="glass-enhanced inline-flex items-center gap-2 rounded-full border border-aw px-4 py-1.5 text-sm font-medium text-aw-text">
-                  <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-aw-accent opacity-75" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-aw-accent" />
-                  </span>
-                  {t("Réseau social de l'information vérifiée", "The social network for verified information")}
-                </span>
-              </motion.div>
+      {/* HERO : texte à gauche, aperçu produit à droite */}
+      <section id="hero" className="relative pt-12 pb-16 md:pt-20 md:pb-24">
+        <div className="max-w-6xl mx-auto container-px grid lg:grid-cols-[1.3fr_0.7fr] gap-12 lg:gap-10 items-center">
+          <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="max-w-2xl">
+            <motion.p variants={fadeInUp} className="eyebrow mb-6">
+              {t("Le réseau de l'information vérifiée", "The network for verified information")}
+            </motion.p>
 
-              <motion.h1
-                variants={fadeInUp}
-                className="hero-title text-4xl md:text-6xl font-bold leading-tight"
-              >
-                <span className="text-aw-text">{t("Partage ce qui t'intéresse.", "Share what matters to you.")}</span>
-                <br />
-                <span className="gradient-text">{t("Prouve pourquoi c'est fiable.", "Show why it's reliable.")}</span>
-              </motion.h1>
+            <motion.h1 variants={fadeInUp} className="display">
+              {t("Partage ce qui t'intéresse.", "Share what matters to you.")}{" "}
+              <span className="block text-aw-primary">{t("Prouve pourquoi c'est fiable.", "Show why it's reliable.")}</span>
+            </motion.h1>
 
-              <motion.p
-                variants={fadeInUp}
-                className="mt-6 text-aw-muted text-lg md:text-xl leading-relaxed"
-              >
-                {t("Un réseau social préventif où chaque publication s'appuie sur une ", "A preventive social network where every post is backed by a ")}
-                <strong className="text-aw-text">{t("source visible", "visible source")}</strong>
-                {t(", vérifiée par ", ", verified by ")}
-                <strong className="text-aw-text">ASV</strong>
-                {t(", puis éclairée par un jugement communautaire.", ", then enhanced by community judgment.")}
-              </motion.p>
-
-              <motion.div
-                variants={fadeInUp}
-                className="mt-8 flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4"
-              >
-                <Link to="/app" className="btn-primary glow-hover">
-                  {t("Découvrir ActuWorld", "Discover ActuWorld")} <ChevronRight className="w-5 h-5 ml-2" />
-                </Link>
-                <Link to="/reco-src" className="btn-outline group">
-                  <Sparkles className="w-5 h-5 mr-2 text-aw-accent" />
-                  {t("L'IA ASV", "ASV AI")}
-                </Link>
-              </motion.div>
-
-              <motion.div
-                variants={fadeInUp}
-                className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4 justify-center lg:justify-start"
-              >
-                {[
-                  { icon: FileText, label: t("Sourcing", "Sourcing"), value: t("obligatoire", "mandatory") },
-                  { icon: Unlock, label: t("Lecture", "Reading"), value: t("100% gratuite", "100% free") },
-                  { icon: ThumbsUp, label: t("Qualité", "Quality"), value: t("> Viralité", "> Virality") },
-                ].map((item, i) => (
-                  <motion.div
-                    key={i}
-                    className="flex items-center gap-2 text-sm"
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <div className="w-10 h-10 rounded-full bg-aw-success flex items-center justify-center">
-                      <item.icon className="w-5 h-5 text-aw-primary" />
-                    </div>
-                    <span className="text-aw-muted">{item.label}<br/><strong className="text-aw-text">{item.value}</strong></span>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </motion.div>
-
-            {/* Colonne visuel produit — visible aussi sur mobile, sans flottement */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.92, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-              className="mt-6 lg:mt-0 max-w-[250px] sm:max-w-none mx-auto w-full"
-            >
-              <HeroPostCard float={isDesktop} compact={!isDesktop} />
-            </motion.div>
-          </div>
-        </motion.div>
-      </Section>
-
-      {/* 01 · LE CONSTAT */}
-      <Section id="problem" className="bg-aw-surface py-16 md:py-24">
-        <AnimatedSection>
-          <div className="flex flex-col items-center text-center mb-16">
-            <SectionKicker number="01" label={t("Le constat", "The problem")} center className="mb-5" />
-            <H2 center>
-              {isEnglish ? <>Today's social networks <span className="gradient-text">don't ask for proof</span></> : <>Les réseaux sociaux d'aujourd'hui <span className="gradient-text">ne demandent aucune preuve</span></>}
-            </H2>
-            <p className="text-aw-muted mt-4 max-w-2xl mx-auto text-lg">
-              {t("La majorité des plateformes optimisent pour l'engagement émotionnel. Personne ne demande d'où vient l'info. Résultat : confusion, perte de confiance, et créateurs sérieux marginalisés.", "Most platforms optimize for emotional engagement. Nobody asks where the info comes from. Result: confusion, loss of trust, and serious creators marginalized.")}
-            </p>
-          </div>
-        </AnimatedSection>
-
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={staggerContainer}
-          className="grid md:grid-cols-2 gap-5"
-        >
-          {problems.map((p, i) => (
-            <motion.div
-              key={i}
-              variants={fadeInUp}
-              whileHover={{ y: -6 }}
-              className="group relative card card-hover p-6 flex gap-5 overflow-hidden"
-            >
-              {/* Liseré rouge animé au survol */}
-              <span
-                aria-hidden="true"
-                className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-red-400 to-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
-              />
-              <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-red-100 dark:bg-red-900/25 flex items-center justify-center ring-1 ring-red-500/10 group-hover:scale-110 transition-transform">
-                <p.icon className="w-6 h-6 text-red-600 dark:text-red-400" />
-              </div>
-              <div>
-                <h3 className="body-semi text-lg flex items-center gap-2">
-                  <span className="text-xs font-bold text-red-500/60 tabular-nums">0{i + 1}</span>
-                  {p.title}
-                </h3>
-                <p className="text-aw-muted text-sm mt-1.5 leading-relaxed">{p.desc}</p>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        <AnimatedSection delay={0.3} className="mt-12 text-center">
-          <p className="text-lg text-aw-muted">
-            <strong className="text-aw-text">ActuWorld</strong> {t("naît d'un constat simple : il est temps de ", "is built on a simple observation: it's time to ")}
-            <span className="text-aw-primary font-semibold highlight-text">{t("donner à chacun les outils pour publier, explorer et partager avec preuves", "give everyone the tools to publish, explore, and share with proof")}</span>.{" "}
-            {t("Un réseau où ", "A network where ")}<strong className="text-aw-text">{t("tes sources parlent pour toi", "your sources speak for you")}</strong>.
-          </p>
-        </AnimatedSection>
-      </Section>
-
-      {/* 02 · COMMENT ÇA MARCHE */}
-      <HowItWorks />
-
-      {/* 03 · VISION */}
-      <Section id="vision" className="bg-aw-surface py-16 md:py-24 relative overflow-hidden">
-        <Parallax offset={30} className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/4 right-0 w-96 h-96 bg-aw-secondary/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 left-0 w-80 h-80 bg-aw-accent/10 rounded-full blur-3xl" />
-        </Parallax>
-
-        <div className="max-w-5xl mx-auto relative">
-          <AnimatedSection className="flex flex-col items-center text-center">
-            <SectionKicker number="03" label={t("Notre vision", "Our vision")} center className="mb-5" />
-            <H2 center>
-              {isEnglish ? <>A space to share <span className="gradient-text">with clarity</span></> : <>Un espace pour partager <span className="gradient-text">avec clarté</span></>}
-            </H2>
-            <p className="text-aw-muted mt-6 text-lg leading-relaxed max-w-3xl">
-              {t("Publie des ", "Publish ")}<strong className="text-aw-text">{t("posts, articles et vidéos", "posts, articles, and videos")}</strong>{t(" sur tout ce qui te passionne — culture, sport, sciences, société, tech, environnement, actualité locale. Chaque publication s'appuie sur une ", " about anything you're passionate about — culture, sports, science, society, tech, environment, local news. Every post is backed by a ")}
-              <strong className="text-aw-text">{t("source visible", "visible source")}</strong>{t(", vérifiée par ", ", verified by ")}
-              <strong className="text-aw-text">ASV</strong>{t(" qui détecte le ", " which detects ")}<Tooltip text={t("Le cherry-picking consiste à sélectionner uniquement les données ou faits qui soutiennent son argument, en ignorant ceux qui le contredisent.", "Cherry-picking means selecting only data or facts that support an argument while ignoring contradictory evidence.")}>cherry-picking</Tooltip>{t(", puis éclairée par la communauté.", ", then enhanced by the community.")}
-            </p>
-          </AnimatedSection>
-
-          <AnimatedSection delay={0.1} className="text-center mt-12">
-            <p className="text-aw-primary body-semi text-lg max-w-2xl mx-auto">
-              {t("ActuWorld ne dit pas quoi penser. Il donne les outils pour chercher, juger et montrer ce qui mérite confiance.", "ActuWorld doesn't tell you what to think. It gives you the tools to search, judge, and show what deserves trust.")}
-            </p>
-            <div className="mt-8">
-              <Link to="/app" className="btn-primary glow-hover">
-                {t("Découvrir la plateforme", "Discover the platform")} <ChevronRight className="w-5 h-5 ml-2" />
-              </Link>
-            </div>
-          </AnimatedSection>
-        </div>
-      </Section>
-
-      {/* 04 · POURQUOI ACTUWORLD EXISTE */}
-      <Section id="founder" className="py-16 md:py-24">
-        <div className="max-w-5xl mx-auto grid md:grid-cols-[auto_1fr] gap-10 md:gap-16 items-center">
-          {/* Photo du fondateur — fondu vertical (un slide horizontal déborde
-              à droite sur mobile et coupe le texte) */}
-          <AnimatedSection direction="up">
-            <div className="relative mx-auto w-56 sm:w-64 md:w-[18rem]">
-              {/* Halo + carré d'accent décoratif */}
-              <div
-                aria-hidden="true"
-                className="absolute -inset-3 rounded-[2rem] opacity-70 blur-xl"
-                style={{ background: "linear-gradient(135deg, color-mix(in srgb, var(--aw-primary) 30%, transparent), color-mix(in srgb, var(--aw-accent) 30%, transparent))" }}
-              />
-              <div aria-hidden="true" className="absolute -bottom-5 -right-5 w-24 h-24 rounded-3xl border-2 border-aw-primary/30" />
-              <img
-                src={founderImg}
-                alt={t("Maxence Allier, fondateur d'ActuWorld", "Maxence Allier, founder of ActuWorld")}
-                className="relative rounded-[1.75rem] w-full aspect-[3/4] object-cover object-top border border-aw shadow-2xl"
-                loading="lazy"
-                width={650}
-                height={975}
-              />
-              {/* Badge fondateur */}
-              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap glass-enhanced border border-aw rounded-full px-4 py-1.5 text-sm font-semibold text-aw-text shadow-lg">
-                {t("Fondateur", "Founder")}
-              </div>
-            </div>
-          </AnimatedSection>
-
-          {/* Citation */}
-          <AnimatedSection direction="up" className="text-center md:text-left">
-            <SectionKicker number="04" label={t("Pourquoi ActuWorld existe", "Why ActuWorld exists")} className="mb-6" />
-            <Quote className="w-10 h-10 text-aw-primary/25 mb-2 mx-auto md:mx-0" aria-hidden="true" />
-            <p
-              className="font-bold leading-snug text-aw-text whitespace-nowrap text-[clamp(11px,3.45vw,16px)] md:whitespace-normal md:text-3xl"
-              style={{ fontFamily: '"Platypi", Georgia, serif' }}
-            >
-              {t("« J'ai construit l'outil dont j'avais besoin. »", "“I built the tool I needed.”")}
-            </p>
-            <p className="text-aw-muted leading-relaxed mt-5 text-lg">
+            <motion.p variants={fadeInUp} className="lead mt-6">
               {t(
-                "Quand je lisais des informations, j'avais toujours ce doute: est-ce que tout ce qui est dit est vrai ? Il manquait ce petit outil qui permette de prendre du recul, de faire une vraie auto-critique avant de croire ou de partager. ActuWorld est né de ce besoin.",
-                "When I read information, I always had that doubt: is everything being said really true? I was missing a simple tool to step back and self-check before believing or sharing. ActuWorld was born from that need."
+                "Chaque publication s'appuie sur une source visible, analysée par ASV puis jugée par la communauté.",
+                "Every post is backed by a visible source, analysed by ASV, then judged by the community."
+              )}
+            </motion.p>
+
+            <motion.div variants={fadeInUp} className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
+              <Link to="/app" className="btn-primary">
+                {t("Découvrir l'app", "Discover the app")}
+                <ChevronRight className="w-4 h-4" aria-hidden="true" />
+              </Link>
+              <Link to="/reco-src" className="btn-link">
+                {t("Comment ASV vérifie", "How ASV verifies")}
+                <ChevronRight className="w-4 h-4" aria-hidden="true" />
+              </Link>
+            </motion.div>
+          </motion.div>
+
+          {/* Sigle ActuWorld en grand */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.94, rotate: -6 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+            className="w-full flex justify-center lg:justify-end"
+          >
+            <LogoMark size={440} className="w-full max-w-[260px] sm:max-w-[340px] lg:max-w-[400px] h-auto" />
+          </motion.div>
+        </div>
+      </section>
+
+      {/* PRINCIPES : bandeau à filets, sous le hero */}
+      <section aria-label={t("Nos principes", "Our principles")} className="border-y border-aw">
+        <ul className="max-w-6xl mx-auto container-px grid sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-[var(--aw-border)]">
+          {principles.map((p) => (
+            <li key={p.label} className="sm:px-6 first:sm:pl-0 last:sm:pr-0">
+              <Link to={p.to} className="group flex items-start gap-4 py-6 rounded-lg">
+                <p.icon className="w-5 h-5 mt-0.5 text-aw-primary shrink-0" aria-hidden="true" />
+                <span className="flex-1">
+                  <span className="flex items-center gap-1 font-semibold text-aw-text group-hover:text-aw-primary">
+                    {p.label}
+                    <ChevronRight className="w-4 h-4 opacity-50 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:opacity-100" aria-hidden="true" />
+                  </span>
+                  <span className="block text-[15px] text-aw-muted mt-0.5">{p.desc}</span>
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* CONSTAT : titre collant à gauche, liste éditoriale à droite */}
+      <Section id="problem" className="bg-aw-surface">
+        <div className="grid lg:grid-cols-[5fr_7fr] gap-10 lg:gap-16">
+          <AnimatedSection className="lg:sticky lg:top-28 self-start">
+            <H2>{t("Les réseaux sociaux ne demandent aucune preuve", "Social networks don't ask for proof")}</H2>
+            <p className="lead mt-5">
+              {t(
+                "La plupart des plateformes optimisent l'engagement. Personne ne demande d'où vient l'info. Résultat : confusion, défiance, et des créateurs sérieux mis de côté.",
+                "Most platforms optimize for engagement. Nobody asks where information comes from. The result: confusion, distrust, and serious creators pushed aside."
               )}
             </p>
-
-            {/* Signature */}
-            <div className="mt-6 flex items-center gap-3 justify-center md:justify-start">
-              <div className="h-px w-8 bg-aw-primary/40" aria-hidden="true" />
-              <div>
-                <div className="font-bold text-aw-text">Maxence Allier</div>
-                <div className="text-sm text-aw-muted">{t("Fondateur d'ActuWorld", "Founder of ActuWorld")}</div>
-              </div>
-            </div>
-
-            <div className="mt-8">
-              <Link to="/app" className="btn-outline">
-                {t("Lire notre vision", "Read our vision")} <ChevronRight className="w-4 h-4 ml-2" />
-              </Link>
-            </div>
           </AnimatedSection>
+
+          <motion.ol
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={staggerContainer}
+            className="divide-y divide-[var(--aw-border-strong)] border-t border-aw-strong"
+          >
+            {problems.map((p) => (
+              <motion.li key={p.title} variants={fadeInUp} className="py-7">
+                <h3 className="text-xl md:text-2xl">{p.title}</h3>
+                <p className="text-aw-muted mt-2 leading-relaxed max-w-prose">{p.desc}</p>
+              </motion.li>
+            ))}
+          </motion.ol>
         </div>
       </Section>
 
-      {/* ILS SUIVENT LE PROJET */}
-      <Section id="supporters" className="bg-aw-surface py-14">
-        <AnimatedSection className="text-center">
-          <p className="overline text-aw-muted mb-7">
-            {t("Ils suivent le projet", "They follow the project")}
+      {/* VISION : manifeste centré */}
+      <Section id="vision">
+        <AnimatedSection className="max-w-3xl mx-auto text-center">
+          <p className="eyebrow mb-6">{t("Notre vision", "Our vision")}</p>
+          <p className="font-display text-[clamp(1.75rem,3.6vw,2.75rem)] leading-[1.15] tracking-[-0.015em] font-semibold text-aw-text">
+            {t(
+              "ActuWorld ne te dit pas quoi penser. Il te donne les outils pour vérifier.",
+              "ActuWorld doesn't tell you what to think. It gives you the tools to check."
+            )}
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-8">
-            <motion.a
-              href="https://territoires.media"
-              target="_blank"
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.05, y: -2 }}
-              transition={{ duration: 0.2 }}
-              className="inline-flex items-center rounded-2xl border border-aw bg-aw-bg px-5 py-3 grayscale hover:grayscale-0 opacity-90 hover:opacity-100 transition-all duration-300"
-              aria-label="Territoire(s) Média"
+          <p className="lead mx-auto mt-8">
+            {t("Publie des ", "Publish ")}
+            <strong className="text-aw-text font-semibold">{t("dépêches et des articles", "dispatches and articles")}</strong>
+            {t(
+              " sur ce qui te passionne : culture, sport, sciences, société, tech, environnement, actu locale. ASV relit chaque source et repère le ",
+              " about what you love: culture, sport, science, society, tech, the environment, local news. ASV reviews every source and flags "
+            )}
+            <Tooltip
+              text={t(
+                "Choisir seulement les faits qui arrangent son argument, en ignorant ceux qui le contredisent.",
+                "Picking only the facts that support an argument while ignoring those that contradict it."
+              )}
             >
-              <img
-                src="/partners/territoires-media.png"
-                alt="Territoire(s) Média"
-                className="h-9 md:h-11 w-auto object-contain dark:bg-white dark:rounded-md dark:px-2 dark:py-1"
-              />
-            </motion.a>
-          </div>
-          <div className="mt-8">
-            <Link to="/partenaires" className="link-underline text-aw-primary font-semibold inline-flex items-center gap-1">
-              {t("Devenir partenaire ou nous soutenir", "Become a partner or support us")}
-              <ChevronRight className="w-4 h-4" />
+              cherry-picking
+            </Tooltip>
+            {t(", puis la communauté donne son avis. Et la lecture est gratuite.", ", then the community weighs in. And reading is free.")}
+          </p>
+          <div className="mt-9">
+            <Link to="/app" className="btn-link">
+              {t("Découvrir l'app", "Discover the app")}
+              <ChevronRight className="w-4 h-4" aria-hidden="true" />
             </Link>
           </div>
         </AnimatedSection>
       </Section>
 
-      {/* 05 · REJOINDRE */}
-      <Section className="py-16 md:py-24">
-        <AnimatedSection direction="scale">
-          <div
-            className="relative max-w-4xl mx-auto overflow-hidden rounded-[2rem] px-6 py-14 md:px-16 md:py-20 text-center border border-white/10"
-            style={{ background: "linear-gradient(160deg, #1B3528 0%, #244736 100%)" }}
-          >
-            {/* Halo statique très discret */}
-            <div
-              aria-hidden="true"
-              className="absolute -top-32 left-1/2 -translate-x-1/2 w-[28rem] h-[28rem] rounded-full opacity-[0.07]"
-              style={{ background: "radial-gradient(circle, #A8D5BA, transparent 70%)" }}
-            />
+      {/* FONDATEUR : portrait + citation */}
+      <Section id="founder" className="bg-aw-surface">
+        <div className="grid md:grid-cols-[minmax(0,18rem)_1fr] gap-10 md:gap-16 items-center max-w-5xl mx-auto">
+          <AnimatedSection>
+            <figure className="mx-auto w-56 sm:w-64 md:w-full">
+              <img
+                src={founderImg}
+                alt={t("Portrait de Maxence Allier, fondateur d'ActuWorld", "Portrait of Maxence Allier, founder of ActuWorld")}
+                className="w-full aspect-[3/4] object-cover object-top rounded-[var(--aw-radius-card)] border border-aw"
+                style={{ boxShadow: "var(--aw-shadow-lg)" }}
+                loading="lazy"
+                width={650}
+                height={975}
+              />
+            </figure>
+          </AnimatedSection>
 
-            <div className="relative">
-              <SectionKicker number="05" label={t("Rejoindre", "Join")} center tone="light" className="mb-6" />
-              <h2
-                className="text-2xl md:text-5xl font-bold text-white leading-tight"
-                style={{ fontFamily: '"Platypi", Georgia, serif' }}
-              >
-                {t("Prêt à partager avec preuves ?", "Ready to share with proof?")}
-              </h2>
-              <p className="mt-4 text-white/85 text-lg max-w-xl mx-auto">
-                {t("Sois parmi les premiers à publier, explorer et juger sur ActuWorld. Inscris-toi à la beta.", "Be among the first to publish, explore and judge on ActuWorld. Join the beta.")}
+          <AnimatedSection>
+            <blockquote>
+              <p className="font-display text-[clamp(1.5rem,3vw,2.25rem)] leading-[1.2] font-semibold text-aw-text">
+                {t(`«${NB}J'ai construit l'outil dont j'avais besoin.${NB}»`, "“I built the tool I needed.”")}
               </p>
-
-              {/* Formulaire dans un panneau clair */}
-              <div className="mt-8 max-w-xl mx-auto rounded-2xl bg-aw-bg/95 backdrop-blur p-5 md:p-6 shadow-2xl text-left">
-                <WaitlistForm variant="inline" />
-              </div>
-            </div>
-          </div>
-        </AnimatedSection>
+              <p className="text-aw-muted leading-relaxed mt-6 text-[17px] max-w-prose">
+                {t(
+                  `Quand je lisais une info, j'avais toujours ce doute${NB}: est-ce que tout est vrai${NB}? Il me manquait un outil simple pour prendre du recul et me poser les bonnes questions avant de croire ou de partager. ActuWorld est né de ce besoin.`,
+                  "Whenever I read the news, I had the same doubt: is all of this true? I was missing a simple tool to step back and ask the right questions before believing or sharing. ActuWorld grew out of that need."
+                )}
+              </p>
+              <footer className="mt-6">
+                <cite className="not-italic font-semibold text-aw-text">Maxence Allier</cite>
+                <span className="block text-sm text-aw-muted">{t("Fondateur d'ActuWorld", "Founder of ActuWorld")}</span>
+              </footer>
+            </blockquote>
+            <Link to="/about" className="btn-link mt-8">
+              {t("L'histoire du projet", "The story behind it")}
+              <ChevronRight className="w-4 h-4" aria-hidden="true" />
+            </Link>
+          </AnimatedSection>
+        </div>
       </Section>
+
+      {/* SOUTIENS : bandeau de logos */}
+      <section id="supporters" className="py-12">
+        <div className="max-w-6xl mx-auto container-px flex flex-col sm:flex-row items-center justify-between gap-6">
+          <p className="text-sm font-semibold text-aw-muted">{t("Ils suivent le projet", "Following the project")}</p>
+          <a
+            href="https://territoires.media"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="grayscale hover:grayscale-0 opacity-80 hover:opacity-100 transition-[filter,opacity] duration-300 rounded-lg"
+          >
+            <img
+              src="/partners/territoires-media.png"
+              alt="Territoire(s) Média"
+              className="h-10 w-auto object-contain dark:bg-white dark:rounded-md dark:px-2 dark:py-1"
+              loading="lazy"
+              height={40}
+            />
+          </a>
+          <Link to="/partenaires" className="btn-link text-[15px]">
+            {t("Devenir partenaire", "Become a partner")}
+            <ChevronRight className="w-4 h-4" aria-hidden="true" />
+          </Link>
+        </div>
+      </section>
+
+      {/* REJOINDRE : panneau vert, alerte de sortie */}
+      <section id="rejoindre" className="pb-20 md:pb-28 pt-4">
+        <div className="max-w-6xl mx-auto container-px">
+          <AnimatedSection>
+            <div
+              className="relative overflow-hidden rounded-[28px] px-6 py-12 md:px-14 md:py-16 grid lg:grid-cols-2 gap-10 items-center"
+              style={{ background: "#1B3528", boxShadow: "var(--aw-shadow-lg)" }}
+            >
+              <div>
+                <h2 className="text-[clamp(1.75rem,3.4vw,2.75rem)] leading-[1.1] tracking-[-0.015em] font-bold text-white">
+                  {t("Bientôt sur l'App Store et Google Play", "Coming soon to the App Store and Google Play")}
+                </h2>
+                <p className="mt-4 text-white/80 text-lg max-w-md">
+                  {t(
+                    "Laisse ton e-mail, on te prévient dès que tu peux télécharger ActuWorld.",
+                    "Leave your email and we'll let you know as soon as you can download ActuWorld."
+                  )}
+                </p>
+              </div>
+              <WaitlistForm tone="dark" />
+            </div>
+          </AnimatedSection>
+        </div>
+      </section>
     </PageWrapper>
   );
 }
