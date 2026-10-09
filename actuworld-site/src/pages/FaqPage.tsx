@@ -183,9 +183,10 @@ export default function FaqPage() {
                     aria-current={active === g.id ? "true" : undefined}
                     className={`block -ml-px border-l-2 pl-4 pr-3 py-1.5 rounded-r-lg text-[15px] transition-colors duration-200 ${
                       active === g.id
-                        ? "border-aw-primary bg-aw-success text-aw-primary font-semibold"
+                        ? "border-aw-primary text-aw-text"
                         : "border-transparent text-aw-muted hover:text-aw-text hover:border-aw-primary"
                     }`}
+                    style={active === g.id ? { background: "color-mix(in srgb, var(--aw-success) 45%, transparent)" } : undefined}
                   >
                     {g.title}
                   </a>
