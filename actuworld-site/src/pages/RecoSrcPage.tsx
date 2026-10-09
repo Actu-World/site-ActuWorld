@@ -114,24 +114,24 @@ export default function RecoSrcPage() {
       />
 
       {/* HERO : texte + fiche ASV dans l'app */}
-      <section className="pt-12 pb-16 md:pt-20 md:pb-24">
-        <div className="max-w-6xl mx-auto container-px grid lg:grid-cols-[1.2fr_0.8fr] gap-14 items-center">
-          <AnimatedSection>
-            <p className="eyebrow mb-6">ActuWorld Source Verification</p>
+      <section className="pt-10 pb-12 md:pt-20 md:pb-24">
+        <div className="max-w-6xl mx-auto container-px grid lg:grid-cols-[1.2fr_0.8fr] gap-10 lg:gap-14 items-center">
+          <AnimatedSection className="text-center lg:text-left max-w-2xl mx-auto lg:mx-0">
+            <p className="eyebrow mb-5 lg:mb-6">ActuWorld Source Verification</p>
             <h1 className="display">
               {isEnglish ? "Does the source really say what the post claims?" : <>La source <span className="whitespace-nowrap">dit-elle</span> vraiment ce qu'on lui fait dire&nbsp;?</>}
             </h1>
-            <p className="lead mt-6">
+            <p className="lead mt-5 lg:mt-6 mx-auto lg:mx-0">
               {t(
                 "À chaque publication, ASV lit les sources citées et répond à deux questions : qui publie cette source, et le post la reprend-il fidèlement ?",
                 "On every post, ASV reads the cited sources and answers two questions: who publishes this source, and does the post report it faithfully?"
               )}
             </p>
-            <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
-              <a href="#notes" className="btn-primary">
+            <div className="mt-8 lg:mt-9 flex flex-col sm:flex-row sm:flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-3">
+              <a href="#notes" className="btn-primary w-full sm:w-auto justify-center">
                 {t("Voir les deux notes", "See the two scores")}
               </a>
-              <a href="#pour-qui" className="btn-link">
+              <a href="#pour-qui" className="btn-link py-2">
                 {t("À quoi ça sert", "What it's for")} <ChevronRight className="w-4 h-4" aria-hidden="true" />
               </a>
             </div>
@@ -157,14 +157,14 @@ export default function RecoSrcPage() {
           </p>
         </AnimatedSection>
 
-        <div className="mt-12 grid lg:grid-cols-2 gap-6">
+        <div className="mt-8 md:mt-12 grid lg:grid-cols-2 gap-3 md:gap-6">
           {/* Note Éditeur */}
-          <AnimatedSection className="card p-7 md:p-8">
+          <AnimatedSection className="card p-6 md:p-8">
             <div className="flex items-center gap-3">
-              <span className="w-10 h-10 rounded-[10px] bg-aw-success flex items-center justify-center" aria-hidden="true">
+              <span className="w-10 h-10 rounded-[10px] bg-aw-success flex items-center justify-center shrink-0" aria-hidden="true">
                 <Link2 className="w-5 h-5 text-aw-primary" />
               </span>
-              <h3 className="text-2xl">{t("Éditeur : qui publie ?", "Publisher: who publishes?")}</h3>
+              <h3 className="text-xl md:text-2xl">{t("Éditeur : qui publie ?", "Publisher: who publishes?")}</h3>
             </div>
             <p className="text-aw-muted mt-4 max-w-prose">
               {t(
@@ -196,12 +196,12 @@ export default function RecoSrcPage() {
           </AnimatedSection>
 
           {/* Note Fidélité */}
-          <AnimatedSection className="card p-7 md:p-8">
+          <AnimatedSection className="card p-6 md:p-8">
             <div className="flex items-center gap-3">
-              <span className="w-10 h-10 rounded-[10px] bg-aw-success flex items-center justify-center" aria-hidden="true">
+              <span className="w-10 h-10 rounded-[10px] bg-aw-success flex items-center justify-center shrink-0" aria-hidden="true">
                 <ShieldCheck className="w-5 h-5 text-aw-primary" />
               </span>
-              <h3 className="text-2xl">{t("Fidélité : la source dit-elle ça ?", "Faithfulness: does the source say that?")}</h3>
+              <h3 className="text-xl md:text-2xl">{t("Fidélité : la source dit-elle ça ?", "Faithfulness: does the source say that?")}</h3>
             </div>
             <p className="text-aw-muted mt-4 max-w-prose">
               {t(
@@ -241,16 +241,19 @@ export default function RecoSrcPage() {
             )}
           </p>
         </AnimatedSection>
-        <ul className="mt-12 grid sm:grid-cols-3 gap-6">
+        {/* Téléphone : cartes à faire glisser (comme les constats de l'accueil) ; dès 640 px, 3 colonnes */}
+        <ul className="mt-8 md:mt-12 flex gap-3 overflow-x-auto snap-x snap-mandatory -mx-5 px-5 scroll-px-5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:grid sm:grid-cols-3 sm:overflow-visible sm:mx-0 sm:px-0 sm:pb-0 md:gap-6">
           {badgeStates.map((b, i) => (
-            <li key={b.fill} className="flex">
+            <li key={b.fill} className="flex snap-start shrink-0 w-[78%] sm:w-auto">
               <AnimatedSection delay={i * 0.08} className="card p-6 flex flex-col w-full">
                 <div className="aw-phone rounded-xl border border-aw flex items-center justify-center py-7" style={{ background: "var(--app-bg)" }} aria-hidden="true">
                   <AsvTile size={34} fill={b.fill} />
                 </div>
+                <div>
                 <h3 className="text-xl mt-5">{b.title}</h3>
                 <p className="caption text-aw-muted mt-1">{b.status}</p>
                 <p className="text-aw-muted mt-3 text-[15px]">{b.desc}</p>
+                </div>
               </AnimatedSection>
             </li>
           ))}
@@ -263,14 +266,14 @@ export default function RecoSrcPage() {
           <p className="eyebrow mb-4">{t("Pour qui", "Who it's for")}</p>
           <H2>{t("À quoi sert ASV, concrètement", "What ASV is for, concretely")}</H2>
         </AnimatedSection>
-        <div className="mt-12 grid md:grid-cols-2 gap-x-12 gap-y-10">
+        <div className="mt-8 md:mt-12 grid md:grid-cols-2 gap-x-12 gap-y-8 md:gap-y-10">
           {audiences.map((a) => (
-            <AnimatedSection key={a.title} className="flex gap-5">
+            <AnimatedSection key={a.title} className="flex gap-4 md:gap-5">
               <span className="w-11 h-11 rounded-xl bg-aw-bg border border-aw flex items-center justify-center shrink-0" aria-hidden="true">
                 <a.icon className="w-5 h-5 text-aw-primary" />
               </span>
               <div>
-                <h3 className="text-xl">{a.title}</h3>
+                <h3 className="text-lg md:text-xl">{a.title}</h3>
                 <p className="text-aw-muted mt-2 leading-relaxed max-w-prose">{a.desc}</p>
               </div>
             </AnimatedSection>
@@ -290,8 +293,8 @@ export default function RecoSrcPage() {
               )}
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
-            <Link to="/contact" className="btn-primary">{t("Nous écrire", "Write to us")}</Link>
+          <div className="flex flex-col sm:flex-row sm:flex-wrap items-center gap-x-6 gap-y-3">
+            <Link to="/contact" className="btn-primary w-full sm:w-auto justify-center">{t("Nous écrire", "Write to us")}</Link>
             <Link to="/#rejoindre" className="btn-link">
               {t("Être prévenu", "Get notified")} <ChevronRight className="w-4 h-4" aria-hidden="true" />
             </Link>
