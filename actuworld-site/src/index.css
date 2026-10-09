@@ -455,25 +455,24 @@
 
 /* =====================================================
    COULEURS UTILITAIRES
+   Déclarées comme couleurs Tailwind : text-aw-*, bg-aw-*, border-aw(-strong)
+   fonctionnent avec toutes les variantes (hover:, md:, dark:…). Ne pas les
+   redéfinir hors @layer : elles écraseraient ces variantes.
    ===================================================== */
 
-.bg-aw-bg { background-color: var(--aw-bg); }
-.bg-aw-surface { background-color: var(--aw-surface); }
-.bg-aw-primary { background-color: var(--aw-primary); }
-.bg-aw-secondary { background-color: var(--aw-secondary); }
-.bg-aw-accent { background-color: var(--aw-accent); }
-.bg-aw-success { background-color: var(--aw-success); }
-
-.text-aw-text { color: var(--aw-text); }
-.text-aw-muted { color: var(--aw-text-muted); }
-.text-aw-primary { color: var(--aw-primary); }
-.text-aw-secondary { color: var(--aw-secondary); }
-.text-aw-accent { color: var(--aw-primary); } /* l'accent texte = primaire (contraste AA) */
-
-.border-aw { border-color: var(--aw-border); }
-.border-aw-strong { border-color: var(--aw-border-strong); }
-
-.text-on-primary { color: var(--aw-on-primary); }
+@theme inline {
+  --color-aw-bg: var(--aw-bg);
+  --color-aw-surface: var(--aw-surface);
+  --color-aw-primary: var(--aw-primary);
+  --color-aw-secondary: var(--aw-secondary);
+  --color-aw-accent: var(--aw-accent);
+  --color-aw-success: var(--aw-success);
+  --color-aw-text: var(--aw-text);
+  --color-aw-muted: var(--aw-text-muted);
+  --color-aw: var(--aw-border);
+  --color-aw-strong: var(--aw-border-strong);
+  --color-on-primary: var(--aw-on-primary);
+}
 
 /* =====================================================
    MOUVEMENT RÉDUIT

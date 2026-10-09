@@ -11,7 +11,7 @@ export function Tooltip({ text, children }: { text: string; children: ReactNode 
       onMouseLeave={() => setShow(false)}
       onClick={() => setShow((v) => !v)}
     >
-      <span className="border-b border-dashed border-aw-accent text-aw-accent font-semibold">
+      <span className="border-b border-dashed border-aw-primary text-aw-primary font-semibold">
         {children}
       </span>
       {show && (
