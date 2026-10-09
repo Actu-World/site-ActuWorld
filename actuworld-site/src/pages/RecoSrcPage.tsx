@@ -35,46 +35,38 @@ export default function RecoSrcPage() {
     { icon: HelpCircle, color: "#6b7280", label: t("Non vérifiable", "Unverifiable"), desc: t("Impossible de trancher avec ce texte.", "Can't tell from this text.") },
   ];
 
-  /* Échelle canonique 2 / 3,5 / 5,5 / 7,5 */
-  const scale = [
-    { from: 0, to: 2, label: t("Trompeur", "Misleading"), color: "#dc2626" },
-    { from: 2, to: 3.5, label: t("Non vérifiable", "Unverifiable"), color: "#ef4444" },
-    { from: 3.5, to: 5.5, label: t("Contexte", "Context"), color: "#f97316" },
-    { from: 5.5, to: 7.5, label: t("Partiel", "Partial"), color: "#f59e0b" },
-    { from: 7.5, to: 10, label: t("Vérifié", "Verified"), color: "#10b981" },
-  ];
 
   const audiences = [
     {
       icon: BookOpenCheck,
       title: t("Lectrices et lecteurs", "Readers"),
       desc: t(
-        "Un coup d'œil au badge suffit pour savoir si les sources tiennent la route. Une touche ouvre le détail : qui publie, et si la source dit vraiment ça.",
-        "One glance at the badge tells you whether the sources hold up. One tap opens the detail: who publishes, and whether the source really says that."
+        "Un coup d'œil au badge donne une première idée de la solidité des sources. Une touche ouvre le détail : qui publie, et ce qu'ASV a relevé dans chaque source.",
+        "One glance at the badge gives a first idea of how solid the sources are. One tap opens the detail: who publishes, and what ASV found in each source."
       ),
     },
     {
       icon: PenLine,
       title: t("Créateurs", "Creators"),
       desc: t(
-        "Ta dépêche est analysée dès sa publication. Si une source est faible ou mal citée, tu le vois tout de suite et tu peux la remplacer.",
-        "Your dispatch is analysed as soon as it's published. If a source is weak or misquoted, you see it right away and can replace it."
+        "ASV vérifie les sources de ta publication et donne du poids à ce que tu avances : tes lecteurs voient d'où vient l'info et sur quoi elle s'appuie.",
+        "ASV checks the sources of your post and gives weight to what you say: your readers see where the information comes from and what backs it up."
       ),
     },
     {
       icon: Newspaper,
       title: t("Rédactions et médias", "Newsrooms and media"),
       desc: t(
-        "ASV fait une première passe sur les sources citées : transparence de l'éditeur et fidélité de la reprise. Un outil d'aide au contrôle, pas un fact-checker automatique. L'intégration à vos outils est en préparation : parlons de vos besoins.",
-        "ASV runs a first pass on cited sources: publisher transparency and how faithfully they're quoted. A checking aid, not an automatic fact-checker. Integration with your tools is in preparation: let's talk about your needs."
+        "ASV fait une première passe sur les sources citées : transparence de l'éditeur et fidélité de la reprise. Un outil d'aide au contrôle, pas un fact-checker automatique.",
+        "ASV runs a first pass on cited sources: publisher transparency and how faithfully they're quoted. A checking aid, not an automatic fact-checker."
       ),
     },
     {
       icon: GraduationCap,
       title: t("Enseignants (éducation aux médias)", "Teachers (media literacy)"),
       desc: t(
-        "Un support concret pour apprendre à remonter à la source : chaque analyse montre la citation exacte de la source à côté de ce qu'en dit le post.",
-        "A concrete way to teach source-checking: each analysis shows the exact quote from the source next to what the post claims."
+        "Un outil concret pour développer l'esprit critique : ouvrir les sources, les comparer au post, puis discuter de l'analyse d'ASV plutôt que la prendre pour acquise.",
+        "A concrete tool to build critical thinking: open the sources, compare them with the post, then discuss ASV's analysis rather than take it for granted."
       ),
     },
   ];
@@ -84,8 +76,8 @@ export default function RecoSrcPage() {
       <PageMeta
         title={t("ASV | ActuWorld Source Verification", "ASV | ActuWorld Source Verification")}
         description={t(
-          "ASV analyse les sources citées dans chaque publication ActuWorld : transparence de l'éditeur et fidélité de la reprise. Elle repère le cherry-picking, sans juger à ta place.",
-          "ASV analyses the sources cited in every ActuWorld post: publisher transparency and faithful quoting. It flags cherry-picking without judging for you."
+          "ASV analyse les sources citées dans chaque publication ActuWorld : transparence de l'éditeur et fidélité de la reprise. Une aide pour vérifier, sans juger à ta place.",
+          "ASV analyses the sources cited in every ActuWorld post: publisher transparency and faithful quoting. A help to check, without judging for you."
         )}
         path="/reco-src"
       />
@@ -105,11 +97,11 @@ export default function RecoSrcPage() {
               )}
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
-              <Link to="/app" className="btn-primary">
-                {t("Découvrir l'app", "Discover the app")} <ChevronRight className="w-4 h-4" aria-hidden="true" />
-              </Link>
-              <a href="#notes" className="btn-link">
-                {t("Voir les deux notes", "See the two scores")} <ChevronRight className="w-4 h-4" aria-hidden="true" />
+              <a href="#notes" className="btn-primary">
+                {t("Voir les deux notes", "See the two scores")}
+              </a>
+              <a href="#pour-qui" className="btn-link">
+                {t("À quoi ça sert", "What it's for")} <ChevronRight className="w-4 h-4" aria-hidden="true" />
               </a>
             </div>
           </AnimatedSection>
@@ -182,8 +174,8 @@ export default function RecoSrcPage() {
             </div>
             <p className="text-aw-muted mt-4 max-w-prose">
               {t(
-                "Une IA lit le texte de chaque source et le compare à l'affirmation du post. Elle rend un verdict par source, avec la citation exacte qui le justifie.",
-                "An AI reads the text of each source and compares it to the post's claim. It returns a verdict per source, with the exact quote that backs it up."
+                "Une IA lit le texte de chaque source et le compare à ce qu'affirme le post. Elle donne un avis par source, avec l'extrait sur lequel elle s'appuie.",
+                "An AI reads the text of each source and compares it to what the post claims. It gives an opinion per source, with the excerpt it relies on."
               )}
             </p>
             <ul className="mt-6 space-y-3">
@@ -199,56 +191,17 @@ export default function RecoSrcPage() {
             </ul>
             <p className="mt-6 text-[15px] text-aw-muted border-t border-aw pt-4">
               {t(
-                "Une source qui contredit le post suffit à le signaler, même si l'éditeur est très fiable.",
-                "A single contradicting source is enough to flag the post, even if the publisher is highly reliable."
+                "Comme toute IA, ASV peut se tromper. C'est une aide, pas un verdict : chaque source reste à portée de clic pour que tu vérifies par toi-même.",
+                "Like any AI, ASV can get it wrong. It's a help, not a verdict: every source stays one click away so you can check for yourself."
               )}
-            </p>
-            <p className="mt-4 rounded-xl bg-aw-bg border border-aw px-4 py-3 text-[15px]">
-              <dfn className="not-italic font-semibold text-aw-text">Cherry-picking</dfn>
-              <span className="text-aw-muted">
-                {t(
-                  " : ne garder d'une source que ce qui arrange son propos, en taisant ce qui le contredit. C'est ce que la note Fidélité permet de repérer.",
-                  ": keeping only the part of a source that suits your point and hiding what contradicts it. The Faithfulness score is what spots it."
-                )}
-              </span>
             </p>
           </AnimatedSection>
         </div>
-      </Section>
-
-      {/* ÉCHELLE */}
-      <Section id="echelle">
-        <AnimatedSection className="max-w-2xl">
-          <H2>{t("De « Trompeur » à « Vérifié »", "From “Misleading” to “Verified”")}</H2>
-          <p className="lead mt-5">
-            {t(
-              "Les deux notes se combinent en un statut sur 10, toujours sur la même échelle. Dans le fil, le badge ASV est plein, à moitié rempli ou en pointillés.",
-              "Both scores combine into a status out of 10, always on the same scale. In the feed, the ASV badge is full, half-filled or dotted."
-            )}
-          </p>
-        </AnimatedSection>
-        <AnimatedSection className="mt-12">
-          <div className="flex h-3 rounded-full overflow-hidden" aria-hidden="true">
-            {scale.map((s) => (
-              <span key={s.label} style={{ flexGrow: s.to - s.from, background: s.color }} />
-            ))}
-          </div>
-          <ol className="mt-5 grid grid-cols-2 sm:grid-cols-5 gap-4">
-            {scale.map((s) => (
-              <li key={s.label}>
-                <p className="font-semibold" style={{ color: s.color }}>{s.label}</p>
-                <p className="text-sm text-aw-muted tabular-nums">
-                  {s.to === 10 ? `${t("dès", "from")} ${String(s.from).replace(".", t(",", "."))}` : `${String(s.from).replace(".", t(",", "."))} ${t("à", "to")} ${String(s.to).replace(".", t(",", "."))}`}
-                </p>
-              </li>
-            ))}
-          </ol>
-          <p className="mt-6 text-sm text-aw-muted max-w-prose">
-            {t(
-              "« Trompeur » n'est attribué que si au moins une source contredit le post ou n'a rien à voir avec lui. Sans source du tout, le statut est « Non vérifiable ».",
-              "“Misleading” is only given when at least one source contradicts the post or is unrelated to it. With no source at all, the status is “Unverifiable”."
-            )}
-          </p>
+        <AnimatedSection className="mt-8 text-[15px] text-aw-muted max-w-prose">
+          {t(
+            "Les deux notes se combinent en un statut affiché par le badge ASV sur chaque publication : plein, à moitié rempli ou en pointillés.",
+            "Both scores combine into a status shown by the ASV badge on every post: full, half-filled or dotted."
+          )}
         </AnimatedSection>
       </Section>
 
@@ -271,12 +224,6 @@ export default function RecoSrcPage() {
             </AnimatedSection>
           ))}
         </div>
-        <AnimatedSection className="mt-12 text-[15px] text-aw-muted max-w-prose">
-          {t(
-            "Aujourd'hui, ASV fonctionne dans l'app ActuWorld. Une extension pour navigateur et une intégration pour les rédactions sont en préparation.",
-            "Today, ASV runs inside the ActuWorld app. A browser extension and an integration for newsrooms are in preparation."
-          )}
-        </AnimatedSection>
       </Section>
 
       {/* CTA */}
@@ -285,7 +232,10 @@ export default function RecoSrcPage() {
           <div>
             <H2>{t("Une rédaction, une école, un projet ?", "A newsroom, a school, a project?")}</H2>
             <p className="lead mt-4">
-              {t("Dis-nous comment tu aimerais utiliser ASV.", "Tell us how you'd like to use ASV.")}
+              {t(
+                "ASV fonctionne aujourd'hui dans l'app. Une extension navigateur et une intégration pour les rédactions sont en préparation : dis-nous comment tu aimerais l'utiliser.",
+                "ASV runs inside the app today. A browser extension and a newsroom integration are in preparation: tell us how you'd like to use it."
+              )}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
