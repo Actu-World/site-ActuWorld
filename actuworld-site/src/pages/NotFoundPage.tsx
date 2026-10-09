@@ -17,7 +17,7 @@ export default function NotFoundPage() {
         path="/404"
         noindex
       />
-      <div className="max-w-6xl w-full mx-auto container-px py-20 md:py-28">
+      <div className="max-w-6xl w-full mx-auto container-px py-16 md:py-28">
         <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="max-w-xl">
           <motion.p variants={fadeInUp} className="eyebrow mb-5 tabular">
             {t("Erreur 404", "Error 404")}

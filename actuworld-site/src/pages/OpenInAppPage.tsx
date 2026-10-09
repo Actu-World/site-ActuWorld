@@ -83,7 +83,7 @@ export default function OpenInAppPage({ kind }: { kind: SharedContentKind }) {
         path={`/${CONTENT.path}`}
         noindex
       />
-      <div className="max-w-6xl w-full mx-auto container-px py-20 md:py-28">
+      <div className="max-w-6xl w-full mx-auto container-px py-16 md:py-28">
         <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="max-w-xl">
           <motion.div
             variants={fadeInUp}

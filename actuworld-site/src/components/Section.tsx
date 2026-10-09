@@ -11,7 +11,7 @@ type Props = {
 
 export const Section: React.FC<Props> = ({ id, className = '', children, container = true, width = 'default' }) => {
   // Rythme vertical par défaut, sauf si la page fournit le sien
-  const spacing = /(^|\s)(py|pt|pb)-/.test(className) ? '' : 'py-20 md:py-28';
+  const spacing = /(^|\s)(py|pt|pb)-/.test(className) ? '' : 'py-16 md:py-28';
   const max = width === 'wide' ? 'max-w-7xl' : 'max-w-6xl';
   return (
     <section id={id} className={`${spacing} ${className}`}>

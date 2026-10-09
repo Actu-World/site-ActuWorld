@@ -6,12 +6,19 @@ export const BackToTop = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    // Sur téléphone, le bouton masquerait le texte pendant la lecture :
+    // il n'apparaît que lorsqu'on remonte la page
+    const mobile = window.matchMedia("(max-width: 767px)");
+    let lastY = window.scrollY;
     const toggleVisibility = () => {
-      if (window.scrollY > 500) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
+      const y = window.scrollY;
+      const goingUp = y < lastY - 2;
+      const goingDown = y > lastY + 2;
+      if (goingUp || goingDown) lastY = y;
+      if (y <= 500) setIsVisible(false);
+      else if (!mobile.matches) setIsVisible(true);
+      else if (goingUp) setIsVisible(true);
+      else if (goingDown) setIsVisible(false);
     };
 
     window.addEventListener("scroll", toggleVisibility, { passive: true });
@@ -33,7 +40,7 @@ export const BackToTop = () => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 12 }}
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 z-40 w-11 h-11 rounded-xl border border-aw-strong bg-aw-bg text-aw-text flex items-center justify-center hover:border-aw-primary hover:text-aw-primary"
+          className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-40 w-11 h-11 rounded-xl border border-aw-strong bg-aw-bg text-aw-text flex items-center justify-center hover:border-aw-primary hover:text-aw-primary"
           style={{ boxShadow: "var(--aw-shadow-sm)" }}
           aria-label="Retour en haut"
         >

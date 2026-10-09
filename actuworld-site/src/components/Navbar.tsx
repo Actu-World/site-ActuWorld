@@ -27,7 +27,13 @@ export const Navbar: React.FC = () => {
     if (!mobileOpen) return;
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setMobileOpen(false);
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    // Menu plein écran : la page dessous ne défile plus
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prevOverflow;
+    };
   }, [mobileOpen]);
 
   const navLinks = [
@@ -36,6 +42,14 @@ export const Navbar: React.FC = () => {
     { href: '/faq', label: 'FAQ' },
     { href: '/partenaires', label: t('Partenaires', 'Partners') },
     { href: '/contact', label: 'Contact' },
+  ];
+
+  // Sur mobile, le menu a la place d'afficher aussi les pages secondaires
+  const mobileLinks = [
+    ...navLinks.slice(0, 2),
+    { href: '/about', label: t('À propos', 'About') },
+    ...navLinks.slice(2),
+    { href: '/press', label: t('Presse', 'Press') },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -149,14 +163,14 @@ export const Navbar: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="lg:hidden border-t border-aw bg-aw-bg overscroll-contain"
+            className="lg:hidden border-t border-aw bg-aw-bg h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain"
           >
             <nav className="max-w-7xl mx-auto container-px py-4 flex flex-col" aria-label={t('Navigation mobile', 'Mobile navigation')}>
-              {navLinks.map((link) => (
+              {mobileLinks.map((link) => (
                 <Link
                   key={link.href}
                   to={link.href}
-                  className={`py-3 text-lg font-medium border-b border-aw last:border-0 ${
+                  className={`py-3.5 text-lg font-medium border-b border-aw last:border-0 ${
                     isActive(link.href) ? 'text-aw-primary' : 'text-aw-text'
                   }`}
                   aria-current={isActive(link.href) ? 'page' : undefined}
