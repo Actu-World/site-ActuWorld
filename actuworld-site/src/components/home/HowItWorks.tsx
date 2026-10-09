@@ -26,8 +26,8 @@ export const HowItWorks: React.FC = () => {
       icon: ShieldCheck,
       title: t("ASV analyse les sources", "ASV analyses the sources"),
       desc: t(
-        "ASV note la transparence de chaque éditeur cité, puis vérifie que la source dit bien ce qu'affirme le post, citation exacte à l'appui.",
-        "ASV rates the transparency of each cited publisher, then checks that the source really says what the post claims, with the exact quote."
+        "ASV note la transparence de chaque éditeur cité, puis compare chaque source à ce qu'affirme le post, extrait à l'appui.",
+        "ASV rates the transparency of each cited publisher, then compares each source with what the post claims, with the supporting excerpt."
       ),
       link: { to: "/reco-src", label: t("Comprendre ASV", "Understand ASV") },
     },
