@@ -1,363 +1,300 @@
-import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
-  Sparkles, Video, Brain, Shield, ShieldCheck, Globe2,
-  FileText, AlertTriangle, CheckCircle2, ChevronRight,
-  Database, Users
+  ChevronRight, Link2, ShieldCheck, Building2, Award, Lock, CalendarClock, UserCheck,
+  FileWarning, CheckCircle2, XCircle, HelpCircle, MinusCircle, Newspaper, GraduationCap,
+  PenLine, BookOpenCheck,
 } from "lucide-react";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
 import { PageMeta } from "../components/PageMeta";
-import {
-  PageWrapper,
-  AnimatedSection,
-  Parallax,
-  Floating,
-  staggerContainer,
-  fadeInUp,
-  scaleUp
-} from "../components/animations";
-import { Tooltip } from "../components/ui/Tooltip";
+import { PageWrapper, AnimatedSection } from "../components/animations";
+import { PhoneMockup } from "../components/app/phone/PhoneMockup";
 import { useLanguage } from "../i18n/LanguageContext";
+
+const NB = " ";
 
 export default function RecoSrcPage() {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
 
-  const coreFeatures = [
-    {
-      icon: FileText,
-      title: "Vérification Posts & Articles",
-      desc: "Extraction automatique des URLs et vérification des sources citées dans nos bases de données fiables.",
-      status: "done"
-    },
-    {
-      icon: Video,
-      title: "Analyse Vidéos & Multimédia",
-      desc: "Transcription audio/vidéo + extraction automatique des claims et recherche de sources correspondantes.",
-      status: "done"
-    },
-    {
-      icon: ShieldCheck,
-      title: "Notation des Sources",
-      desc: "Évaluation complète des sources avec scoring avancé pour une fiabilité maximale.",
-      status: "done"
-    },
-    {
-      icon: Brain,
-      title: "Détection Cherry-Picking",
-      desc: "Comparaison sémantique entre l'affirmation utilisateur et le contenu réel de la source citée.",
-      status: "done"
-    },
+  /* Signaux réellement utilisés pour la note Éditeur (asv_scoring.yaml) */
+  const publisherSignals = [
+    { icon: CalendarClock, label: t("Ancienneté du domaine", "Domain age") },
+    { icon: Lock, label: t("Connexion sécurisée (HTTPS)", "Secure connection (HTTPS)") },
+    { icon: Building2, label: t("Mentions légales et pages institutionnelles", "Legal notice and institutional pages") },
+    { icon: UserCheck, label: t("Auteurs identifiés", "Identified authors") },
+    { icon: FileWarning, label: t("Politique de correction", "Corrections policy") },
+    { icon: Award, label: t("Registres reconnus (CPPAP, IFCN, JTI…)", "Recognised registries (CPPAP, IFCN, JTI…)") },
   ];
 
-  const scoringPillars = [
-    { name: "Fiabilité de la source", icon: Database, desc: "ASV vérifie si la source provient d'un site reconnu : média, institution, revue scientifique ou organisme officiel." },
-    { name: "Avis de la communauté", icon: Users, desc: "Les utilisateurs d'ActuWorld évaluent les contenus. Leurs votes renforcent ou questionnent la fiabilité d'un post." },
-    { name: "Sécurité du site", icon: Shield, desc: "ASV s'assure que le site source est sûr, actif et transparent : pas de site frauduleux ni de source douteuse." },
+  /* Verdicts de la note Fidélité (semantic_verification.py) */
+  const stances = [
+    { icon: CheckCircle2, color: "#10b981", label: t("Soutient", "Supports"), desc: t("La source dit bien ce que dit le post.", "The source says what the post says.") },
+    { icon: XCircle, color: "#ef4444", label: t("Contredit", "Contradicts"), desc: t("La source dit autre chose, voire l'inverse.", "The source says something else, or the opposite.") },
+    { icon: MinusCircle, color: "#f59e0b", label: t("Hors sujet", "Off-topic"), desc: t("La source ne parle pas de l'affirmation.", "The source doesn't address the claim.") },
+    { icon: HelpCircle, color: "#6b7280", label: t("Non vérifiable", "Unverifiable"), desc: t("Impossible de trancher avec ce texte.", "Can't tell from this text.") },
+  ];
+
+  /* Échelle canonique 2 / 3,5 / 5,5 / 7,5 */
+  const scale = [
+    { from: 0, to: 2, label: t("Trompeur", "Misleading"), color: "#dc2626" },
+    { from: 2, to: 3.5, label: t("Non vérifiable", "Unverifiable"), color: "#ef4444" },
+    { from: 3.5, to: 5.5, label: t("Contexte", "Context"), color: "#f97316" },
+    { from: 5.5, to: 7.5, label: t("Partiel", "Partial"), color: "#f59e0b" },
+    { from: 7.5, to: 10, label: t("Vérifié", "Verified"), color: "#10b981" },
+  ];
+
+  const audiences = [
+    {
+      icon: BookOpenCheck,
+      title: t("Lectrices et lecteurs", "Readers"),
+      desc: t(
+        "Un coup d'œil au badge suffit pour savoir si les sources tiennent la route. Une touche ouvre le détail : qui publie, et si la source dit vraiment ça.",
+        "One glance at the badge tells you whether the sources hold up. One tap opens the detail: who publishes, and whether the source really says that."
+      ),
+    },
+    {
+      icon: PenLine,
+      title: t("Créateurs", "Creators"),
+      desc: t(
+        "Ta dépêche est analysée dès sa publication. Si une source est faible ou mal citée, tu le vois tout de suite et tu peux la remplacer.",
+        "Your dispatch is analysed as soon as it's published. If a source is weak or misquoted, you see it right away and can replace it."
+      ),
+    },
+    {
+      icon: Newspaper,
+      title: t("Rédactions et médias", "Newsrooms and media"),
+      desc: t(
+        "ASV fait une première passe sur les sources citées : transparence de l'éditeur et fidélité de la reprise. Un outil d'aide au contrôle, pas un fact-checker automatique. L'intégration à vos outils est en préparation : parlons de vos besoins.",
+        "ASV runs a first pass on cited sources: publisher transparency and how faithfully they're quoted. A checking aid, not an automatic fact-checker. Integration with your tools is in preparation: let's talk about your needs."
+      ),
+    },
+    {
+      icon: GraduationCap,
+      title: t("Enseignants (éducation aux médias)", "Teachers (media literacy)"),
+      desc: t(
+        "Un support concret pour apprendre à remonter à la source : chaque analyse montre la citation exacte de la source à côté de ce qu'en dit le post.",
+        "A concrete way to teach source-checking: each analysis shows the exact quote from the source next to what the post claims."
+      ),
+    },
   ];
 
   return (
-    <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
+    <PageWrapper className="text-aw-text">
       <PageMeta
-        title={t("ASV — ActuWorld Source Verification", "ASV — ActuWorld Source Verification")}
-        description={t("ASV (ActuWorld Source Verification) vérifie si la source est cohérente avec le contenu et détecte les détournements de contexte. Analyse posts, articles et vidéos.", "ASV (ActuWorld Source Verification) checks if the source is consistent with the content and detects context distortions. Analyzes posts, articles, and videos.")}
+        title={t("ASV | ActuWorld Source Verification", "ASV | ActuWorld Source Verification")}
+        description={t(
+          "ASV analyse les sources citées dans chaque publication ActuWorld : transparence de l'éditeur et fidélité de la reprise. Elle repère le cherry-picking, sans juger à ta place.",
+          "ASV analyses the sources cited in every ActuWorld post: publisher transparency and faithful quoting. It flags cherry-picking without judging for you."
+        )}
         path="/reco-src"
       />
-      {/* HEADER */}
-      <Section className="pt-24 pb-12 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#00A896]/10 via-transparent to-transparent pointer-events-none"></div>
-        <Floating duration={8} y={15}>
-          <div className="absolute top-20 right-20 w-32 h-32 bg-aw-accent/20 rounded-full blur-2xl" />
-        </Floating>
-        <Floating duration={6} y={10}>
-          <div className="absolute bottom-10 left-20 w-24 h-24 bg-aw-primary/20 rounded-full blur-2xl" />
-        </Floating>
 
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={staggerContainer}
-          className="text-center relative"
-        >
-          <motion.div variants={scaleUp}>
-            <motion.span
-              className="badge badge-accent mb-6"
-              whileHover={{ scale: 1.05 }}
-            >
-              <Sparkles className="w-4 h-4" /> ActuWorld Source Verification
-            </motion.span>
-            <H2 kicker="" center as="h1">
-              {isEnglish ? <>ASV: <span className="gradient-text">Powerful and reliable</span> verification</> : <>ASV : Vérification <span className="gradient-text">puissante et fiable</span></>}
-            </H2>
-            <p className="text-aw-muted mt-4 max-w-3xl mx-auto text-lg">
-              {t("ASV (ActuWorld Source Verification) vérifie automatiquement si la source est cohérente avec le contenu publié et détecte les détournements de contexte. Il donne à chaque utilisateur une base claire pour juger par soi-même. Accessible aux créateurs, journalistes et entreprises.", "ASV (ActuWorld Source Verification) automatically checks if the source is consistent with published content and detects context distortions. It gives every user a clear basis to judge for themselves. Accessible to creators, journalists, and companies.")}
-            </p>
-          </motion.div>
-
-          <motion.div variants={fadeInUp} className="mt-8 flex flex-wrap items-center justify-center gap-6">
-            {[
-              { icon: Database, label: "+300", value: t("domaines vérifiés", "verified domains") },
-              { icon: Shield, label: "6", value: t("modules de scoring", "scoring modules") },
-              { icon: Globe2, label: "B2B", value: t("API disponible", "API available") },
-            ].map((stat, i) => (
-              <motion.div
-                key={i}
-                className="flex items-center gap-3 px-4 py-2 rounded-xl bg-aw-surface border border-aw"
-                whileHover={{ scale: 1.05 }}
-              >
-                <div className="w-10 h-10 rounded-lg bg-aw-success flex items-center justify-center">
-                  <stat.icon className="w-5 h-5 text-aw-primary" />
-                </div>
-                <div className="text-left">
-                  <div className="text-lg font-bold text-aw-primary">{stat.label}</div>
-                  <div className="text-xs text-aw-muted">{stat.value}</div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </motion.div>
-      </Section>
-
-      {/* CORE FEATURES */}
-      <Section className="bg-aw-surface py-16 md:py-24">
-        <AnimatedSection>
-          <div className="text-center mb-16">
-            <H2 kicker="Fonctionnalités" center>
-              {isEnglish ? <>The <span className="gradient-text">verification</span> modules</> : <>Les modules de <span className="gradient-text">vérification</span></>}
-            </H2>
-          </div>
-        </AnimatedSection>
-
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={staggerContainer}
-          className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"
-        >
-          {coreFeatures.map((f, i) => (
-            <motion.div
-              key={i}
-              variants={scaleUp}
-              whileHover={{ y: -10 }}
-              className="card card-hover p-6 relative"
-            >
-              {f.status === "coming" && (
-                <span className="absolute top-4 right-4 text-xs px-2 py-1 rounded-full bg-aw-accent/20 text-aw-accent font-medium">
-                  {t("Bientôt", "Soon")}
-                </span>
-              )}
-              {f.status === "done" && (
-                <span className="absolute top-4 right-4 text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-500 font-medium">
-                  {t("✓ Actif", "✓ Live")}
-                </span>
-              )}
-              <motion.div
-                className="w-14 h-14 rounded-2xl bg-aw-success flex items-center justify-center mb-4"
-                whileHover={{ scale: 1.1, rotate: 5 }}
-              >
-                <f.icon className="w-7 h-7 text-aw-primary" />
-              </motion.div>
-              <h3 className="body-semi text-lg mb-2">{f.title}</h3>
-              <p className="text-aw-muted text-sm">{f.desc}</p>
-            </motion.div>
-          ))}
-        </motion.div>
-      </Section>
-
-      {/* SCORING SYSTEM */}
-      <Section className="py-16 md:py-24 relative overflow-hidden">
-        <Parallax offset={30} className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/3 left-0 w-80 h-80 bg-aw-secondary/10 rounded-full blur-3xl" />
-        </Parallax>
-
-        <AnimatedSection>
-          <div className="text-center mb-16">
-            <H2 kicker="Score de fiabilité" center>
-              {isEnglish ? <>How ASV <span className="gradient-text">evaluates</span> a source</> : <>Comment ASV <span className="gradient-text">évalue</span> une source</>}
-            </H2>
-            <p className="text-aw-muted mt-4 max-w-2xl mx-auto">
-              {t("Chaque source reçoit un score de fiabilité basé sur 3 piliers. Simple, transparent et compréhensible par tous.", "Each source gets a reliability score based on 3 pillars. Simple, transparent, and easy to understand.")}
-            </p>
-          </div>
-        </AnimatedSection>
-
-        <div className="max-w-3xl mx-auto">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-            className="space-y-6"
-          >
-            {scoringPillars.map((pillar, i) => (
-              <motion.div
-                key={i}
-                variants={fadeInUp}
-                whileHover={{ x: 8 }}
-                className="card card-hover p-6 flex items-center gap-6"
-              >
-                <div className="flex-shrink-0 w-14 h-14 rounded-2xl bg-aw-primary flex items-center justify-center">
-                  <span className="text-2xl font-bold text-on-primary">{i + 1}</span>
-                </div>
-                <div>
-                  <h3 className="body-semi text-lg">{pillar.name}</h3>
-                  <p className="text-aw-muted text-sm mt-1">{pillar.desc}</p>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </Section>
-
-      {/* CHERRY-PICKING DETECTION */}
-      <Section className="bg-aw-surface py-16 md:py-24">
-        <div className="max-w-4xl mx-auto">
+      {/* HERO : texte + fiche ASV dans l'app */}
+      <section className="pt-12 pb-16 md:pt-20 md:pb-24">
+        <div className="max-w-6xl mx-auto container-px grid lg:grid-cols-[1.2fr_0.8fr] gap-14 items-center">
           <AnimatedSection>
-            <div className="text-center mb-12">
-              <motion.span
-                className="badge badge-success mb-4"
-                whileHover={{ scale: 1.05 }}
-              >
-                <CheckCircle2 className="w-4 h-4" /> {t("Feature active et en fonctionnement", "Feature active and running")}
-              </motion.span>
-              <H2 kicker="" center>
-                {t("Détection du ", "Detection of ")}<Tooltip text={t("Le cherry-picking consiste à sélectionner uniquement les données ou faits qui soutiennent son argument, en ignorant ceux qui le contredisent.", "Cherry-picking means selecting only data or facts that support an argument while ignoring contradictory evidence.")}><span className="gradient-text">cherry-picking</span></Tooltip>
-              </H2>
+            <p className="eyebrow mb-6">ActuWorld Source Verification</p>
+            <h1 className="display">
+              {isEnglish ? "Does the source really say what the post claims?" : <>La source <span className="whitespace-nowrap">dit-elle</span> vraiment ce qu'on lui fait dire&nbsp;?</>}
+            </h1>
+            <p className="lead mt-6">
+              {t(
+                "À chaque publication, ASV lit les sources citées et répond à deux questions : qui publie cette source, et le post la reprend-il fidèlement ?",
+                "On every post, ASV reads the cited sources and answers two questions: who publishes this source, and does the post report it faithfully?"
+              )}
+            </p>
+            <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
+              <Link to="/app" className="btn-primary">
+                {t("Découvrir l'app", "Discover the app")} <ChevronRight className="w-4 h-4" aria-hidden="true" />
+              </Link>
+              <a href="#notes" className="btn-link">
+                {t("Voir les deux notes", "See the two scores")} <ChevronRight className="w-4 h-4" aria-hidden="true" />
+              </a>
+            </div>
+          </AnimatedSection>
+          <AnimatedSection>
+            <PhoneMockup screen="asv" width={290} />
+            <p className="mt-4 caption text-aw-muted text-center">
+              {t("La fiche ASV, telle qu'elle s'ouvre dans l'app.", "The ASV sheet, as it opens in the app.")}
+            </p>
+          </AnimatedSection>
+        </div>
+      </section>
+
+      {/* LES DEUX NOTES */}
+      <Section id="notes" className="bg-aw-surface">
+        <AnimatedSection className="max-w-2xl">
+          <H2>{t("Deux notes, deux questions", "Two scores, two questions")}</H2>
+          <p className="lead mt-5">
+            {t(
+              "ASV ne dit pas si une info est vraie. Elle évalue la qualité des sources et la façon dont elles sont citées. Le reste, c'est à toi de juger.",
+              "ASV doesn't say whether information is true. It rates the quality of the sources and how they're cited. The rest is yours to judge."
+            )}
+          </p>
+        </AnimatedSection>
+
+        <div className="mt-12 grid lg:grid-cols-2 gap-6">
+          {/* Note Éditeur */}
+          <AnimatedSection className="card p-7 md:p-8">
+            <div className="flex items-center gap-3">
+              <span className="w-10 h-10 rounded-[10px] bg-aw-success flex items-center justify-center" aria-hidden="true">
+                <Link2 className="w-5 h-5 text-aw-primary" />
+              </span>
+              <h3 className="text-2xl">{t("Éditeur : qui publie ?", "Publisher: who publishes?")}</h3>
+            </div>
+            <p className="text-aw-muted mt-4 max-w-prose">
+              {t(
+                `Chaque site cité reçoit une note de transparence sur 10. ASV s'appuie sur une base de plus de 1${NB}800 domaines déjà évalués, enrichie automatiquement à chaque nouvelle source.`,
+                "Each cited site gets a transparency score out of 10. ASV relies on a base of more than 1,800 domains already rated, automatically extended with every new source."
+              )}
+            </p>
+            <ul className="mt-6 grid sm:grid-cols-2 gap-x-6 gap-y-3">
+              {publisherSignals.map((s) => (
+                <li key={s.label} className="flex items-start gap-2.5 text-[15px]">
+                  <s.icon className="w-4 h-4 mt-1 text-aw-primary shrink-0" aria-hidden="true" />
+                  {s.label}
+                </li>
+              ))}
+            </ul>
+            <div className="aw-phone mt-7 rounded-xl p-4 border border-aw" style={{ background: "var(--app-bg)" }} aria-hidden="true">
+              <div className="flex items-center justify-between text-sm">
+                <span className="font-semibold underline" style={{ color: "var(--app-text)" }}>ign.fr</span>
+                <span className="font-bold" style={{ color: "#10b981" }}>9/10</span>
+              </div>
+              <div className="flex gap-1.5 mt-2 text-[11px] font-semibold">
+                <span className="rounded px-1.5 py-0.5" style={{ background: "var(--app-row-strong)", color: "var(--app-text)" }}>Institution</span>
+                <span className="rounded px-1.5 py-0.5 inline-flex items-center gap-1" style={{ background: "rgba(16,185,129,0.12)", color: "#10b981" }}>
+                  <Award className="w-3 h-3" /> {t("Registre reconnu", "Recognised registry")}
+                </span>
+                <span className="rounded px-1.5 py-0.5" style={{ background: "var(--app-row-strong)", color: "var(--app-text)" }}>HTTPS</span>
+              </div>
             </div>
           </AnimatedSection>
 
-          <AnimatedSection direction="scale">
-            <motion.div
-              className="card p-8"
-              whileHover={{ scale: 1.01 }}
-            >
-              <div className="space-y-6">
-                <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20">
-                  <h4 className="font-semibold text-red-400 mb-2 flex items-center gap-2">
-                    <AlertTriangle className="w-5 h-5" /> Exemple de cherry-picking
-                  </h4>
-                  <div className="space-y-3 text-sm">
-                    <div>
-                      <span className="text-aw-muted">Source originale (Le Monde) :</span>
-                      <p className="text-aw-text italic mt-1">
-                        "Le chômage a légèrement baissé de 0.1% ce mois-ci, <strong>mais reste à un niveau préoccupant de 8.5%</strong>, bien au-dessus de la moyenne européenne de 6.2%"
-                      </p>
-                    </div>
-                    <div>
-                      <span className="text-aw-muted">Post utilisateur :</span>
-                      <p className="text-aw-text italic mt-1">
-                        "Selon Le Monde, le chômage a baissé ! 📉"
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20">
-                  <h4 className="font-semibold text-green-400 mb-2 flex items-center gap-2">
-                    <CheckCircle2 className="w-5 h-5" /> Détection ASV
-                  </h4>
-                  <div className="space-y-2 text-sm">
-                    <p>✅ Source citée : Le Monde (fiable)</p>
-                    <p>❌ Citation fidèle : <strong className="text-red-400">NON - Contexte important omis</strong></p>
-                    <p>⚠️ Verdict : Cherry-picking détecté (score fidélité : 20%)</p>
-                  </div>
-                </div>
-
-            <p className="text-aw-muted text-sm text-center">
-              ASV analyse ce qui a été dit et compare avec le contenu réel de la source. Il détecte et note le <Tooltip text="Le cherry-picking consiste à sélectionner uniquement les données ou faits qui soutiennent son argument, en ignorant ceux qui le contredisent.">cherry-picking</Tooltip>.
+          {/* Note Fidélité */}
+          <AnimatedSection className="card p-7 md:p-8">
+            <div className="flex items-center gap-3">
+              <span className="w-10 h-10 rounded-[10px] bg-aw-success flex items-center justify-center" aria-hidden="true">
+                <ShieldCheck className="w-5 h-5 text-aw-primary" />
+              </span>
+              <h3 className="text-2xl">{t("Fidélité : la source dit-elle ça ?", "Faithfulness: does the source say that?")}</h3>
+            </div>
+            <p className="text-aw-muted mt-4 max-w-prose">
+              {t(
+                "Une IA lit le texte de chaque source et le compare à l'affirmation du post. Elle rend un verdict par source, avec la citation exacte qui le justifie.",
+                "An AI reads the text of each source and compares it to the post's claim. It returns a verdict per source, with the exact quote that backs it up."
+              )}
             </p>
-              </div>
-            </motion.div>
+            <ul className="mt-6 space-y-3">
+              {stances.map((s) => (
+                <li key={s.label} className="flex items-start gap-3">
+                  <s.icon className="w-5 h-5 mt-0.5 shrink-0" style={{ color: s.color }} aria-hidden="true" />
+                  <span>
+                    <strong className="font-semibold">{s.label}</strong>
+                    <span className="text-aw-muted"> : {s.desc}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-6 text-[15px] text-aw-muted border-t border-aw pt-4">
+              {t(
+                "Une source qui contredit le post suffit à le signaler, même si l'éditeur est très fiable.",
+                "A single contradicting source is enough to flag the post, even if the publisher is highly reliable."
+              )}
+            </p>
+            <p className="mt-4 rounded-xl bg-aw-bg border border-aw px-4 py-3 text-[15px]">
+              <dfn className="not-italic font-semibold text-aw-text">Cherry-picking</dfn>
+              <span className="text-aw-muted">
+                {t(
+                  " : ne garder d'une source que ce qui arrange son propos, en taisant ce qui le contredit. C'est ce que la note Fidélité permet de repérer.",
+                  ": keeping only the part of a source that suits your point and hiding what contradicts it. The Faithfulness score is what spots it."
+                )}
+              </span>
+            </p>
           </AnimatedSection>
         </div>
       </Section>
 
-      {/* USE CASES */}
-      <Section className="py-16 md:py-24">
-        <AnimatedSection>
-          <div className="text-center mb-16">
-            <H2 kicker="Cas d'usage" center>
-              Pour qui est <span className="gradient-text">ASV</span> ?
-            </H2>
-          </div>
+      {/* ÉCHELLE */}
+      <Section id="echelle">
+        <AnimatedSection className="max-w-2xl">
+          <H2>{t("De « Trompeur » à « Vérifié »", "From “Misleading” to “Verified”")}</H2>
+          <p className="lead mt-5">
+            {t(
+              "Les deux notes se combinent en un statut sur 10, toujours sur la même échelle. Dans le fil, le badge ASV est plein, à moitié rempli ou en pointillés.",
+              "Both scores combine into a status out of 10, always on the same scale. In the feed, the ASV badge is full, half-filled or dotted."
+            )}
+          </p>
         </AnimatedSection>
+        <AnimatedSection className="mt-12">
+          <div className="flex h-3 rounded-full overflow-hidden" aria-hidden="true">
+            {scale.map((s) => (
+              <span key={s.label} style={{ flexGrow: s.to - s.from, background: s.color }} />
+            ))}
+          </div>
+          <ol className="mt-5 grid grid-cols-2 sm:grid-cols-5 gap-4">
+            {scale.map((s) => (
+              <li key={s.label}>
+                <p className="font-semibold" style={{ color: s.color }}>{s.label}</p>
+                <p className="text-sm text-aw-muted tabular-nums">
+                  {s.to === 10 ? `${t("dès", "from")} ${String(s.from).replace(".", t(",", "."))}` : `${String(s.from).replace(".", t(",", "."))} ${t("à", "to")} ${String(s.to).replace(".", t(",", "."))}`}
+                </p>
+              </li>
+            ))}
+          </ol>
+          <p className="mt-6 text-sm text-aw-muted max-w-prose">
+            {t(
+              "« Trompeur » n'est attribué que si au moins une source contredit le post ou n'a rien à voir avec lui. Sans source du tout, le statut est « Non vérifiable ».",
+              "“Misleading” is only given when at least one source contradicts the post or is unrelated to it. With no source at all, the status is “Unverifiable”."
+            )}
+          </p>
+        </AnimatedSection>
+      </Section>
 
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={staggerContainer}
-          className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-5xl mx-auto"
-        >
-          {[
-            {
-              icon: Users,
-              title: "Utilisateurs & Lecteurs",
-              desc: "Recevez une base visuelle claire sur chaque article et post. Un premier appui pour développer votre esprit critique.",
-              badge: "Lecture & compréhension",
-              accent: "from-aw-primary/10 to-aw-accent/10"
-            },
-            {
-              icon: FileText,
-              title: "Créateurs de contenu",
-              desc: "Publiez du contenu sourcé avec confiance. ASV valide automatiquement vos sources et votre contenu.",
-              badge: "Publication fiable",
-              accent: "from-aw-success/20 to-aw-primary/10"
-            },
-            {
-              icon: Globe2,
-              title: "Journalistes & Médias",
-              desc: "API B2B qui vérifie les sources et le contenu pour vous en première passe avant publication. Gagnez du temps dans vos vérifications.",
-              badge: "Workflow newsroom",
-              accent: "from-aw-secondary/15 to-aw-accent/10"
-            },
-            {
-              icon: ShieldCheck,
-              title: "Communauté & Apprenants",
-              desc: "Une app ouverte et pédagogique pour tous : un réseau de confiance où l'on vérifie ensemble les sources et le contenu.",
-              badge: "Esprit critique",
-              accent: "from-aw-primary/10 to-aw-success/20"
-            }
-          ].map((use, i) => (
-            <motion.div
-              key={i}
-              variants={fadeInUp}
-              whileHover={{ y: -6, scale: 1.02 }}
-              className="card card-hover p-6 text-center border border-aw/60 bg-gradient-to-br from-aw-surface to-aw-bg"
-            >
-              <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${use.accent} flex items-center justify-center mb-4 mx-auto`}>
-                <use.icon className="w-6 h-6 text-aw-primary" />
+      {/* POUR QUI */}
+      <Section id="pour-qui" className="bg-aw-surface">
+        <AnimatedSection className="max-w-2xl">
+          <p className="eyebrow mb-4">{t("Pour qui", "Who it's for")}</p>
+          <H2>{t("À quoi sert ASV, concrètement", "What ASV is for, concretely")}</H2>
+        </AnimatedSection>
+        <div className="mt-12 grid md:grid-cols-2 gap-x-12 gap-y-10">
+          {audiences.map((a) => (
+            <AnimatedSection key={a.title} className="flex gap-5">
+              <span className="w-11 h-11 rounded-xl bg-aw-bg border border-aw flex items-center justify-center shrink-0" aria-hidden="true">
+                <a.icon className="w-5 h-5 text-aw-primary" />
+              </span>
+              <div>
+                <h3 className="text-xl">{a.title}</h3>
+                <p className="text-aw-muted mt-2 leading-relaxed max-w-prose">{a.desc}</p>
               </div>
-              <div className="inline-flex items-center justify-center gap-2 text-xs font-semibold text-aw-primary bg-aw-success/30 px-3 py-1 rounded-full mb-3 mx-auto">
-                {use.badge}
-              </div>
-              <h3 className="body-semi text-lg mb-2">{use.title}</h3>
-              <p className="text-aw-muted text-sm leading-relaxed">{use.desc}</p>
-            </motion.div>
+            </AnimatedSection>
           ))}
-        </motion.div>
+        </div>
+        <AnimatedSection className="mt-12 text-[15px] text-aw-muted max-w-prose">
+          {t(
+            "Aujourd'hui, ASV fonctionne dans l'app ActuWorld. Une extension pour navigateur et une intégration pour les rédactions sont en préparation.",
+            "Today, ASV runs inside the ActuWorld app. A browser extension and an integration for newsrooms are in preparation."
+          )}
+        </AnimatedSection>
       </Section>
 
       {/* CTA */}
-      <Section className="bg-aw-surface py-16 md:py-24">
-        <AnimatedSection direction="scale">
-          <div className="text-center">
-            <h3 className="text-2xl font-bold mb-4">{t("Prêt à vérifier vos sources ?", "Ready to verify your sources?")}</h3>
-            <p className="text-aw-muted mb-8 max-w-xl mx-auto">
-              {t("Médias, journalistes, créateurs : discutons de l'API ASV. Ou rejoignez la beta dès maintenant.", "Media, journalists, creators: let's talk about the ASV API. Or join the beta now.")}
+      <Section>
+        <div className="grid md:grid-cols-[1fr_auto] gap-8 items-center">
+          <div>
+            <H2>{t("Une rédaction, une école, un projet ?", "A newsroom, a school, a project?")}</H2>
+            <p className="lead mt-4">
+              {t("Dis-nous comment tu aimerais utiliser ASV.", "Tell us how you'd like to use ASV.")}
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/contact" className="btn-primary glow-hover">
-                {t("Nous contacter", "Contact us")} <ChevronRight className="w-5 h-5 ml-2" />
-              </Link>
-              <Link to="/app" className="btn-outline">
-                {t("Découvrir l'app", "Discover the app")}
-              </Link>
-            </div>
           </div>
-        </AnimatedSection>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
+            <Link to="/contact" className="btn-primary">{t("Nous écrire", "Write to us")}</Link>
+            <Link to="/#rejoindre" className="btn-link">
+              {t("Être prévenu", "Get notified")} <ChevronRight className="w-4 h-4" aria-hidden="true" />
+            </Link>
+          </div>
+        </div>
       </Section>
     </PageWrapper>
   );
