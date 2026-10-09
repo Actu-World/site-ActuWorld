@@ -8,7 +8,7 @@ import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
 import { PageMeta } from "../components/PageMeta";
 import { PageWrapper, AnimatedSection } from "../components/animations";
-import { PhoneMockup } from "../components/app/phone/PhoneMockup";
+import { PhoneMockup, AsvTile } from "../components/app/phone/PhoneMockup";
 import { useLanguage } from "../i18n/LanguageContext";
 
 const NB = " ";
@@ -35,6 +35,37 @@ export default function RecoSrcPage() {
     { icon: HelpCircle, color: "#6b7280", label: t("Non vérifiable", "Unverifiable"), desc: t("Impossible de trancher avec ce texte.", "Can't tell from this text.") },
   ];
 
+
+  /* Remplissage du badge selon le statut (asvState.ts de l'app) */
+  const badgeStates: { fill: "full" | "half" | "outline"; title: string; status: string; desc: string }[] = [
+    {
+      fill: "full",
+      title: t("Jauge pleine", "Full gauge"),
+      status: t("Vérifié", "Verified"),
+      desc: t(
+        "Des éditeurs transparents, et des sources qui disent bien ce qu'affirme le post.",
+        "Transparent publishers, and sources that do say what the post claims."
+      ),
+    },
+    {
+      fill: "half",
+      title: t("Jauge à moitié", "Half gauge"),
+      status: t("Partiel ou contexte manquant", "Partial or missing context"),
+      desc: t(
+        "Les sources soutiennent une partie du propos, ou il manque du contexte pour tout confirmer.",
+        "The sources back part of the claim, or some context is missing to confirm it all."
+      ),
+    },
+    {
+      fill: "outline",
+      title: t("Pointillés", "Dotted"),
+      status: t("Non vérifiable ou trompeur", "Unverifiable or misleading"),
+      desc: t(
+        "Pas de source exploitable, ou des sources sans rapport voire contraires au post. Ouvre-les avant de partager.",
+        "No usable source, or sources that are unrelated or even contrary to the post. Open them before sharing."
+      ),
+    },
+  ];
 
   const audiences = [
     {
@@ -197,12 +228,33 @@ export default function RecoSrcPage() {
             </p>
           </AnimatedSection>
         </div>
-        <AnimatedSection className="mt-8 text-[15px] text-aw-muted max-w-prose">
-          {t(
-            "Les deux notes se combinent en un statut affiché par le badge ASV sur chaque publication : plein, à moitié rempli ou en pointillés.",
-            "Both scores combine into a status shown by the ASV badge on every post: full, half-filled or dotted."
-          )}
+      </Section>
+
+      {/* LE BADGE : les trois remplissages de la tuile (asvState.ts de l'app) */}
+      <Section id="badge">
+        <AnimatedSection className="max-w-2xl">
+          <H2>{t("Le badge ASV, en un coup d'œil", "The ASV badge at a glance")}</H2>
+          <p className="lead mt-5">
+            {t(
+              "Les deux notes se combinent en un statut, affiché par le badge sur chaque publication. Sa jauge se lit en un instant.",
+              "Both scores combine into a status, shown by the badge on every post. Its gauge reads in an instant."
+            )}
+          </p>
         </AnimatedSection>
+        <ul className="mt-12 grid sm:grid-cols-3 gap-6">
+          {badgeStates.map((b, i) => (
+            <li key={b.fill} className="flex">
+              <AnimatedSection delay={i * 0.08} className="card p-6 flex flex-col w-full">
+                <div className="aw-phone rounded-xl border border-aw flex items-center justify-center py-7" style={{ background: "var(--app-bg)" }} aria-hidden="true">
+                  <AsvTile size={34} fill={b.fill} />
+                </div>
+                <h3 className="text-xl mt-5">{b.title}</h3>
+                <p className="caption text-aw-muted mt-1">{b.status}</p>
+                <p className="text-aw-muted mt-3 text-[15px]">{b.desc}</p>
+              </AnimatedSection>
+            </li>
+          ))}
+        </ul>
       </Section>
 
       {/* POUR QUI */}
