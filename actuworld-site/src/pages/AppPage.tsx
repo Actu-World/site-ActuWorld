@@ -47,7 +47,7 @@ export default function AppPage() {
     t("Politique", "Politics"), t("International & Conflits", "World & Conflicts"), t("Économie & Finance", "Economy & Finance"),
     t("Justice & Faits divers", "Justice & Crime"), t("Musique & Arts", "Music & Arts"), t("Littérature & Philosophie", "Literature & Philosophy"),
     t("Cinéma & Séries", "Film & TV"), t("Gaming & Esport", "Gaming & Esports"), t("Gastronomie & Cuisine", "Food & Cooking"),
-    t("Voyages & Territoires", "Travel & Places"), t("Environnement & Climat", "Environment & Climate"), t("Société & Social", "Society"),
+    t("Voyages & Territoires", "Travel & Places"), t("Environnement & Climat", "Environment & Climate"), t("Vie quotidienne & Social", "Everyday Life & Social"),
     t("Santé & Médecine", "Health & Medicine"), t("Sport", "Sport"),
   ];
   const TOPICS_PREVIEW = 8;

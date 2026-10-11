@@ -42,7 +42,7 @@ export const STUDIO_THEMES: StudioTheme[] = [
   { key: 'gastronomie', fr: 'Gastronomie & Cuisine', en: 'Food & Cooking', color: '#f59e0b', Icon: Utensils, descFr: 'Recettes, restaurants, produits, chefs, terroir', descEn: 'Recipes, restaurants, produce, chefs, terroir' },
   { key: 'voyage', fr: 'Voyages & Territoires', en: 'Travel & Places', color: '#0ea5e9', Icon: Compass, descFr: 'Destinations, régions, villes, paysages, patrimoine local, urbanisme', descEn: 'Destinations, regions, cities, landscapes, local heritage, urbanism' },
   { key: 'environnement', fr: 'Environnement & Climat', en: 'Environment & Climate', color: '#84cc16', Icon: Leaf, descFr: 'Climat, biodiversité, énergie, écologie', descEn: 'Climate, biodiversity, energy, ecology' },
-  { key: 'societe', fr: 'Société & Social', en: 'Society & Social Issues', color: '#14b8a6', Icon: Users, descFr: 'Faits de société, débats, modes de vie, éducation', descEn: 'Social issues, debates, lifestyles, education' },
+  { key: 'societe', fr: 'Vie quotidienne & Social', en: 'Everyday Life & Social', color: '#14b8a6', Icon: Users, descFr: 'Éducation, logement, travail, famille, inégalités, mouvements sociaux', descEn: 'Education, housing, work, family, inequality, social movements' },
   { key: 'sante', fr: 'Santé & Médecine', en: 'Health & Medicine', color: '#f87171', Icon: Stethoscope, descFr: 'Médecine, prévention, bien-être, recherche médicale', descEn: 'Medicine, prevention, wellbeing, medical research' },
   { key: 'sport', fr: 'Sport', en: 'Sports', color: '#a3e635', Icon: Trophy, descFr: 'Compétitions, athlètes, résultats, disciplines', descEn: 'Competitions, athletes, results, disciplines' },
 ];
