@@ -1,24 +1,29 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { ImageOff, Images, Lock, MapPin, Newspaper, RefreshCw } from 'lucide-react';
+import { ImageOff, Images, Lock, MapPin, Newspaper, Pencil, RefreshCw } from 'lucide-react';
 import { Section } from '../../components/Section';
 import { PageMeta } from '../../components/PageMeta';
 import { PostPreview } from '../../components/studio/PostPreview';
 import { ArticlePreview } from '../../components/studio/ArticlePreview';
+import { EditPanel } from '../../components/studio/inlineEdit';
+import { InlineEditContext, type EditDraft, type InlineEditApi } from '../../components/studio/inlineEditContext';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { useStudioSession } from '../../hooks/useStudioSession';
 import { journalImageUrl, resolveAvatarUrl } from '../../lib/studio/images';
 import { STUDIO_THEME_BY_KEY } from '../../lib/studio/themes';
 import {
-  PLAN_STEPS, clearRedactionReturn, getEditorialPlan, hasText, imageCount, itemTitle, rememberRedactionReturn,
-  type PlanAccount, type PlanItem,
+  PLAN_STEPS, clearRedactionReturn, editLimit, getEditorialPlan, hasText, imageCount, itemTitle, rememberRedactionReturn,
+  saveEditorialEdit, stripCredits, withEdits,
+  type PlanAccount, type PlanItem, type PlanItemData,
 } from '../../lib/studio/redaction';
 import type { PostDraftImage } from '../../types/post';
 
 // Page « Rédaction » : le plan éditorial des comptes officiels, chaque contenu
 // rendu comme dans l'app (aperçus du Studio). Ce qui n'est pas encore fourni
-// (texte, image) est signalé tel quel. Lecture seule — le contenu vient du
-// dépôt actuworld-seed-content via api/seed/sync-plan.ts.
+// (texte, image) est signalé tel quel. Le contenu vient du dépôt
+// actuworld-seed-content via api/seed/sync-plan.ts ; les membres autorisés
+// (can_edit) peuvent retoucher les textes sur place (mode « Retoucher ») —
+// retouches stockées à part, rapatriées dans le dépôt par api/seed/pull-edits.ts.
 
 // Règle d'une session (cf. SOMMAIRE.txt du dépôt de contenu)
 const SESSION_RULE = { posts: 5, articles: 3, reunion: 2 };
@@ -35,8 +40,8 @@ function store(slug: string) {
 }
 
 /** Cartes au format de l'aperçu (une source par carte, comme le composer). */
-function toPreviewCards(item: PlanItem): PostDraftImage[] {
-  const cards = item.data.images ?? [];
+function toPreviewCards(data: PlanItemData): PostDraftImage[] {
+  const cards = data.images ?? [];
   if (!cards.length) return [{ image_url: '', subject: '', description: '', back_description: '', source: null }];
   return cards.map((c) => ({
     image_url: c.image_url ?? '',
@@ -69,6 +74,7 @@ function ItemCard({ item, onOpen }: { item: PlanItem; onOpen: () => void }) {
   const imgs = imageCount(item);
   const theme = d.primary_theme ? STUDIO_THEME_BY_KEY[d.primary_theme] : undefined;
   const visual = isPost ? d.images?.[0]?.image_url : d.cover_path ? journalImageUrl(d.cover_path) : null;
+  const nEdits = Object.keys(item.edits ?? {}).length;
 
   return (
     <button
@@ -94,6 +100,14 @@ function ItemCard({ item, onOpen }: { item: PlanItem; onOpen: () => void }) {
         >
           {isPost ? t('Dépêche', 'Dispatch') : t('Article', 'Article')}
         </span>
+        {nEdits > 0 && (
+          <span
+            className="absolute bottom-2 right-2 z-10 flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500 text-white text-[10.5px] font-bold"
+            title={t('Retouches en attente de rapatriement dans les fichiers', 'Edits pending')}
+          >
+            <Pencil className="w-3 h-3" /> {nEdits}
+          </span>
+        )}
         {isPost && imgs.total > 1 && (
           <span className="absolute top-2 right-2 flex items-center gap-1 px-2 py-0.5 rounded-md bg-black/55 text-white text-[11px] font-bold">
             <Images className="w-3 h-3" /> {imgs.total}
@@ -153,7 +167,13 @@ export default function StudioRedactionPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const [activeSlug, setActiveSlug] = useState<string | null>(readStored());
   const [filter, setFilter] = useState<'all' | 'post' | 'article' | 'reunion'>('all');
-  const [openItem, setOpenItem] = useState<PlanItem | null>(null);
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [canEdit, setCanEdit] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [draft, setDraft] = useState<EditDraft | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const openItem = openId ? items.find((it) => it.id === openId) ?? null : null;
 
   const load = () => {
     setLoadState('loading');
@@ -161,6 +181,7 @@ export default function StudioRedactionPage() {
       .then((res) => {
         setAccounts(res.accounts);
         setItems(res.items);
+        setCanEdit(!!res.canEdit);
         setLoadState('ready');
       })
       .catch((err: Error) => {
@@ -174,6 +195,51 @@ export default function StudioRedactionPage() {
     clearRedactionReturn();
     load();
   }, [session]);
+
+  const closePreview = () => {
+    if (draft && draft.value !== draft.initial && !window.confirm(t('Abandonner la retouche en cours ?', 'Discard the current edit?'))) return;
+    setDraft(null);
+    setSaveError(null);
+    setOpenId(null);
+  };
+
+  /** Enregistre (value) ou annule (null) la retouche du champ ouvert. */
+  const commit = async (value: string | null) => {
+    if (!openItem || !draft) return;
+    setSaving(true);
+    setSaveError(null);
+    try {
+      const res = await saveEditorialEdit(openItem.id, draft.path, value);
+      setItems((prev) => prev.map((it) => (it.id === openItem.id ? { ...it, edits: res.edits } : it)));
+      setDraft(null);
+    } catch (err) {
+      setSaveError((err as Error).message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const editApi: InlineEditApi | null = openItem && canEdit ? {
+    active: editMode,
+    openPath: draft?.path ?? null,
+    isEdited: (path) => !!openItem.edits?.[path],
+    open: (path, label, value) => {
+      if (draft && draft.path !== path && draft.value !== draft.initial
+        && !window.confirm(t('Abandonner la retouche en cours ?', 'Discard the current edit?'))) return;
+      const cardIndex = path.startsWith('cards.') ? Number(path.split('.')[1]) : undefined;
+      const initial = path === 'cards.0.back_description' ? stripCredits(value) : value;
+      setSaveError(null);
+      setDraft({ path, label, initial, value: initial, limit: editLimit(path, cardIndex), edited: !!openItem.edits?.[path] });
+    },
+    textFor: (path, value) => {
+      if (draft?.path !== path) return value;
+      if (path === 'cards.0.back_description') {
+        const line = value.match(/Crédits photo : [^\n]*$/)?.[0];
+        return line ? `${draft.value.trim()}\n\n${line}` : draft.value;
+      }
+      return draft.value;
+    },
+  } : null;
 
   const countByAccount = useMemo(() => {
     const m = new Map<string, number>();
@@ -358,7 +424,7 @@ export default function StudioRedactionPage() {
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 items-start">
                           {shown.map((it) => (
-                            <ItemCard key={it.id} item={it} onOpen={() => setOpenItem(it)} />
+                            <ItemCard key={it.id} item={it} onOpen={() => setOpenId(it.id)} />
                           ))}
                         </div>
                       </section>
@@ -371,26 +437,66 @@ export default function StudioRedactionPage() {
         </div>
       </Section>
 
-      {openItem?.kind === 'post' && (
-        <PostPreview
-          cards={toPreviewCards(openItem)}
-          tags={openItem.data.tags ?? []}
-          authorName={authorName}
-          authorExpertise={null}
-          avatarSrc={avatarSrc}
-          onClose={() => setOpenItem(null)}
-          showMissing
-        />
+      <InlineEditContext.Provider value={editApi}>
+        {openItem?.kind === 'post' && (() => {
+          const d = withEdits(openItem);
+          return (
+            <PostPreview
+              cards={toPreviewCards(d)}
+              tags={d.tags ?? []}
+              authorName={authorName}
+              authorExpertise={null}
+              avatarSrc={avatarSrc}
+              onClose={closePreview}
+              showMissing
+            />
+          );
+        })()}
+        {openItem?.kind === 'article' && (() => {
+          const d = withEdits(openItem);
+          return (
+            <ArticlePreview
+              title={d.title ?? ''}
+              dek={d.dek ?? ''}
+              coverPath={d.cover_path ?? null}
+              blocks={d.blocks ?? []}
+              sources={d.sources ?? []}
+              onClose={closePreview}
+              showMissing
+            />
+          );
+        })()}
+      </InlineEditContext.Provider>
+
+      {/* Mode retouche : bouton au-dessus de l'aperçu + panneau d'édition */}
+      {openItem && canEdit && (
+        <div className="fixed z-[60] top-4 left-4 flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => { setEditMode((v) => !v); setDraft(null); setSaveError(null); }}
+            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm font-bold shadow-lg ${
+              editMode ? 'bg-amber-400 text-black' : 'bg-white text-black hover:bg-white/90'
+            }`}
+          >
+            <Pencil className="w-4 h-4" /> {editMode ? t('Retouche activée', 'Editing on') : t('Retoucher', 'Edit')}
+          </button>
+          {editMode && (
+            <span className="px-3 py-1.5 rounded-full bg-black/60 text-white text-xs font-semibold">
+              {t('Clique sur un texte du téléphone', 'Click any text on the phone')}
+              {Object.keys(openItem.edits ?? {}).length > 0 && ` · ${Object.keys(openItem.edits ?? {}).length} ${t('retouche(s)', 'edit(s)')}`}
+            </span>
+          )}
+        </div>
       )}
-      {openItem?.kind === 'article' && (
-        <ArticlePreview
-          title={openItem.data.title ?? ''}
-          dek={openItem.data.dek ?? ''}
-          coverPath={openItem.data.cover_path ?? null}
-          blocks={openItem.data.blocks ?? []}
-          sources={openItem.data.sources ?? []}
-          onClose={() => setOpenItem(null)}
-          showMissing
+      {openItem && draft && (
+        <EditPanel
+          draft={draft}
+          onChange={(value) => setDraft((d) => (d ? { ...d, value } : d))}
+          onSave={() => commit(draft.value)}
+          onCancel={() => { setDraft(null); setSaveError(null); }}
+          onRevert={() => commit(null)}
+          saving={saving}
+          error={saveError}
         />
       )}
     </div>

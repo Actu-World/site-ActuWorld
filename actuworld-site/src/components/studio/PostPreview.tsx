@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import {
   BatteryFull, ChevronLeft, ChevronRight, ImageOff, Images, MessageCircle, Share2, Signal, Tag, Wifi, X,
 } from 'lucide-react';
 import type { PostDraftImage } from '../../types/post';
 import { hostFromUrl } from '../../lib/studio/journal';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { Editable } from './inlineEdit';
+import { InlineEditContext, isTyping, useEditText } from './inlineEditContext';
 
 // Aperçu « comme dans l'app » : miroir de VisualFeedCard (feed mobile) — pour
 // chaque carte, une page cover (image + dégradé, titre 22/28, excerpt) puis une
@@ -34,6 +36,8 @@ export function PostPreview({ cards, tags, authorName, authorExpertise, avatarSr
   const [currentPage, setCurrentPage] = useState(0);
   const totalPages = cards.length * 2;
   const untitled = showMissing ? t('Pas encore de texte', 'No text yet') : t('(Sans titre)', '(Untitled)');
+  const editing = !!useContext(InlineEditContext)?.active;
+  const tx = useEditText();
 
   // Navigation au clic (façon stories) : moitié gauche/droite de l'écran du
   // mockup, flèches ←/→ au clavier — en plus du scroll horizontal.
@@ -48,6 +52,7 @@ export function PostPreview({ cards, tags, authorName, authorExpertise, avatarSr
 
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
+      if (isTyping(event)) return;
       if (event.key === 'Escape') onClose();
       else if (event.key === 'ArrowRight') goToPage(currentPageRef.current + 1);
       else if (event.key === 'ArrowLeft') goToPage(currentPageRef.current - 1);
@@ -116,13 +121,17 @@ export function PostPreview({ cards, tags, authorName, authorExpertise, avatarSr
 
       {/* Bas : titre, excerpt, signature */}
       <div className="absolute bottom-0 inset-x-0 px-[22px] pb-[22px] pt-6">
-        <h2 className="text-white text-[22px] leading-7 font-black [text-shadow:0_2px_10px_rgba(0,0,0,0.7)] line-clamp-3">
-          {card.subject?.trim() || untitled}
-        </h2>
-        {!!card.description?.trim() && card.description.trim() !== card.subject?.trim() && (
-          <p className="text-white/[0.88] text-sm leading-5 mt-1.5 font-medium [text-shadow:0_1px_5px_rgba(0,0,0,0.5)] line-clamp-2">
-            {card.description}
-          </p>
+        <Editable dark path={`cards.${idx}.subject`} label={`Carte ${idx + 1} · titre`} value={card.subject ?? ''}>
+          <h2 className="text-white text-[22px] leading-7 font-black [text-shadow:0_2px_10px_rgba(0,0,0,0.7)] line-clamp-3">
+            {tx(`cards.${idx}.subject`, card.subject ?? '').trim() || untitled}
+          </h2>
+        </Editable>
+        {(editing || (!!card.description?.trim() && card.description.trim() !== card.subject?.trim())) && (
+          <Editable dark path={`cards.${idx}.description`} label={`Carte ${idx + 1} · recto`} value={card.description ?? ''}>
+            <p className={`text-white/[0.88] text-sm leading-5 mt-1.5 font-medium [text-shadow:0_1px_5px_rgba(0,0,0,0.5)] ${editing ? '' : 'line-clamp-2'}`}>
+              {tx(`cards.${idx}.description`, card.description ?? '') || (editing ? '(recto vide)' : '')}
+            </p>
+          </Editable>
         )}
         {idx === 0 && (
           <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-white/20">
@@ -166,13 +175,17 @@ export function PostPreview({ cards, tags, authorName, authorExpertise, avatarSr
 
         <div className="relative h-full flex flex-col px-[22px] pt-11 pb-3.5">
           <div className="flex-1 overflow-y-auto space-y-2.5">
-            <h3 className="text-white text-[19px] leading-[25px] font-extrabold">
-              {card.subject?.trim() || untitled}
-            </h3>
-            {(card.back_description?.trim() || card.description?.trim()) && (
-              <p className="text-white/70 text-[15px] leading-[23px] whitespace-pre-line">
-                {card.back_description?.trim() || card.description}
-              </p>
+            <Editable dark path={`cards.${idx}.subject`} label={`Carte ${idx + 1} · titre`} value={card.subject ?? ''}>
+              <h3 className="text-white text-[19px] leading-[25px] font-extrabold">
+                {tx(`cards.${idx}.subject`, card.subject ?? '').trim() || untitled}
+              </h3>
+            </Editable>
+            {(editing || card.back_description?.trim() || card.description?.trim()) && (
+              <Editable dark path={`cards.${idx}.back_description`} label={`Carte ${idx + 1} · verso`} value={card.back_description ?? ''}>
+                <p className="text-white/70 text-[15px] leading-[23px] whitespace-pre-line">
+                  {tx(`cards.${idx}.back_description`, card.back_description ?? '').trim() || card.description}
+                </p>
+              </Editable>
             )}
 
             <div className="h-px bg-white/10" />
@@ -271,7 +284,7 @@ export function PostPreview({ cards, tags, authorName, authorExpertise, avatarSr
 
       {/* ── Mockup téléphone : châssis + écran (même gabarit que l'aperçu article) ── */}
       <div
-        className="rounded-[52px] bg-neutral-900 p-[10px] shadow-[0_25px_80px_rgba(0,0,0,0.55)] ring-1 ring-white/10 select-none"
+        className={`rounded-[52px] bg-neutral-900 p-[10px] shadow-[0_25px_80px_rgba(0,0,0,0.55)] ring-1 ring-white/10 ${editing ? '' : 'select-none'}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="relative bg-aw-bg text-aw-text rounded-[42px] overflow-hidden w-[375px] max-w-[calc(100vw-4rem)] h-[min(85vh,780px)] flex flex-col">

@@ -1,10 +1,12 @@
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { X, Link2, Signal, Wifi, BatteryFull, ImageOff } from 'lucide-react';
 import type { JournalBlock, JournalSource } from '../../types/journal';
 import { journalImageUrl } from '../../lib/studio/images';
 import { hostFromUrl } from '../../lib/studio/journal';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { Editable } from './inlineEdit';
+import { InlineEditContext, isTyping, useEditText } from './inlineEditContext';
 
 // Aperçu « comme dans l'app » : miroir fidèle d'ArticleRenderer + de l'en-tête
 // de la page article mobile (components/journal/ArticleRenderer.tsx) — mêmes
@@ -93,9 +95,14 @@ const headingSizePx = (level?: 1 | 2 | 3) => (level === 3 ? 18 : level === 2 ? 2
 export function ArticlePreview({ title, dek, coverPath, blocks, sources, onClose, showMissing = false }: ArticlePreviewProps) {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
+  const editing = !!useContext(InlineEditContext)?.active;
+  const tx = useEditText();
+  // La dernière ligne « Crédits photo » est ajoutée par la synchro : pas retouchable.
+  const isCredits = (text: string) => text.startsWith('Crédits photo');
 
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
+      if (isTyping(event)) return;
       if (event.key === 'Escape') onClose();
     };
     document.addEventListener('keydown', handleKey);
@@ -130,7 +137,7 @@ export function ArticlePreview({ title, dek, coverPath, blocks, sources, onClose
 
       {/* ── Mockup téléphone : châssis + écran ── */}
       <div
-        className="rounded-[52px] bg-neutral-900 p-[10px] shadow-[0_25px_80px_rgba(0,0,0,0.55)] ring-1 ring-white/10 select-none"
+        className={`rounded-[52px] bg-neutral-900 p-[10px] shadow-[0_25px_80px_rgba(0,0,0,0.55)] ring-1 ring-white/10 ${editing ? '' : 'select-none'}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="relative bg-aw-bg text-aw-text rounded-[42px] overflow-hidden w-[375px] max-w-[calc(100vw-4rem)] h-[min(85vh,780px)] flex flex-col">
@@ -157,11 +164,15 @@ export function ArticlePreview({ title, dek, coverPath, blocks, sources, onClose
 
           {/* En-tête article : paddingHorizontal 20, titre 22/28, chapeau 15/22 */}
           <div className="px-5 pt-4">
-            <h1 className="text-[22px] leading-7 font-bold">
-              {title.trim() || (showMissing ? t('Pas encore de texte', 'No text yet') : t('(Sans titre)', '(Untitled)'))}
-            </h1>
-            {dek.trim() && (
-              <p className="text-aw-muted text-[15px] leading-[22px] mt-2">{dek}</p>
+            <Editable path="title" label="Titre" value={title}>
+              <h1 className="text-[22px] leading-7 font-bold">
+                {tx('title', title).trim() || (showMissing ? t('Pas encore de texte', 'No text yet') : t('(Sans titre)', '(Untitled)'))}
+              </h1>
+            </Editable>
+            {(editing || dek.trim()) && (
+              <Editable path="dek" label="Chapeau" value={dek}>
+                <p className="text-aw-muted text-[15px] leading-[22px] mt-2">{tx('dek', dek) || '(chapeau vide)'}</p>
+              </Editable>
             )}
           </div>
 
@@ -174,36 +185,47 @@ export function ArticlePreview({ title, dek, coverPath, blocks, sources, onClose
               switch (block.type) {
                 case 'heading':
                   return (
-                    <h2
-                      key={index}
-                      className="font-semibold mt-2 mb-1.5 tracking-[0.2px]"
-                      style={{ fontSize: headingSizePx(block.level) }}
-                    >
-                      {block.text}
-                    </h2>
+                    <Editable key={index} path={`blocks.${index}.text`} label={`Bloc ${index + 1} · intertitre`} value={block.text}>
+                      <h2
+                        className="font-semibold mt-2 mb-1.5 tracking-[0.2px]"
+                        style={{ fontSize: headingSizePx(block.level) }}
+                      >
+                        {tx(`blocks.${index}.text`, block.text)}
+                      </h2>
+                    </Editable>
                   );
                 case 'paragraph': {
                   if (!block.text.trim()) return null;
+                  const text = tx(`blocks.${index}.text`, block.text);
                   // Lettrine sur le premier paragraphe, comme l'app
-                  if (index === firstParaIndex) {
-                    return (
-                      <p key={index} className="text-[15px] leading-6 mb-3 whitespace-pre-line">
-                        <span className="text-[28px] leading-7 font-bold">{block.text.slice(0, 1)}</span>
-                        {renderInline(block.text.slice(1), `p-${index}-`)}
-                      </p>
-                    );
-                  }
-                  return (
-                    <p key={index} className="text-[15px] leading-6 mb-3 whitespace-pre-line">
-                      {renderInline(block.text, `p-${index}-`)}
+                  const para = index === firstParaIndex ? (
+                    <p className="text-[15px] leading-6 mb-3 whitespace-pre-line">
+                      <span className="text-[28px] leading-7 font-bold">{text.slice(0, 1)}</span>
+                      {renderInline(text.slice(1), `p-${index}-`)}
                     </p>
+                  ) : (
+                    <p className="text-[15px] leading-6 mb-3 whitespace-pre-line">
+                      {renderInline(text, `p-${index}-`)}
+                    </p>
+                  );
+                  if (isCredits(block.text)) return <div key={index}>{para}</div>;
+                  return (
+                    <Editable key={index} path={`blocks.${index}.text`} label={`Bloc ${index + 1} · paragraphe`} value={block.text}>
+                      {para}
+                    </Editable>
                   );
                 }
                 case 'quote':
                   return block.text.trim() ? (
                     <div key={index} className="my-4 px-3.5 py-3 border-l-[3px] border-aw-primary rounded-lg bg-aw-surface">
-                      <p className="leading-6">"{block.text}"</p>
-                      {block.author && <p className="text-aw-muted text-xs mt-1.5">— {block.author}</p>}
+                      <Editable path={`blocks.${index}.text`} label={`Bloc ${index + 1} · citation (sans guillemets)`} value={block.text}>
+                        <p className="leading-6">"{tx(`blocks.${index}.text`, block.text)}"</p>
+                      </Editable>
+                      {(editing || block.author) && (
+                        <Editable path={`blocks.${index}.author`} label={`Bloc ${index + 1} · auteur de la citation`} value={block.author ?? ''}>
+                          <p className="text-aw-muted text-xs mt-1.5">— {tx(`blocks.${index}.author`, block.author ?? '')}</p>
+                        </Editable>
+                      )}
                     </div>
                   ) : null;
                 case 'divider':
@@ -216,8 +238,10 @@ export function ArticlePreview({ title, dek, coverPath, blocks, sources, onClose
                         alt={block.caption ?? ''}
                         className="w-full aspect-video object-cover rounded-xl border border-aw"
                       />
-                      {block.caption && (
-                        <figcaption className="text-aw-muted text-xs italic mt-1.5">{block.caption}</figcaption>
+                      {(editing || block.caption) && (
+                        <Editable path={`blocks.${index}.caption`} label={`Bloc ${index + 1} · légende`} value={block.caption ?? ''}>
+                          <figcaption className="text-aw-muted text-xs italic mt-1.5">{tx(`blocks.${index}.caption`, block.caption ?? '')}</figcaption>
+                        </Editable>
                       )}
                     </figure>
                   );
@@ -234,12 +258,16 @@ export function ArticlePreview({ title, dek, coverPath, blocks, sources, onClose
                           alt=""
                           className="w-[150px] aspect-[3/4] object-cover rounded-[10px] border border-aw"
                         />
-                        {block.caption && (
-                          <figcaption className="text-aw-muted text-xs italic mt-1">{block.caption}</figcaption>
+                        {(editing || block.caption) && (
+                          <Editable path={`blocks.${index}.caption`} label={`Bloc ${index + 1} · légende`} value={block.caption ?? ''}>
+                            <figcaption className="text-aw-muted text-xs italic mt-1">{tx(`blocks.${index}.caption`, block.caption ?? '')}</figcaption>
+                          </Editable>
                         )}
                       </figure>
                       {block.text && (
-                        <p className="text-[15px] leading-6 whitespace-pre-line">{renderInline(block.text, `it-${index}-`)}</p>
+                        <Editable path={`blocks.${index}.text`} label={`Bloc ${index + 1} · texte à côté de l'image`} value={block.text}>
+                          <p className="text-[15px] leading-6 whitespace-pre-line">{renderInline(tx(`blocks.${index}.text`, block.text), `it-${index}-`)}</p>
+                        </Editable>
                       )}
                     </div>
                   );
