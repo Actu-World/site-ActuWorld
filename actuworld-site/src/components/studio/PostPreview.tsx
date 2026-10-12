@@ -189,13 +189,20 @@ export function PostPreview({ cards, tags, authorName, authorExpertise, avatarSr
               <span className="px-2 py-1 rounded-lg bg-black/50 text-white/60 text-[10px] font-bold">ASV</span>
             </div>
             {sourceUrl && (
-              <div className="flex items-center gap-2 py-1 pl-1">
+              <a
+                href={sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                title={sourceUrl}
+                className="flex items-center gap-2 py-1 pl-1 hover:underline decoration-white/60"
+              >
                 <span className="w-[5px] h-[5px] rounded-full shrink-0" style={{ backgroundColor: MINT }} />
                 <span className="text-white text-[12.5px] font-semibold truncate">
                   {card.source?.title?.trim() || hostFromUrl(sourceUrl) || sourceUrl}
                 </span>
                 <span className="w-[5px] h-[5px] rounded-full shrink-0" style={{ backgroundColor: MINT }} />
-              </div>
+              </a>
             )}
 
             {/* Barre de vote (décorative en aperçu) */}

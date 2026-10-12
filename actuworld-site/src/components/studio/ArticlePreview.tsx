@@ -254,12 +254,20 @@ export function ArticlePreview({ title, dek, coverPath, blocks, sources, onClose
                 <p className="text-xs uppercase tracking-wide text-aw-muted mb-2">{t('Sources', 'Sources')}</p>
                 <ul className="space-y-1.5">
                   {filledSources.map((source, index) => (
-                    <li key={index} className="flex items-start gap-2 text-sm">
-                      <Link2 className="w-3.5 h-3.5 text-aw-primary shrink-0 mt-0.5" />
-                      <span className="min-w-0">
-                        <span className="block truncate">{source.title?.trim() || source.url}</span>
-                        <span className="text-aw-muted text-xs">{hostFromUrl(source.url)}</span>
-                      </span>
+                    <li key={index}>
+                      <a
+                        href={source.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={source.url}
+                        className="group flex items-start gap-2 text-sm"
+                      >
+                        <Link2 className="w-3.5 h-3.5 text-aw-primary shrink-0 mt-0.5" />
+                        <span className="min-w-0">
+                          <span className="block truncate group-hover:underline">{source.title?.trim() || source.url}</span>
+                          <span className="text-aw-muted text-xs">{hostFromUrl(source.url)}</span>
+                        </span>
+                      </a>
                     </li>
                   ))}
                 </ul>
