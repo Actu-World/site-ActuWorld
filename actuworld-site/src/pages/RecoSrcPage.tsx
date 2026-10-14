@@ -295,7 +295,7 @@ export default function RecoSrcPage() {
           </div>
           <div className="flex flex-col sm:flex-row sm:flex-wrap items-center gap-x-6 gap-y-3">
             <Link to="/contact" className="btn-primary w-full sm:w-auto justify-center">{t("Nous écrire", "Write to us")}</Link>
-            <Link to="/#rejoindre" className="btn-link">
+            <Link to="/liste-attente" className="btn-link">
               {t("Être prévenu", "Get notified")} <ChevronRight className="w-4 h-4" aria-hidden="true" />
             </Link>
           </div>

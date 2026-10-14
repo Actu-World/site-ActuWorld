@@ -147,7 +147,7 @@ export default function ContactPage() {
             )}
           </p>
           <div className="mt-8 flex flex-col sm:flex-row sm:flex-wrap items-center justify-center lg:justify-start gap-x-8 gap-y-3">
-            <Link to="/#rejoindre" className="btn-primary w-full sm:w-auto justify-center">
+            <Link to="/liste-attente" className="btn-primary w-full sm:w-auto justify-center">
               {t("Être prévenu", "Get notified")}
             </Link>
             <Link to="/faq" className="btn-link py-2">

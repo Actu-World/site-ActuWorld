@@ -138,7 +138,7 @@ export default function OpenInAppPage({ kind }: { kind: SharedContentKind }) {
                 "Pas encore l'app\u00a0? Elle arrive bientôt sur l'App Store et Google Play.",
                 "Don't have the app yet? It's coming soon to the App Store and Google Play."
               )}{" "}
-              <Link to="/#rejoindre" className="link">
+              <Link to="/liste-attente" className="link">
                 {t("Être prévenu de la sortie", "Get notified at launch")}
               </Link>
             </motion.p>

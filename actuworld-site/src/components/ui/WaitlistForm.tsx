@@ -2,18 +2,21 @@ import { useId, useState } from "react";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { useLanguage } from "../../i18n/LanguageContext";
 import { STUDIO_API_URL } from "../../lib/studio/config";
+import { waitlistSource, type WaitlistForm as WaitlistFormKind } from "../../lib/waitlistSource";
 
 interface WaitlistFormProps {
   className?: string;
   /** Variante sur fond sombre (panneau vert) */
   tone?: "default" | "dark";
+  /** Formulaire d'origine, complété par la provenance de campagne (voir lib/waitlistSource) */
+  form?: WaitlistFormKind;
 }
 
 /**
  * Inscription à l'alerte de sortie sur les stores.
- * Réutilise l'endpoint `/waitlist/join` (source `site_home`, inchangée pour le suivi).
+ * Réutilise l'endpoint `/waitlist/join` ; la home garde `site_home` comme base pour le suivi.
  */
-export const WaitlistForm = ({ className = "", tone = "default" }: WaitlistFormProps) => {
+export const WaitlistForm = ({ className = "", tone = "default", form = "site_home" }: WaitlistFormProps) => {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
   const inputId = useId();
@@ -36,7 +39,7 @@ export const WaitlistForm = ({ className = "", tone = "default" }: WaitlistFormP
       const res = await fetch(`${STUDIO_API_URL}/waitlist/join`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: value, locale: isEnglish ? "en" : "fr", source: "site_home" }),
+        body: JSON.stringify({ email: value, locale: isEnglish ? "en" : "fr", source: waitlistSource(form) }),
       });
       if (!res.ok) {
         setStatus("error");

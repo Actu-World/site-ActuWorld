@@ -76,7 +76,7 @@ export default function AppPage() {
               {t("Publie, explore et partage sur tous les sujets, avec des sources visibles et un score de confiance clair.", "Publish, explore and share on any topic, with visible sources and a clear trust score.")}
             </motion.p>
             <motion.div variants={fadeInUp} className="mt-8 flex flex-col sm:flex-row sm:flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-3">
-              <Link to="/#rejoindre" className="btn-primary w-full sm:w-auto justify-center">
+              <Link to="/liste-attente" className="btn-primary w-full sm:w-auto justify-center">
                 {t("Être prévenu", "Get notified")}
               </Link>
               <Link to="/reco-src" className="btn-link py-2">

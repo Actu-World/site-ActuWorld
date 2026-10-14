@@ -8,6 +8,7 @@ import { ScrollProgress } from './components/ui/ScrollProgress';
 import { BackToTop } from './components/ui/BackToTop';
 import { CookieBanner } from './components/ui/CookieBanner';
 import { useGoogleAnalytics } from './hooks/useGoogleAnalytics';
+import { captureWaitlistSource } from './lib/waitlistSource';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const AppPage = lazy(() => import('./pages/AppPage'));
@@ -25,6 +26,7 @@ const PartnersPage = lazy(() => import('./pages/PartnersPage'));
 const AccountDeletionPage = lazy(() => import('./pages/AccountDeletionPage'));
 const ChildSafetyPage = lazy(() => import('./pages/ChildSafetyPage'));
 const OpenInAppPage = lazy(() => import('./pages/OpenInAppPage'));
+const WaitlistPage = lazy(() => import('./pages/WaitlistPage'));
 const StudioLoginPage = lazy(() => import('./pages/studio/StudioLoginPage'));
 const StudioEditorPage = lazy(() => import('./pages/studio/StudioEditorPage'));
 const StudioPostPage = lazy(() => import('./pages/studio/StudioPostPage'));
@@ -63,6 +65,11 @@ export default function App() {
   // Initialize Google Analytics
   useGoogleAnalytics();
 
+  // Provenance des liens de campagne (?src=ig, UTM) pour la liste d'attente
+  useEffect(() => {
+    captureWaitlistSource(location.search);
+  }, [location.search]);
+
   return (
     <MotionConfig reducedMotion="user">
       {!isStudio && (
@@ -92,6 +99,8 @@ export default function App() {
             <Route path="/securite-enfants" element={<ChildSafetyPage />} />
             <Route path="/child-safety" element={<ChildSafetyPage />} />
             <Route path="/partenaires" element={<PartnersPage />} />
+            <Route path="/liste-attente" element={<WaitlistPage />} />
+            <Route path="/waitlist" element={<WaitlistPage />} />
             {/* Atterrissage des liens partagés depuis l'app (deep links actuworld.fr). */}
             <Route path="/post/:id" element={<OpenInAppPage kind="post" />} />
             <Route path="/journal/:id" element={<OpenInAppPage kind="journal" />} />

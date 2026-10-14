@@ -41,7 +41,7 @@ export default function PricingPage() {
         t("Suivre des créateurs", "Follow creators"),
       ],
       cta: t("Être prévenu", "Get notified"),
-      to: "/#rejoindre",
+      to: "/liste-attente",
       featured: false,
     },
     {
@@ -56,7 +56,7 @@ export default function PricingPage() {
         t("Statistiques de base", "Basic analytics"),
       ],
       cta: t("Être prévenu", "Get notified"),
-      to: "/#rejoindre",
+      to: "/liste-attente",
       featured: false,
     },
     {
