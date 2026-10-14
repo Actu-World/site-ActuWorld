@@ -27,7 +27,7 @@ export default function HomePage() {
     {
       icon: ShieldCheck,
       label: t("ASV analyse chaque source", "ASV analyses every source"),
-      desc: t("Qui publie, et la reprise est-elle fidèle\u00a0?", "Who publishes, and is it quoted faithfully?"),
+      desc: t("L'éditeur de la source est-il transparent, et le post la reprend-il fidèlement ?", "Is the source's publisher transparent, and does the post quote it faithfully?"),
     },
     {
       icon: Users,

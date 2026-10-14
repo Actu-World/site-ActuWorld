@@ -23,7 +23,7 @@ export default function WaitlistPage() {
     },
     {
       icon: ShieldCheck,
-      label: t("ASV analyse qui publie et si la reprise est fidèle", "ASV checks who publishes and whether it's quoted faithfully"),
+      label: t("ASV analyse les sources : transparence de l'éditeur, fidélité de la reprise", "ASV analyses the sources: publisher transparency, faithful quoting"),
     },
     {
       icon: Users,

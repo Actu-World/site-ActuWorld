@@ -58,11 +58,19 @@ export const WaitlistForm = ({ className = "", tone = "default", form = "site_ho
   if (status === "success") {
     return (
       <p
-        className={`flex items-center gap-3 text-[17px] font-semibold ${dark ? "text-white" : "text-aw-text"} ${className}`}
+        className={`flex items-start gap-3 text-[17px] font-semibold ${dark ? "text-white" : "text-aw-text"} ${className}`}
         role="status"
       >
         <CheckCircle2 className={`w-6 h-6 shrink-0 ${dark ? "text-[#A8D5BA]" : "text-aw-primary"}`} aria-hidden="true" />
-        {t("C'est noté. On t'écrit dès la sortie.", "Got it. We'll email you at launch.")}
+        <span>
+          {t("C'est noté. On t'écrit dès la sortie.", "Got it. We'll email you at launch.")}
+          <span className={`block mt-1 text-sm font-normal ${dark ? "text-white/75" : "text-aw-muted"}`}>
+            {t(
+              "Un mail de confirmation vient de partir. Tu ne le vois pas ? Regarde dans tes indésirables.",
+              "A confirmation email is on its way. Can't see it? Check your spam folder."
+            )}
+          </span>
+        </span>
       </p>
     );
   }
