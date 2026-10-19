@@ -4,6 +4,7 @@ import {
 } from 'lucide-react';
 import type { PostDraftImage } from '../../types/post';
 import { hostFromUrl } from '../../lib/studio/journal';
+import { safeHttpUrl } from '../../lib/safeUrl';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { Editable } from './inlineEdit';
 import { InlineEditContext, isTyping, useEditText } from './inlineEditContext';
@@ -201,22 +202,34 @@ export function PostPreview({ cards, tags, authorName, authorExpertise, avatarSr
               )}
               <span className="px-2 py-1 rounded-lg bg-black/50 text-white/60 text-[10px] font-bold">ASV</span>
             </div>
-            {sourceUrl && (
-              <a
-                href={sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                title={sourceUrl}
-                className="flex items-center gap-2 py-1 pl-1 hover:underline decoration-white/60"
-              >
-                <span className="w-[5px] h-[5px] rounded-full shrink-0" style={{ backgroundColor: MINT }} />
-                <span className="text-white text-[12.5px] font-semibold truncate">
-                  {card.source?.title?.trim() || hostFromUrl(sourceUrl) || sourceUrl}
+            {sourceUrl && (() => {
+              const href = safeHttpUrl(sourceUrl);
+              const content = (
+                <>
+                  <span className="w-[5px] h-[5px] rounded-full shrink-0" style={{ backgroundColor: MINT }} />
+                  <span className="text-white text-[12.5px] font-semibold truncate">
+                    {card.source?.title?.trim() || hostFromUrl(sourceUrl) || sourceUrl}
+                  </span>
+                  <span className="w-[5px] h-[5px] rounded-full shrink-0" style={{ backgroundColor: MINT }} />
+                </>
+              );
+              return href ? (
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  title={sourceUrl}
+                  className="flex items-center gap-2 py-1 pl-1 hover:underline decoration-white/60"
+                >
+                  {content}
+                </a>
+              ) : (
+                <span title={sourceUrl} className="flex items-center gap-2 py-1 pl-1">
+                  {content}
                 </span>
-                <span className="w-[5px] h-[5px] rounded-full shrink-0" style={{ backgroundColor: MINT }} />
-              </a>
-            )}
+              );
+            })()}
 
             {/* Barre de vote (décorative en aperçu) */}
             <div className="flex items-center gap-2.5 py-1">
