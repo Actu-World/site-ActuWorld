@@ -4,6 +4,7 @@ import { X, Link2, Signal, Wifi, BatteryFull, ImageOff } from 'lucide-react';
 import type { JournalBlock, JournalSource } from '../../types/journal';
 import { journalImageUrl } from '../../lib/studio/images';
 import { hostFromUrl } from '../../lib/studio/journal';
+import { safeHttpUrl } from '../../lib/safeUrl';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { Editable } from './inlineEdit';
 import { InlineEditContext, isTyping, useEditText } from './inlineEditContext';
@@ -281,23 +282,37 @@ export function ArticlePreview({ title, dek, coverPath, blocks, sources, onClose
               <div className="mt-4 pt-4 border-t border-aw">
                 <p className="text-xs uppercase tracking-wide text-aw-muted mb-2">{t('Sources', 'Sources')}</p>
                 <ul className="space-y-1.5">
-                  {filledSources.map((source, index) => (
-                    <li key={index}>
-                      <a
-                        href={source.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title={source.url}
-                        className="group flex items-start gap-2 text-sm"
-                      >
+                  {filledSources.map((source, index) => {
+                    const href = safeHttpUrl(source.url);
+                    const content = (
+                      <>
                         <Link2 className="w-3.5 h-3.5 text-aw-primary shrink-0 mt-0.5" />
                         <span className="min-w-0">
                           <span className="block truncate group-hover:underline">{source.title?.trim() || source.url}</span>
                           <span className="text-aw-muted text-xs">{hostFromUrl(source.url)}</span>
                         </span>
-                      </a>
-                    </li>
-                  ))}
+                      </>
+                    );
+                    return (
+                      <li key={index}>
+                        {href ? (
+                          <a
+                            href={href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title={source.url}
+                            className="group flex items-start gap-2 text-sm"
+                          >
+                            {content}
+                          </a>
+                        ) : (
+                          <span title={source.url} className="flex items-start gap-2 text-sm">
+                            {content}
+                          </span>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             )}
