@@ -14,6 +14,14 @@ import { wantsRedactionReturn } from '../../lib/studio/redaction';
 
 type SendState = 'idle' | 'sending' | 'sent' | 'error';
 
+// URL de retour du magic link : CONSTANTE en prod, jamais dérivée de l'URL
+// visitée (www ou non, miroir, proxy) — une seule entrée d'allowlist Supabase à
+// maintenir. Seul le serveur de dev Vite (`npm run dev`) revient sur son origine
+// locale.
+const STUDIO_MAGIC_LINK_REDIRECT = import.meta.env.DEV
+  ? `${window.location.origin}/studio/editeur`
+  : 'https://actuworld.fr/studio/editeur';
+
 export default function StudioLoginPage() {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
@@ -40,18 +48,10 @@ export default function StudioLoginPage() {
     setSendState('sending');
     setErrorMessage('');
 
-    // URL de retour CANONIQUE : quelle que soit la variante visitée (www ou non),
-    // on renvoie toujours vers actuworld.fr — une seule entrée d'allowlist Supabase
-    // à maintenir, et pas de retombée silencieuse sur la Site URL si la variante
-    // manque. L'origine locale est conservée pour le dev (localhost).
-    const redirectBase = window.location.hostname.endsWith('actuworld.fr')
-      ? 'https://actuworld.fr'
-      : window.location.origin;
-
     const { error } = await supabase.auth.signInWithOtp({
       email: trimmedEmail,
       options: {
-        emailRedirectTo: `${redirectBase}/studio/editeur`,
+        emailRedirectTo: STUDIO_MAGIC_LINK_REDIRECT,
         // Le Studio connecte des créateurs existants, il ne crée pas de comptes.
         shouldCreateUser: false,
       },
