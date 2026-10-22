@@ -267,8 +267,8 @@ export default function TermsPage() {
       body: (
         <p>
           {t(
-            "Nous pouvons modifier ces conditions pour suivre l'évolution du service ou de la loi. La date de mise à jour figure en tête de page. Un changement important est annoncé dans l'application ou par e-mail au moins 15 jours avant son entrée en vigueur ; si tu le refuses, tu peux supprimer ton compte.",
-            "We may change these terms to follow changes in the service or the law. The update date is shown at the top of the page. A significant change is announced in the app or by email at least 15 days before it takes effect; if you refuse it, you can delete your account."
+            "Nous pouvons modifier ces conditions pour suivre l'évolution du service ou de la loi. La date de mise à jour figure en tête de page. Un changement important est annoncé dans l'application ou par e-mail au moins 7 jours avant son entrée en vigueur ; si tu le refuses, tu peux supprimer ton compte.",
+            "We may change these terms to follow changes in the service or the law. The update date is shown at the top of the page. A significant change is announced in the app or by email at least 7 days before it takes effect; if you refuse it, you can delete your account."
           )}
         </p>
       ),
