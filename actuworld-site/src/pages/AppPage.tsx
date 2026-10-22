@@ -163,10 +163,10 @@ export default function AppPage() {
             <AnimatedSection delay={0.1} className="card p-6">
               <div className="flex items-center gap-3 mb-2">
                 <Heart className="w-5 h-5 text-aw-primary" aria-hidden="true" />
-                <h3 className="text-xl">{t("Une monétisation éthique", "Ethical monetization")}</h3>
+                <h3 className="text-xl">{t("Ni publicité, ni vente de données", "No ads, no data sales")}</h3>
               </div>
               <p className="text-aw-muted">
-                {t("Les créateurs sont soutenus par les dons de leur audience. Pas de publicité intrusive, pas d'algorithme à buzz.", "Creators are supported by donations from their audience. No intrusive ads, no hype-driven algorithm.")}
+                {t("Pas de publicité, pas de vente de données, pas d'algorithme à buzz. ActuWorld se financera par des outils pour les professionnels de l'information, jamais sur ta lecture.", "No ads, no data sales, no hype-driven algorithm. ActuWorld will be funded by tools for information professionals, never by your reading.")}
               </p>
             </AnimatedSection>
           </div>
@@ -176,9 +176,9 @@ export default function AppPage() {
       {/* CTA ASV */}
       <Section>
         <AnimatedSection className="max-w-2xl">
-          <H2>{t("Notre IA de vérification", "Our verification AI")}</H2>
+          <H2>{t("Notre analyse de sources", "Our source analysis")}</H2>
           <p className="lead mt-4">
-            {t("ASV analyse tes publications, vérifie les sources citées et évalue leur fiabilité. Tu publies en confiance, tes lecteurs jugent en connaissance de cause.", "ASV analyzes your posts, checks the cited sources and rates their reliability. You publish with confidence, your readers judge with full knowledge.")}
+            {t("ASV compare tes publications aux sources citées, signale ce qui en sort et donne des repères sur la fiabilité des sites. Elle éclaire tes lecteurs, elle ne tranche pas à leur place.", "ASV compares your posts with the cited sources, flags what strays from them and gives cues about site reliability. It informs your readers; it does not decide for them.")}
           </p>
           <div className="mt-8">
             <Link to="/reco-src" className="btn-primary w-full sm:w-auto justify-center">

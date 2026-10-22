@@ -52,7 +52,7 @@ export default function PricingPage() {
       points: [
         t("Publication sourcée", "Source-based publishing"),
         t("Vérification des sources intégrée", "Built-in source verification"),
-        t("Recevoir des dons", "Receive donations"),
+        t("Écrire sur ordinateur avec le Studio", "Write on desktop with the Studio"),
         t("Statistiques de base", "Basic analytics"),
       ],
       cta: t("Être prévenu", "Get notified"),
@@ -82,8 +82,8 @@ export default function PricingPage() {
       a: t("ASV Pro est l'offre en préparation pour les professionnels de l'information : médias, rédactions, écoles. Elle n'est pas encore disponible. Si tu veux l'utiliser ou nous aider à la concevoir, écris-nous.", "ASV Pro is the upcoming offer for information professionals: media, newsrooms, schools. It isn't available yet. If you'd like to use it or help us shape it, write to us."),
     },
     {
-      q: t("Comment fonctionnent les dons ?", "How do donations work?"),
-      a: t("Les lecteurs peuvent donner directement aux créateurs. ActuWorld prélève une commission de 10 % pour faire vivre la plateforme.", "Readers can donate directly to creators. ActuWorld takes a 10% fee to keep the platform running."),
+      q: t("Comment ActuWorld se finance-t-il ?", "How is ActuWorld funded?"),
+      a: t("Pas de publicité, pas de vente de données, et aucun système de don entre utilisateurs pour l'instant. Le financement viendra des outils destinés aux professionnels de l'information (ASV Pro). La lecture et la publication resteront gratuites.", "No advertising, no data sales, and no donation system between users for now. Funding will come from tools for information professionals (ASV Pro). Reading and publishing will remain free."),
     },
     {
       q: t("Quand l'app sera-t-elle disponible ?", "When will the app be available?"),
