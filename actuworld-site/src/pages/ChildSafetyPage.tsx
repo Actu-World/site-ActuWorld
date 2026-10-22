@@ -110,8 +110,8 @@ export default function ChildSafetyPage() {
       body: (
         <p>
           {t(
-            "ActuWorld respecte les lois applicables en matière de protection des mineurs et de lutte contre les contenus d'abus sexuels sur mineurs, notamment le droit français et européen, et coopère pleinement avec les forces de l'ordre dans le cadre des procédures légales. L'application est réservée aux personnes de 13 ans et plus.",
-            "ActuWorld complies with applicable laws on the protection of minors and the fight against child sexual abuse material, including French and European law, and cooperates fully with law enforcement within legal procedures. The app is restricted to people aged 13 and over."
+            "ActuWorld respecte les lois applicables en matière de protection des mineurs et de lutte contre les contenus d'abus sexuels sur mineurs, notamment le droit français et européen, et coopère pleinement avec les forces de l'ordre dans le cadre des procédures légales. L'application est réservée aux personnes de 15 ans et plus.",
+            "ActuWorld complies with applicable laws on the protection of minors and the fight against child sexual abuse material, including French and European law, and cooperates fully with law enforcement within legal procedures. The app is restricted to people aged 15 and over."
           )}
         </p>
       ),

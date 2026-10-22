@@ -31,7 +31,8 @@ import {
   isValidSourceUrl, listMyJournal, publishArticle, updateDraft,
 } from '../../lib/studio/journal';
 import { clearLocalDraft, loadLocalDraft, saveLocalDraft } from '../../lib/studio/draftStorage';
-import { wantsRedactionReturn } from '../../lib/studio/redaction';
+import { clearRedactionReturn, wantsRedactionReturn } from '../../lib/studio/redaction';
+import { useStudioAccess } from '../../hooks/useStudioAccess';
 import type { JournalBlock, JournalSource, StudioDraftRow } from '../../types/journal';
 
 type StudioProfile = {
@@ -67,6 +68,7 @@ export default function StudioEditorPage() {
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
 
   const { session, isLoading } = useStudioSession();
+  const { access: studioAccess, isLoading: isAccessLoading } = useStudioAccess(!!session);
   const [profile, setProfile] = useState<StudioProfile>(null);
   const authError = useMemo(readAuthErrorFromHash, []);
 
@@ -625,8 +627,14 @@ export default function StudioEditorPage() {
     );
   }
 
-  // Connexion lancée depuis la page Rédaction : on y retourne.
-  if (wantsRedactionReturn()) return <Navigate to="/studio/redaction" replace />;
+  // Connexion lancée depuis la page Rédaction : on y retourne, mais seulement
+  // pour un modérateur (la page lui est réservée). L'intention est effacée
+  // dans tous les cas pour ne jamais rejouer la redirection.
+  if (wantsRedactionReturn()) {
+    if (isAccessLoading) return null;
+    clearRedactionReturn();
+    if (studioAccess.moderator) return <Navigate to="/studio/redaction" replace />;
+  }
 
   // Nom affiché : profil API, sinon métadonnées de session (le JWT contient
   // display_name), l'email en tout dernier recours.

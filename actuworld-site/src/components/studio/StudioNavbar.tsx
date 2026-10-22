@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../hooks/useTheme';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { Logo } from '../Logo';
+import { useStudioAccessFromSession } from '../../hooks/useStudioAccess';
 
 /**
  * En-tête de l'environnement Studio : remplace la Navbar du site sur les
@@ -13,6 +14,8 @@ import { Logo } from '../Logo';
 export const StudioNavbar: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const { language, setLanguage, isEnglish } = useLanguage();
+  // Lien « Rédaction » : modérateurs uniquement (la page et l'API le vérifient aussi).
+  const { access } = useStudioAccessFromSession();
 
   return (
     <header className="sticky top-0 z-40 glass border-b border-aw" role="banner">
@@ -34,14 +37,16 @@ export const StudioNavbar: React.FC = () => {
         </Link>
 
         <div className="flex items-center gap-2 shrink-0">
-          {/* Plan éditorial des comptes officiels (réservé à la rédaction) */}
-          <Link
-            to="/studio/redaction"
-            className="inline-flex items-center gap-1.5 text-sm text-aw-muted hover:text-aw-primary transition-colors mr-1"
-          >
-            <Newspaper className="w-4 h-4" aria-hidden="true" />
-            <span className="hidden sm:inline">{isEnglish ? 'Newsroom' : 'Rédaction'}</span>
-          </Link>
+          {/* Plan éditorial des comptes officiels (réservé aux modérateurs) */}
+          {access.moderator && (
+            <Link
+              to="/studio/redaction"
+              className="inline-flex items-center gap-1.5 text-sm text-aw-muted hover:text-aw-primary transition-colors mr-1"
+            >
+              <Newspaper className="w-4 h-4" aria-hidden="true" />
+              <span className="hidden sm:inline">{isEnglish ? 'Newsroom' : 'Rédaction'}</span>
+            </Link>
+          )}
 
           {/* Retour discret vers le site vitrine */}
           <Link

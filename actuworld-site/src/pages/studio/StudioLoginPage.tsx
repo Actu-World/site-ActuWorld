@@ -10,7 +10,8 @@ import { useLanguage } from '../../i18n/LanguageContext';
 import { supabase } from '../../lib/studio/supabase';
 import { useStudioSession } from '../../hooks/useStudioSession';
 import { QrPairingCard } from '../../components/studio/QrPairingCard';
-import { wantsRedactionReturn } from '../../lib/studio/redaction';
+import { useStudioAccess } from '../../hooks/useStudioAccess';
+import { clearRedactionReturn, wantsRedactionReturn } from '../../lib/studio/redaction';
 
 type SendState = 'idle' | 'sending' | 'sent' | 'error';
 
@@ -27,6 +28,10 @@ export default function StudioLoginPage() {
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
 
   const { session, isLoading } = useStudioSession();
+  // Droits Studio : la page Rédaction est réservée aux modérateurs. On ne
+  // redirige vers elle qu'à leur demande explicite (lien magique lancé depuis
+  // /studio/redaction) ; tout le monde arrive sinon sur l'éditeur.
+  const { access, isLoading: isAccessLoading } = useStudioAccess(!!session);
   // Le pairing QR n'est monté que sur écran large : `hidden` CSS masquerait le
   // composant mais le laisserait poller l'API pour rien depuis un mobile.
   const [isDesktop] = useState(
@@ -37,7 +42,10 @@ export default function StudioLoginPage() {
   const [errorMessage, setErrorMessage] = useState('');
 
   if (!isLoading && session) {
-    return <Navigate to={wantsRedactionReturn() ? '/studio/redaction' : '/studio/editeur'} replace />;
+    if (!wantsRedactionReturn()) return <Navigate to="/studio/editeur" replace />;
+    if (isAccessLoading) return null;
+    clearRedactionReturn();
+    return <Navigate to={access.moderator ? '/studio/redaction' : '/studio/editeur'} replace />;
   }
 
   const handleSubmit = async (event: FormEvent) => {

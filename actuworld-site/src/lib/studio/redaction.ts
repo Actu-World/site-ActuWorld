@@ -126,6 +126,12 @@ export function wantsRedactionReturn(): boolean {
 export function clearRedactionReturn(): void {
   try { localStorage.removeItem(NEXT_KEY); } catch { /* stockage indisponible */ }
 }
+/** Lit ET efface l'intention de retour : une redirection vers Rédaction ne se rejoue jamais. */
+export function takeRedactionReturn(): boolean {
+  const wanted = wantsRedactionReturn();
+  if (wanted) clearRedactionReturn();
+  return wanted;
+}
 
 export const PLAN_STEPS =['proposé', 'validé', 'rédigé', 'images', 'brouillon', 'publié'] as const;
 
