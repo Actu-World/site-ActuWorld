@@ -13,7 +13,9 @@ export type PlanCard = {
   description?: string | null;
   back_description?: string | null;
   sources?: PlanSource[];
+  credit_kind?: 'own' | 'illustration' | 'external' | string | null;
   credit?: string | null;
+  credit_url?: string | null;
 };
 
 export type PlanItemData = {
@@ -29,6 +31,9 @@ export type PlanItemData = {
   dek?: string | null;
   cover_path?: string | null;
   cover_brief?: string | null;
+  cover_credit_kind?: 'own' | 'illustration' | 'external' | string | null;
+  cover_credit?: string | null;
+  cover_credit_url?: string | null;
   format?: string | null;
   blocks?: JournalBlock[];
   sources?: JournalSource[];
@@ -48,7 +53,7 @@ export type PlanItem = {
 };
 
 export type PlanEditEntry = { value: string; at: string; by: string };
-/** Chemins : title | dek | cards.<i>.<champ> | blocks.<i>.<champ> */
+/** Chemins : title | dek | cover_credit | cards.<i>.<champ> | blocks.<i>.<champ> */
 export type PlanEdits = Record<string, PlanEditEntry>;
 
 export type PlanAccount = {
@@ -71,21 +76,17 @@ export function saveEditorialEdit(id: string, path: string, value: string | null
 }
 
 /** Limites de l'app par champ retouchable (cf. CONSIGNES-REDACTION.md). */
-export function editLimit(path: string, cardIndex?: number): number {
+export function editLimit(path: string): number {
   if (path === 'title') return 120;
   if (path === 'dek') return 200;
+  if (path === 'cover_credit' || path.endsWith('.credit')) return 200;
   if (path.endsWith('.subject')) return 80;
   if (path.endsWith('.description') && !path.endsWith('back_description')) return 150;
-  if (path.endsWith('.back_description')) return cardIndex === 0 ? 480 : 600;
+  if (path.endsWith('.back_description')) return 600;
   if (path.endsWith('.caption')) return 100;
   if (path.endsWith('.author')) return 120;
   return 4000;
 }
-
-const CREDIT_LINE_RE = /\s*Crédits photo : [^\n]*$/;
-/** Verso sans la ligne « Crédits photo » ajoutée par la synchro. */
-export const stripCredits = (text: string) => text.replace(CREDIT_LINE_RE, '').trim();
-const creditLine = (text: string) => text.match(/Crédits photo : [^\n]*$/)?.[0] ?? null;
 
 /** Contenu tel qu'affiché : données synchronisées + retouches en attente. */
 export function withEdits(item: PlanItem): PlanItemData {
@@ -98,14 +99,10 @@ export function withEdits(item: PlanItem): PlanItemData {
   };
   for (const [path, e] of Object.entries(edits)) {
     const [group, idxStr, field] = path.split('.');
-    if (group === 'title' || group === 'dek') { d[group] = e.value; continue; }
+    if (group === 'title' || group === 'dek' || group === 'cover_credit') { d[group] = e.value; continue; }
     const idx = Number(idxStr);
     if (group === 'cards' && d.images?.[idx]) {
-      const card = d.images[idx] as Record<string, unknown>;
-      if (field === 'back_description') {
-        const line = creditLine(String(item.data.images?.[idx]?.back_description ?? ''));
-        card[field] = line ? `${e.value.trim()}\n\n${line}` : e.value;
-      } else card[field] = e.value;
+      (d.images[idx] as Record<string, unknown>)[field] = e.value;
     } else if (group === 'blocks' && d.blocks?.[idx]) {
       (d.blocks[idx] as Record<string, unknown>)[field] = e.value;
     }

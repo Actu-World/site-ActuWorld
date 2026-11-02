@@ -8,6 +8,7 @@ import { safeHttpUrl } from '../../lib/safeUrl';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { Editable } from './inlineEdit';
 import { InlineEditContext, isTyping, useEditText } from './inlineEditContext';
+import { creditLinkUrl, formatImageCredit } from '../../lib/studio/imageCredit';
 
 // Aperçu « comme dans l'app » : miroir de VisualFeedCard (feed mobile) — pour
 // chaque carte, une page cover (image + dégradé, titre 22/28, excerpt) puis une
@@ -17,6 +18,8 @@ import { InlineEditContext, isTyping, useEditText } from './inlineEditContext';
 const MINT = '#A8D5BA';
 
 interface PostPreviewProps {
+  /** Pseudo de l'auteur : « Photo : @pseudo » quand credit_kind = own. */
+  authorHandle?: string | null;
   cards: PostDraftImage[];
   tags: string[];
   authorName: string;
@@ -31,7 +34,7 @@ interface PostPreviewProps {
 const initials = (name: string) =>
   name.split(/\s+/).map((part) => part[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
 
-export function PostPreview({ cards, tags, authorName, authorExpertise, avatarSrc, onClose, showMissing = false }: PostPreviewProps) {
+export function PostPreview({ cards, tags, authorName, authorHandle = null, authorExpertise, avatarSrc, onClose, showMissing = false }: PostPreviewProps) {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
   const [currentPage, setCurrentPage] = useState(0);
@@ -188,6 +191,24 @@ export function PostPreview({ cards, tags, authorName, authorExpertise, avatarSr
                 </p>
               </Editable>
             )}
+            {/* Crédit de l'image : dernière ligne du texte, au-dessus des sources (comme l'app) */}
+            {(() => {
+              const kind = card.credit_kind ?? null;
+              const text = tx(`cards.${idx}.credit`, card.credit ?? '');
+              const line = formatImageCredit({ credit_kind: kind, credit: text, credit_url: card.credit_url }, { authorHandle, isEnglish });
+              if (!line && !editing) return null;
+              const href = creditLinkUrl(card);
+              const body = href
+                ? <a href={href} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="hover:underline">{line}</a>
+                : line;
+              const cls = 'text-white/50 text-[11px] leading-[15px]';
+              if (kind === 'own') return <p className={cls}>{body}</p>;
+              return (
+                <Editable dark path={`cards.${idx}.credit`} label={`Carte ${idx + 1} · crédit de l’image`} value={card.credit ?? ''}>
+                  <p className={cls}>{body ?? t('(crédit de l’image)', '(image credit)')}</p>
+                </Editable>
+              );
+            })()}
 
             <div className="h-px bg-white/10" />
             <div className="flex items-center justify-between">

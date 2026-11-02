@@ -9,6 +9,10 @@ export type PostDraftImage = {
   description?: string | null;      // excerpt court sur la carte (150)
   back_description?: string | null; // description longue, dos de la carte (600)
   source?: { url: string; title?: string | null } | null; // 1 source requise à la publication
+  // Crédit de l'image (jamais bloquant) : own | illustration | external, texte ≤ 200, page d'origine
+  credit_kind?: 'own' | 'illustration' | 'external' | null;
+  credit?: string | null;
+  credit_url?: string | null;
 };
 
 export type PostDraftPayload = {

@@ -4,11 +4,18 @@
 // (heading/paragraph/quote/divider) mais doit pouvoir relire des brouillons
 // contenant des images.
 
+/** Crédit d'une image (Docs/app/CREDITS-IMAGES-TACHES.md) : tous optionnels. */
+export type JournalImageCredit = {
+  credit_kind?: 'own' | 'illustration' | 'external' | string | null;
+  credit?: string | null;
+  credit_url?: string | null;
+};
+
 export type JournalBlock =
   | { type: 'heading'; text: string; level?: 1 | 2 | 3 }
   | { type: 'paragraph'; text: string }
-  | { type: 'image'; uri: string; caption?: string; width?: number; height?: number }
-  | { type: 'image_text'; uri: string; caption?: string; text: string; align?: 'left' | 'right' }
+  | ({ type: 'image'; uri: string; caption?: string; width?: number; height?: number } & JournalImageCredit)
+  | ({ type: 'image_text'; uri: string; caption?: string; text: string; align?: 'left' | 'right' } & JournalImageCredit)
   | { type: 'quote'; text: string; author?: string }
   | { type: 'divider' };
 
@@ -32,6 +39,9 @@ export type StudioDraftRow = {
   format?: string | null;
   tags: string[] | null;
   cover_url: string | null;
+  cover_credit_kind?: 'own' | 'illustration' | 'external' | string | null;
+  cover_credit?: string | null;
+  cover_credit_url?: string | null;
   origin?: 'app' | 'web' | null; // colonne ajoutée au Lot 3
   created_at: string;
   updated_at: string;

@@ -13,7 +13,7 @@ import { journalImageUrl, resolveAvatarUrl } from '../../lib/studio/images';
 import { STUDIO_THEME_BY_KEY } from '../../lib/studio/themes';
 import {
   PLAN_STEPS, clearRedactionReturn, editLimit, getEditorialPlan, hasText, imageCount, itemTitle, rememberRedactionReturn,
-  saveEditorialEdit, stripCredits, withEdits,
+  saveEditorialEdit, withEdits,
   type PlanAccount, type PlanItem, type PlanItemData,
 } from '../../lib/studio/redaction';
 import type { PostDraftImage } from '../../types/post';
@@ -49,6 +49,9 @@ function toPreviewCards(data: PlanItemData): PostDraftImage[] {
     description: c.description ?? '',
     back_description: c.back_description ?? '',
     source: c.sources?.[0] ? { url: c.sources[0].url, title: c.sources[0].title ?? c.sources[0].publisher ?? null } : null,
+    credit_kind: (c.credit_kind as PostDraftImage['credit_kind']) ?? (c.credit ? 'external' : null),
+    credit: c.credit ?? null,
+    credit_url: c.credit_url ?? null,
   }));
 }
 
@@ -226,19 +229,10 @@ export default function StudioRedactionPage() {
     open: (path, label, value) => {
       if (draft && draft.path !== path && draft.value !== draft.initial
         && !window.confirm(t('Abandonner la retouche en cours ?', 'Discard the current edit?'))) return;
-      const cardIndex = path.startsWith('cards.') ? Number(path.split('.')[1]) : undefined;
-      const initial = path === 'cards.0.back_description' ? stripCredits(value) : value;
       setSaveError(null);
-      setDraft({ path, label, initial, value: initial, limit: editLimit(path, cardIndex), edited: !!openItem.edits?.[path] });
+      setDraft({ path, label, initial: value, value, limit: editLimit(path), edited: !!openItem.edits?.[path] });
     },
-    textFor: (path, value) => {
-      if (draft?.path !== path) return value;
-      if (path === 'cards.0.back_description') {
-        const line = value.match(/Crédits photo : [^\n]*$/)?.[0];
-        return line ? `${draft.value.trim()}\n\n${line}` : draft.value;
-      }
-      return draft.value;
-    },
+    textFor: (path, value) => (draft?.path !== path ? value : draft.value),
   } : null;
 
   const countByAccount = useMemo(() => {
@@ -445,6 +439,7 @@ export default function StudioRedactionPage() {
               cards={toPreviewCards(d)}
               tags={d.tags ?? []}
               authorName={authorName}
+              authorHandle={account?.username ?? null}
               authorExpertise={null}
               avatarSrc={avatarSrc}
               onClose={closePreview}
@@ -459,6 +454,12 @@ export default function StudioRedactionPage() {
               title={d.title ?? ''}
               dek={d.dek ?? ''}
               coverPath={d.cover_path ?? null}
+              coverCredit={{
+                credit_kind: d.cover_credit_kind ?? (d.cover_credit ? 'external' : null),
+                credit: d.cover_credit ?? null,
+                credit_url: d.cover_credit_url ?? null,
+              }}
+              authorHandle={account?.username ?? null}
               blocks={d.blocks ?? []}
               sources={d.sources ?? []}
               onClose={closePreview}

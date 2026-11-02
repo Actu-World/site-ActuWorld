@@ -8,6 +8,7 @@ import { safeHttpUrl } from '../../lib/safeUrl';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { Editable } from './inlineEdit';
 import { InlineEditContext, isTyping, useEditText } from './inlineEditContext';
+import { creditLinkUrl, formatImageCredit, type ImageCreditFields } from '../../lib/studio/imageCredit';
 
 // Aperçu « comme dans l'app » : miroir fidèle d'ArticleRenderer + de l'en-tête
 // de la page article mobile (components/journal/ArticleRenderer.tsx) — mêmes
@@ -19,6 +20,10 @@ interface ArticlePreviewProps {
   title: string;
   dek: string;
   coverPath: string | null;
+  /** Crédit de la couverture (légende sous l'image). */
+  coverCredit?: ImageCreditFields | null;
+  /** Pseudo de l'auteur, pour « Photo : @pseudo » quand credit_kind = own. */
+  authorHandle?: string | null;
   blocks: JournalBlock[];
   sources: JournalSource[];
   onClose: () => void;
@@ -93,13 +98,32 @@ function renderInline(text: string, keyPrefix = 'rt-'): ReactNode[] {
 
 const headingSizePx = (level?: 1 | 2 | 3) => (level === 3 ? 18 : level === 2 ? 22 : 26);
 
-export function ArticlePreview({ title, dek, coverPath, blocks, sources, onClose, showMissing = false }: ArticlePreviewProps) {
+export function ArticlePreview({
+  title, dek, coverPath, coverCredit, authorHandle, blocks, sources, onClose, showMissing = false,
+}: ArticlePreviewProps) {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
   const editing = !!useContext(InlineEditContext)?.active;
   const tx = useEditText();
-  // La dernière ligne « Crédits photo » est ajoutée par la synchro : pas retouchable.
-  const isCredits = (text: string) => text.startsWith('Crédits photo');
+
+  /** Légende de crédit d'une image (couverture ou bloc), retouchable sur la page Rédaction. */
+  const renderCredit = (path: string, label: string, c: ImageCreditFields | null | undefined, className: string) => {
+    const kind = c?.credit_kind ?? null;
+    const text = tx(path, c?.credit ?? '');
+    const line = formatImageCredit({ credit_kind: kind, credit: text, credit_url: c?.credit_url }, { authorHandle, isEnglish });
+    if (!line && !editing) return null;
+    const href = creditLinkUrl(c);
+    const body = href
+      ? <a href={href} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="hover:underline">{line}</a>
+      : line;
+    // « Ma photo » n'a pas de texte à retoucher : légende seule.
+    if (kind === 'own') return <p className={className}>{body}</p>;
+    return (
+      <Editable path={path} label={label} value={c?.credit ?? ''}>
+        <p className={className}>{body ?? t('(crédit de l’image)', '(image credit)')}</p>
+      </Editable>
+    );
+  };
 
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
@@ -155,7 +179,12 @@ export function ArticlePreview({ title, dek, coverPath, blocks, sources, onClose
 
           <div className="overflow-y-auto flex-1">
           {coverPath ? (
-            <img src={journalImageUrl(coverPath)} alt="" className="w-full aspect-[3/2] object-cover" />
+            <>
+              <img src={journalImageUrl(coverPath)} alt="" className="w-full aspect-[3/2] object-cover" />
+              <div className="px-5 pt-1.5">
+                {renderCredit('cover_credit', t('Couverture · crédit de l’image', 'Cover · image credit'), coverCredit, 'text-aw-muted text-[11px]')}
+              </div>
+            </>
           ) : showMissing && (
             <div className="w-full aspect-[3/2] flex flex-col items-center justify-center gap-2 bg-aw-surface text-aw-muted">
               <ImageOff className="w-8 h-8" />
@@ -209,7 +238,6 @@ export function ArticlePreview({ title, dek, coverPath, blocks, sources, onClose
                       {renderInline(text, `p-${index}-`)}
                     </p>
                   );
-                  if (isCredits(block.text)) return <div key={index}>{para}</div>;
                   return (
                     <Editable key={index} path={`blocks.${index}.text`} label={`Bloc ${index + 1} · paragraphe`} value={block.text}>
                       {para}
@@ -244,6 +272,7 @@ export function ArticlePreview({ title, dek, coverPath, blocks, sources, onClose
                           <figcaption className="text-aw-muted text-xs italic mt-1.5">{tx(`blocks.${index}.caption`, block.caption ?? '')}</figcaption>
                         </Editable>
                       )}
+                      {renderCredit(`blocks.${index}.credit`, `Bloc ${index + 1} · crédit de l’image`, block, 'text-aw-muted text-[11px] mt-1')}
                     </figure>
                   );
                 case 'image_text': {
@@ -264,6 +293,7 @@ export function ArticlePreview({ title, dek, coverPath, blocks, sources, onClose
                             <figcaption className="text-aw-muted text-xs italic mt-1">{tx(`blocks.${index}.caption`, block.caption ?? '')}</figcaption>
                           </Editable>
                         )}
+                        {renderCredit(`blocks.${index}.credit`, `Bloc ${index + 1} · crédit de l’image`, block, 'text-aw-muted text-[11px] mt-1')}
                       </figure>
                       {block.text && (
                         <Editable path={`blocks.${index}.text`} label={`Bloc ${index + 1} · texte à côté de l'image`} value={block.text}>
