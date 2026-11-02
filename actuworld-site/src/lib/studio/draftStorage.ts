@@ -1,4 +1,5 @@
 import type { JournalBlock, JournalSource } from '../../types/journal';
+import type { ImageCreditFields } from './imageCredit';
 
 // Autosauvegarde locale de l'éditeur : évite de perdre un article en cours si
 // la session expire ou si l'onglet se ferme. Un seul brouillon local par
@@ -13,6 +14,8 @@ export type StudioLocalDraft = {
   format?: string;
   tags?: string[];
   coverPath?: string | null;
+  /** Crédit de la couverture (absent des brouillons locaux antérieurs). */
+  coverCredit?: ImageCreditFields | null;
   blocks: JournalBlock[];
   sources: JournalSource[];
   savedAt: string;

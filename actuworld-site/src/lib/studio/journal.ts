@@ -25,6 +25,10 @@ export type StudioDraftPayload = {
   format?: string;
   tags?: string[];
   cover_url: string | null;
+  /** Crédit de la couverture (colonnes cover_credit_* ; tout null = non renseigné). */
+  cover_credit_kind?: 'own' | 'illustration' | 'external' | null;
+  cover_credit?: string | null;
+  cover_credit_url?: string | null;
 };
 
 /** Miroir de hasValidSource côté API : URL http/https non vide. */

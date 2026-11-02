@@ -12,6 +12,23 @@ import { SourceListEditor } from '../../components/studio/SourceListEditor';
 import { TagsInput } from '../../components/studio/TagsInput';
 import { DraftList } from '../../components/studio/DraftList';
 import { ArticlePreview } from '../../components/studio/ArticlePreview';
+import { ImageCreditEditor } from '../../components/studio/ImageCreditEditor';
+import { hasImageCredit, type ImageCreditFields } from '../../lib/studio/imageCredit';
+
+/** Crédit de couverture vide (aucune origine choisie). */
+const EMPTY_COVER_CREDIT: ImageCreditFields = { credit_kind: null, credit: '', credit_url: '' };
+
+/** Colonnes cover_credit_* envoyées à l'API : rien sans origine, ni texte ni lien pour « Ma photo ». */
+function coverCreditPayload(c: ImageCreditFields) {
+  const kind = (c.credit_kind ?? null) as 'own' | 'illustration' | 'external' | null;
+  if (!kind) return { cover_credit_kind: null, cover_credit: null, cover_credit_url: null };
+  const url = (c.credit_url ?? '').trim();
+  return {
+    cover_credit_kind: kind,
+    cover_credit: kind === 'own' ? null : (c.credit?.trim() || null),
+    cover_credit_url: kind === 'own' ? null : (/^https?:\/\//i.test(url) ? url : null),
+  };
+}
 import { PublishedList } from '../../components/studio/PublishedList';
 import { WritingHelpModal } from '../../components/studio/WritingHelpModal';
 import { SourceLibrary } from '../../components/studio/SourceLibrary';
@@ -80,6 +97,8 @@ export default function StudioEditorPage() {
   const [format, setFormat] = useState<StudioJournalFormat>(DEFAULT_STUDIO_FORMAT);
   const [tags, setTags] = useState<string[]>([]);
   const [coverPath, setCoverPath] = useState<string | null>(null);
+  // Crédit de la couverture (Docs/app/CREDITS-IMAGES-TACHES.md) — jamais bloquant.
+  const [coverCredit, setCoverCredit] = useState<ImageCreditFields>(EMPTY_COVER_CREDIT);
   const [blocks, setBlocks] = useState<JournalBlock[]>([{ type: 'paragraph', text: '' }]);
   const [sources, setSources] = useState<JournalSource[]>([{ url: '', title: '' }]);
   const [restoredNotice, setRestoredNotice] = useState(false);
@@ -103,12 +122,17 @@ export default function StudioEditorPage() {
 
   // ── Aide à l'écriture (checklist + conseils, derrière l'icône info) ──
   const [showHelp, setShowHelp] = useState(false);
+  // Images de l'article (couverture + blocs image) pour le point « crédit » de la checklist.
+  const articleImages: ImageCreditFields[] = [
+    ...(coverPath ? [coverCredit] : []),
+    ...blocks.filter((b): b is Extract<JournalBlock, { type: 'image' | 'image_text' }> => b.type === 'image' || b.type === 'image_text'),
+  ];
 
   // ── Historique annuler/rétablir (structure + texte, granularité ~400 ms) ──
   type EditorSnapshot = {
     editingDraftId: string | null;
     title: string; dek: string; primaryTheme: string; format: StudioJournalFormat;
-    tags: string[]; coverPath: string | null;
+    tags: string[]; coverPath: string | null; coverCredit: ImageCreditFields;
     blocks: JournalBlock[]; sources: JournalSource[];
   };
   const historyRef = useRef<EditorSnapshot[]>([]);
@@ -159,7 +183,7 @@ export default function StudioEditorPage() {
 
   // ── Annuler / rétablir ──
   const makeSnapshot = (): EditorSnapshot => ({
-    editingDraftId, title, dek, primaryTheme, format, tags, coverPath, blocks, sources,
+    editingDraftId, title, dek, primaryTheme, format, tags, coverPath, coverCredit, blocks, sources,
   });
   const applySnapshot = (snap: EditorSnapshot) => {
     skipHistoryRef.current = true;
@@ -170,6 +194,7 @@ export default function StudioEditorPage() {
     setFormat(snap.format);
     setTags(snap.tags);
     setCoverPath(snap.coverPath);
+    setCoverCredit(snap.coverCredit ?? EMPTY_COVER_CREDIT);
     setBlocks(snap.blocks);
     setSources(snap.sources);
   };
@@ -191,7 +216,7 @@ export default function StudioEditorPage() {
     }, 400);
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editingDraftId, title, dek, primaryTheme, format, tags, coverPath, blocks, sources, sentDraftTitle]);
+  }, [editingDraftId, title, dek, primaryTheme, format, tags, coverPath, coverCredit, blocks, sources, sentDraftTitle]);
 
   const undo = () => {
     if (sentDraftTitle) return;
@@ -255,6 +280,7 @@ export default function StudioEditorPage() {
     setFormat(normalizeStudioFormat(local.format));
     setTags(local.tags ?? []);
     setCoverPath(local.coverPath ?? null);
+    setCoverCredit(local.coverCredit ?? EMPTY_COVER_CREDIT);
     setBlocks(local.blocks.length > 0 ? local.blocks : [{ type: 'paragraph', text: '' }]);
     setSources(local.sources.length > 0 ? local.sources : [{ url: '', title: '' }]);
     setRestoredNotice(true);
@@ -264,10 +290,10 @@ export default function StudioEditorPage() {
   useEffect(() => {
     if (!userId || sentDraftTitle) return;
     const timer = setTimeout(() => {
-      saveLocalDraft(userId, { editingDraftId, title, dek, primaryTheme, format, tags, coverPath, blocks, sources });
+      saveLocalDraft(userId, { editingDraftId, title, dek, primaryTheme, format, tags, coverPath, coverCredit, blocks, sources });
     }, AUTOSAVE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [userId, editingDraftId, title, dek, primaryTheme, format, tags, coverPath, blocks, sources, sentDraftTitle]);
+  }, [userId, editingDraftId, title, dek, primaryTheme, format, tags, coverPath, coverCredit, blocks, sources, sentDraftTitle]);
 
   // Chargement des brouillons + publiés Supabase
   const refreshJournal = useCallback(async () => {
@@ -300,6 +326,7 @@ export default function StudioEditorPage() {
     format,
     tags: tags.length > 0 ? tags : undefined,
     cover_url: coverPath,
+    ...coverCreditPayload(coverPath ? coverCredit : EMPTY_COVER_CREDIT),
   });
 
   // ── Sauvegarde serveur continue : dès qu'il y a un titre, le brouillon vit
@@ -336,7 +363,7 @@ export default function StudioEditorPage() {
     }, 2500);
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, editingDraftId, title, dek, primaryTheme, format, tags, coverPath, blocks, sources, sentDraftTitle, isSending, isPublishing]);
+  }, [userId, editingDraftId, title, dek, primaryTheme, format, tags, coverPath, coverCredit, blocks, sources, sentDraftTitle, isSending, isPublishing]);
 
   const resetEditor = () => {
     setEditingDraftId(null);
@@ -346,6 +373,7 @@ export default function StudioEditorPage() {
     setFormat(DEFAULT_STUDIO_FORMAT);
     setTags([]);
     setCoverPath(null);
+    setCoverCredit(EMPTY_COVER_CREDIT);
     setBlocks([{ type: 'paragraph', text: '' }]);
     setSources([{ url: '', title: '' }]);
     setSendError('');
@@ -509,6 +537,11 @@ export default function StudioEditorPage() {
     setFormat(normalizeStudioFormat(draft.format));
     setTags(draft.tags ?? []);
     setCoverPath(draft.cover_url ?? null);
+    setCoverCredit({
+      credit_kind: draft.cover_credit_kind ?? null,
+      credit: draft.cover_credit ?? '',
+      credit_url: draft.cover_credit_url ?? '',
+    });
     setBlocks(draft.blocks && draft.blocks.length > 0 ? draft.blocks : [{ type: 'paragraph', text: '' }]);
     setSources(draft.sources && draft.sources.length > 0 ? draft.sources.slice(0, 2) : [{ url: '', title: '' }]);
     setSentDraftTitle(null);
@@ -862,6 +895,14 @@ export default function StudioEditorPage() {
                       </span>
                     )}
                   </button>
+                  {coverPath && (
+                    <div className="px-1">
+                      <ImageCreditEditor
+                        value={coverCredit}
+                        onChange={(patch) => setCoverCredit((prev) => ({ ...prev, ...patch }))}
+                      />
+                    </div>
+                  )}
 
                   {/* Titre + chapeau — champs nus comme l'app */}
                   <div className="px-1 space-y-2">
@@ -971,6 +1012,7 @@ export default function StudioEditorPage() {
                     title={title}
                     dek={dek}
                     coverPath={coverPath}
+                    coverCredit={coverCredit}
                     blocks={blocks}
                     sources={sources}
                     onClose={() => setShowPreview(false)}
@@ -984,6 +1026,8 @@ export default function StudioEditorPage() {
                     bodyLength={bodyLength}
                     primaryTheme={primaryTheme}
                     sources={sources}
+                    imagesTotal={articleImages.length}
+                    imagesCredited={articleImages.filter(hasImageCredit).length}
                     onClose={() => setShowHelp(false)}
                   />
                 )}

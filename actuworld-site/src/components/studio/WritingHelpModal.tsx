@@ -13,10 +13,12 @@ interface WritingHelpModalProps {
   bodyLength: number;
   primaryTheme: string;
   sources: JournalSource[];
+  imagesTotal?: number;
+  imagesCredited?: number;
   onClose: () => void;
 }
 
-export function WritingHelpModal({ title, bodyLength, primaryTheme, sources, onClose }: WritingHelpModalProps) {
+export function WritingHelpModal({ title, bodyLength, primaryTheme, sources, imagesTotal, imagesCredited, onClose }: WritingHelpModalProps) {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
 
@@ -80,6 +82,8 @@ export function WritingHelpModal({ title, bodyLength, primaryTheme, sources, onC
             bodyLength={bodyLength}
             primaryTheme={primaryTheme}
             sources={sources}
+            imagesTotal={imagesTotal}
+            imagesCredited={imagesCredited}
           />
 
           {/* Règles du format */}

@@ -7,6 +7,7 @@ import {
 import type { JournalBlock } from '../../types/journal';
 import { journalImageUrl, uploadJournalImage } from '../../lib/studio/images';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { ImageCreditEditor } from './ImageCreditEditor';
 
 // Blocs strictement alignés sur le composer mobile (journal/compose.tsx) :
 // paragraphe, titre (niveau 2), image + légende, img+texte (align g/d),
@@ -342,6 +343,10 @@ export function BlockListEditor({ blocks, onChange, budgetFor, onUploadError }: 
                 maxLength={budgetFor((block.caption ?? '').length)}
                 className={`${inputClass} mt-2 text-sm`}
               />
+              <ImageCreditEditor
+                value={{ credit_kind: block.credit_kind ?? null, credit: block.credit ?? '', credit_url: block.credit_url ?? '' }}
+                onChange={(patch) => replaceAt(index, { ...block, ...patch })}
+              />
             </div>
           )}
 
@@ -360,6 +365,11 @@ export function BlockListEditor({ blocks, onChange, budgetFor, onUploadError }: 
                   placeholder={t('Légende (optionnel)', 'Caption (optional)')}
                   maxLength={budgetFor((block.caption ?? '').length)}
                   className={`${inputClass} mt-2 text-xs`}
+                />
+                <ImageCreditEditor
+                  compact
+                  value={{ credit_kind: block.credit_kind ?? null, credit: block.credit ?? '', credit_url: block.credit_url ?? '' }}
+                  onChange={(patch) => replaceAt(index, { ...block, ...patch })}
                 />
               </div>
               <textarea

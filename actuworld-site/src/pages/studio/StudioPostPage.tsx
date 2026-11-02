@@ -11,6 +11,7 @@ import { TagsInput } from '../../components/studio/TagsInput';
 import { StudioTabs } from '../../components/studio/StudioTabs';
 import { PaperSheet } from '../../components/studio/PaperSheet';
 import { PostPreview } from '../../components/studio/PostPreview';
+import { ImageCreditEditor } from '../../components/studio/ImageCreditEditor';
 import { PostHelpModal } from '../../components/studio/PostHelpModal';
 import { StudioByline } from '../../components/studio/StudioByline';
 import { useLanguage } from '../../i18n/LanguageContext';
@@ -41,11 +42,12 @@ const AUTOSAVE_DELAY_MS = 2500;
 // champs sont visibles d'emblée, la zone image sert de bouton d'upload.
 const EMPTY_CARD: PostDraftImage = {
   image_url: '', subject: '', description: '', back_description: '', source: { url: '', title: '' },
+  credit_kind: null, credit: '', credit_url: '',
 };
 
 const cardHasContent = (card: PostDraftImage): boolean =>
   !!card.image_url || !!card.subject?.trim() || !!card.description?.trim() ||
-  !!card.back_description?.trim() || !!card.source?.url?.trim();
+  !!card.back_description?.trim() || !!card.source?.url?.trim() || !!card.credit_kind;
 
 const inputClass =
   'w-full rounded-lg border border-aw bg-aw-bg px-3 py-2.5 text-aw-text text-sm placeholder:text-aw-muted focus:outline-none focus:ring-2 focus:ring-aw-primary';
@@ -638,6 +640,11 @@ export default function StudioPostPage() {
                             onChange={(e) => replaceCard(index, { ...card, source: { url: card.source?.url ?? '', title: e.target.value } })}
                             placeholder={t('Titre de la source (optionnel)', 'Source title (optional)')}
                             className={inputClass} />
+                          {/* Crédit de l'image — même bloc que l'app, jamais bloquant */}
+                          <ImageCreditEditor
+                            value={{ credit_kind: card.credit_kind ?? null, credit: card.credit ?? '', credit_url: card.credit_url ?? '' }}
+                            onChange={(patch) => replaceCard(index, { ...card, ...patch })}
+                          />
                         </div>
                       </div>
                     ))}

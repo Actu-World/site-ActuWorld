@@ -11,6 +11,9 @@ interface PreflightChecklistProps {
   bodyLength: number;
   primaryTheme: string;
   sources: JournalSource[];
+  /** Images de l'article (couverture + blocs) et combien ont un crédit déclaré. */
+  imagesTotal?: number;
+  imagesCredited?: number;
 }
 
 type CheckItem = {
@@ -20,7 +23,9 @@ type CheckItem = {
   en: string;
 };
 
-export function PreflightChecklist({ title, bodyLength, primaryTheme, sources }: PreflightChecklistProps) {
+export function PreflightChecklist({
+  title, bodyLength, primaryTheme, sources, imagesTotal = 0, imagesCredited = 0,
+}: PreflightChecklistProps) {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
 
@@ -49,6 +54,14 @@ export function PreflightChecklist({ title, bodyLength, primaryTheme, sources }:
       fr: 'Un thème principal choisi',
       en: 'A main theme selected',
     },
+    // Crédit des images : conseillé, jamais bloquant (Docs/app/CREDITS-IMAGES-TACHES.md).
+    ...(imagesTotal > 0
+      ? [{
+          ok: imagesCredited >= imagesTotal,
+          fr: `Un crédit sur chaque image (${imagesCredited}/${imagesTotal})`,
+          en: `A credit on every image (${imagesCredited}/${imagesTotal})`,
+        }]
+      : []),
   ];
 
   const okCount = items.filter((i) => i.ok).length;

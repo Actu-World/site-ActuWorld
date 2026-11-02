@@ -13,6 +13,18 @@ export type ImageCreditFields = {
   credit_url?: string | null;
 };
 
+/** Modification émise par l'éditeur de crédit (kind strictement typé). */
+export type ImageCreditPatch = {
+  credit_kind?: ImageCreditKind | null;
+  credit?: string;
+  credit_url?: string;
+};
+
+/** Vrai quand l'auteur a déclaré une origine (la checklist compte les images créditées). */
+export function hasImageCredit(c: ImageCreditFields | null | undefined): boolean {
+  return !!c?.credit_kind;
+}
+
 /** Légende affichée sous une image, ou null s'il n'y a rien à montrer. */
 export function formatImageCredit(
   c: ImageCreditFields | null | undefined,
