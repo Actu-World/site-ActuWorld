@@ -504,6 +504,10 @@ export default function StudioEditorPage() {
       ));
       return;
     }
+    if (!payload.primary_theme) {
+      setSendError(t('Une thématique est requise pour publier.', 'A theme is required to publish.'));
+      return;
+    }
     const confirmed = window.confirm(t(
       `Publier « ${payload.title} » ?\n\nL'article sera visible par tout le monde dans l'app et la vérification des sources (ASV) se lancera immédiatement.`,
       `Publish “${payload.title}”?\n\nThe article will be visible to everyone in the app and source verification (ASV) will start immediately.`

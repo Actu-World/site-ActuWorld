@@ -51,8 +51,9 @@ export function PreflightChecklist({
     },
     {
       ok: primaryTheme !== '',
-      fr: 'Un thème principal choisi',
-      en: 'A main theme selected',
+      required: true,
+      fr: 'Un thème principal choisi (obligatoire pour publier)',
+      en: 'A main theme selected (required to publish)',
     },
     // Crédit des images : conseillé, jamais bloquant (Docs/app/CREDITS-IMAGES-TACHES.md).
     ...(imagesTotal > 0
