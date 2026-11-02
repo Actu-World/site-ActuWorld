@@ -53,7 +53,7 @@ export function ImageCreditEditor({ value, onChange, compact = false }: ImageCre
               type="button"
               onClick={() => onChange({ credit_kind: active ? null : key })}
               aria-pressed={active}
-              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-colors ${
+              className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs transition-colors ${
                 active
                   ? 'border-aw-primary bg-aw-primary/10 text-aw-primary font-bold'
                   : 'border-aw text-aw-muted hover:border-aw-primary/50'
