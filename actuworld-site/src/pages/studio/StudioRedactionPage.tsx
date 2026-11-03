@@ -327,12 +327,12 @@ export default function StudioRedactionPage() {
                       type="button"
                       aria-pressed={active}
                       onClick={() => { setActiveSlug(a.slug); store(a.slug); setFilter('all'); }}
-                      className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-full border text-sm font-semibold transition-colors ${
+                      className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border text-sm font-semibold transition-colors ${
                         active ? 'bg-aw-primary border-aw-primary text-on-primary' : 'border-aw hover:border-aw-primary'
                       }`}
                     >
                       {shortName(a.display_name) || a.username}
-                      <span className={`min-w-[22px] px-1.5 rounded-full text-xs tabular-nums ${active ? 'bg-white/25' : 'bg-aw-surface text-aw-muted'}`}>
+                      <span className={`min-w-[22px] px-1.5 rounded-md text-xs tabular-nums ${active ? 'bg-white/25' : 'bg-aw-surface text-aw-muted'}`}>
                         {countByAccount.get(a.id) ?? 0}
                       </span>
                     </button>
@@ -475,14 +475,14 @@ export default function StudioRedactionPage() {
           <button
             type="button"
             onClick={() => { setEditMode((v) => !v); setDraft(null); setSaveError(null); }}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm font-bold shadow-lg ${
+            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-bold shadow-lg ${
               editMode ? 'bg-amber-400 text-black' : 'bg-white text-black hover:bg-white/90'
             }`}
           >
             <Pencil className="w-4 h-4" /> {editMode ? t('Retouche activée', 'Editing on') : t('Retoucher', 'Edit')}
           </button>
           {editMode && (
-            <span className="px-3 py-1.5 rounded-full bg-black/60 text-white text-xs font-semibold">
+            <span className="px-3 py-1.5 rounded-lg bg-black/60 text-white text-xs font-semibold">
               {t('Clique sur un texte du téléphone', 'Click any text on the phone')}
               {Object.keys(openItem.edits ?? {}).length > 0 && ` · ${Object.keys(openItem.edits ?? {}).length} ${t('retouche(s)', 'edit(s)')}`}
             </span>
