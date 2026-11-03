@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   ArrowDown, ArrowUp, CheckCircle2, Cloud, CloudOff, Eye, FileImage, FilePlus2, ImagePlus,
-  Info, Link2, Loader2, PenLine, Redo2, Send, Smartphone, Trash2, Undo2,
+  Globe, Info, Link2, Loader2, PenLine, Redo2, Send, Smartphone, Trash2, Undo2,
 } from 'lucide-react';
 import { Section } from '../../components/Section';
 import { PageMeta } from '../../components/PageMeta';
@@ -23,7 +23,7 @@ import { isValidSourceUrl } from '../../lib/studio/journal';
 import {
   MAX_POST_IMAGES, POST_BACK_DESC_MAX, POST_DESC_MAX, POST_SOURCE_TITLE_MAX,
   POST_SOURCE_URL_MAX, POST_SUBJECT_MAX,
-  createPostDraft, deletePostDraft, listMyPostDrafts, postDraftTitle, updatePostDraft,
+  createPostDraft, deletePostDraft, listMyPostDrafts, postDraftTitle, publishPost, updatePostDraft,
 } from '../../lib/studio/posts';
 import type { PostDraftImage, PostDraftRow } from '../../types/post';
 
@@ -66,6 +66,9 @@ export default function StudioPostPage() {
 
   // ── État du post (miroir du composer mobile : 1-4 cartes image) ──
   const [editingDraftId, setEditingDraftId] = useState<string | null>(null);
+  // Valeur à jour pour la publication, qui attend une éventuelle sauvegarde auto.
+  const editingDraftIdRef = useRef<string | null>(null);
+  editingDraftIdRef.current = editingDraftId;
   const [primaryTheme, setPrimaryTheme] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [cards, setCards] = useState<PostDraftImage[]>([EMPTY_CARD]);
@@ -80,8 +83,10 @@ export default function StudioPostPage() {
   const lastSavedSnapshotRef = useRef<string | null>(null);
   const isAutosavingRef = useRef(false);
   const [isSending, setIsSending] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
   const [sendError, setSendError] = useState('');
   const [sentTitle, setSentTitle] = useState<string | null>(null);
+  const [sentMode, setSentMode] = useState<'draft' | 'published'>('draft');
 
   // ── Brouillons ──
   const [drafts, setDrafts] = useState<PostDraftRow[]>([]);
@@ -202,7 +207,7 @@ export default function StudioPostPage() {
 
   // Sauvegarde serveur continue dès qu'il y a du contenu réel.
   useEffect(() => {
-    if (!userId || sentTitle || isSending || !hasAnyContent) return;
+    if (!userId || sentTitle || isSending || isPublishing || !hasAnyContent) return;
     const payload = buildPayload();
     const snapshot = JSON.stringify(payload);
     if (snapshot === lastSavedSnapshotRef.current) return;
@@ -230,7 +235,7 @@ export default function StudioPostPage() {
     }, AUTOSAVE_DELAY_MS);
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, editingDraftId, primaryTheme, tags, cards, sentTitle, isSending]);
+  }, [userId, editingDraftId, primaryTheme, tags, cards, sentTitle, isSending, isPublishing]);
 
   const resetEditor = () => {
     setEditingDraftId(null);
@@ -239,6 +244,7 @@ export default function StudioPostPage() {
     setCards([EMPTY_CARD]);
     setSendError('');
     setSentTitle(null);
+    setSentMode('draft');
     setSaveState('idle');
     setLastSavedAt(null);
     lastSavedSnapshotRef.current = null;
@@ -336,6 +342,56 @@ export default function StudioPostPage() {
         : err instanceof Error ? err.message : t("L'envoi a échoué.", 'Sending failed.'));
     } finally {
       setIsSending(false);
+    }
+  };
+
+  // ── Publication directe : mêmes gardes que le bouton Publier de l'app
+  // (image, sujet, excerpt et source sur chaque carte + thématique), puis
+  // confirmation explicite : la dépêche devient publique et l'ASV se lance. ──
+  const handlePublish = async () => {
+    if (isSending || isPublishing || isUploading || !userId || sentTitle) return;
+    setSendError('');
+
+    const filledCards = cards.filter(cardHasContent);
+    const missing: string[] = [];
+    if (filledCards.length === 0 || filledCards.some((c) => !c.image_url)) missing.push(t('une image sur chaque carte', 'an image on each card'));
+    if (!primaryTheme) missing.push(t('une thématique', 'a theme'));
+    if (filledCards.some((c) => !c.subject?.trim())) missing.push(t('un sujet sur chaque carte', 'a subject on each card'));
+    if (filledCards.some((c) => !c.description?.trim())) missing.push(t('un excerpt sur chaque carte', 'an excerpt on each card'));
+    if (filledCards.some((c) => !isValidSourceUrl(c.source?.url ?? ''))) {
+      missing.push(t('une source valide (http:// ou https://) sur chaque carte', 'a valid source (http:// or https://) on each card'));
+    }
+    if (missing.length > 0) {
+      setSendError(t(`Pour publier, il manque : ${missing.join(', ')}.`, `To publish, still missing: ${missing.join(', ')}.`));
+      return;
+    }
+    const title = filledCards[0].subject!.trim();
+    const confirmed = window.confirm(t(
+      `Publier « ${title} » ?\n\nLa dépêche sera visible par tout le monde dans l'app et la vérification des sources (ASV) se lancera immédiatement.`,
+      `Publish “${title}”?\n\nThe dispatch will be visible to everyone in the app and source verification (ASV) will start immediately.`
+    ));
+    if (!confirmed) return;
+
+    setIsPublishing(true);
+    try {
+      // Une sauvegarde auto en vol pourrait recréer un brouillon après coup :
+      // on la laisse finir pour connaître l'id du brouillon à supprimer.
+      for (let i = 0; i < 30 && isAutosavingRef.current; i++) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+      await publishPost(editingDraftIdRef.current, buildPayload());
+      setSentMode('published');
+      setSentTitle(title);
+      setEditingDraftId(null);
+      lastSavedSnapshotRef.current = null;
+      setSaveState('idle');
+      setLastSavedAt(null);
+      void refreshDrafts();
+    } catch (err: unknown) {
+      setSendError(isNetworkError(err) ? apiUnreachableMsg
+        : err instanceof Error ? err.message : t('La publication a échoué.', 'Publishing failed.'));
+    } finally {
+      setIsPublishing(false);
     }
   };
 
@@ -437,7 +493,7 @@ export default function StudioPostPage() {
     <div className="min-h-screen bg-aw-bg text-aw-text">
       <PageMeta
         title={t('Studio — Dépêche', 'Studio — Dispatch')}
-        description={t("Compose une dépêche (cartes visuelles sourcées) et envoie-la en brouillon dans l'app.", 'Compose a dispatch (sourced visual cards) and send it as a draft to the app.')}
+        description={t("Compose une dépêche (cartes visuelles sourcées), publie-la directement ou envoie-la en brouillon dans l'app.", 'Compose a dispatch (sourced visual cards), publish it directly or send it as a draft to the app.')}
         path="/studio/post"
       />
 
@@ -452,14 +508,28 @@ export default function StudioPostPage() {
             {sentTitle ? (
               <div className="card p-10 text-center" role="status">
                 <CheckCircle2 className="w-10 h-10 text-aw-primary mx-auto mb-4" />
-                <h1 className="text-2xl font-bold mb-2">{t('Brouillon envoyé !', 'Draft sent!')}</h1>
-                <p className="text-aw-muted max-w-md mx-auto mb-2">
-                  {t(`« ${sentTitle} » t'attend dans le composer de dépêches de l'app.`, `“${sentTitle}” is waiting in the app's dispatch composer.`)}
-                </p>
-                <p className="text-aw-muted text-sm max-w-md mx-auto mb-8 inline-flex items-center justify-center">
-                  <Smartphone className="w-4 h-4 mr-1.5 shrink-0" />
-                  {t('Relis-le sur ton téléphone puis publie — la vérification ASV se lance à ce moment-là.', 'Review it on your phone then publish — ASV verification runs at that moment.')}
-                </p>
+                {sentMode === 'published' ? (
+                  <>
+                    <h1 className="text-2xl font-bold mb-2">{t('Dépêche publiée !', 'Dispatch published!')}</h1>
+                    <p className="text-aw-muted max-w-md mx-auto mb-2">
+                      {t(`« ${sentTitle} » est en ligne dans l'app.`, `“${sentTitle}” is live in the app.`)}
+                    </p>
+                    <p className="text-aw-muted text-sm max-w-md mx-auto mb-8">
+                      {t('La vérification des sources (ASV) est en cours, son résultat apparaîtra sur la dépêche.', 'Source verification (ASV) is running, its result will appear on the dispatch.')}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <h1 className="text-2xl font-bold mb-2">{t('Brouillon envoyé !', 'Draft sent!')}</h1>
+                    <p className="text-aw-muted max-w-md mx-auto mb-2">
+                      {t(`« ${sentTitle} » t'attend dans le composer de dépêches de l'app.`, `“${sentTitle}” is waiting in the app's dispatch composer.`)}
+                    </p>
+                    <p className="text-aw-muted text-sm max-w-md mx-auto mb-8 inline-flex items-center justify-center">
+                      <Smartphone className="w-4 h-4 mr-1.5 shrink-0" />
+                      {t('Relis-le sur ton téléphone puis publie, la vérification ASV se lance à ce moment-là.', 'Review it on your phone then publish, ASV verification runs at that moment.')}
+                    </p>
+                  </>
+                )}
                 <button type="button" onClick={resetEditor} className="btn-primary">
                   {t('Composer une autre dépêche', 'Compose another dispatch')}
                 </button>
@@ -680,16 +750,26 @@ export default function StudioPostPage() {
                     )}
                   </div>
 
-                  {/* Envoi */}
+                  {/* Publication directe + envoi en brouillon vers l'app */}
                   <div className="card p-5">
                     {sendError && <p className="text-red-500 text-sm mb-4" role="alert">{sendError}</p>}
-                    <button type="button" onClick={() => void handleSend()} disabled={isSending || isUploading}
-                      className="btn-primary w-full inline-flex items-center justify-center disabled:opacity-60">
-                      <Send className="w-5 h-5 mr-2" />
-                      {isSending ? t('Envoi en cours…', 'Sending…') : t("Envoyer vers l'app", 'Send to the app')}
-                    </button>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <button type="button" onClick={() => void handlePublish()} disabled={isSending || isPublishing || isUploading}
+                        className="btn-primary flex-1 inline-flex items-center justify-center disabled:opacity-60">
+                        <Globe className="w-5 h-5 mr-2" />
+                        {isPublishing ? t('Publication…', 'Publishing…') : t('Publier', 'Publish')}
+                      </button>
+                      <button type="button" onClick={() => void handleSend()} disabled={isSending || isPublishing || isUploading}
+                        className="btn-outline flex-1 inline-flex items-center justify-center disabled:opacity-60">
+                        <Send className="w-5 h-5 mr-2" />
+                        {isSending ? t('Envoi en cours…', 'Sending…') : t("Envoyer vers l'app", 'Send to the app')}
+                      </button>
+                    </div>
                     <p className="text-aw-muted text-xs mt-3 text-center">
-                      {t("Le brouillon reste privé : la publication et la vérification ASV se font depuis l'app.", 'The draft stays private: publishing and ASV verification happen from the app.')}
+                      {t(
+                        "Publier met la dépêche en ligne immédiatement (vérification ASV automatique). Le brouillon, lui, reste privé pour être relu et publié depuis l'app.",
+                        'Publish puts the dispatch online immediately (automatic ASV verification). The draft stays private, to be reviewed and published from the app.'
+                      )}
                     </p>
                   </div>
                 </div>

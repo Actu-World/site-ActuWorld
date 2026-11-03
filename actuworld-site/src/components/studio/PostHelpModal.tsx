@@ -76,8 +76,8 @@ export function PostHelpModal({ cards, primaryTheme, onClose }: PostHelpModalPro
       'The front shows the image, subject and excerpt; the long description and source are on the back of the card.',
     ],
     [
-      "Le brouillon s'envoie dans l'app ; la publication et la vérification des sources se font depuis l'app.",
-      'The draft is sent to the app; publishing and source verification happen from the app.',
+      "Publier met la dépêche en ligne tout de suite et lance la vérification des sources. Tu peux aussi l'envoyer en brouillon dans l'app pour la relire sur ton téléphone.",
+      'Publish puts the dispatch online right away and starts source verification. You can also send it to the app as a draft to review it on your phone.',
     ],
   ];
 

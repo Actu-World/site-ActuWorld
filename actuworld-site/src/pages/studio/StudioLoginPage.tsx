@@ -112,8 +112,8 @@ export default function StudioLoginPage() {
               </H2>
               <p className="text-aw-muted mt-3">
                 {t(
-                  "Installe-toi, écris au clavier sur grand écran, la sauvegarde est automatique. Publie ton article directement d'ici, ou envoie-le en brouillon dans l'app.",
-                  'Settle in and write with a real keyboard on a big screen, autosave has your back. Publish your article straight from here, or send it to the app as a draft.'
+                  "Installe-toi, écris au clavier sur grand écran, la sauvegarde est automatique. Publie tes articles et tes dépêches directement d'ici, ou envoie-les en brouillon dans l'app.",
+                  'Settle in and write with a real keyboard on a big screen, autosave has your back. Publish your articles and dispatches straight from here, or send them to the app as drafts.'
                 )}
               </p>
             </div>
@@ -201,8 +201,8 @@ export default function StudioLoginPage() {
                 <Globe className="w-5 h-5 text-aw-primary shrink-0 mt-0.5" />
                 <p className="text-aw-muted text-sm">
                   {t(
-                    "Tes articles se publient depuis le Studio, avec les mêmes règles que dans l'app : au moins une source et une thématique.",
-                    'Your articles are published from the Studio, with the same rules as in the app: at least one source and a theme.'
+                    "Tu publies depuis le Studio avec les mêmes règles que dans l'app : des sources et une thématique.",
+                    'You publish from the Studio with the same rules as in the app: sources and a theme.'
                   )}
                 </p>
               </div>

@@ -222,8 +222,8 @@ export default function TermsPage() {
       body: (
         <p>
           {t(
-            "Le Studio permet d'écrire sur ordinateur avec ton compte ActuWorld, par lien de connexion envoyé à ton adresse e-mail ou par association avec ton téléphone. Tu peux y publier un article directement ou l'enregistrer en brouillon ; les mêmes règles de publication que dans l'app s'appliquent. Le lien de connexion est personnel et à usage unique.",
-            "The Studio lets you write on a computer with your ActuWorld account, via a sign-in link sent to your email address or by pairing with your phone. You can publish an article from it directly or save it as a draft; the same publishing rules as in the app apply. The sign-in link is personal and single-use."
+            "Le Studio permet d'écrire sur ordinateur avec ton compte ActuWorld, par lien de connexion envoyé à ton adresse e-mail ou par association avec ton téléphone. Tu peux y publier un article ou une dépêche directement ou l'enregistrer en brouillon ; les mêmes règles de publication que dans l'app s'appliquent. Le lien de connexion est personnel et à usage unique.",
+            "The Studio lets you write on a computer with your ActuWorld account, via a sign-in link sent to your email address or by pairing with your phone. You can publish an article or a dispatch from it directly or save it as a draft; the same publishing rules as in the app apply. The sign-in link is personal and single-use."
           )}
         </p>
       ),
