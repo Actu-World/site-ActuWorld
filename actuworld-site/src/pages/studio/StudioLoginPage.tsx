@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, PenLine, Smartphone, ShieldCheck } from 'lucide-react';
+import { Mail, PenLine, Globe, ShieldCheck } from 'lucide-react';
 import { Section } from '../../components/Section';
 import { H2 } from '../../components/H2';
 import { PageMeta } from '../../components/PageMeta';
@@ -112,8 +112,8 @@ export default function StudioLoginPage() {
               </H2>
               <p className="text-aw-muted mt-3">
                 {t(
-                  "Installe-toi, écris au clavier sur grand écran, la sauvegarde est automatique. Ton article arrivera en brouillon dans l'app.",
-                  'Settle in and write with a real keyboard on a big screen, autosave has your back. Your article lands as a draft in the app.'
+                  "Installe-toi, écris au clavier sur grand écran, la sauvegarde est automatique. Publie ton article directement d'ici, ou envoie-le en brouillon dans l'app.",
+                  'Settle in and write with a real keyboard on a big screen, autosave has your back. Publish your article straight from here, or send it to the app as a draft.'
                 )}
               </p>
             </div>
@@ -198,11 +198,11 @@ export default function StudioLoginPage() {
 
             <div className="grid sm:grid-cols-2 gap-4 mt-8">
               <div className="card p-4 flex items-start gap-3">
-                <Smartphone className="w-5 h-5 text-aw-primary shrink-0 mt-0.5" />
+                <Globe className="w-5 h-5 text-aw-primary shrink-0 mt-0.5" />
                 <p className="text-aw-muted text-sm">
                   {t(
-                    "La publication finale se fait toujours dans l'app, après relecture.",
-                    'Final publishing always happens in the app, after review.'
+                    "Tes articles se publient depuis le Studio, avec les mêmes règles que dans l'app : au moins une source et une thématique.",
+                    'Your articles are published from the Studio, with the same rules as in the app: at least one source and a theme.'
                   )}
                 </p>
               </div>

@@ -47,8 +47,8 @@ export function PublishedList({ articles }: PublishedListProps) {
       <h2 className="body-semi text-lg mb-1">{t('Publiés récemment', 'Recently published')}</h2>
       <p className="text-aw-muted text-sm mb-4">
         {t(
-          'Statut de la vérification ASV de tes derniers articles — géré depuis l\'app.',
-          'ASV verification status of your latest articles — managed from the app.'
+          'Statut de la vérification ASV de tes derniers articles.',
+          'ASV verification status of your latest articles.'
         )}
       </p>
       <ul className="space-y-2">

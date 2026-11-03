@@ -48,8 +48,8 @@ export function WritingHelpModal({ title, bodyLength, primaryTheme, sources, ima
       '1 to 2 sources, with a URL starting with http:// or https://. At least one valid source (required to publish).',
     ],
     [
-      "Le brouillon s'envoie dans l'app ; la publication et la vérification des sources se font depuis l'app.",
-      'The draft is sent to the app; publishing and source verification happen from the app.',
+      "Publier met l'article en ligne tout de suite et lance la vérification des sources. Tu peux aussi l'envoyer en brouillon dans l'app pour le relire sur ton téléphone.",
+      'Publish puts the article online right away and starts source verification. You can also send it to the app as a draft to review it on your phone.',
     ],
   ];
 

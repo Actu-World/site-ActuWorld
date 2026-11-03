@@ -90,8 +90,8 @@ export function PreflightChecklist({
       </ul>
       <p className="text-aw-muted text-xs mt-3">
         {t(
-          "La publication et la vérification des sources se font depuis l'app.",
-          'Publishing and source verification happen from the app.'
+          "La vérification des sources se lance dès la publication, depuis le Studio comme depuis l'app.",
+          'Source verification starts as soon as you publish, from the Studio as from the app.'
         )}
       </p>
     </div>

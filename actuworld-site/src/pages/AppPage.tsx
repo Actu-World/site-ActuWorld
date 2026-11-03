@@ -35,8 +35,8 @@ export default function AppPage() {
       title: t("L'article", "The article"),
       tab: t("Onglet Articles", "Articles tab"),
       desc: t(
-        "Le format long pour aller au fond d'un sujet : info, enquête, analyse ou opinion, toujours avec ses sources. Tu peux aussi l'écrire depuis ton ordinateur avec le Studio.",
-        "The long format to dig into a topic: news, investigation, analysis or opinion, always with its sources. You can also write it from your computer with the Studio."
+        "Le format long pour aller au fond d'un sujet : info, enquête, analyse ou opinion, toujours avec ses sources. Tu peux aussi l'écrire et le publier depuis ton ordinateur avec le Studio.",
+        "The long format to dig into a topic: news, investigation, analysis or opinion, always with its sources. You can also write and publish it from your computer with the Studio."
       ),
     },
   ];
