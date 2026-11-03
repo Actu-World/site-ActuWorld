@@ -75,7 +75,7 @@ export async function publishPost(draftId: string | null, payload: PostDraftPayl
     title: first.subject?.trim() ?? '',
     body: first.back_description?.trim() || null,
     tldr: first.description?.trim() || null,
-    tags: payload.tags?.length ? payload.tags : null,
+    tags: payload.tags ?? [], // posts.tags est NOT NULL
     primary_theme: payload.primary_theme || null,
     visibility: 'public',
     images: images.map((img) => ({
