@@ -91,6 +91,9 @@ export default function StudioEditorPage() {
 
   // ── État de l'éditeur (parité composer mobile) ──
   const [editingDraftId, setEditingDraftId] = useState<string | null>(null);
+  // Valeur à jour pour la publication, qui attend une éventuelle sauvegarde auto.
+  const editingDraftIdRef = useRef<string | null>(null);
+  editingDraftIdRef.current = editingDraftId;
   const [title, setTitle] = useState('');
   const [dek, setDek] = useState('');
   const [primaryTheme, setPrimaryTheme] = useState('');
@@ -347,6 +350,7 @@ export default function StudioEditorPage() {
           await updateDraft(editingDraftId, payload);
         } else {
           const { id } = await createDraft(payload);
+          editingDraftIdRef.current = id; // lu par la publication avant le prochain rendu
           setEditingDraftId(id);
           void refreshJournal();
         }
@@ -516,7 +520,13 @@ export default function StudioEditorPage() {
 
     setIsPublishing(true);
     try {
-      await publishArticle(editingDraftId, payload);
+      // Une sauvegarde auto en vol crée peut-être le brouillon en ce moment :
+      // sans son id, on créerait l'article et l'anti-doublon de l'API
+      // renverrait ce brouillon sans le publier (bug du 03/11).
+      for (let i = 0; i < 30 && isAutosavingRef.current; i++) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+      await publishArticle(editingDraftIdRef.current, payload);
       clearLocalDraft(userId);
       setSentMode('published');
       setSentDraftTitle(payload.title);

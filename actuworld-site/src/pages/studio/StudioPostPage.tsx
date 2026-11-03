@@ -221,6 +221,7 @@ export default function StudioPostPage() {
           await updatePostDraft(editingDraftId, payload);
         } else {
           const { id } = await createPostDraft(payload);
+          editingDraftIdRef.current = id; // lu par la publication avant le prochain rendu
           setEditingDraftId(id);
           void refreshDrafts();
         }
