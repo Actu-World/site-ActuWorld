@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { ImageOff, Images, Lock, MapPin, Newspaper, Pencil, RefreshCw } from 'lucide-react';
+import { CalendarClock, CheckCircle2, ImageOff, Images, Lock, MapPin, Newspaper, Pencil, RefreshCw } from 'lucide-react';
 import { Section } from '../../components/Section';
 import { PageMeta } from '../../components/PageMeta';
 import { PostPreview } from '../../components/studio/PostPreview';
 import { ArticlePreview } from '../../components/studio/ArticlePreview';
+import { RedactionCalendar } from '../../components/studio/RedactionCalendar';
 import { EditPanel } from '../../components/studio/inlineEdit';
 import { InlineEditContext, type EditDraft, type InlineEditApi } from '../../components/studio/inlineEditContext';
 import { useLanguage } from '../../i18n/LanguageContext';
@@ -12,8 +13,8 @@ import { useStudioSession } from '../../hooks/useStudioSession';
 import { journalImageUrl, resolveAvatarUrl } from '../../lib/studio/images';
 import { STUDIO_THEME_BY_KEY } from '../../lib/studio/themes';
 import {
-  PLAN_STEPS, clearRedactionReturn, editLimit, getEditorialPlan, hasText, imageCount, itemTitle, rememberRedactionReturn,
-  saveEditorialEdit, withEdits,
+  PLAN_STEPS, byScheduleDate, clearRedactionReturn, editLimit, effectiveStatus, formatShort, getEditorialPlan, hasText,
+  imageCount, itemTitle, rememberRedactionReturn, saveEditorialEdit, withEdits,
   type PlanAccount, type PlanItem, type PlanItemData,
 } from '../../lib/studio/redaction';
 import type { PostDraftImage } from '../../types/post';
@@ -29,14 +30,19 @@ import type { PostDraftImage } from '../../types/post';
 const SESSION_RULE = { posts: 5, articles: 3, reunion: 2 };
 const ARTICLE_ACCENT = '#0EA5E9';
 const ACCOUNT_KEY = 'studio-redaction-account';
+const VIEW_KEY = 'studio-redaction-view';
+const SORT_KEY = 'studio-redaction-sort';
+
+type View = 'calendar' | 'accounts';
+type Sort = 'session' | 'date';
 
 const shortName = (name: string | null) => (name ?? '').replace(/^Rédaction ActuWorld · /, '');
 
-function readStored(): string | null {
-  try { return localStorage.getItem(ACCOUNT_KEY); } catch { return null; }
+function readStored(key = ACCOUNT_KEY): string | null {
+  try { return localStorage.getItem(key); } catch { return null; }
 }
-function store(slug: string) {
-  try { localStorage.setItem(ACCOUNT_KEY, slug); } catch { /* stockage indisponible */ }
+function store(value: string, key = ACCOUNT_KEY) {
+  try { localStorage.setItem(key, value); } catch { /* stockage indisponible */ }
 }
 
 /** Cartes au format de l'aperçu (une source par carte, comme le composer). */
@@ -78,6 +84,7 @@ function ItemCard({ item, onOpen }: { item: PlanItem; onOpen: () => void }) {
   const theme = d.primary_theme ? STUDIO_THEME_BY_KEY[d.primary_theme] : undefined;
   const visual = isPost ? d.images?.[0]?.image_url : d.cover_path ? journalImageUrl(d.cover_path) : null;
   const nEdits = Object.keys(item.edits ?? {}).length;
+  const when = item.published?.at ?? d.scheduled_at ?? null;
 
   return (
     <button
@@ -150,8 +157,14 @@ function ItemCard({ item, onOpen }: { item: PlanItem; onOpen: () => void }) {
             </span>
           )}
         </div>
+        {when && (
+          <p className={`inline-flex items-center gap-1 text-xs font-semibold ${item.published ? 'text-emerald-700 dark:text-emerald-400' : 'text-aw-text'}`}>
+            {item.published ? <CheckCircle2 className="w-3 h-3" /> : <CalendarClock className="w-3 h-3" />}
+            {item.published ? t('Publié le', 'Published') : t('Sortie', 'Out')} {formatShort(when, isEnglish, !!item.published || d.scheduled_time !== false)}
+          </p>
+        )}
         <div className="mt-auto pt-1 flex items-center justify-between gap-2">
-          <StatusSteps status={item.status} />
+          <StatusSteps status={effectiveStatus(item)} />
           <span className="font-mono text-[10.5px] text-aw-muted">{item.id}</span>
         </div>
       </div>
@@ -170,6 +183,8 @@ export default function StudioRedactionPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const [activeSlug, setActiveSlug] = useState<string | null>(readStored());
   const [filter, setFilter] = useState<'all' | 'post' | 'article' | 'reunion'>('all');
+  const [view, setView] = useState<View>(readStored(VIEW_KEY) === 'accounts' ? 'accounts' : 'calendar');
+  const [sort, setSort] = useState<Sort>(readStored(SORT_KEY) === 'session' ? 'session' : 'date');
   const [openId, setOpenId] = useState<string | null>(null);
   const [canEdit, setCanEdit] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -268,13 +283,16 @@ export default function StudioRedactionPage() {
       acc[it.kind] += 1;
       acc.images += img.total;
       acc.ready += img.ready;
-      if (it.status === 'publié') acc.published += 1;
+      if (effectiveStatus(it) === 'publié') acc.published += 1;
       return acc;
     },
     { post: 0, article: 0, images: 0, ready: 0, published: 0 },
   );
-  const authorName = account?.display_name || account?.username || '';
-  const avatarSrc = resolveAvatarUrl(account?.avatar_url);
+  // L'aperçu prend le compte du contenu ouvert (la vue Calendrier mélange les comptes).
+  const previewAccount = (openItem && accounts.find((a) => a.id === openItem.account_id)) || account;
+  const authorName = previewAccount?.display_name || previewAccount?.username || '';
+  const avatarSrc = resolveAvatarUrl(previewAccount?.avatar_url);
+  const byDate = [...visible].sort(byScheduleDate);
 
   return (
     <div className="min-h-screen bg-aw-bg text-aw-text">
@@ -317,6 +335,32 @@ export default function StudioRedactionPage() {
           )}
 
           {loadState === 'ready' && account && (
+            <div className="flex flex-wrap gap-1.5" role="tablist" aria-label={t('Vue', 'View')}>
+              {([
+                ['calendar', t('Calendrier', 'Calendar'), CalendarClock],
+                ['accounts', t('Par compte', 'By account'), Newspaper],
+              ] as const).map(([key, label, Icon]) => (
+                <button
+                  key={key}
+                  type="button"
+                  role="tab"
+                  aria-selected={view === key}
+                  onClick={() => { setView(key); store(key, VIEW_KEY); }}
+                  className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border text-sm font-semibold transition-colors ${
+                    view === key ? 'bg-aw-primary border-aw-primary text-on-primary' : 'border-aw hover:border-aw-primary'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" /> {label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {loadState === 'ready' && view === 'calendar' && (
+            <RedactionCalendar items={items} accounts={accounts} onOpen={setOpenId} />
+          )}
+
+          {loadState === 'ready' && view === 'accounts' && account && (
             <>
               <nav className="flex flex-wrap gap-2" aria-label={t('Comptes', 'Accounts')}>
                 {accounts.map((a) => {
@@ -388,9 +432,34 @@ export default function StudioRedactionPage() {
                         {label}
                       </button>
                     ))}
+                    <span className="mx-1 w-px self-stretch bg-aw-text/15" aria-hidden />
+                    {([
+                      ['date', t('Par date de sortie', 'By release date')],
+                      ['session', t('Par session', 'By session')],
+                    ] as const).map(([key, label]) => (
+                      <button
+                        key={key}
+                        type="button"
+                        aria-pressed={sort === key}
+                        onClick={() => { setSort(key); store(key, SORT_KEY); }}
+                        className={`px-3 py-1.5 rounded-lg border text-sm font-semibold ${
+                          sort === key ? 'bg-aw-text text-aw-bg border-aw-text' : 'border-aw hover:border-aw-primary'
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
                   </div>
 
-                  {sessions.map((s) => {
+                  {sort === 'date' && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 items-start">
+                      {byDate.map((it) => (
+                        <ItemCard key={it.id} item={it} onOpen={() => setOpenId(it.id)} />
+                      ))}
+                    </div>
+                  )}
+
+                  {sort === 'session' && sessions.map((s) => {
                     const all = accountItems.filter((it) => (it.session ?? '—') === s);
                     const shown = visible.filter((it) => (it.session ?? '—') === s);
                     if (!shown.length) return null;
@@ -439,7 +508,7 @@ export default function StudioRedactionPage() {
               cards={toPreviewCards(d)}
               tags={d.tags ?? []}
               authorName={authorName}
-              authorHandle={account?.username ?? null}
+              authorHandle={previewAccount?.username ?? null}
               authorExpertise={null}
               avatarSrc={avatarSrc}
               onClose={closePreview}
@@ -459,7 +528,7 @@ export default function StudioRedactionPage() {
                 credit: d.cover_credit ?? null,
                 credit_url: d.cover_credit_url ?? null,
               }}
-              authorHandle={account?.username ?? null}
+              authorHandle={previewAccount?.username ?? null}
               blocks={d.blocks ?? []}
               sources={d.sources ?? []}
               onClose={closePreview}
