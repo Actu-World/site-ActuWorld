@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
   BatteryFull, ChevronLeft, ChevronRight, ImageOff, Images, MessageCircle, Share2, Signal, Tag, Wifi, X,
 } from 'lucide-react';
@@ -29,6 +29,47 @@ interface PostPreviewProps {
   onClose: () => void;
   /** Page Rédaction : signale l'image ou le texte pas encore fournis. */
   showMissing?: boolean;
+}
+
+const EXCERPT_CLAMP = 'line-clamp-2';
+
+/** Texte du recto coupé à 2 lignes avec « voir plus » / « voir moins », comme dans l'app. */
+function CoverExcerpt({ text, editing }: { text: string; editing: boolean }) {
+  const { isEnglish } = useLanguage();
+  const ref = useRef<HTMLParagraphElement>(null);
+  const [open, setOpen] = useState(false);
+  const [overflows, setOverflows] = useState(false);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el || open || editing) return;
+    const measure = () => setOverflows(el.scrollHeight > el.clientHeight + 1);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [text, open, editing]);
+
+  const clamped = !editing && !open;
+  return (
+    <>
+      <p
+        ref={ref}
+        className={`text-white/[0.88] text-sm leading-5 mt-1.5 font-medium [text-shadow:0_1px_5px_rgba(0,0,0,0.5)] ${clamped ? EXCERPT_CLAMP : ''}`}
+      >
+        {text}
+      </p>
+      {!editing && (overflows || open) && (
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); setOpen((v) => !v); }}
+          className="relative z-10 mt-0.5 text-white/[0.92] text-xs font-bold [text-shadow:0_1px_5px_rgba(0,0,0,0.5)] hover:underline"
+        >
+          {open ? (isEnglish ? 'see less' : 'voir moins') : (isEnglish ? 'see more' : 'voir plus')}
+        </button>
+      )}
+    </>
+  );
 }
 
 const initials = (name: string) =>
@@ -132,9 +173,10 @@ export function PostPreview({ cards, tags, authorName, authorHandle = null, auth
         </Editable>
         {(editing || (!!card.description?.trim() && card.description.trim() !== card.subject?.trim())) && (
           <Editable dark path={`cards.${idx}.description`} label={`Carte ${idx + 1} · recto`} value={card.description ?? ''}>
-            <p className={`text-white/[0.88] text-sm leading-5 mt-1.5 font-medium [text-shadow:0_1px_5px_rgba(0,0,0,0.5)] ${editing ? '' : 'line-clamp-2'}`}>
-              {tx(`cards.${idx}.description`, card.description ?? '') || (editing ? '(recto vide)' : '')}
-            </p>
+            <CoverExcerpt
+              text={tx(`cards.${idx}.description`, card.description ?? '') || (editing ? '(recto vide)' : '')}
+              editing={editing}
+            />
           </Editable>
         )}
         {idx === 0 && (
