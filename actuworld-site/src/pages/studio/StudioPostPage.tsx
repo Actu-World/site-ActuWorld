@@ -20,6 +20,7 @@ import { useStudioSession } from '../../hooks/useStudioSession';
 import { ThemeSelect } from '../../components/studio/ThemeSelect';
 import { resolveAvatarUrl, uploadPostImage } from '../../lib/studio/images';
 import { isValidSourceUrl } from '../../lib/studio/journal';
+import { AsvReadabilityHint } from '../../components/studio/AsvReadabilityHint';
 import {
   MAX_POST_IMAGES, POST_BACK_DESC_MAX, POST_DESC_MAX, POST_SOURCE_TITLE_MAX,
   POST_SOURCE_URL_MAX, POST_SUBJECT_MAX,
@@ -707,6 +708,8 @@ export default function StudioPostPage() {
                               placeholder={t('Source de la carte — https://… *', 'Card source — https://… *')}
                               className={`${inputClass} pl-9 ${card.source?.url?.trim() && !isValidSourceUrl(card.source.url) ? 'border-red-500' : ''}`} />
                           </div>
+                          {/* ASV 7.7 : l'ASV pourra-t-il lire la source de cette carte ? */}
+                          <AsvReadabilityHint url={card.source?.url ?? ''} />
                           <input type="text" value={card.source?.title ?? ''} maxLength={POST_SOURCE_TITLE_MAX}
                             onChange={(e) => replaceCard(index, { ...card, source: { url: card.source?.url ?? '', title: e.target.value } })}
                             placeholder={t('Titre de la source (optionnel)', 'Source title (optional)')}

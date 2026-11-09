@@ -5,6 +5,7 @@ import {
   fetchUrlMetadata, isValidSourceUrl, MAX_SOURCES, SOURCE_TITLE_MAX, SOURCE_URL_MAX,
 } from '../../lib/studio/journal';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { AsvReadabilityHint } from './AsvReadabilityHint';
 
 // Sources alignées sur le composer mobile : titre (optionnel) + URL, 2 max,
 // source obligatoire pour publier (l'app l'exige, le brouillon peut attendre).
@@ -160,6 +161,7 @@ export function SourceListEditor({ sources, onChange }: SourceListEditorProps) {
                     </p>
                   )}
                   {!urlInvalid && renderCheck(source.url)}
+                  {!urlInvalid && checks[source.url.trim()]?.state === 'ok' && <AsvReadabilityHint url={source.url} />}
                 </div>
                 <button
                   type="button"

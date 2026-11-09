@@ -124,6 +124,21 @@ export type UrlMetadata = {
   publishedAt: string | null;
 };
 
+/** ASV 7.7 — l'ASV pourra-t-il lire cette source à la vérification ? */
+export type SourceReadability = {
+  url: string;
+  state: string;
+  readable: boolean;
+  partial: boolean;
+  chars: number;
+};
+
+/** Lecture d'essai par l'ASV (côté serveur, navigateur compris) ; null si le service ne répond pas. */
+export async function fetchSourceReadability(url: string): Promise<SourceReadability | null> {
+  const res = await studioApi.post<{ sources?: SourceReadability[] }>('/tools/source-readability', { urls: [url] });
+  return res?.sources?.find((s) => s.url === url) ?? res?.sources?.[0] ?? null;
+}
+
 /** Métadonnées + accessibilité d'une URL de source (fetch côté API, hors CORS tiers). */
 export function fetchUrlMetadata(url: string): Promise<UrlMetadata> {
   return studioApi.post<UrlMetadata>('/tools/url-metadata', { url });
