@@ -75,8 +75,28 @@ export type PlanAccount = {
   interests: string[] | null;
 };
 
-export function getEditorialPlan(): Promise<{ accounts: PlanAccount[]; items: PlanItem[]; canEdit?: boolean }> {
+export type EditorialPlan = { accounts: PlanAccount[]; items: PlanItem[]; canEdit?: boolean };
+
+export function getEditorialPlan(): Promise<EditorialPlan> {
   return studioApi.get('/studio/redaction');
+}
+
+// Cache mémoire du plan : la page Rédaction est démontée à chaque navigation et
+// la session Supabase change d'objet à chaque rafraîchissement de jeton. Sans
+// cache, chaque retour sur la page relançait « Chargement du plan… ». Le cache
+// vit le temps de l'onglet ; il est invalidé après un envoi ou une publication
+// depuis l'éditeur, et remplacé par « Actualiser » ou une retouche.
+let planCache: { plan: EditorialPlan; userId: string; at: number } | null = null;
+
+export function readEditorialPlanCache(userId: string): EditorialPlan | null {
+  return planCache && planCache.userId === userId ? planCache.plan : null;
+}
+export function writeEditorialPlanCache(userId: string, plan: EditorialPlan): void {
+  planCache = { plan, userId, at: Date.now() };
+}
+/** À appeler après un envoi ou une publication : le prochain passage sur Rédaction recharge. */
+export function invalidateEditorialPlanCache(): void {
+  planCache = null;
 }
 
 /** Enregistre (ou annule avec value = null) la retouche d'un champ. */

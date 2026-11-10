@@ -14,7 +14,8 @@ import { journalImageUrl, resolveAvatarUrl } from '../../lib/studio/images';
 import { STUDIO_THEME_BY_KEY } from '../../lib/studio/themes';
 import {
   PLAN_STEPS, byScheduleDate, clearRedactionReturn, editLimit, effectiveStatus, formatShort, getEditorialPlan, hasText,
-  imageCount, itemTitle, rememberRedactionReturn, saveEditorialEdit, withEdits,
+  imageCount, itemTitle, readEditorialPlanCache, rememberRedactionReturn, saveEditorialEdit, withEdits,
+  writeEditorialPlanCache,
   type PlanAccount, type PlanItem, type PlanItemData,
 } from '../../lib/studio/redaction';
 import type { PostDraftImage } from '../../types/post';
@@ -177,16 +178,18 @@ export default function StudioRedactionPage() {
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
   const { session, isLoading } = useStudioSession();
 
-  const [accounts, setAccounts] = useState<PlanAccount[]>([]);
-  const [items, setItems] = useState<PlanItem[]>([]);
-  const [loadState, setLoadState] = useState<'loading' | 'ready' | 'forbidden' | 'error'>('loading');
+  const userId = session?.user.id ?? null;
+  const cached = userId ? readEditorialPlanCache(userId) : null;
+  const [accounts, setAccounts] = useState<PlanAccount[]>(cached?.accounts ?? []);
+  const [items, setItems] = useState<PlanItem[]>(cached?.items ?? []);
+  const [loadState, setLoadState] = useState<'loading' | 'ready' | 'forbidden' | 'error'>(cached ? 'ready' : 'loading');
   const [errorMsg, setErrorMsg] = useState('');
   const [activeSlug, setActiveSlug] = useState<string | null>(readStored());
   const [filter, setFilter] = useState<'all' | 'post' | 'article' | 'reunion'>('all');
   const [view, setView] = useState<View>(readStored(VIEW_KEY) === 'accounts' ? 'accounts' : 'calendar');
   const [sort, setSort] = useState<Sort>(readStored(SORT_KEY) === 'session' ? 'session' : 'date');
   const [openId, setOpenId] = useState<string | null>(null);
-  const [canEdit, setCanEdit] = useState(false);
+  const [canEdit, setCanEdit] = useState(!!cached?.canEdit);
   const [editMode, setEditMode] = useState(false);
   const [draft, setDraft] = useState<EditDraft | null>(null);
   const [saving, setSaving] = useState(false);
@@ -201,6 +204,7 @@ export default function StudioRedactionPage() {
         setItems(res.items);
         setCanEdit(!!res.canEdit);
         setLoadState('ready');
+        if (userId) writeEditorialPlanCache(userId, res);
       })
       .catch((err: Error) => {
         if (/interdit|forbidden/i.test(err.message)) setLoadState('forbidden');
@@ -208,11 +212,16 @@ export default function StudioRedactionPage() {
       });
   };
 
+  // Chargement une seule fois par utilisateur : la session Supabase change
+  // d'objet à chaque rafraîchissement de jeton (retour sur l'onglet), ce qui
+  // relançait le chargement. Si le plan est en cache, on l'affiche tel quel ;
+  // il se recharge via « Actualiser », une retouche ou après un envoi.
   useEffect(() => {
-    if (!session) return;
+    if (!userId) return;
     clearRedactionReturn();
-    load();
-  }, [session]);
+    if (!readEditorialPlanCache(userId)) load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   const closePreview = () => {
     if (draft && draft.value !== draft.initial && !window.confirm(t('Abandonner la retouche en cours ?', 'Discard the current edit?'))) return;
@@ -228,7 +237,11 @@ export default function StudioRedactionPage() {
     setSaveError(null);
     try {
       const res = await saveEditorialEdit(openItem.id, draft.path, value);
-      setItems((prev) => prev.map((it) => (it.id === openItem.id ? { ...it, edits: res.edits } : it)));
+      setItems((prev) => {
+        const next = prev.map((it) => (it.id === openItem.id ? { ...it, edits: res.edits } : it));
+        if (userId) writeEditorialPlanCache(userId, { accounts, items: next, canEdit });
+        return next;
+      });
       setDraft(null);
     } catch (err) {
       setSaveError((err as Error).message);

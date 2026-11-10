@@ -48,7 +48,7 @@ import {
   isValidSourceUrl, listMyJournal, publishArticle, updateDraft,
 } from '../../lib/studio/journal';
 import { clearLocalDraft, loadLocalDraft, saveLocalDraft } from '../../lib/studio/draftStorage';
-import { clearRedactionReturn, wantsRedactionReturn } from '../../lib/studio/redaction';
+import { clearRedactionReturn, invalidateEditorialPlanCache, wantsRedactionReturn } from '../../lib/studio/redaction';
 import { useStudioAccess } from '../../hooks/useStudioAccess';
 import type { JournalBlock, JournalSource, StudioDraftRow } from '../../types/journal';
 
@@ -474,6 +474,7 @@ export default function StudioEditorPage() {
         await createDraft(payload);
       }
       clearLocalDraft(userId);
+      invalidateEditorialPlanCache();
       setSentMode('draft');
       setSentDraftTitle(payload.title);
       setSaveState('idle');
@@ -528,6 +529,7 @@ export default function StudioEditorPage() {
       }
       await publishArticle(editingDraftIdRef.current, payload);
       clearLocalDraft(userId);
+      invalidateEditorialPlanCache();
       setSentMode('published');
       setSentDraftTitle(payload.title);
       setSaveState('idle');

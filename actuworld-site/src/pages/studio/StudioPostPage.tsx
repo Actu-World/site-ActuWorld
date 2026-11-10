@@ -20,6 +20,7 @@ import { useStudioSession } from '../../hooks/useStudioSession';
 import { ThemeSelect } from '../../components/studio/ThemeSelect';
 import { resolveAvatarUrl, uploadPostImage } from '../../lib/studio/images';
 import { isValidSourceUrl } from '../../lib/studio/journal';
+import { invalidateEditorialPlanCache } from '../../lib/studio/redaction';
 import { AsvReadabilityHint } from '../../components/studio/AsvReadabilityHint';
 import {
   MAX_POST_IMAGES, POST_BACK_DESC_MAX, POST_DESC_MAX, POST_SOURCE_TITLE_MAX,
@@ -334,6 +335,7 @@ export default function StudioPostPage() {
       } else {
         await createPostDraft(payload);
       }
+      invalidateEditorialPlanCache();
       setSentTitle(filledCards[0].subject?.trim() || t('(Sans titre)', '(Untitled)'));
       lastSavedSnapshotRef.current = null;
       setSaveState('idle');
@@ -382,6 +384,7 @@ export default function StudioPostPage() {
         await new Promise((resolve) => setTimeout(resolve, 100));
       }
       await publishPost(editingDraftIdRef.current, buildPayload());
+      invalidateEditorialPlanCache();
       setSentMode('published');
       setSentTitle(title);
       setEditingDraftId(null);
