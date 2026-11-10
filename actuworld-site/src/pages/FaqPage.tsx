@@ -57,8 +57,15 @@ export default function FaqPage() {
         {
           q: t("Comment ASV analyse-t-il les sources ?", "How does ASV analyze sources?"),
           a: t(
-            "À la publication, ASV récupère les sources citées et donne deux notes. Éditeur : la transparence du site (ancienneté, mentions légales, auteurs identifiés, registres reconnus…). Fidélité : une IA compare le texte de chaque source avec ce qu'affirme le post, ce qui permet de repérer le cherry-picking et les contradictions.",
-            "When a post is published, ASV fetches the cited sources and gives two scores. Publisher: how transparent the site is (age, legal notice, identified authors, recognised registries…). Faithfulness: an AI compares each source's text with what the post claims, which reveals cherry-picking and contradictions."
+            "À la publication, ASV récupère les sources citées et donne deux notes. Éditeur : la transparence du site (ancienneté, mentions légales, auteurs identifiés, registres reconnus…). Fidélité : une IA compare le texte de chaque source avec ce qu'affirme le post, carte par carte, et ne passe au rouge que si une source dit l'inverse d'un fait précis, citation à l'appui.",
+            "When a post is published, ASV fetches the cited sources and gives two scores. Publisher: how transparent the site is (age, legal notice, identified authors, recognised registries…). Faithfulness: an AI compares each source's text with what the post claims, card by card, and only turns red when a source says the opposite of a precise fact, with a quote."
+          ),
+        },
+        {
+          q: t("ASV note-t-il mon avis ?", "Does ASV score my opinion?"),
+          a: t(
+            "Non. Ton avis, ta conclusion, ce que tu choisis de garder ou de couper, ton ton : rien de tout ça ne pèse sur la note. ASV le montre aux lecteurs, à part de ce que dit la source (« L'auteur ajoute, sans sa source : … »), pour qu'ils fassent la différence. Un contenu qui ne donne qu'un avis est affiché « Avis de l'auteur », sans couleur.",
+            "No. Your opinion, your conclusion, what you choose to keep or cut, your tone: none of it weighs on the score. ASV shows it to readers, apart from what the source says (“The author adds, without a source: …”), so they can tell the difference. A post that only gives an opinion is shown as “Author's opinion”, with no colour."
           ),
         },
       ],

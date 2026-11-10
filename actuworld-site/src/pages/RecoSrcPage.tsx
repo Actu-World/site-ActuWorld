@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import {
   ChevronRight, Link2, ShieldCheck, Building2, Award, Lock, CalendarClock, UserCheck,
   FileWarning, CheckCircle2, XCircle, HelpCircle, MinusCircle, Newspaper, GraduationCap,
-  PenLine, BookOpenCheck,
+  PenLine, BookOpenCheck, MessageCircle,
 } from "lucide-react";
 import { Section } from "../components/Section";
 import { H2 } from "../components/H2";
@@ -30,9 +30,35 @@ export default function RecoSrcPage() {
   /* Verdicts de la note Fidélité (semantic_verification.py) */
   const stances = [
     { icon: CheckCircle2, color: "#10b981", label: t("Soutient", "Supports"), desc: t("La source dit bien ce que dit le post.", "The source says what the post says.") },
-    { icon: XCircle, color: "#ef4444", label: t("Contredit", "Contradicts"), desc: t("La source dit autre chose, voire l'inverse.", "The source says something else, or the opposite.") },
+    { icon: XCircle, color: "#ef4444", label: t("Contredit", "Contradicts"), desc: t("La source affirme l'inverse d'un fait précis du post, citation à l'appui.", "The source states the opposite of a precise fact in the post, with a quote.") },
     { icon: MinusCircle, color: "#f59e0b", label: t("Hors sujet", "Off-topic"), desc: t("La source ne parle pas de l'affirmation.", "The source doesn't address the claim.") },
-    { icon: HelpCircle, color: "#6b7280", label: t("Non vérifiable", "Unverifiable"), desc: t("Impossible de trancher avec ce texte.", "Can't tell from this text.") },
+    { icon: HelpCircle, color: "#6b7280", label: t("Non vérifiable", "Unverifiable"), desc: t("Impossible de trancher avec ce texte, ou source illisible (accès réservé, lien mort, vidéo).", "Can't tell from this text, or the source can't be read (restricted access, dead link, video).") },
+    { icon: MessageCircle, color: "#6b7280", label: t("Avis de l'auteur", "Author's opinion"), desc: t("Rien à vérifier : un avis n'est ni confirmé, ni contredit, ni noté.", "Nothing to check: an opinion is neither confirmed, contradicted, nor scored.") },
+  ];
+
+  /* Ce qu'ASV ne note pas (phase 10 : l'avis se montre, ne se note pas) */
+  const notScored = [
+    {
+      title: t("Ton avis", "Your opinion"),
+      desc: t(
+        "« C'est une honte », « il faut le supprimer », « d'après ce qu'on m'a raconté » : ASV le lit comme ce que tu ajoutes à ta source. Ce n'est ni un défaut, ni une note.",
+        "“It's a disgrace”, “it should be scrapped”, “from what I've been told”: ASV reads it as what you add to your source. It's neither a flaw nor a score."
+      ),
+    },
+    {
+      title: t("Ce que tu choisis de garder", "What you choose to keep"),
+      desc: t(
+        "Résumer, couper, choisir un angle : omettre n'est pas déformer. ASV ne te demande pas de tout recopier.",
+        "Summarising, cutting, choosing an angle: leaving things out isn't distorting. ASV doesn't ask you to copy everything."
+      ),
+    },
+    {
+      title: t("Ton ton", "Your tone"),
+      desc: t(
+        "Alarmiste, ironique, enthousiaste : le ton est signalé comme une information, il ne pèse pas sur la note.",
+        "Alarmist, ironic, enthusiastic: tone is flagged as information, it doesn't weigh on the score."
+      ),
+    },
   ];
 
 
@@ -228,6 +254,35 @@ export default function RecoSrcPage() {
             </p>
           </AnimatedSection>
         </div>
+        {/* Ce qu'ASV ne note pas : l'avis se montre, il ne se note pas (phase 10) */}
+        <AnimatedSection className="card p-6 md:p-8 mt-6">
+          <div className="flex items-center gap-3">
+            <span className="w-10 h-10 rounded-[10px] bg-aw-success flex items-center justify-center shrink-0" aria-hidden="true">
+              <MessageCircle className="w-5 h-5 text-aw-primary" />
+            </span>
+            <h3 className="text-xl md:text-2xl">{t("Ce qu'ASV ne note pas", "What ASV doesn't score")}</h3>
+          </div>
+          <p className="text-aw-muted mt-4 max-w-prose">
+            {t(
+              "ASV répond à deux questions : la source dit-elle le contraire ? et qu'est-ce qui vient de toi ? La première peut faire passer un contenu au rouge, toujours avec la citation de la source. La seconde s'affiche, elle ne note jamais.",
+              "ASV answers two questions: does the source say the opposite? and what comes from you? The first can turn a post red, always with the source's quote. The second is shown, never scored."
+            )}
+          </p>
+          <ul className="mt-6 grid gap-4 md:grid-cols-3">
+            {notScored.map((n) => (
+              <li key={n.title}>
+                <strong className="font-semibold">{n.title}</strong>
+                <p className="text-aw-muted mt-1 text-[15px]">{n.desc}</p>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-6 text-[15px] text-aw-muted border-t border-aw pt-4">
+            {t(
+              "Dans l'app, la fiche de chaque carte sépare les deux : « La source dit : … » avec la citation, puis « L'auteur ajoute, sans sa source : … ». Un contenu ne passe au rouge que si une source affirme l'inverse d'un fait précis.",
+              "In the app, each card's sheet keeps the two apart: “The source says: …” with the quote, then “The author adds, without a source: …”. A post only turns red when a source states the opposite of a precise fact."
+            )}
+          </p>
+        </AnimatedSection>
       </Section>
 
       {/* LE BADGE : les trois remplissages de la tuile (asvState.ts de l'app) */}
