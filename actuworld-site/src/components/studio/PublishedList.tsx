@@ -1,6 +1,7 @@
 import { BadgeCheck, CircleDashed, CircleHelp, Newspaper, TriangleAlert } from 'lucide-react';
 import type { StudioDraftRow } from '../../types/journal';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { authorAdditions, isOpinionOnly } from '../../lib/studio/asvFeedback';
 
 // Boucle de retour ASV (lecture seule) : le créateur qui travaille sur
 // ordinateur voit le statut de vérification de ses derniers articles publiés
@@ -54,6 +55,9 @@ export function PublishedList({ articles }: PublishedListProps) {
       <ul className="space-y-2">
         {articles.map((article) => {
           const visual = article.source_check_status ? STATUS_VISUALS[article.source_check_status] : undefined;
+          // ASV 10.6 : ce qu'ASV a lu comme les ajouts de l'auteur, montré, jamais noté.
+          const additions = authorAdditions(article.source_check_data);
+          const opinionOnly = isOpinionOnly(article.source_check_data);
           return (
             <li key={article.id} className="card p-4 flex items-center gap-3">
               <Newspaper className="w-5 h-5 text-aw-muted shrink-0" />
@@ -62,6 +66,20 @@ export function PublishedList({ articles }: PublishedListProps) {
                 <p className="text-aw-muted text-xs">
                   {t('Publié le', 'Published')} {formatDate(article.published_at ?? article.updated_at)}
                 </p>
+                {opinionOnly ? (
+                  <p className="text-aw-muted text-xs mt-1">
+                    {t(
+                      "Tu donnes un avis : ASV n'a rien à confronter aux sources, et un avis n'est pas noté.",
+                      'You give an opinion: ASV has nothing to check against the sources, and an opinion is not scored.'
+                    )}
+                  </p>
+                ) : additions.length > 0 ? (
+                  <p className="text-aw-muted text-xs mt-1">
+                    {t('ASV a lu ceci comme ton avis, sans source : ', 'ASV read this as your opinion, without a source: ')}
+                    {additions.map((a) => (isEnglish ? `“${a}”` : `« ${a} »`)).join(isEnglish ? ', ' : ', ')}
+                    {t(". C'est montré aux lecteurs, pas noté.", '. It is shown to readers, not scored.')}
+                  </p>
+                ) : null}
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
                 {visual ? (

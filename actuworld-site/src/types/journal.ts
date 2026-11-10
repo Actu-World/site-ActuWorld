@@ -49,4 +49,18 @@ export type StudioDraftRow = {
   // Colonnes de vérification ASV (lecture seule côté Studio)
   source_check_status?: string | null;
   verification_level?: string | number | null;
+  /** Réponse RECO-SRC complète ; seuls les ajouts de l'auteur (ASV 10.6) sont lus ici. */
+  source_check_data?: AsvCheckData | null;
+};
+
+/** ASV 10.2 / 10.6 — le sous-ensemble de la réponse ASV que le Studio exploite. */
+export type AsvCheckData = {
+  verification?: {
+    faithfulness?: { opinion_only?: boolean } | null;
+    cards?: Array<{
+      index: number;
+      card_kind?: 'fact' | 'opinion' | 'mixed' | null;
+      additions?: string[];
+    }>;
+  } | null;
 };
