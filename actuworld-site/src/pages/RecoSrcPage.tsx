@@ -194,8 +194,8 @@ export default function RecoSrcPage() {
             </div>
             <p className="text-aw-muted mt-4 max-w-prose">
               {t(
-                `Chaque site cité reçoit une note de transparence sur 10. ASV s'appuie sur une base de plus de 1${NB}800 domaines déjà évalués, enrichie automatiquement à chaque nouvelle source.`,
-                "Each cited site gets a transparency score out of 10. ASV relies on a base of more than 1,800 domains already rated, automatically extended with every new source."
+                `Chaque site cité reçoit un niveau de transparence, dit en mots dans l'app. ASV s'appuie sur une base de plus de 1${NB}800 domaines déjà évalués, enrichie automatiquement à chaque nouvelle source.`,
+                "Each cited site gets a transparency level, shown in words in the app. ASV relies on a base of more than 1,800 domains already rated, automatically extended with every new source."
               )}
             </p>
             <ul className="mt-6 grid sm:grid-cols-2 gap-x-6 gap-y-3">
@@ -206,10 +206,16 @@ export default function RecoSrcPage() {
                 </li>
               ))}
             </ul>
+            <p className="mt-5 text-[15px] text-aw-muted max-w-prose">
+              {t(
+                "Ce qui est mesuré, et quand : l'ancienneté, la connexion sécurisée, les mentions légales et les pages institutionnelles à chaque citation ; les registres (CPPAP, IFCN, JTI, listes de désinformation) lus en direct ; les auteurs identifiés et la politique de correction relevés en tâche de fond après la première citation. Tant qu'un signal manque, il ne compte ni pour ni contre, et un site nouveau plafonne à « partiel » jusqu'à ce qu'il soit relevé.",
+                "What is measured, and when: domain age, secure connection, legal notice and institutional pages at every citation; registries (CPPAP, IFCN, JTI, disinformation lists) read live; identified authors and corrections policy collected in the background after the first citation. While a signal is missing it counts neither for nor against, and a new site caps at “partial” until it is collected."
+              )}
+            </p>
             <div className="aw-phone mt-7 rounded-xl p-4 border border-aw" style={{ background: "var(--app-bg)" }} aria-hidden="true">
               <div className="flex items-center justify-between text-sm">
                 <span className="font-semibold underline" style={{ color: "var(--app-text)" }}>ign.fr</span>
-                <span className="font-bold" style={{ color: "#10b981" }}>9/10</span>
+                <span className="font-bold" style={{ color: "#10b981" }}>{t("Très transparent", "Very transparent")}</span>
               </div>
               <div className="flex gap-1.5 mt-2 text-[11px] font-semibold">
                 <span className="rounded px-1.5 py-0.5" style={{ background: "var(--app-row-strong)", color: "var(--app-text)" }}>Institution</span>
