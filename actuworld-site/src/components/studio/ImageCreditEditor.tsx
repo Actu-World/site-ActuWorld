@@ -73,8 +73,8 @@ export function ImageCreditEditor({ value, onChange, compact = false }: ImageCre
             maxLength={IMAGE_CREDIT_MAX}
             onChange={(e) => onChange({ credit: e.target.value })}
             placeholder={t(
-              'Auteur, site, licence (ex : Thierry Caro / Wikimedia Commons, CC BY-SA 4.0)',
-              'Author, site, licence (e.g. Thierry Caro / Wikimedia Commons, CC BY-SA 4.0)',
+              'Auteur, licence (ex : Thierry Caro, CC BY-SA 4.0)',
+              'Author, licence (e.g. Thierry Caro, CC BY-SA 4.0)',
             )}
             className={inputClass}
           />
