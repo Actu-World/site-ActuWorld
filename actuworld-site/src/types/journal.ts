@@ -56,7 +56,7 @@ export type StudioDraftRow = {
 /** ASV 10.2 / 10.6 — le sous-ensemble de la réponse ASV que le Studio exploite. */
 export type AsvCheckData = {
   verification?: {
-    faithfulness?: { opinion_only?: boolean } | null;
+    faithfulness?: { opinion_only?: boolean; opinion_sourced?: boolean } | null;
     cards?: Array<{
       index: number;
       card_kind?: 'fact' | 'opinion' | 'mixed' | null;

@@ -28,3 +28,8 @@ export function authorAdditions(data: AsvCheckData | null | undefined): string[]
 export function isOpinionOnly(data: AsvCheckData | null | undefined): boolean {
   return data?.verification?.faithfulness?.opinion_only === true;
 }
+
+/** ASV 11.3 : aucune partie de faits, au moins une mixte confirmée : « Sources cohérentes, avis de l'auteur ». */
+export function isOpinionSourced(data: AsvCheckData | null | undefined): boolean {
+  return data?.verification?.faithfulness?.opinion_sourced === true;
+}

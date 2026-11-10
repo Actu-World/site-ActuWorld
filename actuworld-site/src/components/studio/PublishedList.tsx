@@ -1,7 +1,7 @@
 import { BadgeCheck, CircleDashed, CircleHelp, Newspaper, TriangleAlert } from 'lucide-react';
 import type { StudioDraftRow } from '../../types/journal';
 import { useLanguage } from '../../i18n/LanguageContext';
-import { authorAdditions, isOpinionOnly } from '../../lib/studio/asvFeedback';
+import { authorAdditions, isOpinionOnly, isOpinionSourced } from '../../lib/studio/asvFeedback';
 
 // Boucle de retour ASV (lecture seule) : le créateur qui travaille sur
 // ordinateur voit le statut de vérification de ses derniers articles publiés
@@ -22,6 +22,11 @@ const STATUS_VISUALS: Record<string, StatusVisual> = {
   unverifiable: { label: ['Invérifiable', 'Unverifiable'], className: 'text-aw-muted', icon: 'unknown' },
   misleading: { label: ['Signalé trompeur', 'Flagged misleading'], className: 'text-red-500', icon: 'warn' },
   failed: { label: ['Vérification échouée', 'Verification failed'], className: 'text-aw-muted', icon: 'unknown' },
+};
+// ASV 11.3 : un avis sourcé n'est jamais « vérifié » : la source est cohérente avec ce que
+// l'article en rapporte, le reste est l'avis de l'auteur (vert clair, demi-jauge dans l'app).
+const OPINION_SOURCED_VISUAL: StatusVisual = {
+  label: ["Sources cohérentes, avis de l'auteur", "Consistent sources, author's opinion"], className: 'text-amber-500', icon: 'warn',
 };
 
 function StatusIcon({ kind, className }: { kind: StatusVisual['icon']; className: string }) {
@@ -54,7 +59,9 @@ export function PublishedList({ articles }: PublishedListProps) {
       </p>
       <ul className="space-y-2">
         {articles.map((article) => {
-          const visual = article.source_check_status ? STATUS_VISUALS[article.source_check_status] : undefined;
+          const visual = isOpinionSourced(article.source_check_data)
+            ? OPINION_SOURCED_VISUAL
+            : article.source_check_status ? STATUS_VISUALS[article.source_check_status] : undefined;
           // ASV 10.6 : ce qu'ASV a lu comme les ajouts de l'auteur, montré, jamais noté.
           const additions = authorAdditions(article.source_check_data);
           const opinionOnly = isOpinionOnly(article.source_check_data);
