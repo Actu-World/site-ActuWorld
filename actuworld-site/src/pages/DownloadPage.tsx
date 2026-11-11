@@ -9,7 +9,10 @@ import { PageWrapper, staggerContainer, fadeInUp } from "../components/animation
 import { DOWNLOAD_URL, STORE_URLS, detectMobilePlatform } from "../lib/stores";
 
 /**
- * actuworld.fr/telecharger : le lien unique à partager. Sur téléphone, nginx
+ * actuworld.fr/telecharger : lien à envoyer à la main (associations, écoles…)
+ * avant le lancement public du 1er décembre. Volontairement absent du menu, des
+ * pages et du sitemap, et noindex : le site public annonce la date, il ne
+ * propose pas encore de télécharger. Sur téléphone, nginx
  * redirige déjà vers le bon store avant même la page (voir nginx.conf) ; la page
  * reprend la main pour l'iPad (il s'annonce comme un Mac) et, sur ordinateur,
  * propose les deux stores et un QR code à scanner avec le téléphone.
@@ -33,6 +36,7 @@ export default function DownloadPage() {
           "Download ActuWorld for free on the App Store and Google Play: news with its sources, checked by ASV."
         )}
         path="/telecharger"
+        noindex
       />
       <div className="max-w-6xl w-full mx-auto container-px py-16 md:py-28">
         <motion.div
