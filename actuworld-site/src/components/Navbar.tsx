@@ -121,8 +121,8 @@ export const Navbar: React.FC = () => {
             {theme === 'dark' ? <Sun className="w-[18px] h-[18px]" aria-hidden="true" /> : <Moon className="w-[18px] h-[18px]" aria-hidden="true" />}
           </button>
 
-          <Link to="/liste-attente" className="btn-primary btn-sm ml-1">
-            {t('Être prévenu', 'Get notified')}
+          <Link to="/telecharger" className="btn-primary btn-sm ml-1">
+            {t("Télécharger l'app", 'Download the app')}
           </Link>
         </div>
 
@@ -181,8 +181,8 @@ export const Navbar: React.FC = () => {
                   {link.label}
                 </Link>
               ))}
-              <Link to="/liste-attente" className="btn-primary mt-4">
-                {t('Être prévenu', 'Get notified')}
+              <Link to="/telecharger" className="btn-primary mt-4">
+                {t("Télécharger l'app", 'Download the app')}
               </Link>
             </nav>
           </motion.div>

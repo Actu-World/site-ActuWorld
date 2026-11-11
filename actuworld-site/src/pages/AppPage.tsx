@@ -58,7 +58,7 @@ export default function AppPage() {
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
       <PageMeta
         title={t("L'app : le réseau de l'information fiable", "The app: the network for reliable information")}
-        description={t("Découvre ActuWorld : source visible obligatoire, vérification ASV et jugement communautaire. Partage sur tous les sujets, lecture 100 % gratuite. Bientôt sur l'App Store et Google Play.", "Discover ActuWorld: mandatory visible sources, ASV verification and community judgment. Share on any topic, 100% free to read. Coming soon to the App Store and Google Play.")}
+        description={t("Découvre ActuWorld : source visible obligatoire, vérification ASV et jugement communautaire. Partage sur tous les sujets, lecture 100 % gratuite. Disponible sur l'App Store et Google Play.", "Discover ActuWorld: mandatory visible sources, ASV verification and community judgment. Share on any topic, 100% free to read. Available on the App Store and Google Play.")}
         path="/app"
       />
 
@@ -67,7 +67,7 @@ export default function AppPage() {
         <div className="grid lg:grid-cols-[1.1fr_1fr] gap-10 lg:gap-10 items-center">
           <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="max-w-xl mx-auto lg:mx-0 text-center lg:text-left">
             <motion.p variants={fadeInUp} className="eyebrow mb-5">
-              {t("Bientôt sur l'App Store et Google Play", "Coming soon to the App Store and Google Play")}
+              {t("Disponible sur l'App Store et Google Play", "Available on the App Store and Google Play")}
             </motion.p>
             <motion.h1 variants={fadeInUp} className="display">
               {t("ActuWorld, le réseau de l'information", "ActuWorld, the information network")}
@@ -76,8 +76,8 @@ export default function AppPage() {
               {t("Publie, explore et partage sur tous les sujets, avec des sources visibles et un score de confiance clair.", "Publish, explore and share on any topic, with visible sources and a clear trust score.")}
             </motion.p>
             <motion.div variants={fadeInUp} className="mt-8 flex flex-col sm:flex-row sm:flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-3">
-              <Link to="/liste-attente" className="btn-primary w-full sm:w-auto justify-center">
-                {t("Être prévenu", "Get notified")}
+              <Link to="/telecharger" className="btn-primary w-full sm:w-auto justify-center">
+                {t("Télécharger l'app", "Download the app")}
               </Link>
               <Link to="/reco-src" className="btn-link py-2">
                 {t("Découvrir ASV", "Discover ASV")} <ChevronRight className="w-4 h-4" aria-hidden="true" />
