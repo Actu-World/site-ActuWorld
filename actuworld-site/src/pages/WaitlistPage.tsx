@@ -36,8 +36,8 @@ export default function WaitlistPage() {
       <PageMeta
         title={t("Rejoins la liste d'attente", "Join the waitlist")}
         description={t(
-          "ActuWorld, le réseau de l'information sourcée, arrive d'ici la fin de l'année sur l'App Store et Google Play. Laisse ton e-mail pour être prévenu à la sortie.",
-          "ActuWorld, the network for sourced information, is coming to the App Store and Google Play by the end of the year. Leave your email to hear at launch."
+          "ActuWorld, le réseau de l'information sourcée, sort officiellement le 1er décembre sur l'App Store et Google Play. Laisse ton e-mail pour être prévenu le jour J.",
+          "ActuWorld, the network for sourced information, officially launches on December 1 on the App Store and Google Play. Leave your email to hear on the day."
         )}
         path="/liste-attente"
       />
@@ -46,15 +46,15 @@ export default function WaitlistPage() {
         <div className="max-w-6xl mx-auto container-px grid lg:grid-cols-[1.15fr_0.85fr] gap-12 lg:gap-14 items-center">
           <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="max-w-xl mx-auto lg:mx-0 w-full">
             <motion.p variants={fadeInUp} className="eyebrow mb-5">
-              {t("Sortie d'ici la fin de l'année", "Launching by the end of the year")}
+              {t("Lancement officiel le 1er décembre", "Official launch on December 1")}
             </motion.p>
             <motion.h1 variants={fadeInUp} className="display">
               {t("Sois parmi les premiers sur ActuWorld.", "Be among the first on ActuWorld.")}
             </motion.h1>
             <motion.p variants={fadeInUp} className="lead mt-5">
               {t(
-                "Le réseau où chaque info s'appuie sur une source que tu peux ouvrir. Laisse ton e-mail : on te prévient dès que l'app est sur l'App Store et Google Play.",
-                "The network where every piece of news rests on a source you can open. Leave your email and we'll let you know as soon as the app is on the App Store and Google Play."
+                "Le réseau où chaque info s'appuie sur une source que tu peux ouvrir. Laisse ton e-mail : on te prévient le 1er décembre, jour du lancement sur l'App Store et Google Play.",
+                "The network where every piece of news rests on a source you can open. Leave your email and we'll let you know on December 1, launch day on the App Store and Google Play."
               )}
             </motion.p>
 

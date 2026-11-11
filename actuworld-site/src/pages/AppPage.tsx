@@ -58,7 +58,7 @@ export default function AppPage() {
     <PageWrapper className="min-h-screen bg-aw-bg text-aw-text">
       <PageMeta
         title={t("L'app : le réseau de l'information fiable", "The app: the network for reliable information")}
-        description={t("Découvre ActuWorld : source visible obligatoire, vérification ASV et jugement communautaire. Partage sur tous les sujets, lecture 100 % gratuite. Disponible sur l'App Store et Google Play.", "Discover ActuWorld: mandatory visible sources, ASV verification and community judgment. Share on any topic, 100% free to read. Available on the App Store and Google Play.")}
+        description={t("Découvre ActuWorld : source visible obligatoire, vérification ASV et jugement communautaire. Partage sur tous les sujets, lecture 100 % gratuite. Lancement officiel le 1er décembre sur l'App Store et Google Play.", "Discover ActuWorld: mandatory visible sources, ASV verification and community judgment. Share on any topic, 100% free to read. Official launch on December 1 on the App Store and Google Play.")}
         path="/app"
       />
 
@@ -67,7 +67,7 @@ export default function AppPage() {
         <div className="grid lg:grid-cols-[1.1fr_1fr] gap-10 lg:gap-10 items-center">
           <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="max-w-xl mx-auto lg:mx-0 text-center lg:text-left">
             <motion.p variants={fadeInUp} className="eyebrow mb-5">
-              {t("Disponible sur l'App Store et Google Play", "Available on the App Store and Google Play")}
+              {t("Lancement officiel le 1er décembre", "Official launch on December 1")}
             </motion.p>
             <motion.h1 variants={fadeInUp} className="display">
               {t("ActuWorld, le réseau de l'information", "ActuWorld, the information network")}

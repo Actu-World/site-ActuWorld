@@ -63,7 +63,7 @@ export const WaitlistForm = ({ className = "", tone = "default", form = "site_ho
       >
         <CheckCircle2 className={`w-6 h-6 shrink-0 ${dark ? "text-[#A8D5BA]" : "text-aw-primary"}`} aria-hidden="true" />
         <span>
-          {t("C'est noté. On t'écrit dès la sortie.", "Got it. We'll email you at launch.")}
+          {t("C'est noté. On t'écrit le 1er décembre.", "Got it. We'll email you on December 1.")}
           <span className={`block mt-1 text-sm font-normal ${dark ? "text-white/75" : "text-aw-muted"}`}>
             {t(
               "Un mail de confirmation vient de partir. Tu ne le vois pas ? Regarde dans tes indésirables.",
@@ -118,7 +118,7 @@ export const WaitlistForm = ({ className = "", tone = "default", form = "site_ho
           ? t("Cette adresse ne semble pas valide. Vérifie-la et réessaie.", "This address doesn't look valid. Check it and try again.")
           : status === "error"
             ? t("L'inscription n'a pas abouti. Réessaie dans un instant.", "Sign-up didn't go through. Try again in a moment.")
-            : t("On t'écrit dès que l'app sort sur les stores.", "We'll email you as soon as the app is on the stores.")}
+            : t("On t'écrit le 1er décembre, jour du lancement.", "We'll email you on December 1, launch day.")}
       </p>
     </form>
   );

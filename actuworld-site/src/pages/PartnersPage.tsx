@@ -42,8 +42,8 @@ export default function PartnersPage() {
       icon: Megaphone,
       title: t("Créateurs et ambassadeurs", "Creators and ambassadors"),
       desc: t(
-        "Fais connaître ActuWorld à ta communauté avant la sortie sur les stores.",
-        "Introduce ActuWorld to your community ahead of the store launch."
+        "Fais connaître ActuWorld à ta communauté avant le lancement officiel du 1er décembre.",
+        "Introduce ActuWorld to your community ahead of the official launch on December 1."
       ),
     },
   ];

@@ -87,7 +87,7 @@ export default function PricingPage() {
     },
     {
       q: t("Quand l'app sera-t-elle disponible ?", "When will the app be available?"),
-      a: t("ActuWorld arrive bientôt sur l'App Store et Google Play. Laisse ton e-mail pour être prévenu à la sortie.", "ActuWorld is coming soon to the App Store and Google Play. Leave your email to be notified at launch."),
+      a: t("ActuWorld sort officiellement le 1er décembre sur l'App Store et Google Play. Laisse ton e-mail pour être prévenu le jour J.", "ActuWorld officially launches on December 1 on the App Store and Google Play. Leave your email to be notified on the day."),
     },
   ];
 

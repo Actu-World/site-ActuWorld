@@ -90,15 +90,15 @@ export default function FaqPage() {
         {
           q: t("Quand ActuWorld sera-t-il disponible ?", "When will ActuWorld be available?"),
           a: t(
-            "L'app arrive bientôt sur l'App Store et Google Play. La publication sur les stores est en cours.",
-            "The app is coming soon to the App Store and Google Play. Store publication is in progress."
+            "Le lancement officiel est fixé au 1er décembre, sur l'App Store et Google Play.",
+            "The official launch is set for December 1, on the App Store and Google Play."
           ),
         },
         {
           q: t("Comment être prévenu de la sortie ?", "How do I get notified at launch?"),
           a: t(
-            "Laisse ton adresse e-mail en bas de la page d'accueil : on t'écrit dès que l'app sort sur les stores.",
-            "Leave your email address at the bottom of the home page: we'll email you as soon as the app is on the stores."
+            "Laisse ton adresse e-mail en bas de la page d'accueil : on t'écrit le jour du lancement, le 1er décembre.",
+            "Leave your email address at the bottom of the home page: we'll email you on launch day, December 1."
           ),
         },
       ],

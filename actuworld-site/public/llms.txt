@@ -2,7 +2,7 @@
 > Le réseau de l'information fiable, sur tous les sujets.
 
 ## Description
-ActuWorld est le réseau de l'information où chaque publication s'appuie sur une source visible. ASV (ActuWorld Source Verification) analyse les sources citées : transparence de l'éditeur et fidélité de la reprise, ce qui permet de repérer le cherry-picking. ASV ne juge pas si une information est vraie. Séparément, les lecteurs votent Fiable ou Douteuse, ce qui donne un score de confiance sur 100. La lecture est gratuite. L'app arrive bientôt sur l'App Store et Google Play.
+ActuWorld est le réseau de l'information où chaque publication s'appuie sur une source visible. ASV (ActuWorld Source Verification) analyse les sources citées : transparence de l'éditeur et fidélité de la reprise, ce qui permet de repérer le cherry-picking. ASV ne juge pas si une information est vraie. Séparément, les lecteurs votent Fiable ou Douteuse, ce qui donne un score de confiance sur 100. La lecture est gratuite. Lancement officiel de l'app le 1er décembre 2026 sur l'App Store et Google Play.
 
 ## Pages principales
 - Accueil : https://www.actuworld.fr/

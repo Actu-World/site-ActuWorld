@@ -313,12 +313,12 @@ export default function HomePage() {
             >
               <div>
                 <h2 className="text-[clamp(1.75rem,3.4vw,2.75rem)] leading-[1.1] tracking-[-0.015em] font-bold text-white">
-                  {t("Bientôt sur l'App Store et Google Play", "Coming soon to the App Store and Google Play")}
+                  {t("Le 1er décembre sur l'App Store et Google Play", "December 1 on the App Store and Google Play")}
                 </h2>
                 <p className="mt-4 text-white/80 text-lg max-w-md">
                   {t(
-                    "Laisse ton e-mail, on te prévient dès que tu peux télécharger ActuWorld.",
-                    "Leave your email and we'll let you know as soon as you can download ActuWorld."
+                    "Lancement officiel le 1er décembre. Laisse ton e-mail, on te prévient le jour J.",
+                    "Official launch on December 1. Leave your email and we'll let you know on the day."
                   )}
                 </p>
               </div>

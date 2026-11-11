@@ -23,8 +23,8 @@ export default function PressPage() {
     {
       label: t("Produit", "Product"),
       value: t(
-        "Application mobile iOS et Android, bientôt sur l'App Store et Google Play.",
-        "Mobile app for iOS and Android, coming soon to the App Store and Google Play."
+        "Application mobile iOS et Android, lancement officiel le 1er décembre sur l'App Store et Google Play.",
+        "Mobile app for iOS and Android, official launch on December 1 on the App Store and Google Play."
       ),
     },
     {

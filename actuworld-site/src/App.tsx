@@ -4,6 +4,7 @@ import { AnimatePresence, MotionConfig } from 'framer-motion';
 import { Navbar } from './components/Navbar';
 import { StudioNavbar } from './components/studio/StudioNavbar';
 import { Footer } from './components/Footer';
+import { LaunchBanner } from './components/LaunchBanner';
 import { ScrollProgress } from './components/ui/ScrollProgress';
 import { BackToTop } from './components/ui/BackToTop';
 import { CookieBanner } from './components/ui/CookieBanner';
@@ -80,6 +81,7 @@ export default function App() {
       )}
       {!isStudio && <ScrollProgress />}
       <ScrollToTop />
+      {!isStudio && <LaunchBanner />}
       {isStudio ? <StudioNavbar /> : <Navbar />}
       <main id="main" tabIndex={-1} className="overflow-x-clip outline-none">
         <Suspense fallback={<div className="min-h-[70vh]" aria-busy="true" />}>

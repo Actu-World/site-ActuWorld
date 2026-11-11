@@ -58,8 +58,8 @@ export default function ContactPage() {
       <PageMeta
         title={t("Contact | Écrire à ActuWorld", "Contact | Write to ActuWorld")}
         description={t(
-          "Écris à l'équipe ActuWorld : créateurs, médias, éducateurs ou curieux. L'app arrive bientôt sur l'App Store et Google Play.",
-          "Write to the ActuWorld team: creators, media, educators or curious minds. The app is coming soon to the App Store and Google Play."
+          "Écris à l'équipe ActuWorld : créateurs, médias, éducateurs ou curieux. L'app sort officiellement le 1er décembre sur l'App Store et Google Play.",
+          "Write to the ActuWorld team: creators, media, educators or curious minds. The app officially launches on December 1 on the App Store and Google Play."
         )}
         path="/contact"
       />
@@ -139,11 +139,11 @@ export default function ContactPage() {
       {/* SORTIE */}
       <Section>
         <AnimatedSection className="max-w-2xl mx-auto lg:mx-0 text-center lg:text-left">
-          <H2>{t("Bientôt sur l'App Store et Google Play", "Coming soon to the App Store and Google Play")}</H2>
+          <H2>{t("Le 1er décembre sur l'App Store et Google Play", "December 1 on the App Store and Google Play")}</H2>
           <p className="lead mt-4 mx-auto lg:mx-0">
             {t(
-              "La publication sur les stores est en cours. Laisse ton e-mail et on te prévient dès la sortie.",
-              "Store publication is in progress. Leave your email and we'll let you know at launch."
+              "Lancement officiel le 1er décembre. Laisse ton e-mail et on te prévient le jour J.",
+              "Official launch on December 1. Leave your email and we'll let you know on the day."
             )}
           </p>
           <div className="mt-8 flex flex-col sm:flex-row sm:flex-wrap items-center justify-center lg:justify-start gap-x-8 gap-y-3">

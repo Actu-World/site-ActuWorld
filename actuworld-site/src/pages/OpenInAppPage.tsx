@@ -65,7 +65,6 @@ export default function OpenInAppPage({ kind }: { kind: SharedContentKind }) {
 
   const Icon = CONTENT.icon;
   const deepLink = `actuworld://${CONTENT.path}`;
-  const hasStoreLinks = Boolean(STORE_URLS.playStore || STORE_URLS.appStore);
 
   return (
     <PageWrapper className="min-h-[80vh] bg-aw-bg text-aw-text flex items-center">
@@ -109,35 +108,19 @@ export default function OpenInAppPage({ kind }: { kind: SharedContentKind }) {
             </Link>
           </motion.div>
 
-          {hasStoreLinks ? (
-            <motion.div variants={fadeInUp} className="mt-10 pt-8 border-t border-aw">
-              <p className="text-[15px] text-aw-muted mb-4">
-                {t("Pas encore l'app\u00a0? Installe-la\u00a0:", "Don't have the app yet? Install it:")}
-              </p>
-              <div className="flex flex-wrap gap-3">
-                {STORE_URLS.playStore && (
-                  <a href={STORE_URLS.playStore} target="_blank" rel="noopener noreferrer" className="btn-outline">
-                    Google Play
-                  </a>
-                )}
-                {STORE_URLS.appStore && (
-                  <a href={STORE_URLS.appStore} target="_blank" rel="noopener noreferrer" className="btn-outline">
-                    App Store
-                  </a>
-                )}
-              </div>
-            </motion.div>
-          ) : (
-            <motion.p variants={fadeInUp} className="mt-10 pt-8 border-t border-aw text-[15px] text-aw-muted">
-              {t(
-                "Pas encore l'app\u00a0? Elle arrive bientôt sur l'App Store et Google Play.",
-                "Don't have the app yet? It's coming soon to the App Store and Google Play."
-              )}{" "}
-              <Link to="/liste-attente" className="link">
-                {t("Être prévenu de la sortie", "Get notified at launch")}
-              </Link>
-            </motion.p>
-          )}
+          <motion.div variants={fadeInUp} className="mt-10 pt-8 border-t border-aw">
+            <p className="text-[15px] text-aw-muted mb-4">
+              {t("Pas encore l'app ? Installe-la :", "Don't have the app yet? Install it:")}
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <a href={STORE_URLS.playStore} target="_blank" rel="noopener noreferrer" className="btn-outline">
+                Google Play
+              </a>
+              <a href={STORE_URLS.appStore} target="_blank" rel="noopener noreferrer" className="btn-outline">
+                App Store
+              </a>
+            </div>
+          </motion.div>
         </motion.div>
       </div>
     </PageWrapper>
