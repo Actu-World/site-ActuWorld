@@ -12,15 +12,10 @@ import {
 import { useLanguage } from "../i18n/LanguageContext";
 import { PageMeta } from "../components/PageMeta";
 import { PageWrapper, staggerContainer, fadeInUp } from "../components/animations";
+import { STORE_URLS } from "../lib/stores";
 
 /** Type de contenu partagé depuis l'app : détermine l'icône, le texte et le deep link. */
 export type SharedContentKind = "post" | "journal" | "messages" | "user" | "tag";
-
-/** Liens stores : à renseigner à la publication (null = bouton masqué). */
-const STORE_URLS: { playStore: string | null; appStore: string | null } = {
-  playStore: null,
-  appStore: null
-};
 
 /**
  * Atterrissage des liens partagés (https://actuworld.fr/post/<id>, /journal/<id>…).

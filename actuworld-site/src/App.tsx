@@ -27,6 +27,7 @@ const AccountDeletionPage = lazy(() => import('./pages/AccountDeletionPage'));
 const ChildSafetyPage = lazy(() => import('./pages/ChildSafetyPage'));
 const OpenInAppPage = lazy(() => import('./pages/OpenInAppPage'));
 const WaitlistPage = lazy(() => import('./pages/WaitlistPage'));
+const DownloadPage = lazy(() => import('./pages/DownloadPage'));
 const StudioLoginPage = lazy(() => import('./pages/studio/StudioLoginPage'));
 const StudioEditorPage = lazy(() => import('./pages/studio/StudioEditorPage'));
 const StudioPostPage = lazy(() => import('./pages/studio/StudioPostPage'));
@@ -101,6 +102,8 @@ export default function App() {
             <Route path="/partenaires" element={<PartnersPage />} />
             <Route path="/liste-attente" element={<WaitlistPage />} />
             <Route path="/waitlist" element={<WaitlistPage />} />
+            <Route path="/telecharger" element={<DownloadPage />} />
+            <Route path="/download" element={<DownloadPage />} />
             {/* Atterrissage des liens partagés depuis l'app (deep links actuworld.fr). */}
             <Route path="/post/:id" element={<OpenInAppPage kind="post" />} />
             <Route path="/journal/:id" element={<OpenInAppPage kind="journal" />} />
