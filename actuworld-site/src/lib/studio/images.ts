@@ -1,16 +1,17 @@
 import { studioApi } from './api';
 import { STUDIO_SUPABASE_URL } from './config';
 
-// Images du Studio : mêmes règles que l'app mobile (redimension 1920px max,
-// JPEG qualité 0.8, bucket `journal`, chemin `userId/...`). L'upload passe par
-// l'API (POST /storage/upload/image) — jamais par supabase-js directement.
+// Images du Studio : mêmes règles que l'app mobile (1920 px max sur le plus
+// grand côté, JPEG qualité 0.8, bucket `journal`, chemin `userId/...`). L'upload
+// passe par l'API (POST /storage/upload/image) — jamais par supabase-js
+// directement ; c'est l'API qui crée la vignette 480 px à côté.
 
-const MAX_WIDTH = 1920;
+const MAX_DIMENSION = 1920;
 const JPEG_QUALITY = 0.8;
 
 async function compressImage(file: File): Promise<Blob> {
   const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, MAX_WIDTH / bitmap.width);
+  const scale = Math.min(1, MAX_DIMENSION / Math.max(bitmap.width, bitmap.height));
   const canvas = document.createElement('canvas');
   canvas.width = Math.max(1, Math.round(bitmap.width * scale));
   canvas.height = Math.max(1, Math.round(bitmap.height * scale));
