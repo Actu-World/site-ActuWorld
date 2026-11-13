@@ -67,7 +67,7 @@
 
   /* Garde-fou anti-débordement horizontal (bande blanche à droite sur mobile).
      `clip` et non `hidden` : `hidden` faisait de <body> le conteneur de scroll,
-     window.scrollY restait à 0 (barre de progression, retour en haut inertes). */
+     window.scrollY restait à 0 (retour en haut inerte). */
   html, body {
     max-width: 100%;
     overflow-x: clip;

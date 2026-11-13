@@ -5,7 +5,6 @@ import { Navbar } from './components/Navbar';
 import { StudioNavbar } from './components/studio/StudioNavbar';
 import { Footer } from './components/Footer';
 import { LaunchBanner } from './components/LaunchBanner';
-import { ScrollProgress } from './components/ui/ScrollProgress';
 import { BackToTop } from './components/ui/BackToTop';
 import { CookieBanner } from './components/ui/CookieBanner';
 import { useGoogleAnalytics } from './hooks/useGoogleAnalytics';
@@ -61,7 +60,7 @@ export default function App() {
   const location = useLocation();
 
   // Environnement Studio : navbar dédiée, pas de footer ni d'habillage
-  // « site vitrine » (barre de progression, retour en haut).
+  // « site vitrine » (retour en haut, bandeau de lancement).
   const isStudio = location.pathname === '/studio' || location.pathname.startsWith('/studio/');
 
   // Initialize Google Analytics
@@ -79,7 +78,6 @@ export default function App() {
           Aller au contenu
         </a>
       )}
-      {!isStudio && <ScrollProgress />}
       <ScrollToTop />
       {!isStudio && <LaunchBanner />}
       {isStudio ? <StudioNavbar /> : <Navbar />}
