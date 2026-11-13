@@ -1,12 +1,13 @@
 import type { CSSProperties, ReactNode } from "react";
 import {
-  Lock, RotateCw,
+  Lock, RotateCw, Tag, BookOpen,
   CheckCircle2, XCircle, Users, MessageCircle, Share2, Link2, ShieldCheck,
-  MessageSquareMore, Flag, HelpCircle, ChevronDown, ChevronRight, Award,
-  Bell, MessagesSquare, Newspaper, MoreHorizontal, GraduationCap,
+  MessageSquareMore, Flag, HelpCircle, ChevronDown, Award,
+  Bell, MessagesSquare, Newspaper, GraduationCap,
 } from "lucide-react";
 import coverImg from "../../../assets/phone_img_opt.webp";
 import sourcePageImg from "../../../assets/source_parc_national.webp";
+import parcFavicon from "../../../assets/favicon_parc_national.png";
 import homeSvg from "./icons/HomeIconR.svg?raw";
 import addSvg from "./icons/AddIcon.svg?raw";
 import searchSvg from "./icons/SearchIcon.svg?raw";
@@ -183,18 +184,22 @@ const TrustStrip: React.FC<{ score: number }> = ({ score }) => (
   </div>
 );
 
-const Segments: React.FC<{ active: number; count?: number }> = ({ active, count = 2 }) => (
+/* Indicateur de pages (feed/PageSegments.tsx) : un trait par PAGE, coupé en deux
+   moitiés collées — recto (crème) | verso (menthe). La dépêche de démo a 2 pages. */
+const Segments: React.FC<{ onVerso: boolean; current?: number; count?: number }> = ({ onVerso, current = 0, count = 2 }) => (
   <div className="absolute left-0 right-0 flex justify-center" style={{ top: 6, gap: 5, paddingInline: 40 }}>
-    {Array.from({ length: count }).map((_, i) => (
-      <span key={i} className="flex-1" style={{ maxWidth: 34, height: 3, borderRadius: 1, background: i === active ? "#FAF4EB" : "rgba(255,255,255,0.3)" }} />
-    ))}
+    {Array.from({ length: count }).map((_, i) => {
+      const cur = i === current;
+      const recto = cur ? (onVerso ? "rgba(255,255,255,0.55)" : "#FAF4EB") : "rgba(255,255,255,0.3)";
+      const verso = cur ? (onVerso ? "#A8D5BA" : "rgba(255,255,255,0.55)") : "rgba(255,255,255,0.3)";
+      return (
+        <span key={i} className="flex flex-1 overflow-hidden" style={{ maxWidth: 52, height: 3, borderRadius: 1, gap: 1 }}>
+          <i className="block flex-1 h-full" style={{ background: recto }} />
+          <i className="block flex-1 h-full" style={{ background: verso }} />
+        </span>
+      );
+    })}
   </div>
-);
-
-const MenuBtn = () => (
-  <span className="absolute flex items-center justify-center" style={{ right: 12, top: 12, width: 34, height: 34 }}>
-    <MoreHorizontal style={{ width: 18, height: 18, color: "#fff" }} strokeWidth={2.4} />
-  </span>
 );
 
 const cardShell: CSSProperties = {
@@ -216,8 +221,9 @@ const CardFront: React.FC<{ t: (fr: string, en: string) => string; score: number
       style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, transparent 22%, transparent 50%, rgba(0,0,0,0.9) 100%)" }}
     />
     <TrustStrip score={score} />
-    <Segments active={0} />
-    <div className="absolute flex items-center flex-wrap" style={{ top: 12, paddingLeft: 12, paddingRight: 64, gap: 6, minHeight: 34 }}>
+    <Segments onVerso={false} />
+    {/* Tags < 18 caractères : affichés en entier dans l'app (truncTag), pas de retour à la ligne */}
+    <div className="absolute left-0 right-0 flex items-center" style={{ top: 12, paddingLeft: 12, paddingRight: 64, gap: 6, minHeight: 34 }}>
       <span
         className="flex items-center justify-center"
         style={{ minWidth: 26, height: 24, borderRadius: 8, paddingInline: 6, background: "rgba(0,0,0,0.5)", color: trustColor(score), fontSize: 12, fontWeight: 900, letterSpacing: -0.3 }}
@@ -234,13 +240,14 @@ const CardFront: React.FC<{ t: (fr: string, en: string) => string; score: number
       {[t("Nature", "Nature"), t("La Réunion", "Réunion")].map((tag) => (
         <span
           key={tag}
-          style={{ borderRadius: 8, padding: "3px 8px", background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: 9.5, fontWeight: 800, letterSpacing: 0.8, textTransform: "uppercase" }}
+          className="flex items-center"
+          style={{ gap: 4, borderRadius: 8, padding: "3px 8px", background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: 9.5, fontWeight: 800, letterSpacing: 0.8, textTransform: "uppercase", flexShrink: 0, whiteSpace: "nowrap" }}
         >
+          <Tag style={{ width: 10, height: 10 }} />
           {tag}
         </span>
       ))}
     </div>
-    <MenuBtn />
     <div className="absolute left-0 right-0 bottom-0" style={{ padding: "24px 22px 22px" }}>
       <div style={{ fontFamily: "Platypi, serif", fontWeight: 700, fontSize: 22, lineHeight: "28px", letterSpacing: -0.2, color: "#fff", textShadow: "0 2px 10px rgba(0,0,0,0.7)" }}>
         {t("Les cascades cachées de La Réunion", "The hidden waterfalls of Réunion Island")}
@@ -294,8 +301,7 @@ const CardBack: React.FC<{ t: (fr: string, en: string) => string; score: number;
     <img src={coverImg} alt="" className="absolute inset-0 w-full h-full object-cover" style={{ filter: "blur(30px)", transform: "scale(1.2)" }} />
     <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.82)" }} />
     <TrustStrip score={score} />
-    <Segments active={1} />
-    <MenuBtn />
+    <Segments onVerso />
     <div className="absolute inset-0 flex flex-col" style={{ padding: "44px 22px 14px" }}>
       <div style={{ fontFamily: "Platypi, serif", fontWeight: 700, fontSize: 19, lineHeight: "25px", color: "#fff" }}>
         {t("Les cascades cachées de La Réunion", "The hidden waterfalls of Réunion Island")}
@@ -309,18 +315,17 @@ const CardBack: React.FC<{ t: (fr: string, en: string) => string; score: number;
 
       <div className="mt-auto flex flex-col" style={{ gap: 8 }}>
         <div style={{ height: 0.5, background: "rgba(255,255,255,0.12)" }} />
-        {/* Sources */}
+        {/* Sources (common/SourcesBlock.tsx) : seulement la source de CETTE carte —
+            favicon du site + mini-carte ; le chip « +N » n'apparaît qu'à partir de 2 sources */}
         <div className="flex items-center justify-between" style={focusStyle(focus === "sources")}>
-          <div className="flex items-center" style={{ gap: 6 }}>
-            <span className="relative flex items-center" style={{ gap: 7, padding: "5px 10px", borderRadius: 10, background: "rgba(255,255,255,0.09)", border: "0.5px solid rgba(255,255,255,0.22)" }}>
+          <div className="flex items-center flex-1" style={{ gap: 6, padding: "10px 0", marginRight: 8, minWidth: 0 }}>
+            <img src={parcFavicon} alt="" width={14} height={14} className="block shrink-0" style={{ borderRadius: 3 }} />
+            <span className="relative flex items-center" style={{ gap: 8, padding: "5px 10px", borderRadius: 10, background: "rgba(255,255,255,0.09)", border: "0.5px solid rgba(255,255,255,0.22)" }}>
               {tapSource && <Finger className="aw-tap" style={{ left: "50%", top: "50%", marginLeft: -23, marginTop: -23 }} />}
               {fingerOnSource && <Finger style={{ left: "60%", top: "50%", marginLeft: -23, marginTop: -8, opacity: 0.9 }} />}
-              <span className="block rounded-full" style={{ width: 6, height: 6, background: sourceScoreColor(9) }} />
+              <span className="block rounded-full shrink-0" style={{ width: 6, height: 6, background: sourceScoreColor(9) }} />
               <span style={{ color: "#fff", fontSize: 12.5, fontWeight: 600, whiteSpace: "nowrap" }}>Parc national</span>
               <span style={{ color: "rgba(255,255,255,0.45)", fontSize: 11, whiteSpace: "nowrap" }}>reunion-parcnational.fr</span>
-            </span>
-            <span className="flex items-center" style={{ gap: 2, padding: "5px 8px", borderRadius: 10, background: "rgba(255,255,255,0.12)", color: "#fff", fontSize: 11, fontWeight: 700 }}>
-              +1 <ChevronRight style={{ width: 11, height: 11 }} />
             </span>
           </div>
           <span className="relative">
@@ -329,11 +334,12 @@ const CardBack: React.FC<{ t: (fr: string, en: string) => string; score: number;
           </span>
         </div>
         {/* Vote */}
-        <div className="flex flex-col" style={{ gap: 8, marginTop: 4, ...focusStyle(focus === "vote") }}>
-        <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 10, fontWeight: 600 }}>
-          {vote && vote.choice !== 0 ? t("Merci pour ton vote", "Thanks for your vote") : t("Cette info te paraît…", "Does this look…")}
+        <div className="flex flex-col" style={{ gap: 4, marginTop: 4, marginBottom: 4, ...focusStyle(focus === "vote") }}>
+        <div className="flex items-center" style={{ gap: 10 }}>
+        <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 10, fontWeight: 600, letterSpacing: 0.2, flexShrink: 1 }}>
+          {choice !== 0 ? t("Merci pour ton vote", "Thanks for your vote") : t("Cette info te paraît...", "This info seems...")}
         </div>
-        <div className="flex items-center" style={{ height: 34, borderRadius: 10, background: "rgba(255,255,255,0.06)", border: `1px solid ${choice === -1 ? "rgba(239,68,68,0.25)" : choice === 1 ? "rgba(16,185,129,0.25)" : "rgba(255,255,255,0.1)"}`, overflow: "hidden" }}>
+        <div className="flex items-center flex-1" style={{ height: 34, borderRadius: 10, background: "rgba(255,255,255,0.06)", border: `1px solid ${choice === -1 ? "rgba(239,68,68,0.25)" : choice === 1 ? "rgba(16,185,129,0.25)" : "rgba(255,255,255,0.1)"}`, overflow: "hidden" }}>
           <VoteEl {...(vote ? { type: "button" as const, onClick: () => vote.onVote(-1), "aria-label": t("Voter Douteuse", "Vote Doubtful") } : {})} className="aw-vote flex-1 h-full flex items-center justify-center" style={voteBtn(-1, "left")}>
             {choice === -1 && <XCircle style={{ width: 13, height: 13 }} />}
             {t("Douteuse", "Doubtful")}
@@ -344,7 +350,8 @@ const CardBack: React.FC<{ t: (fr: string, en: string) => string; score: number;
             {t("Fiable", "Reliable")}
           </VoteEl>
         </div>
-        <div className="flex items-center justify-end tabular-nums" style={{ gap: 5, color: "rgba(255,255,255,0.4)", fontSize: 11 }}>
+        </div>
+        <div className="flex items-center justify-end tabular-nums" style={{ gap: 4, marginTop: 2, color: "rgba(255,255,255,0.4)", fontSize: 11 }}>
           <Users style={{ width: 12, height: 12 }} /> {vote ? vote.total : 128} votes
         </div>
         </div>
@@ -354,7 +361,11 @@ const CardBack: React.FC<{ t: (fr: string, en: string) => string; score: number;
             <span className="block overflow-hidden shrink-0" style={{ width: 28, height: 28, borderRadius: 7 }}><img src="/logo.svg" alt="" className="block w-full h-full object-cover" /></span>
             <div>
               <div style={{ color: "#fff", fontSize: 10.5, fontWeight: 700, letterSpacing: 0.6 }}>ACTUWORLD</div>
-              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 9.5, fontWeight: 600 }}>{t("Rédaction", "Newsroom")}</div>
+              <div className="flex items-center" style={{ gap: 6 }}>
+                <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 9.5, fontWeight: 600, letterSpacing: 0.3 }}>{t("Rédaction", "Newsroom")}</span>
+                <span className="block rounded-full" style={{ width: 2, height: 2, background: "rgba(255,255,255,0.3)" }} />
+                <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 9.5, fontWeight: 500 }}>3{NB}h</span>
+              </div>
             </div>
           </div>
           <div className="flex" style={{ gap: 4 }}>
@@ -371,35 +382,50 @@ const CardBack: React.FC<{ t: (fr: string, en: string) => string; score: number;
   );
 };
 
-/* ───── Fiche ASV (VerificationBadge.tsx, DetailModal) ───── */
+/* ───── Fiche ASV (feed/VerificationBadge.tsx, DetailModal) ─────
+   Mots plutôt que chiffres (ASV 7.1) : fiabilité d'une source en toutes lettres,
+   note Éditeur fondue sous « Sources accessibles », verdict carte par carte. */
 const AsvSheet: React.FC<{ t: (fr: string, en: string) => string; open?: boolean }> = ({ t, open = true }) => {
   const muted = "var(--app-muted)";
-  const row = (icon: ReactNode, label: string, value: ReactNode, sub?: string) => (
+  const green = "#10b981";
+  const row = (icon: ReactNode, label: string, value: string, subs?: string[], color?: string) => (
     <div className="flex" style={{ gap: 10 }}>
-      <span style={{ width: 18, paddingTop: 1, color: muted }}>{icon}</span>
+      <span className="shrink-0" style={{ width: 18, paddingTop: 2, color: color ?? muted }}>{icon}</span>
       <div className="flex-1">
-        <div className="flex items-center justify-between">
+        <div className="flex items-start justify-between" style={{ gap: 8 }}>
           <span style={{ fontSize: 14, fontWeight: 600, color: "var(--app-text)" }}>{label}</span>
-          <span style={{ fontSize: 14, fontWeight: 700 }}>{value}</span>
+          <span className="shrink-0" style={{ fontSize: 14, fontWeight: 600, color: color ?? "var(--app-text)" }}>{value}</span>
         </div>
-        {sub && <div style={{ fontSize: 12, color: muted, marginTop: 2, lineHeight: 1.35 }}>{sub}</div>}
+        {subs?.map((line, i) => (
+          <div key={i} style={{ fontSize: 12, color: muted, marginTop: 2, lineHeight: 1.35 }}>{line}</div>
+        ))}
       </div>
     </div>
   );
-  const src = (dom: string, score: string, cat: string) => (
-    <div style={{ marginLeft: 28, borderRadius: 10, padding: 10, background: "var(--app-row)" }}>
+  const src = (dom: string, cat: string) => (
+    <div style={{ borderRadius: 10, padding: 10, background: "var(--app-row)" }}>
       <div className="flex items-center justify-between">
         <span style={{ fontSize: 13, fontWeight: 600, color: "var(--app-text)", textDecoration: "underline" }}>{dom}</span>
-        <span className="flex items-center" style={{ gap: 4, fontSize: 13, fontWeight: 700, color: "#10b981" }}>
-          {score} <ChevronDown style={{ width: 14, height: 14, color: muted }} />
+        <span className="flex items-center" style={{ gap: 8, fontSize: 13, fontWeight: 700, color: green }}>
+          {t("Très fiable", "Highly reliable")} <ChevronDown style={{ width: 14, height: 14, color: muted }} />
         </span>
       </div>
-      <div className="flex items-center" style={{ gap: 6, marginTop: 5 }}>
-        <span style={{ fontSize: 11, fontWeight: 600, color: "var(--app-text)", background: "var(--app-row-strong)", borderRadius: 4, padding: "1.5px 6px" }}>{cat}</span>
-        <span className="flex items-center" style={{ gap: 3, fontSize: 11, fontWeight: 600, color: "#10b981", background: "rgba(16,185,129,0.12)", borderRadius: 4, padding: "1.5px 6px" }}>
-          <Award style={{ width: 11, height: 11 }} /> {t("Registre reconnu", "Recognised registry")}
+      <div className="flex items-center flex-wrap" style={{ gap: 6, marginTop: 4 }}>
+        <span style={{ fontSize: 12, fontWeight: 600, color: "var(--app-text)" }}>{cat}</span>
+        <span className="flex items-center" style={{ gap: 3, fontSize: 11, fontWeight: 600, color: green, background: "rgba(16,185,129,0.1)", borderRadius: 4, padding: "1px 5px" }}>
+          <Award style={{ width: 11, height: 11 }} /> {t("Registre reconnu", "Recognized registry")}
         </span>
       </div>
+    </div>
+  );
+  const card = (n: number) => (
+    <div className="flex items-center justify-between" style={{ borderRadius: 10, padding: 10, background: "var(--app-row)" }}>
+      <span style={{ fontSize: 13, fontWeight: 600, color: "var(--app-text)" }}>{t(`Carte ${n}`, `Card ${n}`)}</span>
+      <span className="flex items-center" style={{ gap: 4, fontSize: 12, fontWeight: 600, color: green }}>
+        <CheckCircle2 style={{ width: 14, height: 14 }} />
+        {t("Confirmée par la source", "Confirmed by the source")}
+        <ChevronDown style={{ width: 14, height: 14, color: muted, marginLeft: 2 }} />
+      </span>
     </div>
   );
   return (
@@ -422,42 +448,73 @@ const AsvSheet: React.FC<{ t: (fr: string, en: string) => string; open?: boolean
       >
         <div className="mx-auto" style={{ width: 36, height: 4, borderRadius: 2, background: "var(--app-handle)", margin: "10px auto 8px" }} />
         <div style={{ padding: "14px 20px", borderBottom: "0.5px solid var(--app-border)" }}>
-          <div className="flex items-center" style={{ gap: 10 }}>
+          <div className="flex items-center" style={{ gap: 8 }}>
             <AsvTile size={20} />
-            <span className="flex-1" style={{ fontFamily: "Platypi, serif", fontWeight: 700, fontSize: 18, color: "var(--app-text)" }}>
+            {/* adjustsFontSizeToFit dans l'app : une seule ligne, corps réduit */}
+            <span className="flex-1 whitespace-nowrap overflow-hidden" style={{ fontFamily: "Platypi, serif", fontWeight: 700, fontSize: 16, color: "var(--app-text)" }}>
               Actuworld Source Vérification
             </span>
-            <span style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", color: "#8b5cf6", background: "rgba(139,92,246,0.15)", borderRadius: 6, padding: "2px 7px" }}>
+            <span style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: 0.5, color: "#8b5cf6", background: "rgba(139,92,246,0.15)", borderRadius: 6, padding: "2px 7px" }}>
               {t("Bêta", "Beta")}
             </span>
           </div>
-          <div className="text-center" style={{ fontSize: 12, fontStyle: "italic", color: muted, marginTop: 10, lineHeight: 1.4 }}>
+          <div className="text-center" style={{ fontSize: 12, fontStyle: "italic", color: muted, marginTop: 8, lineHeight: 1.4 }}>
             {t(
-              "Cette analyse évalue la qualité et la cohérence des sources citées, pas la véracité du contenu.",
-              "This analysis rates the quality and consistency of the cited sources, not whether the content is true."
+              "Cette analyse évalue la qualité et la cohérence des sources citées — pas la véracité du contenu.",
+              "This score assesses the quality and consistency of the cited sources — not the truthfulness of the content."
             )}
           </div>
         </div>
-        <div className="flex flex-col" style={{ padding: 16, gap: 12 }}>
-          {row(<Link2 style={{ width: 16, height: 16 }} />, t("Sources accessibles", "Accessible sources"), <span style={{ color: "var(--app-text)" }}>2/2</span>, t(`Éditeurs identifiables${NB}: fiabilité moyenne 9/10`, "Identifiable publishers: average reliability 9/10"))}
-          {src("reunion-parcnational.fr", "9/10", "Institution")}
-          {src("ign.fr", "9/10", "Institution")}
-          {row(<ShieldCheck style={{ width: 16, height: 16 }} />, t("Fidélité aux sources", "Faithfulness to sources"), <span style={{ color: "#10b981" }}>{t("Fidèle à ses sources", "Faithful to its sources")}</span>, t("2/2 sources cohérentes avec le post.", "2/2 sources consistent with the post."))}
-          <div className="flex" style={{ gap: 8 }}>
-            <span className="flex-1 flex items-center justify-center" style={{ gap: 5, borderRadius: 10, padding: "10px 0", fontSize: 12, fontWeight: 600, color: "#10b981", background: "rgba(16,185,129,0.08)" }}>
-              <MessageSquareMore style={{ width: 15, height: 15 }} /> {t("Demander une source", "Ask for a source")}
+        <div className="flex flex-col" style={{ padding: 16, gap: 14 }}>
+          {/* Niveau 1 : les sources d'abord, la note Éditeur en sous-lignes */}
+          <div className="flex flex-col" style={{ gap: 14 }}>
+            {row(<Link2 style={{ width: 18, height: 18 }} />, t("Sources accessibles", "Accessible sources"), "2/2", [
+              t("Éditeur(s) identifiable(s)", "Identifiable publisher(s)"),
+              t("2 sources évaluées", "2 sources assessed"),
+            ])}
+            <div className="flex flex-col" style={{ marginLeft: 28, gap: 8 }}>
+              {src("reunion-parcnational.fr", t("Institution publique", "Public institution"))}
+              {src("ign.fr", t("Institution publique", "Public institution"))}
+            </div>
+          </div>
+          {/* Fidélité aux sources : le jugement, preuves carte par carte */}
+          <div className="flex flex-col" style={{ gap: 6 }}>
+            {row(
+              <ShieldCheck style={{ width: 18, height: 18 }} />,
+              t("Fidélité aux sources", "Faithfulness to sources"),
+              t("Fidèle à ses sources", "Faithful to its sources"),
+              [t("2/2 source(s) cohérente(s) avec le post.", "2/2 source(s) consistent with the post.")],
+              green
+            )}
+            <div className="flex flex-col" style={{ marginLeft: 28, gap: 6 }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: muted }}>{t("Carte par carte", "Card by card")}</span>
+              {card(1)}
+              {card(2)}
+            </div>
+          </div>
+          {/* Actions utilisateur */}
+          <div className="flex" style={{ gap: 10, marginTop: 4 }}>
+            <span className="flex-1 flex items-center justify-center" style={{ gap: 5, borderRadius: 10, padding: "10px 8px", fontSize: 12, fontWeight: 600, color: green, background: "rgba(16,185,129,0.08)" }}>
+              <MessageSquareMore style={{ width: 15, height: 15 }} /> {t("Demander une source", "Request a source")}
             </span>
-            <span className="flex-1 flex items-center justify-center" style={{ gap: 5, borderRadius: 10, padding: "10px 0", fontSize: 12, fontWeight: 600, color: "#f59e0b", background: "rgba(245,158,11,0.08)" }}>
+            <span className="flex-1 flex items-center justify-center" style={{ gap: 5, borderRadius: 10, padding: "10px 8px", fontSize: 12, fontWeight: 600, color: "#f59e0b", background: "rgba(245,158,11,0.08)" }}>
               <Flag style={{ width: 15, height: 15 }} /> {t("Signaler l'analyse", "Report analysis")}
             </span>
           </div>
-          <div className="flex items-center" style={{ gap: 8, fontSize: 14, fontWeight: 600, color: "var(--app-text)" }}>
-            <HelpCircle style={{ width: 16, height: 16, color: muted }} />
-            <span className="flex-1">{t("Pourquoi ce score ?", "Why this score?")}</span>
+          {/* Niveau 2 : « Pourquoi ce score ? », replié */}
+          <div className="flex items-center justify-between" style={{ padding: "8px 0", borderTop: "0.5px solid var(--app-border)" }}>
+            <span className="flex items-center" style={{ gap: 6, fontSize: 14, fontWeight: 600, color: "var(--app-text)" }}>
+              <HelpCircle style={{ width: 16, height: 16, color: muted }} />
+              {t("Pourquoi ce score ?", "Why this score?")}
+            </span>
             <ChevronDown style={{ width: 16, height: 16, color: muted }} />
           </div>
+          <div className="flex items-center justify-center" style={{ gap: 6, padding: "4px 0", fontSize: 12, fontWeight: 600, color: "var(--app-primary)", textDecoration: "underline" }}>
+            <BookOpen style={{ width: 14, height: 14 }} />
+            {t("Comment marche ASV ?", "How does ASV work?")}
+          </div>
         </div>
-        <div className="text-center" style={{ margin: "4px 20px 0", padding: "14px 0", borderRadius: 12, background: "var(--app-row-strong)", fontSize: 15, fontWeight: 600, color: "var(--app-text)" }}>
+        <div className="text-center" style={{ margin: "12px 20px 0", padding: "14px 0", borderRadius: 12, border: "0.5px solid var(--app-border)", background: "var(--app-row-strong)", fontSize: 15, fontWeight: 600, color: "var(--app-text)" }}>
           {t("Fermer", "Close")}
         </div>
       </div>

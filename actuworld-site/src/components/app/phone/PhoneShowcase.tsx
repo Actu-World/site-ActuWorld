@@ -34,8 +34,8 @@ export const PhoneShowcase: React.FC<{ width?: number }> = ({ width = 300 }) => 
 
   const hints = [
     t("La dépêche, telle qu'elle apparaît dans La Une.", "The dispatch, as it appears on the Front page."),
-    t("En glissant : les sources citées et ton vote Fiable ou Douteuse.", "Swipe: the cited sources and your Reliable or Doubtful vote."),
-    t("Chaque source s'ouvre : tu lis le texte d'origine et tu te fais ton avis.", "Every source opens: read the original and make up your own mind."),
+    t("En glissant : la source de cette carte et ton vote Fiable ou Douteuse.", "Swipe: this card's source and your Reliable or Doubtful vote."),
+    t("La source s'ouvre : tu lis le texte d'origine et tu te fais ton avis.", "The source opens: read the original and make up your own mind."),
     t("En touchant le badge ASV : le détail de l'analyse des sources.", "Tap the ASV badge: the full source analysis."),
   ];
 
