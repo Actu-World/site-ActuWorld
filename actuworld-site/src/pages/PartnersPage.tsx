@@ -5,6 +5,7 @@ import { H2 } from "../components/H2";
 import { PageMeta } from "../components/PageMeta";
 import { PageWrapper, AnimatedSection } from "../components/animations";
 import { useLanguage } from "../i18n/LanguageContext";
+import { EpitechLogo } from "../components/EpitechLogo";
 
 const PARTNER_EMAIL = "actuworld.app@outlook.fr";
 const MAILTO = `mailto:${PARTNER_EMAIL}?subject=${encodeURIComponent("Partenariat ActuWorld")}`;
@@ -145,21 +146,31 @@ export default function PartnersPage() {
       <Section className="md:border-t md:border-[var(--aw-border)] py-4 md:py-16">
         <AnimatedSection className="flex flex-col items-center gap-6 rounded-[var(--aw-radius-card)] border border-[var(--aw-border)] p-6 md:p-0 md:rounded-none md:border-0 md:flex-row md:justify-between md:gap-8">
           <h2 className="text-xl text-aw-text">{t("Ils suivent déjà le projet", "Already following the project")}</h2>
-          <a
-            href="https://territoires.media"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-lg opacity-80 grayscale hover:opacity-100 hover:grayscale-0"
-          >
-            <img
-              src="/partners/territoires-media.png"
-              alt="Territoire(s) Média"
-              width={1500}
-              height={289}
-              loading="lazy"
-              className="h-10 md:h-12 w-auto object-contain dark:bg-white dark:rounded-md dark:px-2 dark:py-1"
-            />
-          </a>
+          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-5">
+            <a
+              href="https://territoires.media"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center rounded-lg bg-[var(--aw-surface)] px-4 py-2.5 transition-[background-color,box-shadow] duration-300 hover:shadow-[var(--aw-shadow-sm)]"
+            >
+              <img
+                src="/partners/territoires-media.png"
+                alt="Territoire(s) Média"
+                width={1500}
+                height={289}
+                loading="lazy"
+                className="h-7 md:h-8 w-auto object-contain dark:invert"
+              />
+            </a>
+            <a
+              href="https://www.epitech.eu"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center rounded-lg bg-[var(--aw-surface)] px-4 py-2.5 transition-[background-color,box-shadow] duration-300 hover:shadow-[var(--aw-shadow-sm)] text-[#0091D3]"
+            >
+              <EpitechLogo className="h-7 md:h-8 w-auto" />
+            </a>
+          </div>
         </AnimatedSection>
       </Section>
 

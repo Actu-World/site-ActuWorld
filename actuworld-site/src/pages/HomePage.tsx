@@ -9,6 +9,7 @@ import { PageWrapper, AnimatedSection, staggerContainer, fadeInUp } from "../com
 import { WaitlistForm } from "../components/ui/WaitlistForm";
 import { Tooltip } from "../components/ui/Tooltip";
 import { LogoMark } from "../components/LogoMark";
+import { EpitechLogo } from "../components/EpitechLogo";
 import { useLanguage } from "../i18n/LanguageContext";
 
 const NB = " "; // espace insécable (typographie française)
@@ -281,20 +282,30 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto container-px">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-5 sm:gap-6 rounded-[var(--aw-radius-card)] border border-[var(--aw-border)] p-6 sm:rounded-none sm:border-0 sm:p-0">
           <p className="text-sm font-semibold text-aw-muted">{t("Ils suivent le projet", "Following the project")}</p>
-          <a
-            href="https://territoires.media"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="grayscale hover:grayscale-0 opacity-80 hover:opacity-100 transition-[filter,opacity] duration-300 rounded-lg"
-          >
-            <img
-              src="/partners/territoires-media.png"
-              alt="Territoire(s) Média"
-              className="h-10 w-auto object-contain dark:bg-white dark:rounded-md dark:px-2 dark:py-1"
-              loading="lazy"
-              height={40}
-            />
-          </a>
+          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-5">
+            <a
+              href="https://territoires.media"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center rounded-lg bg-[var(--aw-surface)] px-4 py-2.5 transition-[background-color,box-shadow] duration-300 hover:shadow-[var(--aw-shadow-sm)]"
+            >
+              <img
+                src="/partners/territoires-media.png"
+                alt="Territoire(s) Média"
+                className="h-7 w-auto object-contain dark:invert"
+                loading="lazy"
+                height={40}
+              />
+            </a>
+            <a
+              href="https://www.epitech.eu"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center rounded-lg bg-[var(--aw-surface)] px-4 py-2.5 transition-[background-color,box-shadow] duration-300 hover:shadow-[var(--aw-shadow-sm)] text-[#0091D3]"
+            >
+              <EpitechLogo className="h-7 w-auto" />
+            </a>
+          </div>
           <Link to="/partenaires" className="btn-link text-[15px]">
             {t("Devenir partenaire", "Become a partner")}
             <ChevronRight className="w-4 h-4" aria-hidden="true" />
