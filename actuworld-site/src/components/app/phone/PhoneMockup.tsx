@@ -312,6 +312,10 @@ const CardBack: React.FC<{ t: (fr: string, en: string) => string; score: number;
           "Deep in the cirques, waterfalls few hikers ever reach. The national park lists dozens of them, some only reachable after hours of walking. Before you go, check trail conditions on the park's website."
         )}
       </div>
+      {/* Crédit de l'image (common/ImageCreditLine.tsx) : dernière ligne du texte */}
+      <div style={{ marginTop: 10, fontSize: 11, lineHeight: "15px", color: "rgba(255,255,255,0.6)" }}>
+        {t("Photo : Maxence Allier", "Photo: Maxence Allier")}
+      </div>
 
       <div className="mt-auto flex flex-col" style={{ gap: 8 }}>
         <div style={{ height: 0.5, background: "rgba(255,255,255,0.12)" }} />
