@@ -117,6 +117,16 @@ describe('sections', () => {
   });
 });
 
+describe('lecture des sources (3.5)', () => {
+  it('dit comment et combien la source a été lue', () => {
+    const src = { url: 'https://www.olympics.com/x', stance: 'supports' as const, source_state: 'readable',
+      read_method: 'wayback+trafilatura', read_chars: 4560, read_at: '2026-11-16T16:30:00+00:00' };
+    expect(sourceLine(src, [], 'fr').reading).toMatch(/^Lue via une copie archivée \(archive\.org\), 4\s?560 caractères, le 16 nov\./);
+    expect(sourceLine({ ...src, read_method: 'pdf' }, [], 'en').reading).toMatch(/^PDF read, 4,560 characters/);
+    expect(sourceLine({ ...src, read_method: 'aucune', read_chars: 0 }, [], 'fr').reading).toBeNull();
+  });
+});
+
 describe('notes', () => {
   it('Éditeur et Fidélité en mots, seuils de RECO-SRC', () => {
     expect(publisherWords({ score: 8, label: '', sources_evaluated: 3 }, 'fr')).toBe('Éditeurs identifiables');

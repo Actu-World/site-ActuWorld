@@ -125,6 +125,25 @@ export function reliabilityWords(score: number, lang: Lang): string {
   return pick(lang, 'Peu fiable', 'Not very reliable');
 }
 
+/** 3.5 : « Lue via une copie archivée (archive.org), 4 560 caractères, le 16 nov. à 17:30 ». */
+export function readingWords(src: CardSource, lang: Lang): string | null {
+  const method = src.read_method ?? '';
+  if (!method || method === 'aucune' || !src.read_chars) return null;
+  const how = method.includes('wayback')
+    ? pick(lang, 'Lue via une copie archivée (archive.org)', 'Read from an archived copy (archive.org)')
+    : method.includes('pdf_ocr') ? pick(lang, 'PDF scanné, transcrit', 'Scanned PDF, transcribed')
+    : method.includes('pdf') ? pick(lang, 'PDF lu', 'PDF read')
+    : method.includes('legifrance') ? pick(lang, 'Texte officiel lu (Légifrance)', 'Official text read (Légifrance)')
+    : method.includes('headless') ? pick(lang, 'Lue dans un navigateur', 'Read in a browser')
+    : pick(lang, 'Page lue', 'Page read');
+  const locale = lang === 'en' ? 'en-GB' : 'fr-FR';
+  const chars = pick(lang, `${src.read_chars.toLocaleString(locale)} caractères`, `${src.read_chars.toLocaleString(locale)} characters`);
+  const when = src.read_at
+    ? new Date(src.read_at).toLocaleString(locale, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+    : null;
+  return [how, chars, when && pick(lang, `le ${when}`, `on ${when}`)].filter(Boolean).join(', ');
+}
+
 export type SourceLine = {
   url: string;
   domain: string;
@@ -134,6 +153,7 @@ export type SourceLine = {
   quote: string | null;
   explanation: string | null;
   publisher: string | null;
+  reading: string | null;
 };
 
 export function sourceLine(src: CardSource, checks: SourceCheck[], lang: Lang, explanationsLocale = 'fr'): SourceLine {
@@ -155,6 +175,7 @@ export function sourceLine(src: CardSource, checks: SourceCheck[], lang: Lang, e
     // 3.1 : affichée seulement si le modèle l'a écrite dans la langue du lecteur.
     explanation: explanationsLocale === lang && read && src.explanation ? src.explanation : null,
     publisher,
+    reading: readingWords(src, lang),
   };
 }
 
@@ -368,6 +389,7 @@ export function toMarkdown(detail: ProVerificationDetail, lang: Lang): string {
       if (line.claim) lines.push(`  - ${pick(lang, 'Le texte dit', 'The text says')} : « ${line.claim} »`);
       if (line.quote) lines.push(`  - ${pick(lang, 'La source dit', 'The source says')} : « ${line.quote} »`);
       if (line.explanation) lines.push(`  - ${line.explanation}`);
+      if (line.reading) lines.push(`  - ${line.reading}`);
       lines.push(`  - ${line.url}`);
     }
     const addLabel = view.partialRead

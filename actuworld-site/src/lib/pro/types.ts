@@ -42,6 +42,10 @@ export type CardSource = {
   explanation?: string;
   card_kind?: CardKind | null;
   additions?: string[];
+  /** 3.5 : comment et quand la source a été lue. */
+  read_method?: string | null;
+  read_chars?: number | null;
+  read_at?: string | null;
 };
 
 export type CardCheck = {

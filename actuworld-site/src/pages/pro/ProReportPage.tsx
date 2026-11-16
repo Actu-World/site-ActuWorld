@@ -94,6 +94,7 @@ function Section({ view, lang }: { view: SectionView; lang: Lang }) {
               </blockquote>
             )}
             {line.explanation && <p className="text-aw-muted mt-2">{line.explanation}</p>}
+            {line.reading && <p className="caption text-aw-muted mt-2">{line.reading}</p>}
           </li>
         ))}
       </ul>
