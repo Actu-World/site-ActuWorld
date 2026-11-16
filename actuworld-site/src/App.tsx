@@ -28,6 +28,7 @@ const ChildSafetyPage = lazy(() => import('./pages/ChildSafetyPage'));
 const OpenInAppPage = lazy(() => import('./pages/OpenInAppPage'));
 const WaitlistPage = lazy(() => import('./pages/WaitlistPage'));
 const DownloadPage = lazy(() => import('./pages/DownloadPage'));
+const AsvExtensionLegalPage = lazy(() => import('./pages/AsvExtensionLegalPage'));
 const StudioLoginPage = lazy(() => import('./pages/studio/StudioLoginPage'));
 const StudioEditorPage = lazy(() => import('./pages/studio/StudioEditorPage'));
 const StudioPostPage = lazy(() => import('./pages/studio/StudioPostPage'));
@@ -96,6 +97,7 @@ export default function App() {
             <Route path="/press" element={<PressPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/mentions-legales" element={<LegalNoticePage />} />
+            <Route path="/extension-asv" element={<AsvExtensionLegalPage />} />
             <Route path="/suppression-compte" element={<AccountDeletionPage />} />
             <Route path="/securite-enfants" element={<ChildSafetyPage />} />
             <Route path="/child-safety" element={<ChildSafetyPage />} />
