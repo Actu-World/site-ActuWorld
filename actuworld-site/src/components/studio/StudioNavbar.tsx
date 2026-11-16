@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Sun, Moon, ArrowLeft, Newspaper } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../hooks/useTheme';
@@ -16,13 +16,15 @@ export const StudioNavbar: React.FC = () => {
   const { language, setLanguage, isEnglish } = useLanguage();
   // Lien « Rédaction » : modérateurs uniquement (la page et l'API le vérifient aussi).
   const { access } = useStudioAccessFromSession();
+  // Même barre pour ASV Pro (/pro) : badge et lien d'accueil propres.
+  const isPro = useLocation().pathname.startsWith('/pro');
 
   return (
-    <header className="sticky top-0 z-40 glass border-b border-aw" role="banner">
+    <header className="sticky top-0 z-40 glass border-b border-aw print:hidden" role="banner">
       <div className="max-w-7xl mx-auto container-px h-16 flex items-center justify-between">
         <Link
-          to="/studio/editeur"
-          aria-label="ActuWorld Studio"
+          to={isPro ? '/pro/verifier' : '/studio/editeur'}
+          aria-label={isPro ? 'ASV Pro' : 'ActuWorld Studio'}
           className="inline-flex items-center gap-2 min-w-0 shrink"
         >
           {/* Le wordmark « ActuWorld » est masqué sous sm : sur mobile on garde
@@ -32,13 +34,13 @@ export const StudioNavbar: React.FC = () => {
             className="px-2 py-0.5 rounded-md text-[11px] font-bold tracking-[1.5px] uppercase bg-aw-primary text-on-primary shrink-0"
             style={{ fontFamily: '"Platypi", Georgia, serif' }}
           >
-            Studio
+            {isPro ? 'ASV Pro' : 'Studio'}
           </span>
         </Link>
 
         <div className="flex items-center gap-2 shrink-0">
           {/* Plan éditorial des comptes officiels (réservé aux modérateurs) */}
-          {access.moderator && (
+          {access.moderator && !isPro && (
             <Link
               to="/studio/redaction"
               className="inline-flex items-center gap-1.5 text-sm text-aw-muted hover:text-aw-primary transition-colors mr-1"

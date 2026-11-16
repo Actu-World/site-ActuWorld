@@ -29,6 +29,12 @@ const OpenInAppPage = lazy(() => import('./pages/OpenInAppPage'));
 const WaitlistPage = lazy(() => import('./pages/WaitlistPage'));
 const DownloadPage = lazy(() => import('./pages/DownloadPage'));
 const AsvExtensionLegalPage = lazy(() => import('./pages/AsvExtensionLegalPage'));
+const ProLoginPage = lazy(() => import('./pages/pro/ProLoginPage'));
+const ProVerifyPage = lazy(() => import('./pages/pro/ProVerifyPage'));
+const ProReportPage = lazy(() => import('./pages/pro/ProReportPage'));
+const ProHistoryPage = lazy(() => import('./pages/pro/ProHistoryPage'));
+const ProSourcesPage = lazy(() => import('./pages/pro/ProSourcesPage'));
+const ProAccountPage = lazy(() => import('./pages/pro/ProAccountPage'));
 const StudioLoginPage = lazy(() => import('./pages/studio/StudioLoginPage'));
 const StudioEditorPage = lazy(() => import('./pages/studio/StudioEditorPage'));
 const StudioPostPage = lazy(() => import('./pages/studio/StudioPostPage'));
@@ -62,7 +68,8 @@ export default function App() {
 
   // Environnement Studio : navbar dédiée, pas de footer ni d'habillage
   // « site vitrine » (retour en haut, bandeau de lancement).
-  const isStudio = location.pathname === '/studio' || location.pathname.startsWith('/studio/');
+  // ASV Pro (/pro) partage cet environnement : même session, même barre.
+  const isStudio = ['/studio', '/pro'].some((p) => location.pathname === p || location.pathname.startsWith(`${p}/`));
 
   // Initialize Google Analytics
   useGoogleAnalytics();
@@ -116,6 +123,12 @@ export default function App() {
             <Route path="/studio/editeur" element={<StudioEditorPage />} />
             <Route path="/studio/post" element={<StudioPostPage />} />
             <Route path="/studio/redaction" element={<StudioRedactionPage />} />
+            <Route path="/pro" element={<ProLoginPage />} />
+            <Route path="/pro/verifier" element={<ProVerifyPage />} />
+            <Route path="/pro/rapport/:id" element={<ProReportPage />} />
+            <Route path="/pro/historique" element={<ProHistoryPage />} />
+            <Route path="/pro/sources" element={<ProSourcesPage />} />
+            <Route path="/pro/compte" element={<ProAccountPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </AnimatePresence>
