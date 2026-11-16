@@ -136,7 +136,7 @@ export type SourceLine = {
   publisher: string | null;
 };
 
-export function sourceLine(src: CardSource, checks: SourceCheck[], lang: Lang): SourceLine {
+export function sourceLine(src: CardSource, checks: SourceCheck[], lang: Lang, explanationsLocale = 'fr'): SourceLine {
   const stance: StanceKey = STANCES.includes(src.stance as Stance) ? (src.stance as Stance) : 'unverifiable';
   const read = isRead(src.source_state);
   const quote = src.source_quote?.trim();
@@ -152,8 +152,8 @@ export function sourceLine(src: CardSource, checks: SourceCheck[], lang: Lang): 
     state: read && src.source_state !== 'paywall' && src.source_state !== 'paywall_partial' ? null : stateWords(src.source_state, lang),
     claim: stance === 'contradicts' && claim ? claim : null,
     quote: read && quote && src.quote_grounded !== false ? quote : null,
-    // Le modèle explique en français (tâche 3.1 à venir) : masqué en anglais.
-    explanation: lang === 'fr' && read && src.explanation ? src.explanation : null,
+    // 3.1 : affichée seulement si le modèle l'a écrite dans la langue du lecteur.
+    explanation: explanationsLocale === lang && read && src.explanation ? src.explanation : null,
     publisher,
   };
 }
@@ -191,7 +191,9 @@ export type SectionView = {
 
 const isPartial = (state?: string | null) => state === 'paywall' || state === 'paywall_partial';
 
-export function sectionViews(input: ProInput, cards: CardCheck[] | undefined, checks: SourceCheck[] | undefined, lang: Lang): SectionView[] {
+export function sectionViews(
+  input: ProInput, cards: CardCheck[] | undefined, checks: SourceCheck[] | undefined, lang: Lang, explanationsLocale = 'fr',
+): SectionView[] {
   return input.sections.map((section, index) => {
     const card = (cards ?? []).find((c) => c.index === index);
     return {
@@ -201,7 +203,7 @@ export function sectionViews(input: ProInput, cards: CardCheck[] | undefined, ch
       segments: highlightAdditions(section.text, card),
       additions: cardAdditions(card),
       partialRead: (card?.sources ?? []).some((s) => isPartial(s.source_state)),
-      lines: (card?.sources ?? []).map((s) => sourceLine(s, checks ?? [], lang)),
+      lines: (card?.sources ?? []).map((s) => sourceLine(s, checks ?? [], lang, explanationsLocale)),
     };
   });
 }
@@ -339,7 +341,7 @@ export function reviewEmpty(lang: Lang): string {
 
 export function toMarkdown(detail: ProVerificationDetail, lang: Lang): string {
   const v = detail.result?.verification;
-  const views = sectionViews(detail.input, v?.cards, v?.sources_check, lang);
+  const views = sectionViews(detail.input, v?.cards, v?.sources_check, lang, v?.explanations_locale);
   const date = new Date(detail.finished_at ?? detail.created_at).toLocaleString(lang === 'en' ? 'en-GB' : 'fr-FR');
   const lines: string[] = [
     `# ${detail.input.title}`,

@@ -56,9 +56,11 @@ describe('sections', () => {
     expect(line.state).toBe('Accès refusé à la lecture automatique');
   });
 
-  it("masque l'explication du modèle (en français) quand la page est en anglais", () => {
+  it("n'affiche une explication que si le modèle l'a écrite dans la langue du lecteur (3.1)", () => {
     expect(sourceLine(cards[0].sources[0], [], 'en').explanation).toBeNull();
     expect(sourceLine(cards[0].sources[0], [], 'fr').explanation).toBe('Confirme.');
+    expect(sourceLine(cards[0].sources[0], [], 'en', 'en').explanation).toBe('Confirme.');
+    expect(sourceLine(cards[0].sources[0], [], 'fr', 'en').explanation).toBeNull();
   });
 
   it("surligne les ajouts de l'auteur seulement sur une carte mixte", () => {

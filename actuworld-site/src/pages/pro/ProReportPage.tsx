@@ -142,7 +142,7 @@ function Report({ id }: { id: string }) {
   const pending = detail.status === 'pending';
   const status = detail.status === 'failed' && !v ? 'failed' : v?.status ?? (pending ? null : detail.verdict_status);
   const tone = TONE_COLOR[verdictTone(status, opinionSourced)];
-  const views = sectionViews(detail.input, v?.cards, v?.sources_check, lang);
+  const views = sectionViews(detail.input, v?.cards, v?.sources_check, lang, v?.explanations_locale);
   const alerts = (v?.alerts_i18n ?? []).map((a) => alertWords(a, lang)).filter((x): x is string => !!x);
   const review = v ? reviewItems(views, lang) : [];
   const llmDown = detail.result?.llm?.status && detail.result.llm.status !== 'ok';

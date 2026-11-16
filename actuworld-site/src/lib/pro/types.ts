@@ -13,7 +13,7 @@ export type ProAccess = {
 
 export type ProSourceInput = { url: string; title?: string };
 export type ProSectionInput = { text: string; sources: ProSourceInput[] };
-export type ProInput = { title: string; sections: ProSectionInput[] };
+export type ProInput = { title: string; sections: ProSectionInput[]; locale?: 'fr' | 'en' | 'es' | 'zh' };
 
 export type ProStatus = 'pending' | 'done' | 'failed';
 
@@ -94,6 +94,8 @@ export type Verification = {
   sources_check?: SourceCheck[];
   alerts_i18n?: Alert[];
   cards?: CardCheck[];
+  /** 3.1 : langue dans laquelle le modèle a écrit ses explications. */
+  explanations_locale?: string;
 };
 
 export type VerificationResult = {

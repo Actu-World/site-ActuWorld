@@ -141,6 +141,8 @@ function VerifyForm({ access }: { access: ProAccess }) {
     setSending(true);
     setError(null);
     const input: ProInput = {
+      // 3.1 : le modèle écrit ses explications dans la langue du site.
+      locale: isEnglish ? 'en' : 'fr',
       title: draft.title.trim(),
       sections: draft.sections.map((s) => ({
         text: s.text.trim(),
