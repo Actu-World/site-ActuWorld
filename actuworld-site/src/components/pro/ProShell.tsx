@@ -37,7 +37,7 @@ export function ProShell({ title, path, children }: Props) {
 
   return (
     <div className="max-w-5xl mx-auto container-px py-8 sm:py-10">
-      <PageMeta title={`${title} | ASV Pro`} description={t('ASV Pro : vérifier un texte et ses sources.', 'ASV Pro: check a text and its sources.')} path={path} />
+      <PageMeta title={`${title} | ASV Pro`} description={t('ASV Pro : vérifier un texte et ses sources.', 'ASV Pro: check a text and its sources.')} path={path} noindex />
       <nav aria-label="ASV Pro" className="print:hidden flex gap-1 overflow-x-auto border-b border-aw mb-8 -mx-1">
         {links.map((l) => (
           <NavLink

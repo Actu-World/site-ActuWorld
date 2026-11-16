@@ -1,5 +1,5 @@
 import { studioApi } from '../studio/api';
-import type { ProAccess, ProInput, ProVerificationDetail, ProVerificationSummary, UrlCredibility } from './types';
+import type { ProAccess, ProInput, ProVerificationDetail, ProVerificationSummary, ReportData, UrlCredibility } from './types';
 
 // ASV Pro — appels à /api/pro. Même client que le Studio (jeton Supabase,
 // renouvellement sur 401) ; les lectures renvoient `{ data }`.
@@ -25,6 +25,16 @@ export const proApi = {
 
   rerun: (id: string) =>
     studioApi.post<Envelope<{ id: string }>>(`/pro/verifications/${encodeURIComponent(id)}/rerun`).then((r) => r.data.id),
+
+  /** 3.8 : crée (ou rend) le jeton du lien de lecture seule. */
+  share: (id: string) =>
+    studioApi.post<Envelope<{ token: string }>>(`/pro/verifications/${encodeURIComponent(id)}/share`).then((r) => r.data.token),
+
+  unshare: (id: string) => studioApi.delete<{ success: boolean }>(`/pro/verifications/${encodeURIComponent(id)}/share`),
+
+  /** Lecture publique, sans compte. */
+  shared: (token: string) =>
+    studioApi.get<Envelope<ReportData>>(`/pro/shared/${encodeURIComponent(token)}`).then((r) => r.data),
 
   checkUrls: (urls: string[]) =>
     studioApi.post<Envelope<UrlCredibility[]>>('/pro/urls', { urls }).then((r) => r.data),

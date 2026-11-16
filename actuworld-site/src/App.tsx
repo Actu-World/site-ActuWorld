@@ -35,6 +35,7 @@ const ProReportPage = lazy(() => import('./pages/pro/ProReportPage'));
 const ProHistoryPage = lazy(() => import('./pages/pro/ProHistoryPage'));
 const ProSourcesPage = lazy(() => import('./pages/pro/ProSourcesPage'));
 const ProAccountPage = lazy(() => import('./pages/pro/ProAccountPage'));
+const ProSharedPage = lazy(() => import('./pages/pro/ProSharedPage'));
 const StudioLoginPage = lazy(() => import('./pages/studio/StudioLoginPage'));
 const StudioEditorPage = lazy(() => import('./pages/studio/StudioEditorPage'));
 const StudioPostPage = lazy(() => import('./pages/studio/StudioPostPage'));
@@ -129,6 +130,7 @@ export default function App() {
             <Route path="/pro/historique" element={<ProHistoryPage />} />
             <Route path="/pro/sources" element={<ProSourcesPage />} />
             <Route path="/pro/compte" element={<ProAccountPage />} />
+            <Route path="/pro/r/:token" element={<ProSharedPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </AnimatePresence>

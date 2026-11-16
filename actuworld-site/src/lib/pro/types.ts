@@ -112,7 +112,12 @@ export type ProVerificationDetail = ProVerificationSummary & {
   input: ProInput;
   result: VerificationResult | null;
   reverify_count: number;
+  /** 3.8 : jeton du lien de lecture seule, null si non partagé. */
+  share_token?: string | null;
 };
+
+/** Ce qu'il faut pour afficher un rapport (privé ou partagé en lecture seule). */
+export type ReportData = Pick<ProVerificationDetail, 'input' | 'result' | 'status' | 'verdict_status' | 'created_at' | 'finished_at'>;
 
 export type UrlCredibility = {
   url: string;

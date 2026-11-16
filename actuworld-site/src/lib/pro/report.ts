@@ -5,7 +5,7 @@
 
 import type {
   Alert, CardCheck, CardKind, CardSource, FaithfulnessNote, ProInput, ProSectionInput,
-  ProVerificationDetail, PublisherNote, SourceCheck, Stance,
+  PublisherNote, ReportData, SourceCheck, Stance,
 } from './types';
 
 export type Lang = 'fr' | 'en';
@@ -360,7 +360,7 @@ export function reviewEmpty(lang: Lang): string {
 
 // ── Export Markdown ───────────────────────────────────────────────────────────
 
-export function toMarkdown(detail: ProVerificationDetail, lang: Lang): string {
+export function toMarkdown(detail: ReportData, lang: Lang): string {
   const v = detail.result?.verification;
   const views = sectionViews(detail.input, v?.cards, v?.sources_check, lang, v?.explanations_locale);
   const date = new Date(detail.finished_at ?? detail.created_at).toLocaleString(lang === 'en' ? 'en-GB' : 'fr-FR');
