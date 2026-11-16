@@ -224,6 +224,13 @@ export function publisherWords(note: PublisherNote | undefined, lang: Lang): str
 export function faithfulnessWords(note: FaithfulnessNote | undefined, lang: Lang): string {
   if (!note || !note.available) {
     if (note?.opinion_only) return pick(lang, "Avis de l'auteur", "Author's opinion");
+    // 3.9 : RECO-SRC sépare les sources illisibles de celles lues sans le fait.
+    const unreadable = note?.unreadable_count ?? 0;
+    const notFound = note?.not_found_count ?? 0;
+    if (notFound > 0 && unreadable === 0) {
+      return pick(lang, 'Non établie : les sources lues ne contiennent pas ces faits', 'Not established: the sources read do not contain these facts');
+    }
+    if (notFound > 0) return pick(lang, 'Non établie : sources illisibles ou sans ces faits', 'Not established: sources unreadable or without these facts');
     if ((note?.stance_counts?.unverifiable ?? 0) > 0) return pick(lang, 'Non établie : sources illisibles', 'Not established: unreadable sources');
     return pick(lang, 'Non vérifiée', 'Not verified');
   }

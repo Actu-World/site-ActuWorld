@@ -120,6 +120,8 @@ describe('notes', () => {
     expect(publisherWords({ score: 8, label: '', sources_evaluated: 3 }, 'fr')).toBe('Éditeurs identifiables');
     expect(publisherWords({ score: 5.5, label: 'Non applicable', sources_evaluated: 0 }, 'fr')).toBe('Non applicable (réseaux sociaux, vidéos)');
     expect(faithfulnessWords({ available: false, stance_counts: { unverifiable: 2 } }, 'fr')).toBe('Non établie : sources illisibles');
+    expect(faithfulnessWords({ available: false, stance_counts: { unverifiable: 1 }, unreadable_count: 0, not_found_count: 1 }, 'fr'))
+      .toBe('Non établie : les sources lues ne contiennent pas ces faits');
     expect(faithfulnessWords({ available: true, score: 9, stance_counts: { contradicts: 1 } }, 'fr')).toBe('Déforme ses sources');
   });
 });

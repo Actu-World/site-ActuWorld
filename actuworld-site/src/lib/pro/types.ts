@@ -78,6 +78,9 @@ export type FaithfulnessNote = {
   stance_counts?: Record<string, number>;
   opinion_only?: boolean;
   opinion_sourced?: boolean;
+  /** 3.9 : sources non lues, et sources lues qui ne contiennent pas le fait. */
+  unreadable_count?: number;
+  not_found_count?: number;
 };
 
 export type Alert = { code: string; params?: Record<string, unknown> };
