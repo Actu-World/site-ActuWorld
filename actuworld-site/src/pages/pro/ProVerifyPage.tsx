@@ -1,20 +1,19 @@
 import { useEffect, useState } from 'react';
-import type { FormEvent } from 'react';
+import type { ClipboardEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Trash2, Scissors, Send, Loader2 } from 'lucide-react';
+import { ClipboardPaste, Link2Off, Loader2, Plus, Send, Trash2 } from 'lucide-react';
 import { ProShell } from '../../components/pro/ProShell';
 import { AsvReadabilityHint } from '../../components/studio/AsvReadabilityHint';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { proApi } from '../../lib/pro/api';
 import type { ProAccess, ProInput } from '../../lib/pro/types';
-import { MAX_SECTIONS, SECTION_MAX, splitIntoSections, type DraftSection } from '../../lib/pro/draft';
+import {
+  draftProblems, isUrl, MAX_DISTINCT_SOURCES, MAX_SECTIONS, MAX_SOURCES, SECTION_MAX, TITLE_MAX,
+  type Draft, type DraftSection,
+} from '../../lib/pro/draft';
+import { distinctSources, parsePastedHtml, parsePastedText, type PasteResult } from '../../lib/pro/paste';
 
-// Bornes identiques à l'API (utils/proInput.ts).
-const TITLE_MAX = 200;
-const MAX_SOURCES = 3;
-const DRAFT_KEY = 'aw_pro_draft_v1';
-
-type Draft = { title: string; sections: DraftSection[] };
+const DRAFT_KEY = 'aw_pro_draft_v2';
 
 const emptySection = (): DraftSection => ({ text: '', sources: [''] });
 const emptyDraft = (): Draft => ({ title: '', sections: [emptySection()] });
@@ -30,13 +29,80 @@ function loadDraft(): Draft {
   }
 }
 
-function isUrl(value: string): boolean {
-  try {
-    const u = new URL(value.trim());
-    return u.protocol === 'http:' || u.protocol === 'https:';
-  } catch {
-    return false;
-  }
+/** Zone de collage : le HTML du presse-papiers garde les liens de chaque paragraphe. */
+function PasteArticle({ onUse }: { onUse: (r: PasteResult) => void }) {
+  const { isEnglish } = useLanguage();
+  const t = (fr: string, en: string) => (isEnglish ? en : fr);
+  const [result, setResult] = useState<PasteResult | null>(null);
+  const [plain, setPlain] = useState('');
+
+  const handlePaste = (e: ClipboardEvent<HTMLTextAreaElement>) => {
+    const html = e.clipboardData.getData('text/html');
+    const text = e.clipboardData.getData('text/plain');
+    if (!html && !text) return;
+    e.preventDefault();
+    setPlain(text);
+    setResult(html ? parsePastedHtml(html) : parsePastedText(text));
+  };
+
+  const withLinks = result?.sections.filter((s) => s.sources.length > 0).length ?? 0;
+  const distinct = result ? distinctSources(result.sections) : 0;
+
+  return (
+    <div className="card p-5 space-y-3">
+      <div className="flex items-center gap-2">
+        <ClipboardPaste className="w-5 h-5 text-aw-primary" aria-hidden="true" />
+        <h2 className="text-lg">{t('Coller un article', 'Paste an article')}</h2>
+      </div>
+      <p className="text-sm text-aw-muted max-w-prose">
+        {t(
+          "Copie ton article depuis ton CMS, Google Docs ou Word, avec ses liens, et colle-le ici. Chaque paragraphe devient un passage ; les liens d'un paragraphe sont ses sources.",
+          'Copy your article from your CMS, Google Docs or Word, with its links, and paste it here. Each paragraph becomes a passage; the links in a paragraph are its sources.',
+        )}
+      </p>
+      <textarea
+        className="field min-h-[120px]"
+        value={plain}
+        onPaste={handlePaste}
+        onChange={(e) => {
+          setPlain(e.target.value);
+          setResult(e.target.value.trim() ? parsePastedText(e.target.value) : null);
+        }}
+        aria-label={t("Coller l'article", 'Paste the article')}
+        placeholder={t('Colle ton article ici (Ctrl+V).', 'Paste your article here (Ctrl+V).')}
+      />
+      {result && (
+        <div className="text-sm space-y-2" role="status">
+          <p>
+            {t(
+              `${result.sections.length} passage(s), dont ${withLinks} avec lien, ${distinct} source(s) différente(s).`,
+              `${result.sections.length} passage(s), ${withLinks} with a link, ${distinct} different source(s).`,
+            )}
+          </p>
+          {distinct > MAX_DISTINCT_SOURCES && (
+            <p className="text-red-600">
+              {t(`Plus de ${MAX_DISTINCT_SOURCES} sources différentes : garde une partie de l'article, ou fais deux vérifications.`,
+                `More than ${MAX_DISTINCT_SOURCES} different sources: keep part of the article, or run two checks.`)}
+            </p>
+          )}
+          {result.tooManyLinks.length > 0 && (
+            <p className="text-aw-muted">
+              {t(`Passage(s) ${result.tooManyLinks.join(', ')} : plus de ${MAX_SOURCES} liens, seuls les ${MAX_SOURCES} premiers sont gardés.`,
+                `Passage(s) ${result.tooManyLinks.join(', ')}: more than ${MAX_SOURCES} links, only the first ${MAX_SOURCES} are kept.`)}
+            </p>
+          )}
+          {result.dropped > 0 && (
+            <p className="text-aw-muted">
+              {t(`${result.dropped} paragraphe(s) au-delà de ${MAX_SECTIONS} ne sont pas repris.`, `${result.dropped} paragraph(s) beyond ${MAX_SECTIONS} are left out.`)}
+            </p>
+          )}
+          <button type="button" className="btn-outline btn-sm" disabled={!result.sections.length} onClick={() => { onUse(result); setResult(null); setPlain(''); }}>
+            {t('Utiliser ces passages (remplace le texte ci-dessous)', 'Use these passages (replaces the text below)')}
+          </button>
+        </div>
+      )}
+    </div>
+  );
 }
 
 function VerifyForm({ access }: { access: ProAccess }) {
@@ -44,9 +110,6 @@ function VerifyForm({ access }: { access: ProAccess }) {
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
   const navigate = useNavigate();
   const [draft, setDraft] = useState<Draft>(loadDraft);
-  const [splitOpen, setSplitOpen] = useState(false);
-  const [article, setArticle] = useState('');
-  const [articleSources, setArticleSources] = useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -59,31 +122,18 @@ function VerifyForm({ access }: { access: ProAccess }) {
   }, [draft]);
 
   const remaining = Math.max(access.quota - access.used_this_month, 0);
-
-  // Recalculé à chaque rendu : quelques sections, coût négligeable.
-  const problems = (() => {
-    const list: string[] = [];
-    if (!draft.title.trim()) list.push(t('Donne un titre à ton texte.', 'Give your text a title.'));
-    draft.sections.forEach((s, i) => {
-      if (!s.text.trim()) list.push(t(`Section ${i + 1} : le texte est vide.`, `Section ${i + 1}: the text is empty.`));
-      if (s.text.length > SECTION_MAX) list.push(t(`Section ${i + 1} : trop longue.`, `Section ${i + 1}: too long.`));
-      const urls = s.sources.map((u) => u.trim()).filter(Boolean);
-      if (!urls.length) list.push(t(`Section ${i + 1} : ajoute une source.`, `Section ${i + 1}: add a source.`));
-      if (urls.some((u) => !isUrl(u))) list.push(t(`Section ${i + 1} : une adresse n'est pas valide.`, `Section ${i + 1}: an address is not valid.`));
-    });
-    return list;
-  })();
+  const problems = draftProblems(draft);
+  const distinct = distinctSources(draft.sections.map((s) => ({ ...s, sources: s.sources.filter(isUrl) })));
 
   const update = (fn: (d: Draft) => Draft) => setDraft((d) => fn(d));
   const setSection = (i: number, patch: Partial<DraftSection>) =>
     update((d) => ({ ...d, sections: d.sections.map((s, j) => (j === i ? { ...s, ...patch } : s)) }));
 
-  const applySplit = () => {
-    const sources = articleSources.split(/\s+/).map((s) => s.trim()).filter(isUrl).slice(0, MAX_SOURCES);
-    const sections = splitIntoSections(article, sources.length ? sources : ['']);
-    if (sections.length) update((d) => ({ ...d, sections }));
-    setSplitOpen(false);
-  };
+  const usePasted = (r: PasteResult) =>
+    update((d) => ({
+      title: d.title.trim() ? d.title : r.title ?? '',
+      sections: r.sections.map((s) => ({ text: s.text, sources: s.sources.length ? s.sources : [''] })),
+    }));
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -114,8 +164,8 @@ function VerifyForm({ access }: { access: ProAccess }) {
           <h1 className="text-2xl sm:text-3xl">{t('Vérifier un texte', 'Check a text')}</h1>
           <p className="text-aw-muted mt-1 max-w-prose">
             {t(
-              'Une section = un passage et la ou les sources qui le soutiennent. ASV juge chaque section contre ses propres sources.',
-              'One section = a passage and the source(s) backing it. ASV judges each section against its own sources.',
+              "ASV lit chaque source en entier et juge chaque passage contre ses propres liens. Un passage sans lien est signalé, pas jugé.",
+              'ASV reads each source in full and judges each passage against its own links. A passage without a link is flagged, not judged.',
             )}
           </p>
         </div>
@@ -123,6 +173,8 @@ function VerifyForm({ access }: { access: ProAccess }) {
           {t(`${remaining} vérification(s) restante(s) ce mois-ci`, `${remaining} check(s) left this month`)}
         </p>
       </div>
+
+      <PasteArticle onUse={usePasted} />
 
       <div>
         <label htmlFor="pro-title" className="body-semi block mb-2">{t('Titre', 'Title')}</label>
@@ -136,97 +188,89 @@ function VerifyForm({ access }: { access: ProAccess }) {
         />
       </div>
 
-      <div className="card p-4">
-        <button type="button" className="btn-link text-sm" onClick={() => setSplitOpen((o) => !o)} aria-expanded={splitOpen}>
-          <Scissors className="w-4 h-4" aria-hidden="true" />
-          {t('Coller un article entier et le découper en sections', 'Paste a whole article and split it into sections')}
-        </button>
-        {splitOpen && (
-          <div className="mt-4 space-y-3">
-            <textarea className="field min-h-[160px]" value={article} onChange={(e) => setArticle(e.target.value)}
-              placeholder={t('Colle ton article : chaque paragraphe deviendra une section.', 'Paste your article: each paragraph becomes a section.')} />
-            <input className="field" value={articleSources} onChange={(e) => setArticleSources(e.target.value)}
-              placeholder={t("Adresses des sources de l'article (3 au plus), séparées par des espaces", "The article's source addresses (3 max), separated by spaces")} />
-            <p className="text-xs text-aw-muted">
-              {t('Chaque section reçoit ces sources ; tu pourras ensuite les ajuster section par section. Cela remplace les sections actuelles.',
-                'Each section gets these sources; you can then adjust them section by section. This replaces the current sections.')}
-            </p>
-            <button type="button" className="btn-outline btn-sm" onClick={applySplit} disabled={!article.trim()}>
-              {t('Découper', 'Split')}
-            </button>
-          </div>
-        )}
-      </div>
-
       <ol className="space-y-5">
-        {draft.sections.map((section, i) => (
-          <li key={i} className="card p-5 space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg">{t(`Section ${i + 1}`, `Section ${i + 1}`)}</h2>
-              {draft.sections.length > 1 && (
-                <button type="button" className="text-aw-muted hover:text-red-600 p-1" aria-label={t('Retirer la section', 'Remove section')}
-                  onClick={() => update((d) => ({ ...d, sections: d.sections.filter((_, j) => j !== i) }))}>
-                  <Trash2 className="w-4 h-4" aria-hidden="true" />
-                </button>
-              )}
-            </div>
-            <div>
-              <textarea
-                className="field min-h-[120px]"
-                aria-label={t(`Texte de la section ${i + 1}`, `Section ${i + 1} text`)}
-                value={section.text}
-                maxLength={SECTION_MAX}
-                onChange={(e) => setSection(i, { text: e.target.value })}
-                placeholder={t('Le passage à vérifier.', 'The passage to check.')}
-              />
-              <p className="text-xs text-aw-muted text-right tabular mt-1">{section.text.length} / {SECTION_MAX}</p>
-            </div>
-            <div className="space-y-3">
-              <p className="body-semi text-sm">{t('Sources de cette section', 'Sources for this section')}</p>
-              {section.sources.map((url, k) => (
-                <div key={k}>
-                  <div className="flex gap-2">
-                    <input
-                      className="field"
-                      type="url"
-                      inputMode="url"
-                      aria-label={t(`Source ${k + 1}`, `Source ${k + 1}`)}
-                      value={url}
-                      onChange={(e) => setSection(i, { sources: section.sources.map((u, m) => (m === k ? e.target.value : u)) })}
-                      placeholder="https://"
-                    />
-                    {section.sources.length > 1 && (
-                      <button type="button" className="text-aw-muted hover:text-red-600 px-2" aria-label={t('Retirer la source', 'Remove source')}
-                        onClick={() => setSection(i, { sources: section.sources.filter((_, m) => m !== k) })}>
-                        <Trash2 className="w-4 h-4" aria-hidden="true" />
-                      </button>
-                    )}
-                  </div>
-                  <AsvReadabilityHint url={url} />
+        {draft.sections.map((section, i) => {
+          const hasLink = section.sources.some((u) => u.trim());
+          return (
+            <li key={i} className="card p-5 space-y-4">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-lg">{t(`Passage ${i + 1}`, `Passage ${i + 1}`)}</h2>
+                <div className="flex items-center gap-3">
+                  {!hasLink && (
+                    <span className="inline-flex items-center gap-1 text-xs text-aw-muted">
+                      <Link2Off className="w-3.5 h-3.5" aria-hidden="true" />
+                      {t('Sans lien : signalé, pas jugé', 'No link: flagged, not judged')}
+                    </span>
+                  )}
+                  {draft.sections.length > 1 && (
+                    <button type="button" className="text-aw-muted hover:text-red-600 p-1" aria-label={t('Retirer le passage', 'Remove passage')}
+                      onClick={() => update((d) => ({ ...d, sections: d.sections.filter((_, j) => j !== i) }))}>
+                      <Trash2 className="w-4 h-4" aria-hidden="true" />
+                    </button>
+                  )}
                 </div>
-              ))}
-              {section.sources.length < MAX_SOURCES && (
-                <button type="button" className="btn-link text-sm" onClick={() => setSection(i, { sources: [...section.sources, ''] })}>
-                  <Plus className="w-4 h-4" aria-hidden="true" />
-                  {t('Ajouter une source', 'Add a source')}
-                </button>
-              )}
-            </div>
-          </li>
-        ))}
+              </div>
+              <div>
+                <textarea
+                  className="field min-h-[110px]"
+                  aria-label={t(`Texte du passage ${i + 1}`, `Passage ${i + 1} text`)}
+                  value={section.text}
+                  maxLength={SECTION_MAX}
+                  onChange={(e) => setSection(i, { text: e.target.value })}
+                  placeholder={t('Le passage à vérifier.', 'The passage to check.')}
+                />
+                <p className="text-xs text-aw-muted text-right tabular mt-1">{section.text.length} / {SECTION_MAX}</p>
+              </div>
+              <div className="space-y-3">
+                <p className="body-semi text-sm">{t('Liens de ce passage', 'Links in this passage')}</p>
+                {section.sources.map((url, k) => (
+                  <div key={k}>
+                    <div className="flex gap-2">
+                      <input
+                        className="field"
+                        type="url"
+                        inputMode="url"
+                        aria-label={t(`Lien ${k + 1}`, `Link ${k + 1}`)}
+                        value={url}
+                        onChange={(e) => setSection(i, { sources: section.sources.map((u, m) => (m === k ? e.target.value : u)) })}
+                        placeholder="https://"
+                      />
+                      {section.sources.length > 1 && (
+                        <button type="button" className="text-aw-muted hover:text-red-600 px-2" aria-label={t('Retirer le lien', 'Remove link')}
+                          onClick={() => setSection(i, { sources: section.sources.filter((_, m) => m !== k) })}>
+                          <Trash2 className="w-4 h-4" aria-hidden="true" />
+                        </button>
+                      )}
+                    </div>
+                    <AsvReadabilityHint url={url} />
+                  </div>
+                ))}
+                {section.sources.length < MAX_SOURCES && (
+                  <button type="button" className="btn-link text-sm" onClick={() => setSection(i, { sources: [...section.sources, ''] })}>
+                    <Plus className="w-4 h-4" aria-hidden="true" />
+                    {t('Ajouter un lien', 'Add a link')}
+                  </button>
+                )}
+              </div>
+            </li>
+          );
+        })}
       </ol>
 
       {draft.sections.length < MAX_SECTIONS && (
         <button type="button" className="btn-outline btn-sm" onClick={() => update((d) => ({ ...d, sections: [...d.sections, emptySection()] }))}>
           <Plus className="w-4 h-4" aria-hidden="true" />
-          {t('Ajouter une section', 'Add a section')}
+          {t('Ajouter un passage', 'Add a passage')}
         </button>
       )}
 
       <div className="card p-5 space-y-3">
+        <p className={`text-sm tabular ${distinct > MAX_DISTINCT_SOURCES ? 'text-red-600' : 'text-aw-muted'}`}>
+          {t(`${distinct} / ${MAX_DISTINCT_SOURCES} sources différentes`, `${distinct} / ${MAX_DISTINCT_SOURCES} different sources`)}
+        </p>
         {problems.length > 0 && (
           <ul className="text-sm text-aw-muted list-disc pl-5">
-            {problems.slice(0, 5).map((p) => <li key={p}>{p}</li>)}
+            {problems.slice(0, 5).map((p) => <li key={p.fr}>{isEnglish ? p.en : p.fr}</li>)}
           </ul>
         )}
         {error && <p className="text-sm text-red-600" role="alert">{error}</p>}

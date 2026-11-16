@@ -6,8 +6,8 @@ import { useLanguage } from '../../i18n/LanguageContext';
 import { proApi } from '../../lib/pro/api';
 import type { ProVerificationDetail } from '../../lib/pro/types';
 import {
-  alertWords, faithfulnessWords, publisherWords, sectionViews, stanceTone, stanceWords, synthesis,
-  toMarkdown, TONE_COLOR, verdictTone, verdictWords, type Lang, type SectionView,
+  alertWords, faithfulnessWords, publisherWords, reviewEmpty, reviewItems, sectionViews, stanceTone, stanceWords,
+  synthesis, toMarkdown, TONE_COLOR, verdictTone, verdictWords, type Lang, type SectionView,
 } from '../../lib/pro/report';
 
 const POLL_MS = 3000;
@@ -32,9 +32,9 @@ function ToneDot({ color }: { color: string }) {
 function Section({ view, lang }: { view: SectionView; lang: Lang }) {
   const t = (fr: string, en: string) => (lang === 'en' ? en : fr);
   return (
-    <li className="card p-5 sm:p-6 break-inside-avoid">
+    <li id={`passage-${view.index + 1}`} className="card p-5 sm:p-6 break-inside-avoid scroll-mt-24">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-        <h3 className="text-lg">{t('Section', 'Section')} {view.index + 1}</h3>
+        <h3 className="text-lg">{t('Passage', 'Passage')} {view.index + 1}</h3>
         <span className="inline-flex items-center gap-2 text-sm font-semibold">
           <ToneDot color={TONE_COLOR[stanceTone(view.stance)]} />
           {stanceWords(view.stance, lang)}
@@ -53,7 +53,11 @@ function Section({ view, lang }: { view: SectionView; lang: Lang }) {
       </p>
       {view.additions.length > 0 && (
         <div className="mt-4 text-sm">
-          <p className="body-semi">{t("L'auteur ajoute, sans sa source :", 'The author adds, without a source:')}</p>
+          <p className="body-semi">
+            {view.partialRead
+              ? t('Pas trouvé dans la partie lue de la source (le reste est réservé aux abonnés) :', 'Not found in the part of the source that was read (the rest is for subscribers):')
+              : t("L'auteur ajoute, sans sa source :", 'The author adds, without a source:')}
+          </p>
           <ul className="list-disc pl-5 text-aw-muted mt-1">
             {view.additions.map((a) => <li key={a}>« {a} »</li>)}
           </ul>
@@ -61,7 +65,11 @@ function Section({ view, lang }: { view: SectionView; lang: Lang }) {
       )}
       <ul className="mt-5 space-y-4">
         {view.lines.length === 0 && (
-          <li className="text-sm text-aw-muted">{t('Pas de verdict pour cette section.', 'No verdict for this section.')}</li>
+          <li className="text-sm text-aw-muted">
+            {view.stance === 'none'
+              ? t('Ce passage n’a pas de lien : ASV n’a rien à confronter. Ajoute une source si c’est un fait.', 'This passage has no link: ASV has nothing to check. Add a source if it is a fact.')
+              : t('Pas de verdict pour ce passage.', 'No verdict for this passage.')}
+          </li>
         )}
         {view.lines.map((line) => (
           <li key={line.url} className="border-t border-aw pt-4 text-sm">
@@ -136,6 +144,7 @@ function Report({ id }: { id: string }) {
   const tone = TONE_COLOR[verdictTone(status, opinionSourced)];
   const views = sectionViews(detail.input, v?.cards, v?.sources_check, lang);
   const alerts = (v?.alerts_i18n ?? []).map((a) => alertWords(a, lang)).filter((x): x is string => !!x);
+  const review = v ? reviewItems(views, lang) : [];
   const llmDown = detail.result?.llm?.status && detail.result.llm.status !== 'ok';
   const date = new Date(detail.finished_at ?? detail.created_at).toLocaleString(isEnglish ? 'en-GB' : 'fr-FR', { dateStyle: 'long', timeStyle: 'short' });
 
@@ -186,6 +195,23 @@ function Report({ id }: { id: string }) {
               </p>
             )}
           </>
+        )}
+        {v && (
+          <section className="mt-6 rounded-xl border border-aw p-4 sm:p-5" aria-labelledby="pro-review">
+            <h2 id="pro-review" className="text-base">{t('À reprendre avant publication', 'To fix before publishing')}</h2>
+            {review.length === 0 ? (
+              <p className="text-sm mt-2 inline-flex items-center gap-2"><ToneDot color={TONE_COLOR.green} />{reviewEmpty(lang)}</p>
+            ) : (
+              <ol className="mt-3 space-y-2 text-sm">
+                {review.map((item, i) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <span className="mt-1.5"><ToneDot color={TONE_COLOR[item.tone]} /></span>
+                    <a href={`#passage-${item.passage}`} className="hover:underline">{item.text}</a>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </section>
         )}
         {v && (
           <dl className="grid sm:grid-cols-2 gap-4 mt-6 text-sm">

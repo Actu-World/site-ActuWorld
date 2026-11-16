@@ -64,7 +64,7 @@ export function stanceWords(key: StanceKey, lang: Lang): string {
     case 'unrelated': return pick(lang, 'Source hors sujet', 'Off-topic source');
     case 'unverifiable': return pick(lang, 'Non vérifiable', 'Not verifiable');
     case 'opinion': return pick(lang, "Avis de l'auteur, non vérifié", "Author's opinion, not verified");
-    default: return pick(lang, 'Sans source', 'No source');
+    default: return pick(lang, 'Sans lien : rien à confronter', 'No link: nothing to check');
   }
 }
 
@@ -184,8 +184,12 @@ export type SectionView = {
   stance: StanceKey;
   segments: Segment[];
   additions: string[];
+  /** 3.10 : une source n'a été lue qu'en partie (abonnés) ; un « ajout » peut être dans la partie non lue. */
+  partialRead: boolean;
   lines: SourceLine[];
 };
+
+const isPartial = (state?: string | null) => state === 'paywall' || state === 'paywall_partial';
 
 export function sectionViews(input: ProInput, cards: CardCheck[] | undefined, checks: SourceCheck[] | undefined, lang: Lang): SectionView[] {
   return input.sections.map((section, index) => {
@@ -193,9 +197,10 @@ export function sectionViews(input: ProInput, cards: CardCheck[] | undefined, ch
     return {
       index,
       input: section,
-      stance: cardStance(card),
+      stance: section.sources.length === 0 ? 'none' : cardStance(card),
       segments: highlightAdditions(section.text, card),
       additions: cardAdditions(card),
+      partialRead: (card?.sources ?? []).some((s) => isPartial(s.source_state)),
       lines: (card?.sources ?? []).map((s) => sourceLine(s, checks ?? [], lang)),
     };
   });
@@ -256,22 +261,71 @@ export function alertWords(alert: Alert, lang: Lang): string | null {
 // ── Synthèse en une phrase (en attendant la phrase RECO-SRC, tâche 3.2) ────────
 
 export function synthesis(views: SectionView[], lang: Lang): string {
-  const n = views.length;
-  const count = (k: StanceKey) => views.filter((v) => v.stance === k).length;
+  const linked = views.filter((v) => v.stance !== 'none');
+  const unlinked = views.length - linked.length;
+  const count = (k: StanceKey) => linked.filter((v) => v.stance === k).length;
   const confirmed = count('supports');
   const contradicted = count('contradicts');
   const opinions = count('opinion');
-  const unreadable = views.flatMap((v) => v.lines).filter((l) => l.state).length;
+  const unread = views.flatMap((v) => v.lines).filter((l) => l.state).length;
   const parts: string[] = [];
   parts.push(lang === 'en'
-    ? `${confirmed} of ${n} section(s) confirmed by their sources`
-    : `${confirmed} section(s) sur ${n} confirmée(s) par leurs sources`);
-  if (contradicted) parts.push(pick(lang, `${contradicted} contredite(s) par sa source`, `${contradicted} contradicted by its source`));
-  else parts.push(pick(lang, 'aucune contradiction', 'no contradiction'));
-  if (opinions) parts.push(pick(lang, `avis de l'auteur sur ${opinions} section(s)`, `author's opinion on ${opinions} section(s)`));
-  if (unreadable) parts.push(pick(lang, `${unreadable} source(s) non lue(s)`, `${unreadable} source(s) not read`));
+    ? `${confirmed} of ${linked.length} linked passage(s) confirmed by their sources`
+    : `${confirmed} passage(s) sur ${linked.length} avec lien confirmé(s) par leurs sources`);
+  parts.push(contradicted
+    ? pick(lang, `${contradicted} contredit(s) par sa source`, `${contradicted} contradicted by its source`)
+    : pick(lang, 'aucune contradiction', 'no contradiction'));
+  if (opinions) parts.push(pick(lang, `avis de l'auteur sur ${opinions} passage(s)`, `author's opinion on ${opinions} passage(s)`));
+  if (unread) parts.push(pick(lang, `${unread} source(s) non lue(s) ou lue(s) en partie`, `${unread} source(s) not read or partly read`));
+  if (unlinked) parts.push(pick(lang, `${unlinked} passage(s) sans lien`, `${unlinked} passage(s) without a link`));
   const sentence = parts.join(', ');
   return sentence.charAt(0).toUpperCase() + sentence.slice(1) + '.';
+}
+
+// ── « À reprendre avant publication » (3.0.4) ──────────────────────────────────
+
+export type ReviewItem = { passage: number; text: string; tone: Tone };
+
+/** Une action par point à reprendre, en mots, dans l'ordre du texte. Vide = rien à reprendre. */
+export function reviewItems(views: SectionView[], lang: Lang): ReviewItem[] {
+  const items: ReviewItem[] = [];
+  for (const v of views) {
+    const n = v.index + 1;
+    const p = (fr: string, en: string) => pick(lang, `Passage ${n} : ${fr}`, `Passage ${n}: ${en}`);
+    for (const line of v.lines) {
+      if (line.stance === 'contradicts') {
+        items.push({ passage: n, tone: 'red', text: p(
+          `${line.domain} dit le contraire. Corrige le passage ou reprends la phrase exacte de la source.`,
+          `${line.domain} says the opposite. Correct the passage or use the source's exact wording.`) });
+      } else if (line.state && !/abonn|subscriber/i.test(line.state)) {
+        items.push({ passage: n, tone: 'grey', text: p(
+          `${line.domain} n'a pas pu être lue (${line.state.toLowerCase()}). Ajoute la page d'origine ou une copie archivée.`,
+          `${line.domain} could not be read (${line.state.toLowerCase()}). Add the original page or an archived copy.`) });
+      } else if (line.state) {
+        items.push({ passage: n, tone: 'grey', text: p(
+          `${line.domain} n'a été lue qu'en partie (abonnés). Vérifie toi-même la partie réservée.`,
+          `${line.domain} was only partly read (subscribers). Check the paywalled part yourself.`) });
+      } else if (line.stance === 'unrelated') {
+        items.push({ passage: n, tone: 'orange', text: p(
+          `${line.domain} ne traite pas de ce passage. Remplace-la par une source qui en parle.`,
+          `${line.domain} does not cover this passage. Replace it with a source that does.`) });
+      } else if (line.stance === 'unverifiable') {
+        items.push({ passage: n, tone: 'orange', text: p(
+          `${line.domain} ne contient pas ce fait. Précise d'où il vient ou ajoute la source qui le dit.`,
+          `${line.domain} does not contain this fact. Say where it comes from or add the source that states it.`) });
+      }
+    }
+    if (v.additions.length && !v.partialRead) {
+      items.push({ passage: n, tone: 'grey', text: p(
+        `une partie est ton analyse (« ${v.additions[0]} »). Signale-la comme telle si c'est voulu.`,
+        `part of it is your own analysis (“${v.additions[0]}”). Flag it as such if intended.`) });
+    }
+  }
+  return items;
+}
+
+export function reviewEmpty(lang: Lang): string {
+  return pick(lang, 'Rien à reprendre côté sources.', 'Nothing to fix on the sourcing side.');
 }
 
 // ── Export Markdown ───────────────────────────────────────────────────────────
@@ -291,9 +345,15 @@ export function toMarkdown(detail: ProVerificationDetail, lang: Lang): string {
     `- ${pick(lang, 'Fidélité aux sources', 'Faithfulness to sources')} : ${faithfulnessWords(v?.faithfulness, lang)}`,
     `- ${pick(lang, 'Rapport du', 'Report of')} ${date}`,
     '',
+    `## ${pick(lang, 'À reprendre avant publication', 'To fix before publishing')}`,
+    '',
   ];
+  const review = reviewItems(views, lang);
+  if (review.length) for (const item of review) lines.push(`- ${item.text}`);
+  else lines.push(reviewEmpty(lang));
+  lines.push('');
   for (const view of views) {
-    lines.push(`## ${pick(lang, 'Section', 'Section')} ${view.index + 1} : ${stanceWords(view.stance, lang)}`, '', `> ${view.input.text.replace(/\n/g, '\n> ')}`, '');
+    lines.push(`## ${pick(lang, 'Passage', 'Passage')} ${view.index + 1} : ${stanceWords(view.stance, lang)}`, '', `> ${view.input.text.replace(/\n/g, '\n> ')}`, '');
     for (const line of view.lines) {
       lines.push(`- **${line.domain}** : ${stanceWords(line.stance, lang)}${line.state ? ` (${line.state})` : ''}${line.publisher ? `. ${line.publisher}` : ''}`);
       if (line.claim) lines.push(`  - ${pick(lang, 'Le texte dit', 'The text says')} : « ${line.claim} »`);
@@ -301,7 +361,10 @@ export function toMarkdown(detail: ProVerificationDetail, lang: Lang): string {
       if (line.explanation) lines.push(`  - ${line.explanation}`);
       lines.push(`  - ${line.url}`);
     }
-    for (const addition of view.additions) lines.push(`- ${pick(lang, "L'auteur ajoute, sans sa source", 'The author adds, without a source')} : « ${addition} »`);
+    const addLabel = view.partialRead
+      ? pick(lang, 'Pas trouvé dans la partie lue de la source', 'Not found in the part of the source that was read')
+      : pick(lang, "L'auteur ajoute, sans sa source", 'The author adds, without a source');
+    for (const addition of view.additions) lines.push(`- ${addLabel} : « ${addition} »`);
     lines.push('');
   }
   lines.push('---', pick(lang,

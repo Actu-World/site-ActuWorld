@@ -5,14 +5,15 @@
  *   cd api-actuWorld/api
  *   (config minimale /tmp/v.mjs : un export par défaut dont test.include vaut
  *    le motif des fichiers .test.ts du dossier tests du site)
- *   ./node_modules/.bin/vitest run --root ../../SITE-Actuworld/actuworld-site --config /tmp/v.mjs
+ *   JSDOM_FROM=<chemin de APP-RS-8ActuWorld/frontend/package.json> \n *     ./node_modules/.bin/vitest run --root ../../SITE-Actuworld/actuworld-site --config /tmp/v.mjs
+ *   (JSDOM_FROM fournit DOMParser au test du collage HTML, sinon il est ignoré)
  */
 import { describe, it, expect } from 'vitest';
 import {
-  cardAdditions, cardStance, faithfulnessWords, highlightAdditions, publisherWords, sectionViews,
+  cardAdditions, cardStance, faithfulnessWords, highlightAdditions, publisherWords, reviewItems, sectionViews,
   sourceLine, synthesis, toMarkdown, verdictTone, verdictWords,
 } from '../src/lib/pro/report';
-import { splitIntoSections } from '../src/lib/pro/draft';
+import { draftProblems } from '../src/lib/pro/draft';
 import type { CardCheck, ProInput, ProVerificationDetail } from '../src/lib/pro/types';
 
 const input: ProInput = {
@@ -78,7 +79,39 @@ describe('sections', () => {
 
   it('résume en une phrase', () => {
     const views = sectionViews(input, cards, [], 'fr');
-    expect(synthesis(views, 'fr')).toBe('1 section(s) sur 3 confirmée(s) par leurs sources, 1 contredite(s) par sa source, 1 source(s) non lue(s).');
+    expect(synthesis(views, 'fr')).toBe('1 passage(s) sur 3 avec lien confirmé(s) par leurs sources, 1 contredit(s) par sa source, 1 source(s) non lue(s) ou lue(s) en partie.');
+  });
+
+  it('compte à part les passages sans lien, jamais jugés', () => {
+    const withIntro: ProInput = { ...input, sections: [{ text: 'Intro sans lien.', sources: [] }, ...input.sections] };
+    const shifted = cards.map((c) => ({ ...c, index: c.index + 1 }));
+    const views = sectionViews(withIntro, shifted, [], 'fr');
+    expect(views[0].stance).toBe('none');
+    expect(synthesis(views, 'fr')).toContain('1 passage(s) sans lien');
+  });
+
+  it('liste ce qu’il faut reprendre avant publication, dans l’ordre du texte', () => {
+    const items = reviewItems(sectionViews(input, cards, [], 'fr'), 'fr');
+    expect(items.map((i) => [i.passage, i.tone])).toEqual([[2, 'red'], [3, 'grey'], [3, 'grey']]);
+    expect(items[0].text).toBe('Passage 2 : eur-lex.europa.eu dit le contraire. Corrige le passage ou reprends la phrase exacte de la source.');
+    expect(items[1].text).toContain("legifrance.gouv.fr n'a pas pu être lue (accès refusé à la lecture automatique)");
+    expect(items[2].text).toContain('ton analyse (« C’est une bonne nouvelle. »)');
+  });
+
+  it('sur une source lue en partie, ne présente pas la phrase comme un ajout de l’auteur (3.10)', () => {
+    const paywalled: CardCheck[] = [cards[0], cards[1], {
+      ...cards[2], sources: [{ url: 'https://www.letemps.ch/c', stance: 'supports', source_state: 'paywall_partial' }],
+    }];
+    const views = sectionViews(input, paywalled, [], 'fr');
+    expect(views[2].partialRead).toBe(true);
+    const items = reviewItems(views, 'fr');
+    expect(items.some((i) => i.text.includes('ton analyse'))).toBe(false);
+    expect(items.some((i) => i.text.includes("lue qu'en partie (abonnés)"))).toBe(true);
+  });
+
+  it('ne trouve rien à reprendre quand tout est confirmé', () => {
+    const views = sectionViews({ ...input, sections: [input.sections[0]] }, [cards[0]], [], 'fr');
+    expect(reviewItems(views, 'fr')).toEqual([]);
   });
 });
 
@@ -102,13 +135,15 @@ describe('export et découpe', () => {
     expect(md).toContain('# Salaire minimum');
     expect(md).toContain('Déforme ses sources');
     expect(md).toContain('La source dit : « ne fixe pas le niveau »');
+    expect(md).toContain('## À reprendre avant publication');
+    expect(md).toContain('## Passage 2 : La source dit le contraire');
     expect(md).not.toMatch(/\/10/);
   });
 
-  it("découpe un article en sections d'au plus 1 500 caractères avec ses sources", () => {
-    const article = ['A'.repeat(900), 'B'.repeat(900), 'C'.repeat(100)].join('\n\n');
-    const sections = splitIntoSections(article, ['https://a.fr']);
-    expect(sections).toHaveLength(2);
-    expect(sections.every((s) => s.text.length <= 1500 && s.sources[0] === 'https://a.fr')).toBe(true);
+  it('accepte un passage sans lien, refuse un texte sans aucune source ou à plus de 10 sources', () => {
+    expect(draftProblems({ title: 'T', sections: [{ text: 'Intro', sources: [''] }, { text: 'Fait', sources: ['https://a.fr'] }] })).toEqual([]);
+    expect(draftProblems({ title: 'T', sections: [{ text: 'Intro', sources: [''] }] })[0].fr).toContain('au moins une source');
+    const many = Array.from({ length: 11 }, (_, i) => ({ text: 'Fait', sources: [`https://s${i}.fr`] }));
+    expect(draftProblems({ title: 'T', sections: many })[0].fr).toContain('10 sources différentes au plus');
   });
 });
