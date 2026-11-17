@@ -5,7 +5,7 @@
 
 import type {
   Alert, CardCheck, CardKind, CardSource, FaithfulnessNote, ProInput, ProSectionInput,
-  PublisherNote, ReportData, SourceCheck, Stance,
+  PublisherNote, ReportData, SourceCheck, Stance, Verification,
 } from './types';
 
 export type Lang = 'fr' | 'en';
@@ -288,8 +288,105 @@ export function alertWords(alert: Alert, lang: Lang): string | null {
   }
 }
 
-// ── Synthèse en une phrase (en attendant la phrase RECO-SRC, tâche 3.2) ────────
+// ── Synthèse en une phrase (RECO-SRC 3.2 : api/asv_app/summary.py) ─────────────
 
+const UNREADABLE_REASON: Record<string, [string, string]> = {
+  paywall: ['accès réservé', 'restricted access'],
+  blocked_403: ['accès refusé', 'access denied'],
+  timeout: ['délai dépassé', 'timed out'],
+  js_only: ['page illisible sans navigateur', 'page unreadable without a browser'],
+  too_short: ['page presque vide', 'almost empty page'],
+  unsupported_type: ['format non pris en charge', 'unsupported format'],
+  pdf_no_text: ['PDF sans texte', 'PDF without text'],
+};
+
+/** Un fragment de la synthèse RECO-SRC en mots ; null si le code est inconnu. */
+export function summaryFragment(frag: Alert, lang: Lang): string | null {
+  const n = Number(frag.params?.n ?? 0);
+  const of = Number(frag.params?.of ?? 0);
+  const one = n <= 1;
+  const fr = lang !== 'en';
+  switch (frag.code) {
+    case 'no_sources':
+      return pick(lang, 'aucune source : rien à confronter au texte', 'no sources: nothing to check the text against');
+    case 'opinion_only':
+      return pick(lang, "avis de l'auteur : rien à confronter aux sources", "author's opinion: nothing to check against the sources");
+    case 'outage':
+      return frag.params?.kind === 'timeout'
+        ? pick(lang, "vérification interrompue (délai dépassé) : rien n'a été jugé", 'verification interrupted (timed out): nothing was assessed')
+        : pick(lang, "analyse des sources interrompue (modèle indisponible) : rien n'a été jugé", 'source analysis interrupted (model unavailable): nothing was assessed');
+    case 'confirmed':
+      if (n === 0) return pick(lang, `aucun des ${of} passages confirmé par ses sources`, `none of the ${of} passages confirmed by its sources`);
+      return fr
+        ? `${n} ${one ? 'passage' : 'passages'} sur ${of} ${one ? 'confirmé par ses sources' : 'confirmés par leurs sources'}`
+        : `${n} of ${of} ${of === 1 ? 'passage' : 'passages'} confirmed by ${one ? 'its' : 'their'} sources`;
+    case 'sources_confirmed':
+      return fr
+        ? `${n} ${one ? 'source' : 'sources'} sur ${of} ${one ? 'confirme' : 'confirment'} le texte`
+        : `${n} of ${of} ${of === 1 ? 'source confirms' : 'sources confirm'} the text`;
+    case 'contradicted':
+      return fr
+        ? `${n} ${one ? 'passage contredit par sa source' : 'passages contredits par leurs sources'}`
+        : `${n} ${one ? 'passage contradicted by its source' : 'passages contradicted by their sources'}`;
+    case 'sources_contradicted':
+      return fr ? `${n} ${one ? 'source contredit' : 'sources contredisent'} le texte` : `${n} ${one ? 'source contradicts' : 'sources contradict'} the text`;
+    case 'off_topic':
+      return fr
+        ? `${n} ${one ? 'passage dont la source est hors sujet' : 'passages dont la source est hors sujet'}`
+        : `${n} ${one ? 'passage whose source is off topic' : 'passages whose source is off topic'}`;
+    case 'fact_not_found':
+      return fr
+        ? `${n} ${one ? 'fait absent de la source lue' : 'faits absents des sources lues'}`
+        : `${n} ${one ? 'fact missing from the source read' : 'facts missing from the sources read'}`;
+    case 'unreadable': {
+      const reason = UNREADABLE_REASON[String(frag.params?.reason ?? '')];
+      const words = fr ? `${n} ${one ? 'source illisible' : 'sources illisibles'}` : `${n} unreadable ${one ? 'source' : 'sources'}`;
+      return reason ? `${words} (${pick(lang, reason[0], reason[1])})` : words;
+    }
+    case 'dead_link':
+      return fr ? `${n} ${one ? 'lien mort' : 'liens morts'}` : `${n} dead ${one ? 'link' : 'links'}`;
+    case 'partly_read':
+      return fr
+        ? `${n} ${one ? 'source lue en partie' : 'sources lues en partie'} (accès réservé)`
+        : `${n} ${one ? 'source' : 'sources'} partly read (restricted access)`;
+    case 'not_analyzed':
+      return fr
+        ? `${n} ${one ? 'source non analysée' : 'sources non analysées'} (modèle indisponible)`
+        : `${n} ${one ? 'source' : 'sources'} not analysed (model unavailable)`;
+    case 'opinion':
+      return fr ? `avis de l'auteur sur ${n} ${one ? 'passage' : 'passages'}` : `author's opinion on ${n} ${one ? 'passage' : 'passages'}`;
+    case 'unlinked':
+      return fr ? `${n} ${one ? 'passage sans lien' : 'passages sans lien'}` : `${n} ${one ? 'passage' : 'passages'} without a link`;
+    case 'not_judged':
+      return fr
+        ? `${n} ${one ? 'passage non jugé' : 'passages non jugés'} (trop de sources)`
+        : `${n} ${one ? 'passage' : 'passages'} not assessed (too many sources)`;
+    case 'no_contradiction':
+      return pick(lang, 'aucune contradiction', 'no contradiction');
+    default:
+      return null;
+  }
+}
+
+function sentenceOf(parts: string[]): string {
+  if (!parts.length) return '';
+  const sentence = parts.join(', ');
+  return sentence.charAt(0).toUpperCase() + sentence.slice(1) + '.';
+}
+
+/** Synthèse du rapport : celle de RECO-SRC si présente, sinon la phrase locale
+ *  (rapports enregistrés avant la 3.2). */
+export function reportSummary(v: Verification | undefined, views: SectionView[], lang: Lang): string {
+  const frags = v?.summary_i18n ?? [];
+  if (frags.length) {
+    const parts = frags.map((f) => summaryFragment(f, lang));
+    if (parts.every((p): p is string => !!p)) return sentenceOf(parts);
+    if (lang === 'fr' && v?.summary) return v.summary; // code inconnu : la phrase française de RECO-SRC
+  }
+  return synthesis(views, lang);
+}
+
+/** Phrase locale d'avant la 3.2, pour les rapports qui n'ont pas `summary_i18n`. */
 export function synthesis(views: SectionView[], lang: Lang): string {
   const linked = views.filter((v) => v.stance !== 'none');
   const unlinked = views.length - linked.length;
@@ -369,7 +466,7 @@ export function toMarkdown(detail: ReportData, lang: Lang): string {
     '',
     `**${pick(lang, 'Verdict ASV', 'ASV verdict')}** : ${verdictWords(v?.status ?? detail.verdict_status, lang, !!v?.faithfulness?.opinion_sourced)}`,
     '',
-    synthesis(views, lang),
+    reportSummary(v, views, lang),
     '',
     `- ${pick(lang, 'Qui publie', 'Who publishes')} : ${publisherWords(v?.publisher, lang)}`,
     `- ${pick(lang, 'Fidélité aux sources', 'Faithfulness to sources')} : ${faithfulnessWords(v?.faithfulness, lang)}`,

@@ -4,7 +4,7 @@ import { AlertTriangle, ExternalLink, Loader2 } from 'lucide-react';
 import type { ReportData } from '../../lib/pro/types';
 import {
   alertWords, faithfulnessWords, publisherWords, reviewEmpty, reviewItems, sectionViews, stanceTone, stanceWords,
-  synthesis, TONE_COLOR, verdictTone, verdictWords, type Lang, type SectionView,
+  reportSummary, TONE_COLOR, verdictTone, verdictWords, type Lang, type SectionView,
 } from '../../lib/pro/report';
 
 // ASV Pro — rendu d'un rapport, commun à la page privée (/pro/rapport/:id) et à
@@ -128,7 +128,7 @@ export default function ReportView({ data, lang, actions, banner }: Props) {
               <ToneDot color={tone} />
               {verdictWords(status, lang, opinionSourced)}
             </p>
-            {v && <p className="mt-2 text-aw-muted max-w-prose">{synthesis(views, lang)}</p>}
+            {v && <p className="mt-2 text-aw-muted max-w-prose">{reportSummary(v, views, lang)}</p>}
             {pending && (
               <p className="mt-3 text-sm inline-flex items-center gap-2 text-aw-muted" role="status">
                 <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />

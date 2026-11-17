@@ -11,7 +11,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   cardAdditions, cardStance, faithfulnessWords, highlightAdditions, publisherWords, reviewItems, sectionViews,
-  sourceLine, synthesis, toMarkdown, verdictTone, verdictWords,
+  reportSummary, sourceLine, summaryFragment, synthesis, toMarkdown, verdictTone, verdictWords,
 } from '../src/lib/pro/report';
 import { draftProblems } from '../src/lib/pro/draft';
 import type { CardCheck, ProInput, ProVerificationDetail } from '../src/lib/pro/types';
@@ -82,6 +82,30 @@ describe('sections', () => {
   it('résume en une phrase', () => {
     const views = sectionViews(input, cards, [], 'fr');
     expect(synthesis(views, 'fr')).toBe('1 passage(s) sur 3 avec lien confirmé(s) par leurs sources, 1 contredit(s) par sa source, 1 source(s) non lue(s) ou lue(s) en partie.');
+  });
+
+  it('affiche la synthèse calculée par RECO-SRC (3.2), en français et en anglais', () => {
+    const views = sectionViews(input, cards, [], 'fr');
+    const v = {
+      status: 'misleading',
+      summary_i18n: [
+        { code: 'confirmed', params: { n: 3, of: 4 } },
+        { code: 'unreadable', params: { n: 1, reason: 'paywall' } },
+        { code: 'no_contradiction', params: {} },
+      ],
+    };
+    expect(reportSummary(v, views, 'fr')).toBe('3 passages sur 4 confirmés par leurs sources, 1 source illisible (accès réservé), aucune contradiction.');
+    expect(reportSummary(v, views, 'en')).toBe('3 of 4 passages confirmed by their sources, 1 unreadable source (restricted access), no contradiction.');
+    expect(summaryFragment({ code: 'contradicted', params: { n: 1 } }, 'fr')).toBe('1 passage contredit par sa source');
+    expect(summaryFragment({ code: 'opinion', params: { n: 2 } }, 'en')).toBe("author's opinion on 2 passages");
+  });
+
+  it('retombe sur la phrase de RECO-SRC, puis sur la phrase locale', () => {
+    const views = sectionViews(input, cards, [], 'fr');
+    const unknown = { status: 'verified', summary: 'Phrase de RECO-SRC.', summary_i18n: [{ code: 'nouveau_code', params: {} }] };
+    expect(reportSummary(unknown, views, 'fr')).toBe('Phrase de RECO-SRC.');
+    // Rapport enregistré avant la 3.2 : pas de fragments.
+    expect(reportSummary({ status: 'verified' }, views, 'fr')).toBe(synthesis(views, 'fr'));
   });
 
   it('compte à part les passages sans lien, jamais jugés', () => {

@@ -100,6 +100,9 @@ export type Verification = {
   cards?: CardCheck[];
   /** 3.1 : langue dans laquelle le modèle a écrit ses explications. */
   explanations_locale?: string;
+  /** 3.2 : synthèse calculée par RECO-SRC, en fragments à traduire (et en français). */
+  summary?: string;
+  summary_i18n?: Alert[];
 };
 
 export type VerificationResult = {
