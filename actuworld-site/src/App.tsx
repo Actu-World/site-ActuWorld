@@ -37,6 +37,7 @@ const ProSourcesPage = lazy(() => import('./pages/pro/ProSourcesPage'));
 const ProAccountPage = lazy(() => import('./pages/pro/ProAccountPage'));
 const ProSharedPage = lazy(() => import('./pages/pro/ProSharedPage'));
 const StudioLoginPage = lazy(() => import('./pages/studio/StudioLoginPage'));
+const AuthConfirmPage = lazy(() => import('./pages/AuthConfirmPage'));
 const StudioEditorPage = lazy(() => import('./pages/studio/StudioEditorPage'));
 const StudioPostPage = lazy(() => import('./pages/studio/StudioPostPage'));
 const StudioRedactionPage = lazy(() => import('./pages/studio/StudioRedactionPage'));
@@ -70,7 +71,7 @@ export default function App() {
   // Environnement Studio : navbar dédiée, pas de footer ni d'habillage
   // « site vitrine » (retour en haut, bandeau de lancement).
   // ASV Pro (/pro) partage cet environnement : même session, même barre.
-  const isStudio = ['/studio', '/pro'].some((p) => location.pathname === p || location.pathname.startsWith(`${p}/`));
+  const isStudio = ['/studio', '/pro', '/auth'].some((p) => location.pathname === p || location.pathname.startsWith(`${p}/`));
 
   // Initialize Google Analytics
   useGoogleAnalytics();
@@ -120,6 +121,7 @@ export default function App() {
             <Route path="/messages/:id" element={<OpenInAppPage kind="messages" />} />
             <Route path="/u/:username" element={<OpenInAppPage kind="user" />} />
             <Route path="/tag/:slug" element={<OpenInAppPage kind="tag" />} />
+            <Route path="/auth/confirm" element={<AuthConfirmPage />} />
             <Route path="/studio" element={<StudioLoginPage />} />
             <Route path="/studio/editeur" element={<StudioEditorPage />} />
             <Route path="/studio/post" element={<StudioPostPage />} />
