@@ -131,7 +131,7 @@ export function readingWords(src: CardSource, lang: Lang): string | null {
   if (!method || method === 'aucune' || !src.read_chars) return null;
   const how = method.includes('wayback')
     ? pick(lang, 'Lue via une copie archivée (archive.org)', 'Read from an archived copy (archive.org)')
-    : method.includes('pdf_ocr') ? pick(lang, 'PDF scanné, transcrit', 'Scanned PDF, transcribed')
+    : method.includes('ocr') ? pick(lang, 'PDF scanné, transcrit', 'Scanned PDF, transcribed')
     : method.includes('pdf') ? pick(lang, 'PDF lu', 'PDF read')
     : method.includes('legifrance') ? pick(lang, 'Texte officiel lu (Légifrance)', 'Official text read (Légifrance)')
     : method.includes('headless') ? pick(lang, 'Lue dans un navigateur', 'Read in a browser')
