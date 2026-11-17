@@ -116,6 +116,23 @@ describe('sections', () => {
     expect(synthesis(views, 'fr')).toContain('1 passage(s) sans lien');
   });
 
+  it('reprend les conseils de RECO-SRC quand le rapport en a (3.3)', () => {
+    const advised: CardCheck[] = [
+      { index: 0, stance: 'supports', sources: [{ url: 'https://www.insee.fr/a', stance: 'supports', advice: null }],
+        advice: [{ code: 'flag_opinion', params: { text: 'Bonne nouvelle.' } }] },
+      { index: 1, stance: 'contradicts', sources: [{ url: 'https://eur-lex.europa.eu/b', stance: 'contradicts', advice: { code: 'fix_or_quote', params: {} } }] },
+      { index: 2, stance: 'unverifiable', sources: [{ url: 'https://x.com/c', stance: 'unverifiable', source_state: 'unsupported_type', advice: { code: 'cite_original_post', params: {} } }] },
+    ];
+    const views = sectionViews(input, advised, [], 'fr');
+    const items = reviewItems(views, 'fr', [{ code: 'link_cited_sources', params: { n: 2 } }]);
+    expect(items.map((i) => [i.passage, i.tone])).toEqual([[0, 'orange'], [1, 'grey'], [2, 'red'], [3, 'orange']]);
+    expect(items[0].text).toBe('Le texte cite 2 sources sans leur lien. Ajoute le lien de chacune.');
+    expect(items[1].text).toBe("Passage 1 : une partie est ton analyse (« Bonne nouvelle. »). Signale-la comme telle si c'est voulu.");
+    expect(items[3].text).toContain("x.com est un réseau social ou une vidéo. Cite la publication d'origine");
+    // Rapport d'après la 3.3 sans conseil : rien à reprendre, sans recalcul local.
+    expect(reviewItems(sectionViews(input, cards, [], 'fr'), 'fr', [])).toEqual([]);
+  });
+
   it('liste ce qu’il faut reprendre avant publication, dans l’ordre du texte', () => {
     const items = reviewItems(sectionViews(input, cards, [], 'fr'), 'fr');
     expect(items.map((i) => [i.passage, i.tone])).toEqual([[2, 'red'], [3, 'grey'], [3, 'grey']]);

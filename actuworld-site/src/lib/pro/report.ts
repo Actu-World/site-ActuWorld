@@ -154,6 +154,8 @@ export type SourceLine = {
   explanation: string | null;
   publisher: string | null;
   reading: string | null;
+  /** 3.3 : conseil RECO-SRC pour cette source. */
+  advice: Alert | null;
 };
 
 export function sourceLine(src: CardSource, checks: SourceCheck[], lang: Lang, explanationsLocale = 'fr'): SourceLine {
@@ -176,6 +178,7 @@ export function sourceLine(src: CardSource, checks: SourceCheck[], lang: Lang, e
     explanation: explanationsLocale === lang && read && src.explanation ? src.explanation : null,
     publisher,
     reading: readingWords(src, lang),
+    advice: src.advice ?? null,
   };
 }
 
@@ -208,6 +211,8 @@ export type SectionView = {
   /** 3.10 : une source n'a été lue qu'en partie (abonnés) ; un « ajout » peut être dans la partie non lue. */
   partialRead: boolean;
   lines: SourceLine[];
+  /** 3.3 : conseils RECO-SRC pour le passage entier. */
+  cardAdvice: Alert[];
 };
 
 const isPartial = (state?: string | null) => state === 'paywall' || state === 'paywall_partial';
@@ -225,6 +230,7 @@ export function sectionViews(
       additions: cardAdditions(card),
       partialRead: (card?.sources ?? []).some((s) => isPartial(s.source_state)),
       lines: (card?.sources ?? []).map((s) => sourceLine(s, checks ?? [], lang, explanationsLocale)),
+      cardAdvice: card?.advice ?? [],
     };
   });
 }
@@ -411,10 +417,97 @@ export function synthesis(views: SectionView[], lang: Lang): string {
 
 // ── « À reprendre avant publication » (3.0.4) ──────────────────────────────────
 
+/** `passage` = 0 pour un conseil sur le texte entier. */
 export type ReviewItem = { passage: number; text: string; tone: Tone };
 
-/** Une action par point à reprendre, en mots, dans l'ordre du texte. Vide = rien à reprendre. */
-export function reviewItems(views: SectionView[], lang: Lang): ReviewItem[] {
+// ── Conseils d'action RECO-SRC (3.3 : api/asv_app/advice.py) ──────────────────
+
+type AdviceText = { text: string; tone: Tone };
+
+/** Un conseil sur une source d'un passage, en mots ; null si le code est inconnu. */
+export function sourceAdviceWords(advice: Alert, domain: string, lang: Lang): AdviceText | null {
+  switch (advice.code) {
+    case 'fix_or_quote': return { tone: 'red', text: pick(lang,
+      `${domain} dit le contraire. Corrige le passage ou reprends la phrase exacte de la source.`,
+      `${domain} says the opposite. Correct the passage or use the source's exact wording.`) };
+    case 'dead_link': return { tone: 'grey', text: pick(lang,
+      `le lien vers ${domain} est mort. Remplace la source.`,
+      `the link to ${domain} is dead. Replace the source.`) };
+    case 'cite_original_post': return { tone: 'orange', text: pick(lang,
+      `${domain} est un réseau social ou une vidéo. Cite la publication d'origine si elle existe.`,
+      `${domain} is a social network or a video. Cite the original publication if there is one.`) };
+    case 'protected_source': return { tone: 'grey', text: pick(lang,
+      `${domain} refuse la lecture automatique. Joins une copie archivée ou une autre source.`,
+      `${domain} refuses automatic reading. Add an archived copy or another source.`) };
+    case 'unreadable_source': {
+      const state = (stateWords(String(advice.params?.reason ?? ''), lang) ?? pick(lang, 'lecture impossible', 'could not be read')).toLowerCase();
+      return { tone: 'grey', text: pick(lang,
+        `${domain} n'a pas pu être lue (${state}). Ajoute la page d'origine ou une copie archivée.`,
+        `${domain} could not be read (${state}). Add the original page or an archived copy.`) };
+    }
+    case 'check_paywalled_part': return { tone: 'grey', text: pick(lang,
+      `${domain} n'a été lue qu'en partie (abonnés). Vérifie toi-même la partie réservée.`,
+      `${domain} was only partly read (subscribers). Check the paywalled part yourself.`) };
+    case 'off_topic_source': return { tone: 'orange', text: pick(lang,
+      `${domain} ne traite pas de ce passage. Remplace-la par une source qui en parle.`,
+      `${domain} does not cover this passage. Replace it with a source that does.`) };
+    case 'fact_not_in_source': return { tone: 'orange', text: pick(lang,
+      `${domain} ne contient pas ce fait. Précise d'où il vient ou ajoute la source qui le dit.`,
+      `${domain} does not contain this fact. Say where it comes from or add the source that states it.`) };
+    default: return null;
+  }
+}
+
+/** Un conseil sur un passage entier ; null si le code est inconnu. */
+export function cardAdviceWords(advice: Alert, lang: Lang): AdviceText | null {
+  if (advice.code !== 'flag_opinion') return null;
+  const quote = String(advice.params?.text ?? '');
+  return { tone: 'grey', text: pick(lang,
+    `une partie est ton analyse (« ${quote} »). Signale-la comme telle si c'est voulu.`,
+    `part of it is your own analysis (“${quote}”). Flag it as such if intended.`) };
+}
+
+/** Un conseil sur le texte entier ; null si le code est inconnu. */
+export function contentAdviceWords(advice: Alert, lang: Lang): AdviceText | null {
+  const n = Number(advice.params?.n ?? 0);
+  switch (advice.code) {
+    case 'add_sources': return { tone: 'grey', text: pick(lang,
+      "Ajoute tes sources : sans lien, il n'y a rien à confronter.",
+      'Add your sources: without links, there is nothing to check against.') };
+    case 'link_cited_sources': return { tone: 'orange', text: n > 1
+      ? pick(lang, `Le texte cite ${n} sources sans leur lien. Ajoute le lien de chacune.`, `The text cites ${n} sources without their link. Add a link for each.`)
+      : pick(lang, 'Le texte cite une source sans son lien. Ajoute-le.', 'The text cites a source without its link. Add it.') };
+    default: return null;
+  }
+}
+
+/** « À reprendre » à partir des conseils RECO-SRC (rapports d'après la 3.3). */
+function reviewFromAdvice(views: SectionView[], content: Alert[], lang: Lang): ReviewItem[] {
+  const items: ReviewItem[] = [];
+  for (const a of content) {
+    const w = contentAdviceWords(a, lang);
+    if (w) items.push({ passage: 0, ...w });
+  }
+  for (const v of views) {
+    const n = v.index + 1;
+    const prefix = (text: string) => pick(lang, `Passage ${n} : ${text}`, `Passage ${n}: ${text}`);
+    for (const line of v.lines) {
+      const w = line.advice && sourceAdviceWords(line.advice, line.domain, lang);
+      if (w) items.push({ passage: n, tone: w.tone, text: prefix(w.text) });
+    }
+    for (const a of v.cardAdvice) {
+      const w = cardAdviceWords(a, lang);
+      if (w) items.push({ passage: n, tone: w.tone, text: prefix(w.text) });
+    }
+  }
+  return items;
+}
+
+/** Une action par point à reprendre, en mots, dans l'ordre du texte. Vide = rien à reprendre.
+ *  `contentAdvice` présent (même vide) = rapport d'après la 3.3 : conseils de RECO-SRC ;
+ *  absent = ancien rapport, conseils déduits ici des verdicts. */
+export function reviewItems(views: SectionView[], lang: Lang, contentAdvice?: Alert[]): ReviewItem[] {
+  if (contentAdvice) return reviewFromAdvice(views, contentAdvice, lang);
   const items: ReviewItem[] = [];
   for (const v of views) {
     const n = v.index + 1;
@@ -475,7 +568,7 @@ export function toMarkdown(detail: ReportData, lang: Lang): string {
     `## ${pick(lang, 'À reprendre avant publication', 'To fix before publishing')}`,
     '',
   ];
-  const review = reviewItems(views, lang);
+  const review = reviewItems(views, lang, v?.advice);
   if (review.length) for (const item of review) lines.push(`- ${item.text}`);
   else lines.push(reviewEmpty(lang));
   lines.push('');

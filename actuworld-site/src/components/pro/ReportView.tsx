@@ -105,7 +105,7 @@ export default function ReportView({ data, lang, actions, banner }: Props) {
   const tone = TONE_COLOR[verdictTone(status, opinionSourced)];
   const views = sectionViews(data.input, v?.cards, v?.sources_check, lang, v?.explanations_locale);
   const alerts = (v?.alerts_i18n ?? []).map((a) => alertWords(a, lang)).filter((x): x is string => !!x);
-  const review = v ? reviewItems(views, lang) : [];
+  const review = v ? reviewItems(views, lang, v.advice) : [];
   const llmDown = data.result?.llm?.status && data.result.llm.status !== 'ok';
   const date = new Date(data.finished_at ?? data.created_at)
     .toLocaleString(lang === 'en' ? 'en-GB' : 'fr-FR', { dateStyle: 'long', timeStyle: 'short' });

@@ -46,6 +46,8 @@ export type CardSource = {
   read_method?: string | null;
   read_chars?: number | null;
   read_at?: string | null;
+  /** 3.3 : que faire de cette source (code RECO-SRC, api/asv_app/advice.py). */
+  advice?: Alert | null;
 };
 
 export type CardCheck = {
@@ -55,6 +57,8 @@ export type CardCheck = {
   card_kind?: CardKind | null;
   additions?: string[];
   addition_spans?: Array<[number, number] | null>;
+  /** 3.3 : conseils pour le passage entier (l'auteur ajoute son analyse). */
+  advice?: Alert[];
 };
 
 export type SourceCheck = {
@@ -103,6 +107,8 @@ export type Verification = {
   /** 3.2 : synthèse calculée par RECO-SRC, en fragments à traduire (et en français). */
   summary?: string;
   summary_i18n?: Alert[];
+  /** 3.3 : conseils pour le texte entier (aucune source, source citée sans lien). */
+  advice?: Alert[];
 };
 
 export type VerificationResult = {
