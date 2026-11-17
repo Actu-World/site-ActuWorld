@@ -146,6 +146,12 @@ export default function StudioLoginPage() {
                     `Open the email sent to ${email.trim()} and click the sign-in link. You can close this tab.`
                   )}
                 </p>
+                <p className="text-aw-muted text-sm mt-3">
+                  {t(
+                    "Pas reçu d'ici une minute ? Regarde dans tes courriers indésirables. S'il y est, déplace-le dans ta boîte de réception avant de cliquer : certaines messageries bloquent les liens de ce dossier.",
+                    'Nothing after a minute? Check your junk or spam folder. If it is there, move it to your inbox before clicking: some mail apps block links in that folder.',
+                  )}
+                </p>
                 <button
                   type="button"
                   onClick={() => setSendState('idle')}
