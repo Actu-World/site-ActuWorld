@@ -10,7 +10,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import {
-  cardAdditions, cardStance, faithfulnessWords, highlightAdditions, publisherWords, reviewItems, sectionViews,
+  cardAdditions, cardDetails, cardStance, faithfulnessWords, highlightAdditions, publisherWords, reviewItems, sectionViews,
   reportSummary, sourceLine, summaryFragment, synthesis, toMarkdown, verdictTone, verdictWords,
 } from '../src/lib/pro/report';
 import { draftProblems } from '../src/lib/pro/draft';
@@ -200,5 +200,25 @@ describe('export et découpe', () => {
     expect(draftProblems({ title: 'T', sections: [{ text: 'Intro', sources: [''] }] })[0].fr).toContain('au moins une source');
     const many = Array.from({ length: 11 }, (_, i) => ({ text: 'Fait', sources: [`https://s${i}.fr`] }));
     expect(draftProblems({ title: 'T', sections: many })[0].fr).toContain('10 sources différentes au plus');
+  });
+});
+
+
+describe('écarts de détail (guider, pas discréditer)', () => {
+  const gap = { card_text: 'En 1904', source_quote: 'En 1903, Lizzie Magie dépose le brevet.', source_url: 'https://www.slate.fr/x', span: [0, 7] as [number, number] };
+  const withGap: CardCheck[] = [{ ...cards[0], details: [gap] }, cards[1]];
+
+  it('lit les écarts du passage, sans rien pour un ancien rapport', () => {
+    expect(cardDetails(withGap[0])).toEqual([{ cardText: 'En 1904', sourceQuote: gap.source_quote, domain: 'slate.fr' }]);
+    expect(cardDetails(cards[0])).toEqual([]);
+    expect(cardDetails(undefined)).toEqual([]);
+  });
+
+  it('ne change pas le verdict du passage et ajoute un point à reprendre', () => {
+    const views = sectionViews(input, withGap, [], 'fr');
+    expect(views[0].stance).toBe('supports');
+    const items = reviewItems(views, 'fr', []);
+    expect(items).toContainEqual({ passage: 1, tone: 'orange',
+      text: 'Passage 1 : tu écris « En 1904 », slate.fr dit « En 1903, Lizzie Magie dépose le brevet. ». Vérifie ce point.' });
   });
 });

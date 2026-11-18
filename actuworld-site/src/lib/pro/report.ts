@@ -106,6 +106,24 @@ export function cardAdditions(card: CardCheck | undefined): string[] {
   return card.additions.map((a) => (typeof a === 'string' ? a.trim() : '')).filter(Boolean).slice(0, MAX_ADDITIONS);
 }
 
+export type DetailView = { cardText: string; sourceQuote: string; domain: string | null };
+
+/** Écarts de détail du passage (date, chiffre) : les mots de l'auteur, la phrase de la source en face. */
+export function cardDetails(card: CardCheck | undefined): DetailView[] {
+  if (!card || !Array.isArray(card.details)) return [];
+  return card.details
+    .filter((d) => d && typeof d.card_text === 'string' && typeof d.source_quote === 'string' && d.card_text.trim() && d.source_quote.trim())
+    .slice(0, MAX_ADDITIONS)
+    .map((d) => ({ cardText: d.card_text.trim(), sourceQuote: d.source_quote.trim(), domain: d.source_url ? domainOf(d.source_url) : null }));
+}
+
+export function detailWords(d: DetailView, lang: Lang): string {
+  const source = d.domain ?? pick(lang, 'la source', 'the source');
+  return pick(lang,
+    `tu écris « ${d.cardText} », ${source} dit « ${d.sourceQuote} ». Vérifie ce point.`,
+    `you write “${d.cardText}”, ${source} says “${d.sourceQuote}”. Check this point.`);
+}
+
 export function domainOf(url: string): string {
   try {
     return new URL(url).hostname.replace(/^www\./, '');
@@ -208,6 +226,8 @@ export type SectionView = {
   stance: StanceKey;
   segments: Segment[];
   additions: string[];
+  /** Écarts de détail : montrés pour guider, sans effet sur le verdict du passage. */
+  details: DetailView[];
   /** 3.10 : une source n'a été lue qu'en partie (abonnés) ; un « ajout » peut être dans la partie non lue. */
   partialRead: boolean;
   lines: SourceLine[];
@@ -228,6 +248,7 @@ export function sectionViews(
       stance: section.sources.length === 0 ? 'none' : cardStance(card),
       segments: highlightAdditions(section.text, card),
       additions: cardAdditions(card),
+      details: cardDetails(card),
       partialRead: (card?.sources ?? []).some((s) => isPartial(s.source_state)),
       lines: (card?.sources ?? []).map((s) => sourceLine(s, checks ?? [], lang, explanationsLocale)),
       cardAdvice: card?.advice ?? [],
@@ -499,6 +520,7 @@ function reviewFromAdvice(views: SectionView[], content: Alert[], lang: Lang): R
       const w = cardAdviceWords(a, lang);
       if (w) items.push({ passage: n, tone: w.tone, text: prefix(w.text) });
     }
+    for (const d of v.details) items.push({ passage: n, tone: 'orange', text: prefix(detailWords(d, lang)) });
   }
   return items;
 }
@@ -540,6 +562,7 @@ export function reviewItems(views: SectionView[], lang: Lang, contentAdvice?: Al
         `une partie est ton analyse (« ${v.additions[0]} »). Signale-la comme telle si c'est voulu.`,
         `part of it is your own analysis (“${v.additions[0]}”). Flag it as such if intended.`) });
     }
+    for (const d of v.details) items.push({ passage: n, tone: 'orange', text: p(detailWords(d, lang), detailWords(d, lang)) });
   }
   return items;
 }
@@ -586,6 +609,7 @@ export function toMarkdown(detail: ReportData, lang: Lang): string {
       ? pick(lang, 'Pas trouvé dans la partie lue de la source', 'Not found in the part of the source that was read')
       : pick(lang, "L'auteur ajoute, sans sa source", 'The author adds, without a source');
     for (const addition of view.additions) lines.push(`- ${addLabel} : « ${addition} »`);
+    for (const d of view.details) lines.push(`- ${pick(lang, 'Point à vérifier', 'Point to check')} : ${detailWords(d, lang)}`);
     lines.push('');
   }
   lines.push('---', pick(lang,

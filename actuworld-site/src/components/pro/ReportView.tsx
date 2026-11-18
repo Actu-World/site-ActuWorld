@@ -48,6 +48,22 @@ function Passage({ view, lang }: { view: SectionView; lang: Lang }) {
           </ul>
         </div>
       )}
+      {view.details.length > 0 && (
+        <div className="mt-4 text-sm">
+          <p className="body-semi">
+            {view.details.length > 1
+              ? t('Points à vérifier (le reste du passage tient) :', 'Points to check (the rest of the passage holds):')
+              : t('Un point à vérifier (le reste du passage tient) :', 'One point to check (the rest of the passage holds):')}
+          </p>
+          <ul className="list-disc pl-5 text-aw-muted mt-1 space-y-1">
+            {view.details.map((d) => (
+              <li key={d.cardText}>
+                {t('Tu écris', 'You write')} « {d.cardText} ». {d.domain ?? t('La source', 'The source')} {t('dit', 'says')} : « {d.sourceQuote} »
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       <ul className="mt-5 space-y-4">
         {view.lines.length === 0 && (
           <li className="text-sm text-aw-muted">

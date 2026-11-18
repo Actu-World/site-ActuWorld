@@ -32,6 +32,15 @@ export type ProVerificationSummary = {
 export type CardKind = 'fact' | 'opinion' | 'mixed';
 export type Stance = 'supports' | 'contradicts' | 'unrelated' | 'unverifiable';
 
+/** Écart de détail (RECO-SRC, 18/11) : une date ou un chiffre que la source donne autrement.
+ *  À montrer pour guider l'auteur ; ne change pas le verdict. */
+export type DetailGap = {
+  card_text: string;
+  source_quote: string;
+  source_url?: string | null;
+  span?: [number, number] | null;
+};
+
 export type CardSource = {
   url: string;
   stance?: Stance | null;
@@ -57,6 +66,7 @@ export type CardCheck = {
   card_kind?: CardKind | null;
   additions?: string[];
   addition_spans?: Array<[number, number] | null>;
+  details?: DetailGap[];
   /** 3.3 : conseils pour le passage entier (l'auteur ajoute son analyse). */
   advice?: Alert[];
 };
