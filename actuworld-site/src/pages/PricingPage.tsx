@@ -131,8 +131,8 @@ export default function PricingPage() {
         t("Chaque passage confronté à ses liens", "Each passage checked against its links"),
         t("Citation exacte de la source", "Exact quote from the source"),
       ],
-      cta: t("Demander un accès", "Request access"),
-      mailto: BETA_MAILTO,
+      cta: t("Essayer avec mon compte", "Try it with my account"),
+      to: "/pro",
       featured: false,
     },
     {
@@ -189,7 +189,7 @@ export default function PricingPage() {
     },
     {
       q: t("Puis-je l'utiliser dès maintenant ?", "Can I use it now?"),
-      a: t("ASV Pro est en bêta, gratuite et sur invitation. Écris-nous pour demander un accès. Les prix affichés s'appliqueront à l'ouverture, et les membres de la bêta gardent le tarif de lancement pendant 12 mois.", "ASV Pro is in beta, free and by invitation. Write to us to request access. The prices shown will apply at launch, and beta members keep the launch price for 12 months."),
+      a: t("Oui : la formule Découverte est ouverte à tout compte ActuWorld, avec 5 rapports par mois. Connecte-toi avec le même compte que dans l'app. Pro et Rédaction sont en bêta, gratuite et sur invitation : écris-nous pour demander un accès. Les prix affichés s'appliqueront à l'ouverture, et les membres de la bêta gardent le tarif de lancement pendant 12 mois.", "Yes: the Discovery plan is open to every ActuWorld account, with 5 reports per month. Sign in with the same account as in the app. Pro and Newsroom are in beta, free and by invitation: write to us to request access. The prices shown will apply at launch, and beta members keep the launch price for 12 months."),
     },
     {
       q: t("Pourquoi c'est gratuit pour les enseignants ?", "Why is it free for teachers?"),
@@ -254,7 +254,7 @@ export default function PricingPage() {
           <p className="mt-5 inline-flex items-start gap-2 rounded-xl border border-aw px-4 py-3 text-[15px]" role="note">
             <ShieldCheck className="w-4 h-4 mt-1 flex-shrink-0 text-aw-primary" aria-hidden="true" />
             <span>
-              {t("Bêta gratuite, sur invitation. Les prix ci-dessous s'appliqueront à l'ouverture ; les membres de la bêta gardent le tarif de lancement 12 mois.", "Free beta, by invitation. The prices below will apply at launch; beta members keep the launch price for 12 months.")}
+              {t("Découverte est ouverte à tout compte ActuWorld. Pro et Rédaction sont en bêta gratuite, sur invitation : les prix ci-dessous s'appliqueront à l'ouverture, et les membres de la bêta gardent le tarif de lancement 12 mois.", "Discovery is open to every ActuWorld account. Pro and Newsroom are in a free beta, by invitation: the prices below will apply at launch, and beta members keep the launch price for 12 months.")}
             </span>
           </p>
         </div>
