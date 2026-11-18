@@ -9,6 +9,8 @@ import { download, slug } from '../../lib/pro/files';
 import { toMarkdown, type Lang } from '../../lib/pro/report';
 import type { ReportData } from '../../lib/pro/types';
 
+const POLL_MS = 3000;
+
 /**
  * ASV Pro 3.8 — rapport partagé en lecture seule (/pro/r/:jeton), sans compte.
  * Ni auteur, ni action : lecture, export Markdown, impression. Non indexé.
@@ -21,12 +23,22 @@ export default function ProSharedPage() {
   const [data, setData] = useState<ReportData | null>(null);
   const [missing, setMissing] = useState(false);
 
+  // Un rapport ouvert depuis l'app arrive ici pendant sa vérification : on relit
+  // toutes les 3 s tant qu'il est en cours (comme la page privée du rapport).
   useEffect(() => {
     let cancelled = false;
-    proApi.shared(token)
-      .then((d) => { if (!cancelled) setData(d); })
-      .catch(() => { if (!cancelled) setMissing(true); });
-    return () => { cancelled = true; };
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const load = () => {
+      proApi.shared(token)
+        .then((d) => {
+          if (cancelled) return;
+          setData(d);
+          if (d.status === 'pending') timer = setTimeout(load, POLL_MS);
+        })
+        .catch(() => { if (!cancelled) setMissing(true); });
+    };
+    load();
+    return () => { cancelled = true; if (timer) clearTimeout(timer); };
   }, [token]);
 
   return (

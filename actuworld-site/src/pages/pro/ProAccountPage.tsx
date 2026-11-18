@@ -10,7 +10,7 @@ function Account({ access }: { access: ProAccess }) {
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
   const plan = access.moderator && !access.org_name
     ? t('Équipe ActuWorld', 'ActuWorld team')
-    : ({ beta: t('Bêta', 'Beta'), pro: 'Pro', team: t('Équipe', 'Team') } as Record<string, string>)[access.plan ?? ''] ?? '—';
+    : ({ discovery: t('Découverte', 'Discovery'), beta: t('Bêta', 'Beta'), pro: 'Pro', team: t('Équipe', 'Team') } as Record<string, string>)[access.plan ?? ''] ?? '—';
   const used = Math.min(access.used_this_month, access.quota);
   const ratio = access.quota ? used / access.quota : 1;
 
