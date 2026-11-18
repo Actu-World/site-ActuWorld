@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { CalendarClock, CheckCircle2, ImageOff, Images, Lock, MapPin, Newspaper, Pencil, RefreshCw } from 'lucide-react';
+import { CalendarClock, CheckCircle2, ImageOff, Images, Lock, MapPin, Newspaper, Pencil, RefreshCw, ShieldCheck } from 'lucide-react';
 import { Section } from '../../components/Section';
 import { PageMeta } from '../../components/PageMeta';
 import { PostPreview } from '../../components/studio/PostPreview';
@@ -19,6 +19,8 @@ import {
   type PlanAccount, type PlanItem, type PlanItemData,
 } from '../../lib/studio/redaction';
 import type { PostDraftImage } from '../../types/post';
+import { proApi } from '../../lib/pro/api';
+import { buildPlanProCheck } from '../../lib/studio/proCheck';
 
 // Page « Rédaction » : le plan éditorial des comptes officiels, chaque contenu
 // rendu comme dans l'app (aperçus du Studio). Ce qui n'est pas encore fourni
@@ -194,6 +196,8 @@ export default function StudioRedactionPage() {
   const [draft, setDraft] = useState<EditDraft | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [proBusy, setProBusy] = useState(false);
+  const [proError, setProError] = useState<string | null>(null);
   const openItem = openId ? items.find((it) => it.id === openId) ?? null : null;
 
   const load = () => {
@@ -227,7 +231,32 @@ export default function StudioRedactionPage() {
     if (draft && draft.value !== draft.initial && !window.confirm(t('Abandonner la retouche en cours ?', 'Discard the current edit?'))) return;
     setDraft(null);
     setSaveError(null);
+    setProError(null);
     setOpenId(null);
+  };
+
+  // Vérification ASV Pro du contenu tel qu'il est dans le plan (retouches comprises).
+  // L'onglet s'ouvre avant l'appel, sinon le navigateur le bloque comme pop-up.
+  const checkWithPro = async (item: PlanItem) => {
+    const built = buildPlanProCheck(item, withEdits(item), isEnglish);
+    if (!built.ok) {
+      setProError(isEnglish ? built.en : built.fr);
+      return;
+    }
+    setProError(null);
+    setProBusy(true);
+    const tab = window.open('', '_blank');
+    try {
+      const id = await proApi.create(built.input);
+      const url = `/pro/rapport/${encodeURIComponent(id)}`;
+      if (tab) tab.location.href = url;
+      else window.location.assign(url);
+    } catch (e) {
+      tab?.close();
+      setProError((e as Error).message || t("ASV Pro n'a pas répondu, réessaie.", 'ASV Pro did not answer, try again.'));
+    } finally {
+      setProBusy(false);
+    }
   };
 
   /** Enregistre (value) ou annule (null) la retouche du champ ouvert. */
@@ -551,9 +580,10 @@ export default function StudioRedactionPage() {
         })()}
       </InlineEditContext.Provider>
 
-      {/* Mode retouche : bouton au-dessus de l'aperçu + panneau d'édition */}
-      {openItem && canEdit && (
-        <div className="fixed z-[60] top-4 left-4 flex flex-wrap items-center gap-2">
+      {/* Au-dessus de l'aperçu : retouche (membres can_edit) et vérification ASV Pro avant publication */}
+      {openItem && (
+        <div className="fixed z-[60] top-4 left-4 right-4 sm:right-auto flex flex-wrap items-center gap-2">
+          {canEdit && (<>
           <button
             type="button"
             onClick={() => { setEditMode((v) => !v); setDraft(null); setSaveError(null); }}
@@ -567,6 +597,24 @@ export default function StudioRedactionPage() {
             <span className="px-3 py-1.5 rounded-lg bg-black/60 text-white text-xs font-semibold">
               {t('Clique sur un texte du téléphone', 'Click any text on the phone')}
               {Object.keys(openItem.edits ?? {}).length > 0 && ` · ${Object.keys(openItem.edits ?? {}).length} ${t('retouche(s)', 'edit(s)')}`}
+            </span>
+          )}
+          </>)}
+          {!openItem.published && (
+            <button
+              type="button"
+              onClick={() => checkWithPro(openItem)}
+              disabled={proBusy}
+              title={t("Le rapport s'ouvre dans un nouvel onglet. Rien n'est publié.", 'The report opens in a new tab. Nothing is published.')}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-bold shadow-lg bg-white text-black hover:bg-white/90 disabled:opacity-60"
+            >
+              <ShieldCheck className="w-4 h-4" />
+              {proBusy ? t('Envoi à ASV Pro…', 'Sending to ASV Pro…') : t('Vérifier les sources avant de publier', 'Check sources before publishing')}
+            </button>
+          )}
+          {proError && (
+            <span role="alert" className="px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-semibold max-w-md">
+              {proError}
             </span>
           )}
         </div>
