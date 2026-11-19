@@ -9,8 +9,8 @@ import { featuresOf } from '../../lib/pro/plan';
 import type { ProAccess, ProImportDetail, ProImportSummary, ProSourceInput } from '../../lib/pro/types';
 
 /**
- * « Depuis l'app » : les contenus (dépêches, articles) envoyés par l'app.
- * L'app ENVOIE, le site DEMANDE : rien n'est vérifié ni compté dans le quota
+ * « À vérifier » : les contenus (dépêches, articles) envoyés par l'app ou par le
+ * Studio. On ENVOIE, le site DEMANDE : rien n'est vérifié ni compté dans le quota
  * tant que l'utilisateur n'a pas cliqué « Vérifier ce contenu ».
  */
 
@@ -74,7 +74,7 @@ function ImportDetail({ id, access }: { id: string; access: ProAccess }) {
     return (
       <div className="card p-8 text-center">
         <p className="body-semi">{error}</p>
-        <Link to="/pro/app" className="btn-outline btn-sm mt-5">{t("Retour à « Depuis l'app »", 'Back to “From the app”')}</Link>
+        <Link to="/pro/app" className="btn-outline btn-sm mt-5">{t('Retour à « À vérifier »', 'Back to “To check”')}</Link>
       </div>
     );
   }
@@ -179,8 +179,8 @@ function ImportDetail({ id, access }: { id: string; access: ProAccess }) {
             )}
             {!features.edit && (
               <p className="text-sm text-aw-muted">
-                {t('Une correction à faire ? Modifie ton brouillon dans l’app, puis renvoie-le.',
-                  'Something to fix? Edit your draft in the app, then send it again.')}
+                {t('Une correction à faire ? Modifie ton brouillon là où tu l’écris, puis renvoie-le.',
+                  'Something to fix? Edit your draft where you write it, then send it again.')}
               </p>
             )}
           </>
@@ -241,10 +241,10 @@ function ImportList() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl sm:text-3xl">{t("Depuis l'app", 'From the app')}</h1>
+        <h1 className="text-2xl sm:text-3xl">{t('À vérifier', 'To check')}</h1>
         <p className="text-aw-muted mt-2 max-w-prose">
-          {t('Les dépêches et les articles que tu envoies depuis l’app avec « Vérifier mes sources ». Tu décides ici de lancer la vérification : c’est à ce moment-là qu’elle compte dans ton quota.',
-            'The briefs and articles you send from the app with “Check my sources”. You decide here when to start the check: that is when it counts towards your quota.')}
+          {t('Les dépêches et les articles que tu envoies depuis l’app ou le Studio avec « Vérifier mes sources ». Tu décides ici de lancer la vérification : c’est à ce moment-là qu’elle compte dans ton quota.',
+            'The briefs and articles you send from the app or the Studio with “Check my sources”. You decide here when to start the check: that is when it counts towards your quota.')}
         </p>
       </div>
       {error && <p className="text-red-600 text-sm" role="alert">{error}</p>}
@@ -255,8 +255,8 @@ function ImportList() {
         <div className="card p-8 text-center text-aw-muted">
           <Smartphone className="w-6 h-6 mx-auto" aria-hidden="true" />
           <p className="mt-3 max-w-md mx-auto">
-            {t('Rien pour le moment. Dans l’app, ouvre un brouillon et appuie sur « Vérifier mes sources avant de publier » : il arrivera ici.',
-              'Nothing yet. In the app, open a draft and tap “Check my sources before publishing”: it will show up here.')}
+            {t('Rien pour le moment. Dans l’app ou dans le Studio, ouvre un brouillon et choisis « Vérifier mes sources avant de publier » : il arrivera ici.',
+              'Nothing yet. In the app or in the Studio, open a draft and choose “Check my sources before publishing”: it will show up here.')}
           </p>
         </div>
       )}
@@ -294,7 +294,7 @@ export default function ProAppPage() {
   const { id } = useParams();
   const { isEnglish } = useLanguage();
   return (
-    <ProShell title={isEnglish ? 'From the app' : "Depuis l'app"} path={id ? `/pro/app/${id}` : '/pro/app'}>
+    <ProShell title={isEnglish ? 'To check' : 'À vérifier'} path={id ? `/pro/app/${id}` : '/pro/app'}>
       {(access) => (id ? <ImportDetail id={id} access={access} /> : <ImportList />)}
     </ProShell>
   );

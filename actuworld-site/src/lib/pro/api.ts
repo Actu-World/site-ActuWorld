@@ -40,6 +40,9 @@ export const proApi = {
 
   /** Contenus envoyés par l'app : déposés sans rien lancer, vérifiés à la demande. */
   imports: {
+    /** Dépose un contenu sans rien lancer ; rend l'identifiant de sa page « À vérifier ». */
+    create: (input: ProInput, kind: 'post' | 'article') =>
+      studioApi.post<Envelope<{ id: string }>>('/pro/imports', { ...input, kind }).then((r) => r.data.id),
     list: () => studioApi.get<Envelope<ProImportSummary[]>>('/pro/imports').then((r) => r.data),
     get: (id: string) =>
       studioApi.get<Envelope<ProImportDetail>>(`/pro/imports/${encodeURIComponent(id)}`).then((r) => r.data),

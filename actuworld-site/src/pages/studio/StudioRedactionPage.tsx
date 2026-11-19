@@ -235,7 +235,8 @@ export default function StudioRedactionPage() {
     setOpenId(null);
   };
 
-  // Vérification ASV Pro du contenu tel qu'il est dans le plan (retouches comprises).
+  // Le contenu du plan (retouches comprises) est DÉPOSÉ dans « À vérifier » : sa
+  // page s'ouvre, et c'est là qu'on décide de lancer la vérification.
   // L'onglet s'ouvre avant l'appel, sinon le navigateur le bloque comme pop-up.
   const checkWithPro = async (item: PlanItem) => {
     const built = buildPlanProCheck(item, withEdits(item), isEnglish);
@@ -247,8 +248,8 @@ export default function StudioRedactionPage() {
     setProBusy(true);
     const tab = window.open('', '_blank');
     try {
-      const id = await proApi.create(built.input);
-      const url = `/pro/rapport/${encodeURIComponent(id)}`;
+      const id = await proApi.imports.create(built.input, item.kind);
+      const url = `/pro/app/${encodeURIComponent(id)}`;
       if (tab) tab.location.href = url;
       else window.location.assign(url);
     } catch (e) {
@@ -605,7 +606,7 @@ export default function StudioRedactionPage() {
               type="button"
               onClick={() => checkWithPro(openItem)}
               disabled={proBusy}
-              title={t("Le rapport s'ouvre dans un nouvel onglet. Rien n'est publié.", 'The report opens in a new tab. Nothing is published.')}
+              title={t("La page de vérification s'ouvre dans un nouvel onglet. Rien n'est publié, et rien n'est compté avant ton clic.", 'The check page opens in a new tab. Nothing is published, and nothing is counted before you click.')}
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-bold shadow-lg bg-white text-black hover:bg-white/90 disabled:opacity-60"
             >
               <ShieldCheck className="w-4 h-4" />

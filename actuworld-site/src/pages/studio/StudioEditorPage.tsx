@@ -37,6 +37,7 @@ import { PaperSheet } from '../../components/studio/PaperSheet';
 import { StudioByline } from '../../components/studio/StudioByline';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { studioApi } from '../../lib/studio/api';
+import { ProCheckLink, useProCheck, usePublishConfirm } from '../../components/studio/proCheckFlow';
 import { useStudioSession } from '../../hooks/useStudioSession';
 import { ThemeSelect } from '../../components/studio/ThemeSelect';
 import { FormatSelect } from '../../components/studio/FormatSelect';
@@ -490,6 +491,12 @@ export default function StudioEditorPage() {
     }
   };
 
+  // ── ASV Pro : l'article en cours, tel qu'il sera jugé (un passage par intertitre,
+  // les sources valent pour tout le texte).
+  const getProData = useCallback(() => ({ title, blocks, sources }), [title, blocks, sources]);
+  const proCheck = useProCheck('article', getProData);
+  const publishConfirm = usePublishConfirm();
+
   // ── Publication directe : mêmes gardes que le bouton Publier de l'app
   // (titre + au moins une source valide), confirmation explicite car l'article
   // devient public immédiatement et la vérification ASV se lance. ──
@@ -513,11 +520,13 @@ export default function StudioEditorPage() {
       setSendError(t('Une thématique est requise pour publier.', 'A theme is required to publish.'));
       return;
     }
-    const confirmed = window.confirm(t(
-      `Publier « ${payload.title} » ?\n\nL'article sera visible par tout le monde dans l'app et la vérification des sources (ASV) se lancera immédiatement.`,
-      `Publish “${payload.title}”?\n\nThe article will be visible to everyone in the app and source verification (ASV) will start immediately.`
-    ));
-    if (!confirmed) return;
+    // Confirmation : si les sources n'ont pas été vérifiées, on propose de le faire d'abord.
+    const choice = await publishConfirm.ask(payload.title, true, proCheck.isChecked());
+    if (choice === 'check') {
+      await proCheck.run();
+      return;
+    }
+    if (choice !== 'publish') return;
 
     setIsPublishing(true);
     try {
@@ -993,6 +1002,8 @@ export default function StudioEditorPage() {
                             : t("Envoyer vers l'app", 'Send to the app')}
                       </button>
                     </div>
+                    <ProCheckLink check={proCheck} />
+                    {publishConfirm.dialog}
                     <p className="text-aw-muted text-xs mt-3 text-center">
                       {t(
                         'Publier met l’article en ligne immédiatement (vérification ASV automatique). Le brouillon, lui, reste privé pour être relu et publié depuis l’app.',

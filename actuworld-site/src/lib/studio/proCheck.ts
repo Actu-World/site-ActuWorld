@@ -109,7 +109,12 @@ function articleSections(d: PlanItemData, sources: ProSourceInput[]): ProSection
  * raison, en mots, pour laquelle il ne peut pas partir.
  */
 export function buildPlanProCheck(item: PlanItem, data: PlanItemData, isEnglish: boolean): ProCheckBuild {
-  const isArticle = item.kind === 'article';
+  return buildProCheck(item.kind, data, isEnglish);
+}
+
+/** Même construction pour un contenu en cours d'écriture dans un éditeur du Studio. */
+export function buildProCheck(kind: 'post' | 'article', data: PlanItemData, isEnglish: boolean): ProCheckBuild {
+  const isArticle = kind === 'article';
   const articleSources = isArticle ? toSources(data.sources) : [];
   if (isArticle && articleSources.length > MAX_SOURCES_PER_SECTION) {
     return {

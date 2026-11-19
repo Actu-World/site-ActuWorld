@@ -16,6 +16,7 @@ import { PostHelpModal } from '../../components/studio/PostHelpModal';
 import { StudioByline } from '../../components/studio/StudioByline';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { studioApi } from '../../lib/studio/api';
+import { ProCheckLink, useProCheck, usePublishConfirm } from '../../components/studio/proCheckFlow';
 import { useStudioSession } from '../../hooks/useStudioSession';
 import { ThemeSelect } from '../../components/studio/ThemeSelect';
 import { resolveAvatarUrl, uploadPostImage } from '../../lib/studio/images';
@@ -349,6 +350,19 @@ export default function StudioPostPage() {
     }
   };
 
+  // ── ASV Pro : la dépêche en cours, telle qu'elle sera jugée (une carte = un passage).
+  const getProData = useCallback(() => ({
+    images: cards.filter(cardHasContent).map((c) => ({
+      image_url: c.image_url ?? null,
+      subject: c.subject,
+      description: c.description,
+      back_description: c.back_description,
+      sources: c.source?.url ? [{ url: c.source.url, title: c.source.title }] : [],
+    })),
+  }), [cards]);
+  const proCheck = useProCheck('post', getProData);
+  const publishConfirm = usePublishConfirm();
+
   // ── Publication directe : mêmes gardes que le bouton Publier de l'app
   // (image, sujet, excerpt et source sur chaque carte + thématique), puis
   // confirmation explicite : la dépêche devient publique et l'ASV se lance. ──
@@ -370,11 +384,13 @@ export default function StudioPostPage() {
       return;
     }
     const title = filledCards[0].subject!.trim();
-    const confirmed = window.confirm(t(
-      `Publier « ${title} » ?\n\nLa dépêche sera visible par tout le monde dans l'app et la vérification des sources (ASV) se lancera immédiatement.`,
-      `Publish “${title}”?\n\nThe dispatch will be visible to everyone in the app and source verification (ASV) will start immediately.`
-    ));
-    if (!confirmed) return;
+    // Confirmation : si les sources n'ont pas été vérifiées, on propose de le faire d'abord.
+    const choice = await publishConfirm.ask(title, false, proCheck.isChecked());
+    if (choice === 'check') {
+      await proCheck.run();
+      return;
+    }
+    if (choice !== 'publish') return;
 
     setIsPublishing(true);
     try {
@@ -772,6 +788,8 @@ export default function StudioPostPage() {
                         {isSending ? t('Envoi en cours…', 'Sending…') : t("Envoyer vers l'app", 'Send to the app')}
                       </button>
                     </div>
+                    <ProCheckLink check={proCheck} />
+                    {publishConfirm.dialog}
                     <p className="text-aw-muted text-xs mt-3 text-center">
                       {t(
                         "Publier met la dépêche en ligne immédiatement (vérification ASV automatique). Le brouillon, lui, reste privé pour être relu et publié depuis l'app.",
