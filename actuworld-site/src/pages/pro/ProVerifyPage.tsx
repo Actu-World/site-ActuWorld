@@ -8,7 +8,7 @@ import { useLanguage } from '../../i18n/LanguageContext';
 import { proApi } from '../../lib/pro/api';
 import type { ProAccess, ProInput } from '../../lib/pro/types';
 import {
-  DRAFT_KEY, draftProblems, isUrl, MAX_DISTINCT_SOURCES, MAX_SECTIONS, MAX_SOURCES, SECTION_MAX, TITLE_MAX,
+  DRAFT_KEY, draftProblems, draftSourceUrls, MAX_DISTINCT_SOURCES, MAX_SECTIONS, MAX_SOURCES, SECTION_MAX, TITLE_MAX,
   type Draft, type DraftSection,
 } from '../../lib/pro/draft';
 import { distinctSources, parsePastedHtml, parsePastedText, type PasteResult } from '../../lib/pro/paste';
@@ -104,6 +104,44 @@ function PasteArticle({ onUse }: { onUse: (r: PasteResult) => void }) {
   );
 }
 
+/** Champs de liens (un par ligne), partagés par un passage et par les sources du texte. */
+function LinkFields({ urls, onChange, max }: { urls: string[]; onChange: (next: string[]) => void; max: number }) {
+  const { isEnglish } = useLanguage();
+  const t = (fr: string, en: string) => (isEnglish ? en : fr);
+  return (
+    <>
+      {urls.map((url, k) => (
+        <div key={k}>
+          <div className="flex gap-2">
+            <input
+              className="field"
+              type="url"
+              inputMode="url"
+              aria-label={t(`Lien ${k + 1}`, `Link ${k + 1}`)}
+              value={url}
+              onChange={(e) => onChange(urls.map((u, m) => (m === k ? e.target.value : u)))}
+              placeholder="https://"
+            />
+            {urls.length > 1 && (
+              <button type="button" className="text-aw-muted hover:text-red-600 px-2" aria-label={t('Retirer le lien', 'Remove link')}
+                onClick={() => onChange(urls.filter((_, m) => m !== k))}>
+                <Trash2 className="w-4 h-4" aria-hidden="true" />
+              </button>
+            )}
+          </div>
+          <AsvReadabilityHint url={url} />
+        </div>
+      ))}
+      {urls.length < max && (
+        <button type="button" className="btn-link text-sm" onClick={() => onChange([...urls, ''])}>
+          <Plus className="w-4 h-4" aria-hidden="true" />
+          {t('Ajouter un lien', 'Add a link')}
+        </button>
+      )}
+    </>
+  );
+}
+
 function VerifyForm({ access }: { access: ProAccess }) {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
@@ -122,15 +160,29 @@ function VerifyForm({ access }: { access: ProAccess }) {
 
   const remaining = Math.max(access.quota - access.used_this_month, 0);
   const problems = draftProblems(draft);
-  const distinct = distinctSources(draft.sections.map((s) => ({ ...s, sources: s.sources.filter(isUrl) })));
+  const distinct = draftSourceUrls(draft).length;
+  // Deux modes : une source par passage (l'auteur les attache lui-même), ou des
+  // sources pour tout le texte (un article), listées une seule fois.
+  const textScope = draft.scope === 'text';
+  const textSources = draft.sources?.length ? draft.sources : [''];
+  const setScope = (scope: 'passage' | 'text') =>
+    update((d) => {
+      if (scope === 'passage') return { ...d, scope };
+      // Passage → texte : on part des liens déjà saisis dans les passages.
+      const known = [...new Set(d.sections.flatMap((s) => s.sources.map((u) => u.trim()).filter(Boolean)))].slice(0, MAX_SOURCES);
+      return { ...d, scope, sources: d.sources?.some((u) => u.trim()) ? d.sources : (known.length ? known : ['']) };
+    });
 
   const update = (fn: (d: Draft) => Draft) => setDraft((d) => fn(d));
   const setSection = (i: number, patch: Partial<DraftSection>) =>
     update((d) => ({ ...d, sections: d.sections.map((s, j) => (j === i ? { ...s, ...patch } : s)) }));
 
   const usePasted = (r: PasteResult) =>
+    // Un texte collé garde ses liens paragraphe par paragraphe : mode « par passage ».
     update((d) => ({
       title: d.title.trim() ? d.title : r.title ?? '',
+      scope: 'passage',
+      sources: d.sources,
       sections: r.sections.map((s) => ({ text: s.text, sources: s.sources.length ? s.sources : [''] })),
     }));
 
@@ -139,14 +191,19 @@ function VerifyForm({ access }: { access: ProAccess }) {
     if (problems.length || sending) return;
     setSending(true);
     setError(null);
+    // Sources du texte : chaque passage les reçoit toutes (le moteur juge un
+    // passage contre les sources qu'on lui donne), et le rapport sait qu'elles
+    // valent pour l'ensemble.
+    const shared = textScope ? draftSourceUrls(draft).map((url) => ({ url })) : [];
     const input: ProInput = {
       // 3.1 : le modèle écrit ses explications dans la langue du site.
       locale: isEnglish ? 'en' : 'fr',
       title: draft.title.trim(),
       sections: draft.sections.map((s) => ({
         text: s.text.trim(),
-        sources: s.sources.map((u) => u.trim()).filter(Boolean).map((url) => ({ url })),
+        sources: textScope ? shared : s.sources.map((u) => u.trim()).filter(Boolean).map((url) => ({ url })),
       })),
+      ...(textScope ? { sources_scope: 'text' as const } : {}),
     };
     try {
       const id = await proApi.create(input);
@@ -164,10 +221,15 @@ function VerifyForm({ access }: { access: ProAccess }) {
         <div>
           <h1 className="text-2xl sm:text-3xl">{t('Vérifier un texte', 'Check a text')}</h1>
           <p className="text-aw-muted mt-1 max-w-prose">
-            {t(
-              "ASV lit chaque source en entier et juge chaque passage contre ses propres liens. Un passage sans lien est signalé, pas jugé.",
-              'ASV reads each source in full and judges each passage against its own links. A passage without a link is flagged, not judged.',
-            )}
+            {textScope
+              ? t(
+                'ASV lit chaque source en entier et confronte chaque passage aux sources du texte. Le rapport dit, pour chaque passage, quelle source en parle.',
+                'ASV reads each source in full and checks each passage against the text’s sources. The report says, for each passage, which source covers it.',
+              )
+              : t(
+                "ASV lit chaque source en entier et juge chaque passage contre ses propres liens. Un passage sans lien est signalé, pas jugé.",
+                'ASV reads each source in full and judges each passage against its own links. A passage without a link is flagged, not judged.',
+              )}
           </p>
         </div>
         <p className="text-sm text-aw-muted tabular">
@@ -189,6 +251,33 @@ function VerifyForm({ access }: { access: ProAccess }) {
         />
       </div>
 
+      <fieldset className="card p-5 space-y-4">
+        <legend className="body-semi px-1">{t('Comment tes sources sont-elles liées au texte ?', 'How are your sources linked to the text?')}</legend>
+        <div className="flex flex-wrap gap-2" role="group">
+          <button type="button" aria-pressed={!textScope} onClick={() => setScope('passage')}
+            className={`badge ${!textScope ? 'badge-primary' : 'text-aw-muted border border-aw'}`}>
+            {t('Une source par passage', 'One source per passage')}
+          </button>
+          <button type="button" aria-pressed={textScope} onClick={() => setScope('text')}
+            className={`badge ${textScope ? 'badge-primary' : 'text-aw-muted border border-aw'}`}>
+            {t('Sources pour tout le texte', 'Sources for the whole text')}
+          </button>
+        </div>
+        <p className="text-sm text-aw-muted max-w-prose">
+          {textScope
+            ? t('Comme un article : tu donnes tes sources une fois, elles valent pour tous les passages.',
+                'Like an article: you give your sources once, they apply to every passage.')
+            : t('Comme une dépêche : chaque passage a ses propres liens, que tu attaches toi-même.',
+                'Like a brief: each passage has its own links, which you attach yourself.')}
+        </p>
+        {textScope && (
+          <div className="space-y-3">
+            <p className="body-semi text-sm">{t('Sources du texte', 'Text sources')}</p>
+            <LinkFields urls={textSources} max={MAX_SOURCES} onChange={(next) => update((d) => ({ ...d, sources: next }))} />
+          </div>
+        )}
+      </fieldset>
+
       <ol className="space-y-5">
         {draft.sections.map((section, i) => {
           const hasLink = section.sources.some((u) => u.trim());
@@ -197,7 +286,7 @@ function VerifyForm({ access }: { access: ProAccess }) {
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-lg">{t(`Passage ${i + 1}`, `Passage ${i + 1}`)}</h2>
                 <div className="flex items-center gap-3">
-                  {!hasLink && (
+                  {!textScope && !hasLink && (
                     <span className="inline-flex items-center gap-1 text-xs text-aw-muted">
                       <Link2Off className="w-3.5 h-3.5" aria-hidden="true" />
                       {t('Sans lien : signalé, pas jugé', 'No link: flagged, not judged')}
@@ -222,37 +311,12 @@ function VerifyForm({ access }: { access: ProAccess }) {
                 />
                 <p className="text-xs text-aw-muted text-right tabular mt-1">{section.text.length} / {SECTION_MAX}</p>
               </div>
-              <div className="space-y-3">
-                <p className="body-semi text-sm">{t('Liens de ce passage', 'Links in this passage')}</p>
-                {section.sources.map((url, k) => (
-                  <div key={k}>
-                    <div className="flex gap-2">
-                      <input
-                        className="field"
-                        type="url"
-                        inputMode="url"
-                        aria-label={t(`Lien ${k + 1}`, `Link ${k + 1}`)}
-                        value={url}
-                        onChange={(e) => setSection(i, { sources: section.sources.map((u, m) => (m === k ? e.target.value : u)) })}
-                        placeholder="https://"
-                      />
-                      {section.sources.length > 1 && (
-                        <button type="button" className="text-aw-muted hover:text-red-600 px-2" aria-label={t('Retirer le lien', 'Remove link')}
-                          onClick={() => setSection(i, { sources: section.sources.filter((_, m) => m !== k) })}>
-                          <Trash2 className="w-4 h-4" aria-hidden="true" />
-                        </button>
-                      )}
-                    </div>
-                    <AsvReadabilityHint url={url} />
-                  </div>
-                ))}
-                {section.sources.length < MAX_SOURCES && (
-                  <button type="button" className="btn-link text-sm" onClick={() => setSection(i, { sources: [...section.sources, ''] })}>
-                    <Plus className="w-4 h-4" aria-hidden="true" />
-                    {t('Ajouter un lien', 'Add a link')}
-                  </button>
-                )}
-              </div>
+              {!textScope && (
+                <div className="space-y-3">
+                  <p className="body-semi text-sm">{t('Liens de ce passage', 'Links in this passage')}</p>
+                  <LinkFields urls={section.sources} max={MAX_SOURCES} onChange={(next) => setSection(i, { sources: next })} />
+                </div>
+              )}
             </li>
           );
         })}

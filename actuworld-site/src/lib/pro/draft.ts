@@ -13,7 +13,20 @@ export const MAX_DISTINCT_SOURCES = 10;
 export const DRAFT_KEY = 'aw_pro_draft_v2';
 
 export type DraftSection = { text: string; sources: string[] };
-export type Draft = { title: string; sections: DraftSection[] };
+/**
+ * `scope` : `passage` (défaut) = chaque passage a ses propres liens ; `text` = une
+ * seule liste de sources (`sources`) pour tout le texte, comme un article.
+ */
+export type DraftScope = 'passage' | 'text';
+export type Draft = { title: string; sections: DraftSection[]; scope?: DraftScope; sources?: string[] };
+
+const validUrls = (list: string[]) => list.map((u) => u.trim()).filter(isUrl);
+
+/** Adresses valides et distinctes que le brouillon enverra, selon son mode. */
+export function draftSourceUrls(draft: Draft): string[] {
+  const all = draft.scope === 'text' ? validUrls(draft.sources ?? []) : draft.sections.flatMap((s) => validUrls(s.sources));
+  return [...new Set(all)];
+}
 
 export function isUrl(value: string): boolean {
   try {
@@ -34,11 +47,14 @@ export function draftProblems(draft: Draft): DraftProblem[] {
     const n = i + 1;
     if (!s.text.trim()) list.push({ fr: `Passage ${n} : le texte est vide.`, en: `Passage ${n}: the text is empty.` });
     if (s.text.length > SECTION_MAX) list.push({ fr: `Passage ${n} : trop long.`, en: `Passage ${n}: too long.` });
-    if (s.sources.some((u) => u.trim() && !isUrl(u))) {
+    if (draft.scope !== 'text' && s.sources.some((u) => u.trim() && !isUrl(u))) {
       list.push({ fr: `Passage ${n} : une adresse n'est pas valide.`, en: `Passage ${n}: an address is not valid.` });
     }
   });
-  const distinct = new Set(draft.sections.flatMap((s) => s.sources.map((u) => u.trim()).filter(isUrl))).size;
+  if (draft.scope === 'text' && (draft.sources ?? []).some((u) => u.trim() && !isUrl(u))) {
+    list.push({ fr: "Sources du texte : une adresse n'est pas valide.", en: 'Text sources: an address is not valid.' });
+  }
+  const distinct = draftSourceUrls(draft).length;
   if (distinct === 0) list.push({ fr: 'Ajoute au moins une source : sans lien, rien à confronter.', en: 'Add at least one source: without a link, nothing to check.' });
   if (distinct > MAX_DISTINCT_SOURCES) {
     list.push({

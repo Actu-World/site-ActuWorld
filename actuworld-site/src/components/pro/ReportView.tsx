@@ -14,8 +14,18 @@ function ToneDot({ color }: { color: string }) {
   return <span className="inline-block w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: color }} aria-hidden="true" />;
 }
 
-function Passage({ view, lang }: { view: SectionView; lang: Lang }) {
+/**
+ * `textScope` : les sources valent pour tout le texte (article). Sous un passage,
+ * on ne montre alors que les sources qui en parlent (elles l'appuient ou le
+ * contredisent) ; les autres sont rappelées une fois, en tête du rapport. En mode
+ * « une source par passage », l'auteur a attaché ses sources lui-même : on les
+ * montre toutes, y compris celle qui ne parle pas du passage.
+ */
+function Passage({ view, lang, textScope }: { view: SectionView; lang: Lang; textScope: boolean }) {
   const t = (fr: string, en: string) => (lang === 'en' ? en : fr);
+  const lines = textScope
+    ? view.lines.filter((line) => line.stance === 'supports' || line.stance === 'contradicts')
+    : view.lines;
   return (
     <li id={`passage-${view.index + 1}`} className="card p-5 sm:p-6 break-inside-avoid scroll-mt-24">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
@@ -65,6 +75,11 @@ function Passage({ view, lang }: { view: SectionView; lang: Lang }) {
         </div>
       )}
       <ul className="mt-5 space-y-4">
+        {textScope && view.lines.length > 0 && lines.length === 0 && (
+          <li className="text-sm text-aw-muted">
+            {t('Aucune source du texte ne parle de ce passage.', 'None of the text’s sources covers this passage.')}
+          </li>
+        )}
         {view.lines.length === 0 && (
           <li className="text-sm text-aw-muted">
             {view.stance === 'none'
@@ -72,7 +87,7 @@ function Passage({ view, lang }: { view: SectionView; lang: Lang }) {
               : t('Pas de verdict pour ce passage.', 'No verdict for this passage.')}
           </li>
         )}
-        {view.lines.map((line) => (
+        {lines.map((line) => (
           <li key={line.url} className="border-t border-aw pt-4 text-sm">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
               <a href={line.url} target="_blank" rel="noopener noreferrer" className="link font-semibold inline-flex items-center gap-1">
@@ -122,6 +137,11 @@ export default function ReportView({ data, lang, actions, banner, showReview = t
   const status = data.status === 'failed' && !v ? 'failed' : v?.status ?? (pending ? null : data.verdict_status);
   const tone = TONE_COLOR[verdictTone(status, opinionSourced)];
   const views = sectionViews(data.input, v?.cards, v?.sources_check, lang, v?.explanations_locale);
+  // Sources pour tout le texte : listées une fois ici, avec leur état de lecture.
+  const textScope = data.input.sources_scope === 'text';
+  const textSources = textScope
+    ? [...new Map(views.flatMap((view) => view.lines).map((line) => [line.url, line])).values()]
+    : [];
   const alerts = (v?.alerts_i18n ?? []).map((a) => alertWords(a, lang)).filter((x): x is string => !!x);
   const review = v ? reviewItems(views, lang, v.advice) : [];
   const llmDown = data.result?.llm?.status && data.result.llm.status !== 'ok';
@@ -205,9 +225,31 @@ export default function ReportView({ data, lang, actions, banner, showReview = t
         {actions && <div className="mt-6 print:hidden">{actions}</div>}
       </header>
 
+      {v && textScope && textSources.length > 0 && (
+        <section className="card p-5 sm:p-6" aria-labelledby="pro-text-sources">
+          <h2 id="pro-text-sources" className="text-lg">{t('Sources du texte', 'Text sources')}</h2>
+          <p className="text-sm text-aw-muted mt-1 max-w-prose">
+            {t('Elles valent pour tout le texte. Sous chaque passage, seules celles qui en parlent sont rappelées.',
+              'They apply to the whole text. Under each passage, only the ones that cover it are shown.')}
+          </p>
+          <ul className="mt-4 space-y-3 text-sm">
+            {textSources.map((line) => (
+              <li key={line.url}>
+                <a href={line.url} target="_blank" rel="noopener noreferrer" className="link font-semibold inline-flex items-center gap-1">
+                  {line.domain}
+                  <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
+                </a>
+                {line.publisher && <span className="text-aw-muted ml-3">{line.publisher}</span>}
+                {line.state && <p className="text-aw-muted mt-1">{line.state}</p>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       {v && (
         <ol className="space-y-5">
-          {views.map((view) => <Passage key={view.index} view={view} lang={lang} />)}
+          {views.map((view) => <Passage key={view.index} view={view} lang={lang} textScope={textScope} />)}
         </ol>
       )}
 

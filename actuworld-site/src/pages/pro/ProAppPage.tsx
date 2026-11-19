@@ -90,7 +90,7 @@ function ImportDetail({ id, access }: { id: string; access: ProAccess }) {
   const sections = detail.input.sections ?? [];
   // Un article cite ses sources pour l'ensemble du texte, pas passage par passage :
   // on les montre une fois, en tête. Une dépêche a une source par carte.
-  const isArticle = detail.kind === 'article';
+  const isArticle = detail.input.sources_scope === 'text' || detail.kind === 'article';
   const articleSources = isArticle ? (sections.find((s) => s.sources.length > 0)?.sources ?? []) : [];
   const sourceItems = (list: (ProSourceInput | string)[]) => list.map((s, j) => (
     <li key={j} className="flex flex-wrap items-baseline gap-x-2">
@@ -116,10 +116,20 @@ function ImportDetail({ id, access }: { id: string; access: ProAccess }) {
 
   // Le contenu part dans le formulaire libre (« Vérifier un texte »), où il se retouche.
   const edit = () => {
-    const draft: Draft = {
-      title: detail.input.title,
-      sections: sections.map((s) => ({ text: s.text, sources: s.sources.length ? s.sources.map(sourceUrl) : [''] })),
-    };
+    // Un article s'ouvre en mode « sources pour tout le texte » : ses sources sont
+    // listées une fois, pas recopiées sous chaque passage.
+    const draft: Draft = isArticle
+      ? {
+          title: detail.input.title,
+          scope: 'text',
+          sources: articleSources.length ? articleSources.map(sourceUrl) : [''],
+          sections: sections.map((s) => ({ text: s.text, sources: [''] })),
+        }
+      : {
+          title: detail.input.title,
+          scope: 'passage',
+          sections: sections.map((s) => ({ text: s.text, sources: s.sources.length ? s.sources.map(sourceUrl) : [''] })),
+        };
     try {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
     } catch { /* stockage indisponible : le formulaire s'ouvrira vide */ }

@@ -7,7 +7,8 @@ import type { PlanItem, PlanItemData, PlanSource } from './redaction';
 // (api/src/workers/sourceCheckPayload.ts), pour que le rapport annonce le verdict
 // de l'app : une dépêche = une section par carte (sujet, recto, verso) avec les
 // sources de la carte ; un article = une section par intertitre, chacune avec les
-// sources de l'article. Bornes = celles de l'API (api/src/utils/proInput.ts).
+// sources de l'article (`sources_scope: 'text'` : elles valent pour tout le texte).
+// Bornes = celles de l'API (api/src/utils/proInput.ts).
 
 const TITLE_MAX = 200;
 const SECTION_MAX = 1500;
@@ -139,6 +140,11 @@ export function buildPlanProCheck(item: PlanItem, data: PlanItemData, isEnglish:
     : clean(firstCard?.subject) || clean(firstCard?.description)) || clean(data.planned_subject);
   return {
     ok: true,
-    input: { title: title.slice(0, TITLE_MAX) || 'Sans titre', sections, locale: isEnglish ? 'en' : 'fr' },
+    input: {
+      title: title.slice(0, TITLE_MAX) || 'Sans titre',
+      sections,
+      locale: isEnglish ? 'en' : 'fr',
+      ...(isArticle ? { sources_scope: 'text' as const } : {}),
+    },
   };
 }

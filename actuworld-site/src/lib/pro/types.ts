@@ -34,7 +34,13 @@ export type ProImportDetail = ProImportSummary & { input: ProInput };
 
 export type ProSourceInput = { url: string; title?: string };
 export type ProSectionInput = { text: string; sources: ProSourceInput[] };
-export type ProInput = { title: string; sections: ProSectionInput[]; locale?: 'fr' | 'en' | 'es' | 'zh' };
+export type ProInput = {
+  title: string;
+  sections: ProSectionInput[];
+  locale?: 'fr' | 'en' | 'es' | 'zh';
+  /** `text` : les sources valent pour tout le texte (article). Absent : une source par passage. */
+  sources_scope?: 'text';
+};
 
 export type ProStatus = 'pending' | 'done' | 'failed';
 
