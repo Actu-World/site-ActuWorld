@@ -1,11 +1,12 @@
 import type { ReactNode } from 'react';
 import { Navigate, NavLink } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Lock } from 'lucide-react';
 import { PageMeta } from '../PageMeta';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { useStudioSession } from '../../hooks/useStudioSession';
 import { useProAccess } from '../../hooks/useProAccess';
 import type { ProAccess } from '../../lib/pro/types';
+import { featuresOf } from '../../lib/pro/plan';
 
 type Props = {
   title: string;
@@ -28,11 +29,13 @@ export function ProShell({ title, path, children }: Props) {
   if (!isLoading && !session) return <Navigate to="/pro" replace />;
   if (!isAccessLoading && session && access && !access.member) return <Navigate to="/pro" replace />;
 
+  // Onglet réservé à une formule supérieure : il reste visible, avec un cadenas.
+  const historyLocked = !!access && !featuresOf(access).history;
   const links = [
-    { to: '/pro/verifier', label: t('Vérifier un texte', 'Check a text') },
-    { to: '/pro/historique', label: t('Historique', 'History') },
-    { to: '/pro/sources', label: t('Éditeurs', 'Publishers') },
-    { to: '/pro/compte', label: t('Compte', 'Account') },
+    { to: '/pro/verifier', label: t('Vérifier un texte', 'Check a text'), locked: false },
+    { to: '/pro/historique', label: t('Historique', 'History'), locked: historyLocked },
+    { to: '/pro/sources', label: t('Éditeurs', 'Publishers'), locked: false },
+    { to: '/pro/compte', label: t('Compte', 'Account'), locked: false },
   ];
 
   return (
@@ -44,12 +47,18 @@ export function ProShell({ title, path, children }: Props) {
             key={l.to}
             to={l.to}
             className={({ isActive }) =>
-              `px-3 py-2.5 text-sm font-semibold whitespace-nowrap border-b-2 -mb-px transition-colors ${
+              `inline-flex items-center gap-1.5 px-3 py-2.5 text-sm font-semibold whitespace-nowrap border-b-2 -mb-px transition-colors ${
                 isActive ? 'border-aw-primary text-aw-primary' : 'border-transparent text-aw-muted hover:text-aw-text'
               }`
             }
           >
             {l.label}
+            {l.locked && (
+              <>
+                <Lock className="w-3.5 h-3.5" aria-hidden="true" />
+                <span className="sr-only">{t('(formule Pro)', '(Pro plan)')}</span>
+              </>
+            )}
           </NavLink>
         ))}
       </nav>

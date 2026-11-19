@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { ProShell } from '../../components/pro/ProShell';
+import { ProUpsell } from '../../components/pro/ProUpsell';
+import { featuresOf } from '../../lib/pro/plan';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { proApi } from '../../lib/pro/api';
 import type { ProVerificationSummary } from '../../lib/pro/types';
@@ -104,7 +106,14 @@ export default function ProHistoryPage() {
   const { isEnglish } = useLanguage();
   return (
     <ProShell title={isEnglish ? 'History' : 'Historique'} path="/pro/historique">
-      {() => <History />}
+      {(access) => (featuresOf(access).history ? <History /> : (
+        <ProUpsell
+          title={isEnglish ? 'History comes with the Pro plan' : "L'historique fait partie de la formule Pro"}
+          description={isEnglish
+            ? 'With Discovery, each report opens when you run it. Pro keeps all your reports, with export and read-only sharing.'
+            : 'En Découverte, chaque rapport s’ouvre au moment où tu le lances. Pro garde tous tes rapports, avec l’export et le partage en lecture seule.'}
+        />
+      ))}
     </ProShell>
   );
 }

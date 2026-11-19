@@ -2,15 +2,14 @@ import { ProShell } from '../../components/pro/ProShell';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { supabase } from '../../lib/studio/supabase';
 import type { ProAccess } from '../../lib/pro/types';
+import { planLabel } from '../../lib/pro/plan';
 
 const CONTACT = 'mailto:actuworld.app@outlook.fr?subject=ASV%20Pro';
 
 function Account({ access }: { access: ProAccess }) {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
-  const plan = access.moderator && !access.org_name
-    ? t('Équipe ActuWorld', 'ActuWorld team')
-    : ({ discovery: t('Découverte', 'Discovery'), beta: t('Bêta', 'Beta'), pro: 'Pro', team: t('Équipe', 'Team') } as Record<string, string>)[access.plan ?? ''] ?? '—';
+  const plan = planLabel(access, t);
   const used = Math.min(access.used_this_month, access.quota);
   const ratio = access.quota ? used / access.quota : 1;
 

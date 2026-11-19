@@ -3,11 +3,13 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Check, Copy, Download, Link2, Link2Off, Loader2, Printer, RotateCcw, Trash2 } from 'lucide-react';
 import { ProShell } from '../../components/pro/ProShell';
 import ReportView from '../../components/pro/ReportView';
+import { ProUpsell } from '../../components/pro/ProUpsell';
+import { featuresOf } from '../../lib/pro/plan';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { proApi } from '../../lib/pro/api';
 import { download, slug } from '../../lib/pro/files';
 import { toMarkdown, type Lang } from '../../lib/pro/report';
-import type { ProVerificationDetail } from '../../lib/pro/types';
+import type { ProAccess, ProVerificationDetail } from '../../lib/pro/types';
 
 const POLL_MS = 3000;
 
@@ -73,7 +75,10 @@ function ShareBlock({ detail, onChange }: { detail: ProVerificationDetail; onCha
   );
 }
 
-function Report({ id }: { id: string }) {
+function Report({ id, access }: { id: string; access: ProAccess }) {
+  const features = featuresOf(access);
+  // Sans historique (Découverte), on revient à la page de vérification.
+  const homePath = features.history ? '/pro/historique' : '/pro/verifier';
   const { isEnglish } = useLanguage();
   const lang: Lang = isEnglish ? 'en' : 'fr';
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
@@ -101,7 +106,9 @@ function Report({ id }: { id: string }) {
     return (
       <div className="card p-8 text-center">
         <p className="body-semi">{error}</p>
-        <Link to="/pro/historique" className="btn-outline btn-sm mt-5">{t("Retour à l'historique", 'Back to history')}</Link>
+        <Link to={homePath} className="btn-outline btn-sm mt-5">
+          {features.history ? t("Retour à l'historique", 'Back to history') : t('Vérifier un texte', 'Check a text')}
+        </Link>
       </div>
     );
   }
@@ -131,7 +138,7 @@ function Report({ id }: { id: string }) {
     setBusy(true);
     try {
       await proApi.remove(detail.id);
-      navigate('/pro/historique');
+      navigate(homePath);
     } catch (e) {
       setError((e as Error).message);
       setBusy(false);
@@ -141,6 +148,7 @@ function Report({ id }: { id: string }) {
   const actions = (
     <>
       <div className="flex flex-wrap gap-2">
+        {features.export && (<>
         <button type="button" className="btn-outline btn-sm" disabled={!ready} onClick={() => download(`asv-${slug(detail.input.title)}.md`, toMarkdown(detail, lang), 'text/markdown;charset=utf-8')}>
           <Download className="w-4 h-4" aria-hidden="true" />Markdown
         </button>
@@ -150,6 +158,7 @@ function Report({ id }: { id: string }) {
         <button type="button" className="btn-outline btn-sm" disabled={!ready} onClick={() => window.print()}>
           <Printer className="w-4 h-4" aria-hidden="true" />{t('Imprimer ou PDF', 'Print or PDF')}
         </button>
+        </>)}
         <button type="button" className="btn-outline btn-sm" disabled={busy || pending} onClick={rerun}>
           <RotateCcw className="w-4 h-4" aria-hidden="true" />{t('Relancer', 'Run again')}
         </button>
@@ -164,11 +173,22 @@ function Report({ id }: { id: string }) {
           </button>
         )}
       </div>
-      <ShareBlock detail={detail} onChange={(token) => setDetail((d) => (d ? { ...d, share_token: token } : d))} />
+      {features.share && (
+        <ShareBlock detail={detail} onChange={(token) => setDetail((d) => (d ? { ...d, share_token: token } : d))} />
+      )}
+      {(!features.export || !features.share) && (
+        <div className="mt-4">
+          <ProUpsell
+            compact
+            title={t('Export et partage en lecture seule : formule Pro.', 'Export and read-only sharing: Pro plan.')}
+            description=""
+          />
+        </div>
+      )}
     </>
   );
 
-  return <ReportView data={detail} lang={lang} actions={actions} />;
+  return <ReportView data={detail} lang={lang} actions={actions} showReview={features.review} />;
 }
 
 export default function ProReportPage() {
@@ -176,7 +196,7 @@ export default function ProReportPage() {
   const { isEnglish } = useLanguage();
   return (
     <ProShell title={isEnglish ? 'Report' : 'Rapport'} path={`/pro/rapport/${id}`}>
-      {() => <Report id={id} />}
+      {(access) => <Report id={id} access={access} />}
     </ProShell>
   );
 }

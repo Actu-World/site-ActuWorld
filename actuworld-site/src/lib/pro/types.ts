@@ -9,6 +9,15 @@ export type ProAccess = {
   org_name: string | null;
   quota: number;
   used_this_month: number;
+  /** Ce que la formule ouvre au-delà du rapport (absent sur une API plus ancienne). */
+  features?: ProFeatures;
+};
+
+export type ProFeatures = {
+  history: boolean;
+  export: boolean;
+  share: boolean;
+  review: boolean;
 };
 
 export type ProSourceInput = { url: string; title?: string };

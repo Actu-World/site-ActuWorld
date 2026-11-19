@@ -110,9 +110,11 @@ type Props = {
   actions?: ReactNode;
   /** Mention au-dessus du titre (ex. rapport partagé en lecture seule). */
   banner?: ReactNode;
+  /** Synthèse et « À reprendre avant publication » (formule Pro). Vrai par défaut. */
+  showReview?: boolean;
 };
 
-export default function ReportView({ data, lang, actions, banner }: Props) {
+export default function ReportView({ data, lang, actions, banner, showReview = true }: Props) {
   const t = (fr: string, en: string) => (lang === 'en' ? en : fr);
   const v = data.result?.verification;
   const opinionSourced = !!v?.faithfulness?.opinion_sourced;
@@ -144,7 +146,7 @@ export default function ReportView({ data, lang, actions, banner }: Props) {
               <ToneDot color={tone} />
               {verdictWords(status, lang, opinionSourced)}
             </p>
-            {v && <p className="mt-2 text-aw-muted max-w-prose">{reportSummary(v, views, lang)}</p>}
+            {v && showReview && <p className="mt-2 text-aw-muted max-w-prose">{reportSummary(v, views, lang)}</p>}
             {pending && (
               <p className="mt-3 text-sm inline-flex items-center gap-2 text-aw-muted" role="status">
                 <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
@@ -154,7 +156,13 @@ export default function ReportView({ data, lang, actions, banner }: Props) {
             )}
           </>
         )}
-        {v && (
+        {v && !showReview && (
+          <p className="mt-4 text-sm text-aw-muted">
+            {t('La synthèse et la liste des points à reprendre avant publication font partie de la formule Pro. Le détail passage par passage est juste en dessous.',
+              'The summary and the list of points to fix before publishing come with the Pro plan. The passage-by-passage detail is just below.')}
+          </p>
+        )}
+        {v && showReview && (
           <section className="mt-6 rounded-xl border border-aw p-4 sm:p-5" aria-labelledby="pro-review">
             <h2 id="pro-review" className="text-base">{t('À reprendre avant publication', 'To fix before publishing')}</h2>
             {review.length === 0 ? (

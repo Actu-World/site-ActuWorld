@@ -5,6 +5,9 @@ import { useTheme } from '../../hooks/useTheme';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { Logo } from '../Logo';
 import { useStudioAccessFromSession } from '../../hooks/useStudioAccess';
+import { useStudioSession } from '../../hooks/useStudioSession';
+import { useProAccess } from '../../hooks/useProAccess';
+import { planLabel } from '../../lib/pro/plan';
 
 /**
  * En-tête de l'environnement Studio : remplace la Navbar du site sur les
@@ -18,6 +21,10 @@ export const StudioNavbar: React.FC = () => {
   const { access } = useStudioAccessFromSession();
   // Même barre pour ASV Pro (/pro) : badge et lien d'accueil propres.
   const isPro = useLocation().pathname.startsWith('/pro');
+  // Formule du compte, affichée à côté du badge ASV Pro (connecté et membre seulement).
+  const { session } = useStudioSession();
+  const { access: proAccess } = useProAccess(isPro && !!session);
+  const proPlan = isPro && proAccess?.member ? planLabel(proAccess, (fr, en) => (isEnglish ? en : fr)) : null;
 
   return (
     <header className="sticky top-0 z-40 glass border-b border-aw print:hidden" role="banner">
@@ -36,6 +43,14 @@ export const StudioNavbar: React.FC = () => {
           >
             {isPro ? 'ASV Pro' : 'Studio'}
           </span>
+          {proPlan && (
+            <span
+              className="px-2 py-0.5 rounded-md text-[11px] font-semibold border border-aw text-aw-muted shrink-0 whitespace-nowrap"
+              title={isEnglish ? 'Your plan' : 'Ta formule'}
+            >
+              {proPlan}
+            </span>
+          )}
         </Link>
 
         <div className="flex items-center gap-2 shrink-0">
