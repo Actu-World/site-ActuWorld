@@ -8,12 +8,11 @@ import { useLanguage } from '../../i18n/LanguageContext';
 import { proApi } from '../../lib/pro/api';
 import type { ProAccess, ProInput } from '../../lib/pro/types';
 import {
-  draftProblems, isUrl, MAX_DISTINCT_SOURCES, MAX_SECTIONS, MAX_SOURCES, SECTION_MAX, TITLE_MAX,
+  DRAFT_KEY, draftProblems, isUrl, MAX_DISTINCT_SOURCES, MAX_SECTIONS, MAX_SOURCES, SECTION_MAX, TITLE_MAX,
   type Draft, type DraftSection,
 } from '../../lib/pro/draft';
 import { distinctSources, parsePastedHtml, parsePastedText, type PasteResult } from '../../lib/pro/paste';
 
-const DRAFT_KEY = 'aw_pro_draft_v2';
 
 const emptySection = (): DraftSection => ({ text: '', sources: [''] });
 const emptyDraft = (): Draft => ({ title: '', sections: [emptySection()] });

@@ -18,7 +18,19 @@ export type ProFeatures = {
   export: boolean;
   share: boolean;
   review: boolean;
+  /** Retoucher sur le site un contenu envoyé par l'app (absent sur une API plus ancienne). */
+  edit?: boolean;
 };
+
+/** Contenu (dépêche, article) envoyé par l'app, en attente de vérification ou déjà vérifié. */
+export type ProImportSummary = {
+  id: string;
+  kind: 'post' | 'article' | string;
+  title: string;
+  verification_id: string | null;
+  created_at: string;
+};
+export type ProImportDetail = ProImportSummary & { input: ProInput };
 
 export type ProSourceInput = { url: string; title?: string };
 export type ProSectionInput = { text: string; sources: ProSourceInput[] };

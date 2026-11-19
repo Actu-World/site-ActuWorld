@@ -17,8 +17,8 @@ import { supabase } from '../lib/studio/supabase';
 
 // Destinations autorisées après connexion (jamais une adresse prise telle quelle dans l'URL).
 const NEXT_PATHS = ['/pro', '/studio/editeur'] as const;
-// Rapport ASV Pro ouvert depuis l'app : /pro/rapport/<uuid>, rien d'autre.
-const PRO_REPORT_PATH = /^\/pro\/rapport\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+// Pages ASV Pro ouvertes depuis l'app : un rapport ou un contenu envoyé, rien d'autre.
+const PRO_REPORT_PATH = /^\/pro\/(rapport|app)\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export function safeNext(raw: string | null): string {
   const value = raw ?? '';
@@ -68,17 +68,17 @@ export default function AuthConfirmPage() {
     return (
       <div className="max-w-lg mx-auto container-px py-16 sm:py-24">
         <PageMeta
-          title={t('Rapport ASV', 'ASV report')}
-          description={t('Ouverture de ton rapport ASV Pro.', 'Opening your ASV Pro report.')}
+          title="ASV Pro"
+          description={t('Ouverture d’ASV Pro.', 'Opening ASV Pro.')}
           path="/auth/confirm"
           noindex
         />
         <div className="card p-8 text-center" role="status">
           <Loader2 className="w-5 h-5 animate-spin mx-auto text-aw-muted" aria-hidden="true" />
-          <h1 className="body-semi text-lg mt-4 mb-2">{t('Analyse en cours', 'Analysis in progress')}</h1>
+          <h1 className="body-semi text-lg mt-4 mb-2">{t('Ouverture d’ASV Pro', 'Opening ASV Pro')}</h1>
           <p className="text-aw-muted text-sm">
-            {t('On ouvre ton rapport dans ASV Pro. Les sources sont en train d’être lues.',
-              'Opening your report in ASV Pro. The sources are being read.')}
+            {t('On te connecte avec ton compte ActuWorld. Rien n’est vérifié tant que tu ne l’as pas demandé.',
+              'Signing you in with your ActuWorld account. Nothing is checked until you ask.')}
           </p>
         </div>
       </div>

@@ -21,7 +21,7 @@ export function planLabel(access: Pick<ProAccess, 'plan' | 'moderator' | 'org_na
 
 /** Fonctions ouvertes par la formule (repli sur la formule si l'API ne les envoie pas). */
 export function featuresOf(access: Pick<ProAccess, 'plan' | 'features'>): ProFeatures {
-  if (access.features) return access.features;
   const paid = !!access.plan && access.plan !== 'discovery';
-  return { history: paid, export: paid, share: paid, review: paid };
+  if (access.features) return { ...access.features, edit: access.features.edit ?? paid };
+  return { history: paid, export: paid, share: paid, review: paid, edit: paid };
 }

@@ -36,6 +36,7 @@ const ProHistoryPage = lazy(() => import('./pages/pro/ProHistoryPage'));
 const ProSourcesPage = lazy(() => import('./pages/pro/ProSourcesPage'));
 const ProAccountPage = lazy(() => import('./pages/pro/ProAccountPage'));
 const ProSharedPage = lazy(() => import('./pages/pro/ProSharedPage'));
+const ProAppPage = lazy(() => import('./pages/pro/ProAppPage'));
 const StudioLoginPage = lazy(() => import('./pages/studio/StudioLoginPage'));
 const AuthConfirmPage = lazy(() => import('./pages/AuthConfirmPage'));
 const StudioEditorPage = lazy(() => import('./pages/studio/StudioEditorPage'));
@@ -129,6 +130,8 @@ export default function App() {
             <Route path="/pro" element={<ProLoginPage />} />
             <Route path="/pro/verifier" element={<ProVerifyPage />} />
             <Route path="/pro/rapport/:id" element={<ProReportPage />} />
+            <Route path="/pro/app" element={<ProAppPage />} />
+            <Route path="/pro/app/:id" element={<ProAppPage />} />
             <Route path="/pro/historique" element={<ProHistoryPage />} />
             <Route path="/pro/sources" element={<ProSourcesPage />} />
             <Route path="/pro/compte" element={<ProAccountPage />} />

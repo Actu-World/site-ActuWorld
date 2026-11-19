@@ -9,6 +9,9 @@ export const MAX_SOURCES = 3;
 /** RECO-SRC juge au plus 10 adresses distinctes par vérification. */
 export const MAX_DISTINCT_SOURCES = 10;
 
+/** Brouillon du formulaire « Vérifier un texte », gardé dans le navigateur. */
+export const DRAFT_KEY = 'aw_pro_draft_v2';
+
 export type DraftSection = { text: string; sources: string[] };
 export type Draft = { title: string; sections: DraftSection[] };
 
