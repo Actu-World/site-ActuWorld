@@ -88,6 +88,18 @@ function ImportDetail({ id, access }: { id: string; access: ProAccess }) {
   }
 
   const sections = detail.input.sections ?? [];
+  // Un article cite ses sources pour l'ensemble du texte, pas passage par passage :
+  // on les montre une fois, en tête. Une dépêche a une source par carte.
+  const isArticle = detail.kind === 'article';
+  const articleSources = isArticle ? (sections.find((s) => s.sources.length > 0)?.sources ?? []) : [];
+  const sourceItems = (list: (ProSourceInput | string)[]) => list.map((s, j) => (
+    <li key={j} className="flex flex-wrap items-baseline gap-x-2">
+      <a href={sourceUrl(s)} target="_blank" rel="noopener noreferrer" className="link break-all">
+        {sourceTitle(s) || host(sourceUrl(s))}
+      </a>
+      {sourceTitle(s) && <span className="text-aw-muted">{host(sourceUrl(s))}</span>}
+    </li>
+  ));
   const noQuota = access.used_this_month >= access.quota;
 
   const verify = async () => {
@@ -132,8 +144,11 @@ function ImportDetail({ id, access }: { id: string; access: ProAccess }) {
         ) : (
           <>
             <p className="text-aw-muted max-w-prose">
-              {t('Voici ton contenu tel qu’ASV le lira : chaque passage est confronté à ses propres sources. Rien n’est publié, et rien n’est compté tant que tu n’as pas lancé la vérification.',
-                'Here is your content as ASV will read it: each passage is checked against its own sources. Nothing is published, and nothing is counted until you start the check.')}
+              {isArticle
+                ? t('Voici ton article tel qu’ASV le lira : chaque passage est confronté aux sources de l’article. Rien n’est publié, et rien n’est compté tant que tu n’as pas lancé la vérification.',
+                    'Here is your article as ASV will read it: each passage is checked against the article’s sources. Nothing is published, and nothing is counted until you start the check.')
+                : t('Voici ton contenu tel qu’ASV le lira : chaque passage est confronté à ses propres sources. Rien n’est publié, et rien n’est compté tant que tu n’as pas lancé la vérification.',
+                    'Here is your content as ASV will read it: each passage is checked against its own sources. Nothing is published, and nothing is counted until you start the check.')}
             </p>
             <QuotaLine access={access} />
             <div className="flex flex-wrap gap-2">
@@ -163,23 +178,27 @@ function ImportDetail({ id, access }: { id: string; access: ProAccess }) {
         {error && <p className="text-red-600 text-sm" role="alert">{error}</p>}
       </header>
 
+      {isArticle && (
+        <section className="card p-5 sm:p-6" aria-labelledby="pro-app-sources">
+          <h2 id="pro-app-sources" className="text-base">{t('Sources de l’article', 'Article sources')}</h2>
+          <p className="text-sm text-aw-muted mt-1">
+            {t('Elles valent pour tout l’article : chaque passage ci-dessous leur sera confronté.',
+              'They apply to the whole article: each passage below will be checked against them.')}
+          </p>
+          <ul className="mt-3 space-y-1.5 text-sm">{sourceItems(articleSources)}</ul>
+        </section>
+      )}
+
       <ol className="space-y-4">
         {sections.map((section, i) => (
           <li key={i} className="card p-5 sm:p-6">
             <p className="caption text-aw-muted">{t(`Passage ${i + 1}`, `Passage ${i + 1}`)}</p>
             <p className="mt-2 whitespace-pre-line max-w-prose">{section.text}</p>
-            {section.sources.length > 0 ? (
-              <ul className="mt-4 space-y-1.5 text-sm">
-                {section.sources.map((s, j) => (
-                  <li key={j} className="flex flex-wrap items-baseline gap-x-2">
-                    <span className="text-aw-muted">{t('Source', 'Source')}</span>
-                    <a href={sourceUrl(s)} target="_blank" rel="noopener noreferrer" className="link break-all">
-                      {sourceTitle(s) || host(sourceUrl(s))}
-                    </a>
-                    {sourceTitle(s) && <span className="text-aw-muted">{host(sourceUrl(s))}</span>}
-                  </li>
-                ))}
-              </ul>
+            {isArticle ? null : section.sources.length > 0 ? (
+              <div className="mt-4 text-sm">
+                <p className="text-aw-muted">{t('Source de cette carte', 'Source of this card')}</p>
+                <ul className="mt-1 space-y-1.5">{sourceItems(section.sources)}</ul>
+              </div>
             ) : (
               <p className="mt-4 text-sm text-aw-muted">{t('Pas de source sur ce passage : il ne sera pas confronté.', 'No source on this passage: it will not be checked.')}</p>
             )}
