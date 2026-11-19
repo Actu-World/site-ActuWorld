@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Loader2, LogIn } from 'lucide-react';
 import { PageMeta } from '../components/PageMeta';
@@ -17,10 +17,13 @@ import { supabase } from '../lib/studio/supabase';
 
 // Destinations autorisées après connexion (jamais une adresse prise telle quelle dans l'URL).
 const NEXT_PATHS = ['/pro', '/studio/editeur'] as const;
-type NextPath = (typeof NEXT_PATHS)[number];
+// Rapport ASV Pro ouvert depuis l'app : /pro/rapport/<uuid>, rien d'autre.
+const PRO_REPORT_PATH = /^\/pro\/rapport\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export function safeNext(raw: string | null): NextPath {
-  return (NEXT_PATHS as readonly string[]).includes(raw ?? '') ? (raw as NextPath) : '/studio/editeur';
+export function safeNext(raw: string | null): string {
+  const value = raw ?? '';
+  if ((NEXT_PATHS as readonly string[]).includes(value) || PRO_REPORT_PATH.test(value)) return value;
+  return '/studio/editeur';
 }
 
 export default function AuthConfirmPage() {
@@ -32,7 +35,10 @@ export default function AuthConfirmPage() {
 
   const tokenHash = params.get('token_hash') ?? '';
   const next = safeNext(params.get('next'));
-  const isPro = next === '/pro';
+  const isPro = next.startsWith('/pro');
+  // Ouverture depuis l'app (déjà connectée) : la session s'ouvre sans clic. Le
+  // clic ne protège que les liens reçus par mail, que les antivirus pré-ouvrent.
+  const auto = params.get('auto') === '1' && PRO_REPORT_PATH.test(next);
   const loginPath = isPro ? '/pro' : '/studio';
   const target = isPro ? 'ASV Pro' : t('le Studio', 'the Studio');
 
@@ -47,7 +53,37 @@ export default function AuthConfirmPage() {
     navigate(next, { replace: true });
   };
 
+  // Une seule tentative, même si React rejoue l'effet (le lien ne sert qu'une fois).
+  const autoStarted = useRef(false);
+  useEffect(() => {
+    if (!auto || !tokenHash || autoStarted.current) return;
+    autoStarted.current = true;
+    confirm();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [auto, tokenHash]);
+
   const broken = !tokenHash || state === 'error';
+
+  if (auto && !broken) {
+    return (
+      <div className="max-w-lg mx-auto container-px py-16 sm:py-24">
+        <PageMeta
+          title={t('Rapport ASV', 'ASV report')}
+          description={t('Ouverture de ton rapport ASV Pro.', 'Opening your ASV Pro report.')}
+          path="/auth/confirm"
+          noindex
+        />
+        <div className="card p-8 text-center" role="status">
+          <Loader2 className="w-5 h-5 animate-spin mx-auto text-aw-muted" aria-hidden="true" />
+          <h1 className="body-semi text-lg mt-4 mb-2">{t('Analyse en cours', 'Analysis in progress')}</h1>
+          <p className="text-aw-muted text-sm">
+            {t('On ouvre ton rapport dans ASV Pro. Les sources sont en train d’être lues.',
+              'Opening your report in ASV Pro. The sources are being read.')}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-lg mx-auto container-px py-16 sm:py-24">

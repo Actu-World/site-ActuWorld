@@ -106,7 +106,12 @@ function Report({ id }: { id: string }) {
     );
   }
   if (!detail) {
-    return <div className="flex justify-center py-16 text-aw-muted" role="status"><Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" /></div>;
+    return (
+      <div className="flex flex-col items-center gap-3 py-16 text-aw-muted" role="status">
+        <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
+        <p className="text-sm">{t('Ouverture du rapport…', 'Opening the report…')}</p>
+      </div>
+    );
   }
 
   const ready = !!detail.result?.verification;
