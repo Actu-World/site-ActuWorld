@@ -1,11 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { FileText, Loader2, Newspaper, PencilLine, ShieldCheck, Smartphone, Trash2 } from 'lucide-react';
+import { FileText, Loader2, Newspaper, ShieldCheck, Smartphone, Trash2 } from 'lucide-react';
 import { ProShell } from '../../components/pro/ProShell';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { proApi } from '../../lib/pro/api';
-import { DRAFT_KEY, type Draft } from '../../lib/pro/draft';
-import { featuresOf } from '../../lib/pro/plan';
 import type { ProAccess, ProImportDetail, ProImportSummary, ProSourceInput } from '../../lib/pro/types';
 
 /**
@@ -59,7 +57,6 @@ function QuotaLine({ access }: { access: ProAccess }) {
 function ImportDetail({ id, access }: { id: string; access: ProAccess }) {
   const { t } = useT();
   const navigate = useNavigate();
-  const features = featuresOf(access);
   const [detail, setDetail] = useState<ProImportDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -114,28 +111,6 @@ function ImportDetail({ id, access }: { id: string; access: ProAccess }) {
     }
   };
 
-  // Le contenu part dans le formulaire libre (« Vérifier un texte »), où il se retouche.
-  const edit = () => {
-    // Un article s'ouvre en mode « sources pour tout le texte » : ses sources sont
-    // listées une fois, pas recopiées sous chaque passage.
-    const draft: Draft = isArticle
-      ? {
-          title: detail.input.title,
-          scope: 'text',
-          sources: articleSources.length ? articleSources.map(sourceUrl) : [''],
-          sections: sections.map((s) => ({ text: s.text, sources: [''] })),
-        }
-      : {
-          title: detail.input.title,
-          scope: 'passage',
-          sections: sections.map((s) => ({ text: s.text, sources: s.sources.length ? s.sources.map(sourceUrl) : [''] })),
-        };
-    try {
-      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-    } catch { /* stockage indisponible : le formulaire s'ouvrira vide */ }
-    navigate('/pro/verifier');
-  };
-
   return (
     <article className="space-y-6">
       <header className="card p-6 sm:p-8 space-y-4">
@@ -166,23 +141,16 @@ function ImportDetail({ id, access }: { id: string; access: ProAccess }) {
                 {busy ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <ShieldCheck className="w-4 h-4" aria-hidden="true" />}
                 {t('Vérifier ce contenu', 'Check this content')}
               </button>
-              {features.edit && (
-                <button type="button" className="btn-outline inline-flex items-center gap-2" disabled={busy} onClick={edit}>
-                  <PencilLine className="w-4 h-4" aria-hidden="true" />{t('Retoucher avant de vérifier', 'Edit before checking')}
-                </button>
-              )}
             </div>
             {noQuota && (
               <p className="text-sm">
                 <Link to="/tarifs" className="font-semibold text-aw-primary hover:underline">{t('Voir les formules', 'See the plans')}</Link>
               </p>
             )}
-            {!features.edit && (
-              <p className="text-sm text-aw-muted">
-                {t('Une correction à faire ? Modifie ton brouillon là où tu l’écris, puis renvoie-le.',
-                  'Something to fix? Edit your draft where you write it, then send it again.')}
-              </p>
-            )}
+            <p className="text-sm text-aw-muted">
+              {t('Une correction à faire ? Modifie ton brouillon là où tu l’écris (l’app ou le Studio), puis revérifie : ton texte y garde ses cartes, ses images et sa mise en forme.',
+                'Something to fix? Edit your draft where you write it (the app or the Studio), then check again: your text keeps its cards, images and formatting there.')}
+            </p>
           </>
         )}
         {error && <p className="text-red-600 text-sm" role="alert">{error}</p>}
