@@ -49,6 +49,10 @@ export const proApi = {
     /** Lance la vérification (compte dans le quota) et rend l'identifiant du rapport. */
     verify: (id: string) =>
       studioApi.post<Envelope<{ id: string }>>(`/pro/imports/${encodeURIComponent(id)}/verify`).then((r) => r.data.id),
+    /** Comme `verify`, en disant aussi si un rapport existant a été rouvert (rien compté). */
+    launch: (id: string) =>
+      studioApi.post<Envelope<{ id: string; reused?: boolean }>>(`/pro/imports/${encodeURIComponent(id)}/verify`)
+        .then((r) => ({ id: r.data.id, reused: r.data.reused === true })),
     remove: (id: string) => studioApi.delete<{ success: boolean }>(`/pro/imports/${encodeURIComponent(id)}`),
   },
 
