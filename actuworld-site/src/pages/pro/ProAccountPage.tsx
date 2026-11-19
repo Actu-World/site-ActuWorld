@@ -1,10 +1,68 @@
 import { ProShell } from '../../components/pro/ProShell';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { useState } from 'react';
+import { KeyRound } from 'lucide-react';
 import { supabase } from '../../lib/studio/supabase';
+import { STUDIO_API_URL } from '../../lib/studio/config';
+import { useStudioSession } from '../../hooks/useStudioSession';
 import type { ProAccess } from '../../lib/pro/types';
 import { planLabel } from '../../lib/pro/plan';
 
 const CONTACT = 'mailto:actuworld.app@outlook.fr?subject=ASV%20Pro';
+
+/**
+ * Un compte créé sur le site n'a pas de mot de passe (connexion par lien). Pour
+ * entrer dans l'app, on en définit un : même mail que « mot de passe oublié ».
+ */
+function AppPassword() {
+  const { isEnglish } = useLanguage();
+  const t = (fr: string, en: string) => (isEnglish ? en : fr);
+  const { session } = useStudioSession();
+  const email = session?.user?.email ?? '';
+  const [state, setState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+
+  const send = async () => {
+    if (!email || state === 'sending') return;
+    setState('sending');
+    try {
+      const res = await fetch(`${STUDIO_API_URL}/auth/lostpassword`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, lang: isEnglish ? 'en' : 'fr' }),
+      });
+      setState(res.ok ? 'sent' : 'error');
+    } catch {
+      setState('error');
+    }
+  };
+
+  return (
+    <div className="card p-6 text-sm space-y-3">
+      <p className="body-semi text-aw-text">{t("Utiliser ce compte dans l'app", 'Use this account in the app')}</p>
+      <p className="text-aw-muted">
+        {t(
+          'Ici, tu te connectes par lien, sans mot de passe. L’app ActuWorld, elle, en demande un : définis-le en un clic, avec la même adresse.',
+          'Here you sign in with a link, no password. The ActuWorld app asks for one: set it in one click, with the same address.',
+        )}
+      </p>
+      {state === 'sent' ? (
+        <p role="status">
+          {t(`Mail envoyé à ${email}. Ouvre-le pour choisir ton mot de passe.`, `Email sent to ${email}. Open it to choose your password.`)}
+        </p>
+      ) : (
+        <button type="button" className="btn-outline btn-sm inline-flex items-center gap-2" disabled={!email || state === 'sending'} onClick={send}>
+          <KeyRound className="w-4 h-4" aria-hidden="true" />
+          {state === 'sending' ? t('Envoi en cours…', 'Sending…') : t('Définir ou changer mon mot de passe', 'Set or change my password')}
+        </button>
+      )}
+      {state === 'error' && (
+        <p className="text-red-600" role="alert">
+          {t("L'envoi a échoué. Réessaie dans quelques minutes.", 'Sending failed. Try again in a few minutes.')}
+        </p>
+      )}
+    </div>
+  );
+}
 
 function Account({ access }: { access: ProAccess }) {
   const { isEnglish } = useLanguage();
@@ -43,6 +101,7 @@ function Account({ access }: { access: ProAccess }) {
           <button type="button" className="btn-outline btn-sm" onClick={() => supabase.auth.signOut()}>{t('Se déconnecter', 'Sign out')}</button>
         </div>
       </div>
+      <AppPassword />
       <div className="card p-6 text-sm text-aw-muted space-y-2">
         <p className="body-semi text-aw-text">{t('Tes textes', 'Your texts')}</p>
         <p>
