@@ -34,6 +34,8 @@ export default function AuthConfirmPage() {
   const [state, setState] = useState<'idle' | 'verifying' | 'error'>('idle');
 
   const tokenHash = params.get('token_hash') ?? '';
+  // `signup` : premier lien d'un compte créé sur le site (il confirme l'adresse).
+  const otpType = params.get('type') === 'signup' ? 'signup' : 'magiclink';
   const next = safeNext(params.get('next'));
   const isPro = next.startsWith('/pro');
   // Ouverture depuis l'app (déjà connectée) : la session s'ouvre sans clic. Le
@@ -45,7 +47,7 @@ export default function AuthConfirmPage() {
   const confirm = async () => {
     if (!tokenHash || state === 'verifying') return;
     setState('verifying');
-    const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: 'magiclink' });
+    const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: otpType });
     if (error) {
       setState('error');
       return;
