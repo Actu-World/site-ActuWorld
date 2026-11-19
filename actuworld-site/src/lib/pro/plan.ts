@@ -25,6 +25,8 @@ export function featuresOf(access: Pick<ProAccess, 'plan' | 'features'>): ProFea
   const paid = !!access.plan && access.plan !== 'discovery';
   // Retoucher avant de vérifier : ouvert à toutes les formules, Découverte comprise.
   const edit = !!access.plan;
-  if (access.features) return { ...access.features, edit: access.features.edit ?? edit };
-  return { history: paid, export: paid, share: paid, review: paid, edit };
+  if (access.features) {
+    return { ...access.features, edit: access.features.edit ?? edit, publishers: access.features.publishers ?? paid };
+  }
+  return { history: paid, export: paid, share: paid, review: paid, edit, publishers: paid };
 }

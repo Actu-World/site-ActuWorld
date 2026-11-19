@@ -20,6 +20,8 @@ export type ProFeatures = {
   review: boolean;
   /** Retoucher sur le site un contenu envoyé par l'app (absent sur une API plus ancienne). */
   edit?: boolean;
+  /** Onglet « Éditeurs » (absent sur une API plus ancienne). */
+  publishers?: boolean;
 };
 
 /** Contenu (dépêche, article) envoyé par l'app, en attente de vérification ou déjà vérifié. */

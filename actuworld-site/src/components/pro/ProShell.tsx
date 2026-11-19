@@ -35,7 +35,7 @@ export function ProShell({ title, path, children }: Props) {
     { to: '/pro/verifier', label: t('Vérifier un texte', 'Check a text'), locked: false },
     { to: '/pro/app', label: t('À vérifier', 'To check'), locked: false },
     { to: '/pro/historique', label: t('Historique', 'History'), locked: historyLocked },
-    { to: '/pro/sources', label: t('Éditeurs', 'Publishers'), locked: false },
+    { to: '/pro/sources', label: t('Éditeurs', 'Publishers'), locked: !!access && !featuresOf(access).publishers },
     { to: '/pro/compte', label: t('Compte', 'Account'), locked: false },
   ];
 

@@ -2,6 +2,8 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Download, Loader2, Search } from 'lucide-react';
 import { ProShell } from '../../components/pro/ProShell';
+import { ProUpsell } from '../../components/pro/ProUpsell';
+import { featuresOf } from '../../lib/pro/plan';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { proApi } from '../../lib/pro/api';
 import type { UrlCredibility } from '../../lib/pro/types';
@@ -126,7 +128,14 @@ export default function ProSourcesPage() {
   const { isEnglish } = useLanguage();
   return (
     <ProShell title={isEnglish ? 'Publishers' : 'Éditeurs'} path="/pro/sources">
-      {() => <Sources />}
+      {(access) => (featuresOf(access).publishers ? <Sources /> : (
+        <ProUpsell
+          title={isEnglish ? 'Publisher analysis comes with the Pro plan' : "L'analyse des éditeurs fait partie de la formule Pro"}
+          description={isEnglish
+            ? 'With Discovery, each report already says who publishes your sources. Pro lets you rate any address on its own, before you even write.'
+            : 'En Découverte, chaque rapport dit déjà qui publie tes sources. Pro permet de noter n’importe quelle adresse à part, avant même d’écrire.'}
+        />
+      ))}
     </ProShell>
   );
 }
