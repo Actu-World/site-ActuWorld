@@ -1,6 +1,7 @@
 // ASV Pro — formule du compte : son nom affiché et ce qu'elle ouvre. La page
 // Tarifs fait foi : Découverte = le rapport seul ; historique, export, partage
-// et synthèse viennent avec Pro, Rédaction, la bêta et l'équipe. L'API applique
+// et synthèse viennent avec Pro, Rédaction, la bêta et l'équipe. Retoucher un
+// contenu avant de le vérifier est ouvert à tous. L'API applique
 // les mêmes règles (elle refuse l'historique et le partage en Découverte).
 import type { ProAccess, ProFeatures } from './types';
 
@@ -22,6 +23,8 @@ export function planLabel(access: Pick<ProAccess, 'plan' | 'moderator' | 'org_na
 /** Fonctions ouvertes par la formule (repli sur la formule si l'API ne les envoie pas). */
 export function featuresOf(access: Pick<ProAccess, 'plan' | 'features'>): ProFeatures {
   const paid = !!access.plan && access.plan !== 'discovery';
-  if (access.features) return { ...access.features, edit: access.features.edit ?? paid };
-  return { history: paid, export: paid, share: paid, review: paid, edit: paid };
+  // Retoucher avant de vérifier : ouvert à toutes les formules, Découverte comprise.
+  const edit = !!access.plan;
+  if (access.features) return { ...access.features, edit: access.features.edit ?? edit };
+  return { history: paid, export: paid, share: paid, review: paid, edit };
 }

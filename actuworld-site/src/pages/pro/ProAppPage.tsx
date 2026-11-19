@@ -102,7 +102,7 @@ function ImportDetail({ id, access }: { id: string; access: ProAccess }) {
     }
   };
 
-  // Formule Pro : le contenu part dans le formulaire libre, où il se retouche.
+  // Le contenu part dans le formulaire libre (« Vérifier un texte »), où il se retouche.
   const edit = () => {
     const draft: Draft = {
       title: detail.input.title,
@@ -154,8 +154,8 @@ function ImportDetail({ id, access }: { id: string; access: ProAccess }) {
             )}
             {!features.edit && (
               <p className="text-sm text-aw-muted">
-                {t('Une correction à faire ? Modifie ton brouillon dans l’app, puis renvoie-le. Retoucher le texte ici fait partie de la formule Pro.',
-                  'Something to fix? Edit your draft in the app, then send it again. Editing the text here comes with the Pro plan.')}
+                {t('Une correction à faire ? Modifie ton brouillon dans l’app, puis renvoie-le.',
+                  'Something to fix? Edit your draft in the app, then send it again.')}
               </p>
             )}
           </>
