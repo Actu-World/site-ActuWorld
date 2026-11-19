@@ -147,6 +147,8 @@ function VerifyForm({ access }: { access: ProAccess }) {
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
   const navigate = useNavigate();
   const [draft, setDraft] = useState<Draft>(loadDraft);
+  // Décidé une fois, à l'ouverture : le bloc ne saute pas pendant qu'on écrit.
+  const [startedWithContent] = useState(() => !!draft.title.trim() || draft.sections.some((sec) => sec.text.trim()));
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -237,7 +239,7 @@ function VerifyForm({ access }: { access: ProAccess }) {
         </p>
       </div>
 
-      <PasteArticle onUse={usePasted} />
+      {!startedWithContent && <PasteArticle onUse={usePasted} />}
 
       <div>
         <label htmlFor="pro-title" className="body-semi block mb-2">{t('Titre', 'Title')}</label>
@@ -251,9 +253,11 @@ function VerifyForm({ access }: { access: ProAccess }) {
         />
       </div>
 
-      <fieldset className="card p-5 space-y-4">
-        <legend className="body-semi px-1">{t('Comment tes sources sont-elles liées au texte ?', 'How are your sources linked to the text?')}</legend>
-        <div className="flex flex-wrap gap-2" role="group">
+      {/* Un titre dans la carte, pas un <legend> : sur téléphone, la légende d'un
+          fieldset se posait à cheval sur le bord arrondi de la carte. */}
+      <section className="card p-5 space-y-4" aria-labelledby="pro-scope-title">
+        <h2 id="pro-scope-title" className="body-semi">{t('Comment tes sources sont-elles liées au texte ?', 'How are your sources linked to the text?')}</h2>
+        <div className="flex flex-wrap gap-2" role="group" aria-labelledby="pro-scope-title">
           <button type="button" aria-pressed={!textScope} onClick={() => setScope('passage')}
             className={`badge ${!textScope ? 'badge-primary' : 'text-aw-muted border border-aw'}`}>
             {t('Une source par passage', 'One source per passage')}
@@ -276,7 +280,7 @@ function VerifyForm({ access }: { access: ProAccess }) {
             <LinkFields urls={textSources} max={MAX_SOURCES} onChange={(next) => update((d) => ({ ...d, sources: next }))} />
           </div>
         )}
-      </fieldset>
+      </section>
 
       <ol className="space-y-5">
         {draft.sections.map((section, i) => {
@@ -328,6 +332,10 @@ function VerifyForm({ access }: { access: ProAccess }) {
           {t('Ajouter un passage', 'Add a passage')}
         </button>
       )}
+
+      {/* Texte déjà là en arrivant (contenu envoyé par l'app ou le Studio, brouillon
+          repris) : on le montre d'abord, « Coller un article » passe en bas. */}
+      {startedWithContent && <PasteArticle onUse={usePasted} />}
 
       <div className="card p-5 space-y-3">
         <p className={`text-sm tabular ${distinct > MAX_DISTINCT_SOURCES ? 'text-red-600' : 'text-aw-muted'}`}>
