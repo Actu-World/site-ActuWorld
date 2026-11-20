@@ -1,15 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AlertCircle, Globe, Loader2 } from 'lucide-react';
+import { Globe } from 'lucide-react';
 import { ProCheckTile } from '../asv/AsvTile';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { proApi } from '../../lib/pro/api';
-import { buildProCheck } from '../../lib/studio/proCheck';
+import { buildProCheck, type StudioCheckRequest } from '../../lib/studio/proCheck';
 import {
   completeProCheck, loadProChecks, removeProCheck, saveProCheck, subscribeProChecks, type StoredProCheck,
 } from '../../lib/studio/proCheckStore';
-import ReportView from '../pro/ReportView';
-import { featuresOf } from '../../lib/pro/plan';
-import type { ProAccess, ProInput } from '../../lib/pro/types';
+import type { ProAccess } from '../../lib/pro/types';
 import type { PlanItemData } from '../../lib/studio/redaction';
 import { StudioDialog } from './StudioDialog';
 
@@ -41,7 +39,7 @@ const QUICK_MS = 1500;
 type Phase =
   | { step: 'closed' }
   | { step: 'message'; text: string }
-  | { step: 'confirm'; input: ProInput; access: ProAccess | null; loadingAccess: boolean }
+  | { step: 'confirm'; input: StudioCheckRequest; access: ProAccess | null; loadingAccess: boolean }
   | { step: 'running' }
   | { step: 'ready'; id: string }
   | { step: 'report'; id: string };
@@ -76,9 +74,9 @@ export function useProCheck(kind: Kind, getData: () => PlanItemData, { userId, d
   const draftIdRef = useRef(draftId);
   draftIdRef.current = draftId;
 
-  const currentInput = useCallback((): ProInput | null => {
+  const currentInput = useCallback((): StudioCheckRequest | null => {
     const built = buildProCheck(kind, getData(), isEnglish);
-    return built.ok ? built.input : null;
+    return built.ok ? built.request : null;
   }, [kind, getData, isEnglish]);
 
   const close = useCallback(() => setPhase({ step: 'closed' }), []);
@@ -170,11 +168,11 @@ export function useProCheck(kind: Kind, getData: () => PlanItemData, { userId, d
       return;
     }
     setError(null);
-    if (match && match.key === JSON.stringify(built.input)) {
+    if (match && match.key === JSON.stringify(built.request)) {
       setPhase({ step: 'report', id: match.verificationId });
       return;
     }
-    setPhase({ step: 'confirm', input: built.input, access: null, loadingAccess: true });
+    setPhase({ step: 'confirm', input: built.request, access: null, loadingAccess: true });
     try {
       const access = await proApi.access();
       setPhase((p) => (p.step === 'confirm' ? { ...p, access, loadingAccess: false } : p));
@@ -183,13 +181,14 @@ export function useProCheck(kind: Kind, getData: () => PlanItemData, { userId, d
     }
   }, [running, kind, getData, isEnglish, match]);
 
-  const start = useCallback(async (value: ProInput, access: ProAccess | null) => {
+  const start = useCallback(async (value: StudioCheckRequest, access: ProAccess | null) => {
     if (!userId) return;
     setRunning(true);
     runningKeyRef.current = JSON.stringify(value);
     setPhase({ step: 'running' });
     try {
-      const importId = await proApi.imports.create(value, kind);
+      // Refus de l'API (trop de sources, adresse invalide…) : message en mots plus bas.
+      const importId = await proApi.imports.create(value);
       const { id, reused } = await proApi.imports.launch(importId);
       const entry: StoredProCheck = {
         kind,
@@ -227,186 +226,6 @@ export function useProCheck(kind: Kind, getData: () => PlanItemData, { userId, d
   };
 }
 
-const PLAN_NAMES: Record<string, [string, string]> = {
-  discovery: ['Découverte', 'Discovery'], beta: ['Bêta', 'Beta'], pro: ['Pro', 'Pro'],
-  team: ['Rédaction', 'Newsroom'], staff: ['Équipe ActuWorld', 'ActuWorld team'],
-};
-
-const shortTitle = (title: string) => {
-  const clean = title.trim();
-  return clean.length > 40 ? `${clean.slice(0, 39).trimEnd()}…` : clean;
-};
-
-/** Fenêtres de la vérification : confirmation, analyse en cours, rapport prêt, rapport. */
-function ProCheckDialogs({ check }: { check: ReturnType<typeof useProCheck> }) {
-  const { isEnglish } = useLanguage();
-  const t = (fr: string, en: string) => (isEnglish ? en : fr);
-  const { phase, close, setPhase, shown, latest } = check;
-
-  if (phase.step === 'report') {
-    if (!shown?.detail?.result) return null;
-    const { detail, access, counted } = shown;
-    const features = access ? featuresOf(access) : null;
-    const used = access ? Math.min(access.quota, access.used_this_month + (counted ? 1 : 0)) : null;
-    const plan = PLAN_NAMES[access?.plan ?? ''];
-    return (
-      <div className="fixed inset-0 z-[70] overflow-y-auto bg-aw-bg text-left" role="dialog" aria-modal="true" aria-label={t('Rapport ASV', 'ASV report')}>
-        <div className="max-w-5xl mx-auto container-px py-6 sm:py-8 space-y-6">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-aw-muted max-w-prose">
-              {t('Rien n’est publié. Ferme ce rapport pour corriger ton texte : le lien « Revoir le rapport ASV » le rouvre tant que tu n’as rien changé.',
-                'Nothing is published. Close this report to fix your text: the “View the ASV report again” link reopens it as long as you have not changed anything.')}
-            </p>
-            <button type="button" className="btn-primary btn-sm" onClick={close}>{t("Revenir à l'éditeur", 'Back to the editor')}</button>
-          </div>
-          <ReportView data={detail} lang={isEnglish ? 'en' : 'fr'} showReview={features ? features.review : true} />
-          <div className="card p-5 text-sm space-y-2">
-            {access && used !== null && (
-              <p>
-                {plan
-                  ? t(`Formule ${plan[0]} : ${used} vérification(s) utilisée(s) sur ${access.quota} ce mois-ci.`,
-                      `${plan[1]} plan: ${used} check(s) used out of ${access.quota} this month.`)
-                  : t(`${used} vérification(s) utilisée(s) sur ${access.quota} ce mois-ci.`, `${used} check(s) used out of ${access.quota} this month.`)}
-              </p>
-            )}
-            {access?.plan === 'discovery' && (
-              <p className="text-aw-muted">
-                {t('Avec la formule Pro : 100 vérifications par mois, la synthèse des points à reprendre et l’historique de tes rapports.',
-                  'With the Pro plan: 100 checks per month, a summary of what to fix, and the history of your reports.')}{' '}
-                <a href="/tarifs" target="_blank" rel="noopener noreferrer" className="link">{t('Voir les formules', 'See the plans')}</a>
-              </p>
-            )}
-            <p>
-              <a href={`/pro/rapport/${encodeURIComponent(detail.id)}`} target="_blank" rel="noopener noreferrer" className="link">
-                {t('Ouvrir ce rapport dans ASV Pro', 'Open this report in ASV Pro')}
-              </a>
-            </p>
-            <button type="button" className="btn-outline btn-sm" onClick={close}>{t("Revenir à l'éditeur", 'Back to the editor')}</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const confirm = phase.step === 'confirm' ? phase : null;
-  const left = confirm?.access ? Math.max(0, confirm.access.quota - confirm.access.used_this_month) : null;
-  const cancel = (
-    <button type="button" className="btn-link text-sm justify-center" onClick={close}>{t('Annuler', 'Cancel')}</button>
-  );
-
-  return (
-    <>
-      <StudioDialog
-        open={!!confirm}
-        onClose={close}
-        title={t('Vérifier mes sources', 'Check my sources')}
-        iconNode={<ProCheckTile status="ready" />}
-        description={t('ASV lit chaque source et la confronte à ton texte, passage par passage. Rien n’est publié.',
-          'ASV reads each source and checks it against your text, passage by passage. Nothing is published.')}
-        actions={confirm && (
-          <>
-            <button type="button" className="btn-primary disabled:opacity-60"
-              disabled={confirm.loadingAccess || left === 0}
-              onClick={() => void check.start(confirm.input, confirm.access)}>
-              {confirm.loadingAccess && <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />}
-              {t('Vérifier', 'Check')}
-            </button>
-            {cancel}
-          </>
-        )}
-      >
-        {confirm && !confirm.loadingAccess && (
-          <p className="text-sm" role="status">
-            {left === null
-              ? t('Cette vérification comptera dans ton quota du mois.', 'This check will count towards your monthly quota.')
-              : left > 0
-                ? t(`Il te reste ${left} vérification(s) sur ${confirm.access!.quota} ce mois-ci. Celle-ci en utilisera une.`,
-                    `You have ${left} check(s) left out of ${confirm.access!.quota} this month. This one will use one.`)
-                : t(`Tu as utilisé tes ${confirm.access!.quota} vérifications du mois. Le compteur repart le 1er.`,
-                    `You have used your ${confirm.access!.quota} checks this month. The counter resets on the 1st.`)}
-          </p>
-        )}
-        {/* Texte modifié depuis le dernier rapport de ce brouillon : il reste consultable. */}
-        {confirm && latest && (
-          <button type="button" className="link text-sm" onClick={() => setPhase({ step: 'report', id: latest.verificationId })}>
-            {latest.title.trim()
-              ? t(`Revoir le rapport précédent (« ${shortTitle(latest.title)} »)`, `View the previous report (“${shortTitle(latest.title)}”)`)
-              : t('Revoir le rapport précédent', 'View the previous report')}
-          </button>
-        )}
-      </StudioDialog>
-
-      <StudioDialog
-        open={phase.step === 'running'}
-        title={t('Analyse en cours', 'Analysis in progress')}
-        iconNode={<ProCheckTile status="running" />}
-        description={t('ASV lit tes sources, puis juge chaque passage. Cela prend en général moins de deux minutes. Tu peux continuer à écrire : on te prévient quand le rapport est prêt.',
-          'ASV reads your sources, then judges each passage. This usually takes under two minutes. You can keep writing: we’ll let you know when the report is ready.')}
-        actions={(
-          <button type="button" className="btn-outline" onClick={close}>{t('Continuer en fond', 'Keep going in the background')}</button>
-        )}
-      />
-
-      <StudioDialog
-        open={phase.step === 'ready'}
-        onClose={close}
-        title={t('Ton rapport ASV est prêt', 'Your ASV report is ready')}
-        iconNode={<ProCheckTile status="ready" />}
-        description={t('La vérification de tes sources est terminée.', 'The check of your sources is done.')}
-        actions={(
-          <>
-            <button type="button" className="btn-primary"
-              onClick={() => setPhase((p) => (p.step === 'ready' ? { step: 'report', id: p.id } : p))}>
-              {t('Voir le rapport', 'View the report')}
-            </button>
-            <button type="button" className="btn-link text-sm justify-center" onClick={close}>{t('Plus tard', 'Later')}</button>
-          </>
-        )}
-      />
-
-      <StudioDialog
-        open={phase.step === 'message'}
-        onClose={close}
-        title={t('Vérifier mes sources', 'Check my sources')}
-        icon={AlertCircle}
-        tone="warning"
-        description={phase.step === 'message' ? phase.text : ''}
-        actions={<button type="button" className="btn-primary" onClick={close}>OK</button>}
-      />
-    </>
-  );
-}
-
-/** Lien « Vérifier mes sources avant de publier », à poser près de Publier. */
-export function ProCheckLink({ check }: { check: ReturnType<typeof useProCheck> }) {
-  const { isEnglish } = useLanguage();
-  const t = (fr: string, en: string) => (isEnglish ? en : fr);
-  const label = check.status === 'running'
-    ? t('Vérification en cours…', 'Check in progress…')
-    : check.status === 'ready'
-      ? t('Revoir le rapport ASV', 'View the ASV report again')
-      : t('Vérifier mes sources avant de publier', 'Check my sources before publishing');
-  return (
-    <div className="mt-4 text-center">
-      <button type="button" onClick={() => void check.run()}
-        className="btn-link text-sm inline-flex items-center gap-2">
-        {/* Tuile ASV de l'app : contour + jauge vide, traits qui chargent pendant
-            l'analyse, puis tuile pleine quand le rapport est prêt (jauge = verdict). */}
-        <span aria-hidden="true" className="inline-flex"><ProCheckTile status={check.status} /></span>
-        {label}
-      </button>
-      <p className="text-aw-muted text-xs mt-1">
-        {check.status === 'ready'
-          ? t('Le rapport de ce brouillon est gardé : il se rouvre tant que tu ne changes ni le texte ni les sources.',
-              'This draft’s report is kept: it reopens as long as you change neither the text nor the sources.')
-          : t('Le rapport s’affiche ici, par-dessus l’éditeur. Rien n’est publié, et rien n’est compté avant ta confirmation.',
-              'The report shows here, over the editor. Nothing is published, and nothing is counted before you confirm.')}
-      </p>
-      {check.error && <p className="text-red-500 text-sm mt-2" role="alert">{check.error}</p>}
-      <ProCheckDialogs check={check} />
-    </div>
-  );
-}
 
 export type PublishChoice = 'publish' | 'check' | 'cancel';
 type Ask = { title: string; article: boolean; checked: boolean; resolve: (choice: PublishChoice) => void };

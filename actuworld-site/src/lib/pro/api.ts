@@ -1,4 +1,5 @@
 import { studioApi } from '../studio/api';
+import type { StudioCheckRequest } from '../studio/proCheck';
 import type {
   ProAccess, ProImportDetail, ProImportSummary, ProInput, ProVerificationDetail, ProVerificationSummary, ReportData, UrlCredibility,
 } from './types';
@@ -40,9 +41,12 @@ export const proApi = {
 
   /** Contenus envoyés par l'app : déposés sans rien lancer, vérifiés à la demande. */
   imports: {
-    /** Dépose un contenu sans rien lancer ; rend l'identifiant de sa page « À vérifier ». */
-    create: (input: ProInput, kind: 'post' | 'article') =>
-      studioApi.post<Envelope<{ id: string }>>('/pro/imports', { ...input, kind }).then((r) => r.data.id),
+    /**
+     * Dépose un brouillon brut sans rien lancer ; l'API le découpe en passages
+     * (comme à la publication) et rend l'identifiant de sa page « À vérifier ».
+     */
+    create: ({ kind, locale, content }: StudioCheckRequest) =>
+      studioApi.post<Envelope<{ id: string }>>('/pro/imports', { kind, locale, content }).then((r) => r.data.id),
     list: () => studioApi.get<Envelope<ProImportSummary[]>>('/pro/imports').then((r) => r.data),
     get: (id: string) =>
       studioApi.get<Envelope<ProImportDetail>>(`/pro/imports/${encodeURIComponent(id)}`).then((r) => r.data),

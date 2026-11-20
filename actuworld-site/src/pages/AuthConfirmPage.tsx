@@ -20,7 +20,7 @@ const NEXT_PATHS = ['/pro', '/studio/editeur'] as const;
 // Pages ASV Pro ouvertes depuis l'app : un rapport ou un contenu envoyé, rien d'autre.
 const PRO_REPORT_PATH = /^\/pro\/(rapport|app)\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export function safeNext(raw: string | null): string {
+function safeNext(raw: string | null): string {
   const value = raw ?? '';
   if ((NEXT_PATHS as readonly string[]).includes(value) || PRO_REPORT_PATH.test(value)) return value;
   return '/studio/editeur';

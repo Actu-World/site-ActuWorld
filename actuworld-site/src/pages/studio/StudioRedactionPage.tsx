@@ -248,7 +248,7 @@ export default function StudioRedactionPage() {
     setProBusy(true);
     const tab = window.open('', '_blank');
     try {
-      const id = await proApi.imports.create(built.input, item.kind);
+      const id = await proApi.imports.create(built.request);
       const url = `/pro/app/${encodeURIComponent(id)}`;
       if (tab) tab.location.href = url;
       else window.location.assign(url);
