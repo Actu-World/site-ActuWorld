@@ -386,6 +386,13 @@
   }
   ::-webkit-scrollbar-thumb:hover { background: var(--aw-text-muted); }
 
+  /* Tuile ASV hors maquette (Studio) : vert de marque de l'app, menthe en sombre. */
+  :root { --asv-tile: #3E7C60; }
+  .dark { --asv-tile: #A8D5BA; }
+  /* Traits qui chargent (analyse en cours), comme LoadingTicks dans l'app. */
+  @keyframes asv-tick { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+  .asv-tick { animation: asv-tick 1.3s ease-in-out infinite; }
+
   /* Maquette téléphone : jetons du thème de l'app (constants/theme.ts) */
   .aw-phone {
     --app-feed: #F5EFE6;

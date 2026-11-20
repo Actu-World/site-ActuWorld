@@ -25,6 +25,8 @@ type StudioDialogProps = {
   onClose?: () => void;
   title: string;
   icon?: LucideIcon;
+  /** À la place de l'icône : un composant du site (ex. la tuile ASV), sans pastille. */
+  iconNode?: ReactNode;
   /** Icône qui tourne (analyse en cours). */
   iconSpin?: boolean;
   tone?: DialogTone;
@@ -35,7 +37,7 @@ type StudioDialogProps = {
   actions?: ReactNode;
 };
 
-export function StudioDialog({ open, onClose, title, icon: Icon, iconSpin = false, tone = 'default', description, children, actions }: StudioDialogProps) {
+export function StudioDialog({ open, onClose, title, icon: Icon, iconNode, iconSpin = false, tone = 'default', description, children, actions }: StudioDialogProps) {
   const { isEnglish } = useLanguage();
 
   useEffect(() => {
@@ -54,7 +56,9 @@ export function StudioDialog({ open, onClose, title, icon: Icon, iconSpin = fals
         <div className="absolute inset-0 bg-black/50" aria-hidden="true" />
       )}
       <div className="card relative w-full max-w-md p-6 space-y-4 text-center">
-        {Icon && (
+        {iconNode ? (
+          <div className="flex justify-center" aria-hidden="true">{iconNode}</div>
+        ) : Icon && (
           <span className={`mx-auto flex h-12 w-12 items-center justify-center rounded-xl ${TONE_CLASSES[tone]}`}>
             <Icon className={`w-6 h-6 ${iconSpin ? 'animate-spin' : ''}`} aria-hidden="true" />
           </span>

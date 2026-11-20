@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Globe, Loader2, ShieldCheck } from 'lucide-react';
+import { AlertCircle, Globe, Loader2 } from 'lucide-react';
+import { ProCheckTile } from '../asv/AsvTile';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { proApi } from '../../lib/pro/api';
 import { buildProCheck } from '../../lib/studio/proCheck';
@@ -299,7 +300,7 @@ function ProCheckDialogs({ check }: { check: ReturnType<typeof useProCheck> }) {
         open={!!confirm}
         onClose={close}
         title={t('Vérifier mes sources', 'Check my sources')}
-        icon={ShieldCheck}
+        iconNode={<ProCheckTile status="ready" />}
         description={t('ASV lit chaque source et la confronte à ton texte, passage par passage. Rien n’est publié.',
           'ASV reads each source and checks it against your text, passage by passage. Nothing is published.')}
         actions={confirm && (
@@ -307,7 +308,7 @@ function ProCheckDialogs({ check }: { check: ReturnType<typeof useProCheck> }) {
             <button type="button" className="btn-primary disabled:opacity-60"
               disabled={confirm.loadingAccess || left === 0}
               onClick={() => void check.start(confirm.input, confirm.access)}>
-              {confirm.loadingAccess ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <ShieldCheck className="w-4 h-4" aria-hidden="true" />}
+              {confirm.loadingAccess && <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />}
               {t('Vérifier', 'Check')}
             </button>
             {cancel}
@@ -338,8 +339,7 @@ function ProCheckDialogs({ check }: { check: ReturnType<typeof useProCheck> }) {
       <StudioDialog
         open={phase.step === 'running'}
         title={t('Analyse en cours', 'Analysis in progress')}
-        icon={Loader2}
-        iconSpin
+        iconNode={<ProCheckTile status="running" />}
         description={t('ASV lit tes sources, puis juge chaque passage. Cela prend en général moins de deux minutes. Tu peux continuer à écrire : on te prévient quand le rapport est prêt.',
           'ASV reads your sources, then judges each passage. This usually takes under two minutes. You can keep writing: we’ll let you know when the report is ready.')}
         actions={(
@@ -351,8 +351,7 @@ function ProCheckDialogs({ check }: { check: ReturnType<typeof useProCheck> }) {
         open={phase.step === 'ready'}
         onClose={close}
         title={t('Ton rapport ASV est prêt', 'Your ASV report is ready')}
-        icon={ShieldCheck}
-        tone="success"
+        iconNode={<ProCheckTile status="ready" />}
         description={t('La vérification de tes sources est terminée.', 'The check of your sources is done.')}
         actions={(
           <>
@@ -369,7 +368,7 @@ function ProCheckDialogs({ check }: { check: ReturnType<typeof useProCheck> }) {
         open={phase.step === 'message'}
         onClose={close}
         title={t('Vérifier mes sources', 'Check my sources')}
-        icon={ShieldCheck}
+        icon={AlertCircle}
         tone="warning"
         description={phase.step === 'message' ? phase.text : ''}
         actions={<button type="button" className="btn-primary" onClick={close}>OK</button>}
@@ -390,10 +389,10 @@ export function ProCheckLink({ check }: { check: ReturnType<typeof useProCheck> 
   return (
     <div className="mt-4 text-center">
       <button type="button" onClick={() => void check.run()}
-        className="btn-link text-sm inline-flex items-center gap-1.5">
-        {check.status === 'running'
-          ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
-          : <ShieldCheck className={`w-4 h-4 ${check.status === 'ready' ? 'fill-current' : ''}`} aria-hidden="true" />}
+        className="btn-link text-sm inline-flex items-center gap-2">
+        {/* Tuile ASV de l'app : contour + jauge vide, traits qui chargent pendant
+            l'analyse, puis tuile pleine quand le rapport est prêt (jauge = verdict). */}
+        <span aria-hidden="true" className="inline-flex"><ProCheckTile status={check.status} /></span>
         {label}
       </button>
       <p className="text-aw-muted text-xs mt-1">
@@ -449,7 +448,7 @@ export function usePublishConfirm() {
         <>
           {!pending.checked && (
             <button type="button" className="btn-primary" onClick={() => answer('check')}>
-              <ShieldCheck className="w-4 h-4" aria-hidden="true" />{t('Vérifier d’abord', 'Check first')}
+              {t('Vérifier d’abord', 'Check first')}
             </button>
           )}
           <button type="button" className={pending.checked ? 'btn-primary' : 'btn-outline'} onClick={() => answer('publish')}>
@@ -461,7 +460,7 @@ export function usePublishConfirm() {
     >
       {pending && (pending.checked ? (
         <p className="text-sm inline-flex items-start gap-2 text-left">
-          <ShieldCheck className="w-4 h-4 mt-0.5 shrink-0 text-aw-primary" aria-hidden="true" />
+          <span className="mt-0.5 shrink-0" aria-hidden="true"><ProCheckTile status="ready" /></span>
           {t('Tu as envoyé ce contenu à la vérification. La vérification ASV se relancera à la publication.',
             'You sent this content for checking. ASV will run again on publication.')}
         </p>

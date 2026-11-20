@@ -13,6 +13,7 @@ import addSvg from "./icons/AddIcon.svg?raw";
 import searchSvg from "./icons/SearchIcon.svg?raw";
 import earthSvg from "./icons/EarthIcon.svg?raw";
 import { useLanguage } from "../../../i18n/LanguageContext";
+import { AsvTile } from "../../asv/AsvTile";
 
 /*
  * Reproduction fidèle de l'écran « La Une » de l'app (valeurs reprises de
@@ -41,39 +42,8 @@ const NB = " ";
 const trustColor = (s: number) => (s >= 70 ? "#16a34a" : s >= 40 ? "#f59e0b" : "#ef4444");
 const sourceScoreColor = (s: number) => (s >= 7 ? "#10b981" : s >= 4 ? "#f59e0b" : "#ef4444");
 
-/* ───── Tuile ASV (asv/AsvVariants.tsx, AsvTuile) ───── */
-export const AsvTile: React.FC<{ size?: number; onDark?: boolean; fill?: "full" | "half" | "outline" }> = ({
-  size = 22,
-  onDark = false,
-  fill = "full",
-}) => {
-  const color = onDark ? "#F5E9DA" : "var(--app-asv)";
-  const fs = size * 0.58;
-  const gw = fs * 2;
-  return (
-    <span
-      className="inline-flex flex-col items-center shrink-0"
-      style={{
-        gap: 2,
-        padding: "3px 8px 4px",
-        borderRadius: size * 0.36,
-        border: `1.4px ${fill === "outline" ? "dashed" : "solid"} ${color}`,
-        background: onDark ? "rgba(0,0,0,0.28)" : "transparent",
-      }}
-    >
-      <span style={{ fontFamily: "Platypi, serif", fontWeight: 800, fontSize: fs, letterSpacing: 1.2, color, lineHeight: 1 }}>
-        ASV
-      </span>
-      <span className="relative block" style={{ width: gw, height: 4 }}>
-        <span className="absolute left-0 right-0 rounded-full" style={{ top: 1, height: 2, background: color, opacity: 0.32 }} />
-        <span
-          className="absolute left-0 rounded-full"
-          style={{ top: 0.7, height: 2.6, width: fill === "full" ? "100%" : fill === "half" ? "50%" : 0, background: color }}
-        />
-      </span>
-    </span>
-  );
-};
+/* ───── Tuile ASV : partagée avec le Studio (components/asv/AsvTile.tsx) ───── */
+export { AsvTile };
 
 /* ───── Icône SVG de l'app (currentColor) ───── */
 const RawIcon: React.FC<{ svg: string; size: number; color: string }> = ({ svg, size, color }) => (
