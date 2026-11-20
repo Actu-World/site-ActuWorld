@@ -15,8 +15,11 @@ import { ImageCreditEditor } from '../../components/studio/ImageCreditEditor';
 import { PostHelpModal } from '../../components/studio/PostHelpModal';
 import { StudioByline } from '../../components/studio/StudioByline';
 import { useLanguage } from '../../i18n/LanguageContext';
-import { studioApi } from '../../lib/studio/api';
+import { isAlreadyPublishedError, studioApi } from '../../lib/studio/api';
+import { useAlreadyPublishedNotice } from '../../components/studio/useAlreadyPublished';
 import { ProCheckLink, useProCheck, usePublishConfirm } from '../../components/studio/proCheckFlow';
+import { useConfirmDelete } from '../../components/studio/useConfirmDelete';
+import { forgetProChecks, moveProChecks } from '../../lib/studio/proCheckStore';
 import { useStudioSession } from '../../hooks/useStudioSession';
 import { ThemeSelect } from '../../components/studio/ThemeSelect';
 import { resolveAvatarUrl, uploadPostImage } from '../../lib/studio/images';
@@ -225,13 +228,16 @@ export default function StudioPostPage() {
         } else {
           const { id } = await createPostDraft(payload);
           editingDraftIdRef.current = id; // lu par la publication avant le prochain rendu
+          // Les rapports ASV de l'éditeur suivent le brouillon sous son identifiant.
+          if (userId) moveProChecks(userId, 'post', null, id);
           setEditingDraftId(id);
           void refreshDrafts();
         }
         lastSavedSnapshotRef.current = snapshot;
         setSaveState('saved');
         setLastSavedAt(new Date().toLocaleTimeString(isEnglish ? 'en-GB' : 'fr-FR', { hour: '2-digit', minute: '2-digit' }));
-      } catch {
+      } catch (err) {
+        if (isAlreadyPublishedError(err)) { handleAlreadyPublished(); return; }
         setSaveState('error');
       } finally {
         isAutosavingRef.current = false;
@@ -242,6 +248,8 @@ export default function StudioPostPage() {
   }, [userId, editingDraftId, primaryTheme, tags, cards, sentTitle, isSending, isPublishing]);
 
   const resetEditor = () => {
+    // Éditeur vierge : aucun rapport ASV du texte précédent non enregistré.
+    if (userId) forgetProChecks(userId, 'post', null);
     setEditingDraftId(null);
     setPrimaryTheme('');
     setTags([]);
@@ -252,6 +260,29 @@ export default function StudioPostPage() {
     setSaveState('idle');
     setLastSavedAt(null);
     lastSavedSnapshotRef.current = null;
+  };
+
+
+  // Liste à jour quand on revient sur l'onglet : un brouillon publié depuis
+  // l'app (ou un autre onglet) en sort sans recharger la page.
+  useEffect(() => {
+    if (!userId) return;
+    const onVisible = () => { if (document.visibilityState === 'visible') void refreshDrafts(); };
+    window.addEventListener('focus', onVisible);
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      window.removeEventListener('focus', onVisible);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [userId, refreshDrafts]);
+
+  // Brouillon publié depuis l'app ou un autre onglet : il ne se modifie plus.
+  const alreadyPublished = useAlreadyPublishedNotice('post');
+  const handleAlreadyPublished = () => {
+    if (userId) forgetProChecks(userId, 'post', editingDraftIdRef.current);
+    resetEditor();
+    void refreshDrafts();
+    alreadyPublished.show();
   };
 
   const replaceCard = (index: number, card: PostDraftImage) =>
@@ -334,7 +365,8 @@ export default function StudioPostPage() {
       if (editingDraftId) {
         await updatePostDraft(editingDraftId, payload);
       } else {
-        await createPostDraft(payload);
+        const { id } = await createPostDraft(payload);
+        if (userId) moveProChecks(userId, 'post', null, id);
       }
       invalidateEditorialPlanCache();
       setSentTitle(filledCards[0].subject?.trim() || t('(Sans titre)', '(Untitled)'));
@@ -343,6 +375,7 @@ export default function StudioPostPage() {
       setLastSavedAt(null);
       void refreshDrafts();
     } catch (err: unknown) {
+      if (isAlreadyPublishedError(err)) { handleAlreadyPublished(); return; }
       setSendError(isNetworkError(err) ? apiUnreachableMsg
         : err instanceof Error ? err.message : t("L'envoi a échoué.", 'Sending failed.'));
     } finally {
@@ -360,7 +393,8 @@ export default function StudioPostPage() {
       sources: c.source?.url ? [{ url: c.source.url, title: c.source.title }] : [],
     })),
   }), [cards]);
-  const proCheck = useProCheck('post', getProData);
+  const proCheck = useProCheck('post', getProData, { userId, draftId: editingDraftId });
+  const confirmDelete = useConfirmDelete();
   const publishConfirm = usePublishConfirm();
 
   // ── Publication directe : mêmes gardes que le bouton Publier de l'app
@@ -399,7 +433,10 @@ export default function StudioPostPage() {
       for (let i = 0; i < 30 && isAutosavingRef.current; i++) {
         await new Promise((resolve) => setTimeout(resolve, 100));
       }
-      await publishPost(editingDraftIdRef.current, buildPayload());
+      const publishedDraftId = editingDraftIdRef.current;
+      await publishPost(publishedDraftId, buildPayload());
+      // Publié : les rapports ASV de ce brouillon n'ont plus lieu d'être.
+      forgetProChecks(userId, 'post', publishedDraftId);
       invalidateEditorialPlanCache();
       setSentMode('published');
       setSentTitle(title);
@@ -409,6 +446,7 @@ export default function StudioPostPage() {
       setLastSavedAt(null);
       void refreshDrafts();
     } catch (err: unknown) {
+      if (isAlreadyPublishedError(err)) { handleAlreadyPublished(); return; }
       setSendError(isNetworkError(err) ? apiUnreachableMsg
         : err instanceof Error ? err.message : t('La publication a échoué.', 'Publishing failed.'));
     } finally {
@@ -432,11 +470,13 @@ export default function StudioPostPage() {
       if (editingDraftId) {
         await updatePostDraft(editingDraftId, payload);
       } else {
-        await createPostDraft(payload);
+        const { id } = await createPostDraft(payload);
+        if (userId) moveProChecks(userId, 'post', null, id);
       }
       resetEditor();
       void refreshDrafts();
     } catch (err: unknown) {
+      if (isAlreadyPublishedError(err)) { handleAlreadyPublished(); return; }
       setSaveState('error');
       setSendError(isNetworkError(err) ? apiUnreachableMsg
         : err instanceof Error ? err.message : t('La mise de côté a échoué.', 'Setting the draft aside failed.'));
@@ -446,6 +486,8 @@ export default function StudioPostPage() {
   };
 
   const handleResume = (draft: PostDraftRow) => {
+    // Le texte non enregistré est remplacé : ses rapports ASV aussi.
+    if (userId && !editingDraftId) forgetProChecks(userId, 'post', null);
     setEditingDraftId(draft.id);
     setPrimaryTheme(draft.payload.primary_theme ?? '');
     setTags(draft.payload.tags ?? []);
@@ -460,10 +502,16 @@ export default function StudioPostPage() {
 
   const handleDelete = async (draft: PostDraftRow) => {
     const title = postDraftTitle(draft.payload) || t('(sans titre)', '(untitled)');
-    if (!window.confirm(t(`Supprimer définitivement le brouillon « ${title} » ?`, `Permanently delete the draft “${title}”?`))) return;
+    const confirmed = await confirmDelete.ask(
+      t(`Supprimer « ${title} » ?`, `Delete “${title}”?`),
+      t('Le brouillon sera supprimé définitivement, dans le Studio comme dans l’app.',
+        'The draft will be permanently deleted, in the Studio and in the app.'),
+    );
+    if (!confirmed) return;
     setBusyDraftId(draft.id);
     try {
       await deletePostDraft(draft.id);
+      if (userId) forgetProChecks(userId, 'post', draft.id);
       if (editingDraftId === draft.id) resetEditor();
       await refreshDrafts();
     } catch (err: unknown) {
@@ -863,6 +911,9 @@ export default function StudioPostPage() {
           </motion.div>
         </div>
       </Section>
+      {/* Hors de l'éditeur : la liste des brouillons reste visible après un envoi. */}
+      {confirmDelete.dialog}
+      {alreadyPublished.dialog}
     </div>
   );
 }

@@ -15,6 +15,32 @@ async function getAccessToken(): Promise<string | null> {
   return data.session?.access_token ?? null;
 }
 
+/** Erreur d'API avec son statut HTTP et son `code` (ex. ALREADY_PUBLISHED). */
+export class StudioApiError extends Error {
+  status: number;
+  code?: string;
+  constructor(message: string, status: number, code?: string) {
+    super(message);
+    this.status = status;
+    this.code = code;
+  }
+}
+
+/**
+ * Le contenu a déjà été publié, depuis le Studio ou l'app (20/11/2026) : il ne
+ * se modifie plus et ne se republie pas. L'éditeur le dit et repart à vide.
+ */
+export function isAlreadyPublishedError(err: unknown): boolean {
+  return err instanceof StudioApiError && err.status === 409 && err.code === 'ALREADY_PUBLISHED';
+}
+
+function toApiError(payload: unknown, status: number): StudioApiError {
+  const code = payload && typeof payload === 'object' && typeof (payload as { code?: unknown }).code === 'string'
+    ? (payload as { code: string }).code
+    : undefined;
+  return new StudioApiError(parseApiError(payload, status), status, code);
+}
+
 function parseApiError(payload: unknown, status: number): string {
   if (payload && typeof payload === 'object' && 'error' in payload) {
     const message = (payload as { error: unknown }).error;
@@ -49,7 +75,7 @@ async function request<T>(endpoint: string, options: StudioRequestOptions = {}):
 
   if (!response.ok) {
     const payload = await response.json().catch(() => null);
-    throw new Error(parseApiError(payload, response.status));
+    throw toApiError(payload, response.status);
   }
 
   return (await response.json()) as T;
@@ -77,7 +103,7 @@ async function requestForm<T>(endpoint: string, formData: FormData): Promise<T> 
 
   if (!response.ok) {
     const payload = await response.json().catch(() => null);
-    throw new Error(parseApiError(payload, response.status));
+    throw toApiError(payload, response.status);
   }
 
   return (await response.json()) as T;

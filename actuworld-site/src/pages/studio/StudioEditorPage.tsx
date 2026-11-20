@@ -36,8 +36,11 @@ import { StudioTabs } from '../../components/studio/StudioTabs';
 import { PaperSheet } from '../../components/studio/PaperSheet';
 import { StudioByline } from '../../components/studio/StudioByline';
 import { useLanguage } from '../../i18n/LanguageContext';
-import { studioApi } from '../../lib/studio/api';
+import { isAlreadyPublishedError, studioApi } from '../../lib/studio/api';
+import { useAlreadyPublishedNotice } from '../../components/studio/useAlreadyPublished';
 import { ProCheckLink, useProCheck, usePublishConfirm } from '../../components/studio/proCheckFlow';
+import { useConfirmDelete } from '../../components/studio/useConfirmDelete';
+import { forgetProChecks, moveProChecks } from '../../lib/studio/proCheckStore';
 import { useStudioSession } from '../../hooks/useStudioSession';
 import { ThemeSelect } from '../../components/studio/ThemeSelect';
 import { FormatSelect } from '../../components/studio/FormatSelect';
@@ -352,6 +355,8 @@ export default function StudioEditorPage() {
         } else {
           const { id } = await createDraft(payload);
           editingDraftIdRef.current = id; // lu par la publication avant le prochain rendu
+          // Les rapports ASV de l'éditeur suivent le brouillon sous son identifiant.
+          if (userId) moveProChecks(userId, 'article', null, id);
           setEditingDraftId(id);
           void refreshJournal();
         }
@@ -360,7 +365,8 @@ export default function StudioEditorPage() {
         setLastSavedAt(new Date().toLocaleTimeString(isEnglish ? 'en-GB' : 'fr-FR', {
           hour: '2-digit', minute: '2-digit',
         }));
-      } catch {
+      } catch (err) {
+        if (isAlreadyPublishedError(err)) { handleAlreadyPublished(); return; }
         setSaveState('error');
       } finally {
         isAutosavingRef.current = false;
@@ -371,6 +377,8 @@ export default function StudioEditorPage() {
   }, [userId, editingDraftId, title, dek, primaryTheme, format, tags, coverPath, coverCredit, blocks, sources, sentDraftTitle, isSending, isPublishing]);
 
   const resetEditor = () => {
+    // Éditeur vierge : aucun rapport ASV du texte précédent non enregistré.
+    if (userId) forgetProChecks(userId, 'article', null);
     setEditingDraftId(null);
     setTitle('');
     setDek('');
@@ -388,6 +396,38 @@ export default function StudioEditorPage() {
     setLastSavedAt(null);
     lastSavedSnapshotRef.current = null;
   };
+
+
+  // Liste à jour quand on revient sur l'onglet : un brouillon publié depuis
+  // l'app (ou un autre onglet) en sort sans recharger la page.
+  useEffect(() => {
+    if (!userId) return;
+    const onVisible = () => { if (document.visibilityState === 'visible') void refreshJournal(); };
+    window.addEventListener('focus', onVisible);
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      window.removeEventListener('focus', onVisible);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [userId, refreshJournal]);
+
+  // Brouillon publié depuis l'app ou un autre onglet : il ne se modifie plus.
+  const alreadyPublished = useAlreadyPublishedNotice('article');
+  const handleAlreadyPublished = () => {
+    if (userId) forgetProChecks(userId, 'article', editingDraftIdRef.current);
+    if (userId) clearLocalDraft(userId);
+    resetEditor();
+    void refreshJournal();
+    alreadyPublished.show();
+  };
+
+  // Vu dans la liste des publiés (au retour sur l'onglet) alors qu'il est encore
+  // ouvert ici, sans avoir été publié depuis cet éditeur.
+  useEffect(() => {
+    if (!editingDraftId || sentDraftTitle) return;
+    if (published.some((row) => row.id === editingDraftId)) handleAlreadyPublished();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [published]);
 
   const hasDraftContent =
     title.trim().length > 0 || dek.trim().length > 0 || coverPath !== null ||
@@ -418,12 +458,14 @@ export default function StudioEditorPage() {
       if (editingDraftId) {
         await updateDraft(editingDraftId, payload);
       } else {
-        await createDraft(payload);
+        const { id } = await createDraft(payload);
+        if (userId) moveProChecks(userId, 'article', null, id);
       }
       if (userId) clearLocalDraft(userId);
       resetEditor();
       void refreshJournal();
     } catch (err: unknown) {
+      if (isAlreadyPublishedError(err)) { handleAlreadyPublished(); return; }
       setSaveState('error');
       setSendError(isNetworkError(err) ? apiUnreachableMsg
         : err instanceof Error ? err.message : t('La mise de côté a échoué.', 'Setting the draft aside failed.'));
@@ -472,7 +514,8 @@ export default function StudioEditorPage() {
       if (editingDraftId) {
         await updateDraft(editingDraftId, payload);
       } else {
-        await createDraft(payload);
+        const { id } = await createDraft(payload);
+        if (userId) moveProChecks(userId, 'article', null, id);
       }
       clearLocalDraft(userId);
       invalidateEditorialPlanCache();
@@ -483,6 +526,7 @@ export default function StudioEditorPage() {
       lastSavedSnapshotRef.current = null;
       void refreshJournal();
     } catch (err: unknown) {
+      if (isAlreadyPublishedError(err)) { handleAlreadyPublished(); return; }
       setSendError(isNetworkError(err) ? apiUnreachableMsg
         : err instanceof Error ? err.message
         : t("L'envoi a échoué.", 'Sending failed.'));
@@ -494,7 +538,8 @@ export default function StudioEditorPage() {
   // ── ASV Pro : l'article en cours, tel qu'il sera jugé (un passage par intertitre,
   // les sources valent pour tout le texte).
   const getProData = useCallback(() => ({ title, blocks, sources }), [title, blocks, sources]);
-  const proCheck = useProCheck('article', getProData);
+  const proCheck = useProCheck('article', getProData, { userId, draftId: editingDraftId });
+  const confirmDelete = useConfirmDelete();
   const publishConfirm = usePublishConfirm();
 
   // ── Publication directe : mêmes gardes que le bouton Publier de l'app
@@ -536,7 +581,10 @@ export default function StudioEditorPage() {
       for (let i = 0; i < 30 && isAutosavingRef.current; i++) {
         await new Promise((resolve) => setTimeout(resolve, 100));
       }
-      await publishArticle(editingDraftIdRef.current, payload);
+      const publishedDraftId = editingDraftIdRef.current;
+      await publishArticle(publishedDraftId, payload);
+      // Publié : les rapports ASV de ce brouillon n'ont plus lieu d'être.
+      forgetProChecks(userId, 'article', publishedDraftId);
       clearLocalDraft(userId);
       invalidateEditorialPlanCache();
       setSentMode('published');
@@ -546,6 +594,7 @@ export default function StudioEditorPage() {
       lastSavedSnapshotRef.current = null;
       void refreshJournal();
     } catch (err: unknown) {
+      if (isAlreadyPublishedError(err)) { handleAlreadyPublished(); return; }
       setSendError(isNetworkError(err) ? apiUnreachableMsg
         : err instanceof Error ? err.message
         : t('La publication a échoué.', 'Publishing failed.'));
@@ -555,6 +604,8 @@ export default function StudioEditorPage() {
   };
 
   const handleResume = (draft: StudioDraftRow) => {
+    // Le texte non enregistré est remplacé : ses rapports ASV aussi.
+    if (userId && !editingDraftId) forgetProChecks(userId, 'article', null);
     setEditingDraftId(draft.id);
     setTitle(draft.title ?? '');
     setDek(draft.dek ?? '');
@@ -583,14 +634,16 @@ export default function StudioEditorPage() {
   };
 
   const handleDelete = async (draft: StudioDraftRow) => {
-    const confirmed = window.confirm(t(
-      `Supprimer définitivement le brouillon « ${draft.title || '(sans titre)'} » ?`,
-      `Permanently delete the draft “${draft.title || '(untitled)'}”?`
-    ));
+    const confirmed = await confirmDelete.ask(
+      t(`Supprimer « ${draft.title || '(sans titre)'} » ?`, `Delete “${draft.title || '(untitled)'}”?`),
+      t('Le brouillon sera supprimé définitivement, dans le Studio comme dans l’app.',
+        'The draft will be permanently deleted, in the Studio and in the app.'),
+    );
     if (!confirmed) return;
     setBusyDraftId(draft.id);
     try {
       await deleteDraft(draft.id);
+      if (userId) forgetProChecks(userId, 'article', draft.id);
       if (editingDraftId === draft.id) resetEditor();
       await refreshJournal();
     } catch (err: unknown) {
@@ -1064,6 +1117,9 @@ export default function StudioEditorPage() {
           </motion.div>
         </div>
       </Section>
+      {/* Hors de l'éditeur : la liste des brouillons reste visible après un envoi. */}
+      {confirmDelete.dialog}
+      {alreadyPublished.dialog}
     </div>
   );
 }

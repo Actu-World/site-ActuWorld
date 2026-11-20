@@ -66,7 +66,7 @@ function creditPayload(img: PostDraftImage) {
 /**
  * Publie une dépêche : titre = sujet de la carte 1, tldr = son excerpt, body = son
  * dos (comme usePostComposer de l'app). Le brouillon serveur éventuel est
- * supprimé ensuite, best-effort : un brouillon fantôme vaut mieux qu'un doublon.
+ * marqué publié par l'API (`draft_id`).
  */
 export async function publishPost(draftId: string | null, payload: PostDraftPayload): Promise<{ id: string }> {
   const images = payload.images;
@@ -89,7 +89,10 @@ export async function publishPost(draftId: string | null, payload: PostDraftPayl
         : [],
       ...creditPayload(img),
     })),
+    // Le serveur marque ce brouillon publié (20/11/2026) : il sort des listes
+    // du Studio ET de l'app, et un autre appareil resté ouvert dessus ne peut
+    // plus le modifier ni le republier (409).
+    draft_id: draftId,
   });
-  if (draftId) deletePostDraft(draftId).catch(() => { /* best-effort */ });
   return created;
 }
