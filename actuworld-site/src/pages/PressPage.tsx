@@ -5,7 +5,7 @@ import { PageMeta } from "../components/PageMeta";
 import { useLanguage } from "../i18n/LanguageContext";
 import { PageWrapper, AnimatedSection } from "../components/animations";
 
-const PRESS_EMAIL = "actuworld.app@outlook.fr";
+const PRESS_EMAIL = "contact@actuworld.fr";
 
 export default function PressPage() {
   const { isEnglish } = useLanguage();

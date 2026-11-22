@@ -16,7 +16,7 @@ type SendState = 'idle' | 'sending' | 'sent' | 'error';
 // URL de retour du lien magique : constante en prod (une seule entrée d'allowlist
 // Supabase), origine locale seulement pour le serveur de dev.
 const PRO_MAGIC_LINK_REDIRECT = import.meta.env.DEV ? `${window.location.origin}/pro` : 'https://actuworld.fr/pro';
-const CONTACT = 'mailto:actuworld.app@outlook.fr?subject=ASV%20Pro%20%3A%20demande%20d%27acc%C3%A8s';
+const CONTACT = 'mailto:contact@actuworld.fr?subject=ASV%20Pro%20%3A%20demande%20d%27acc%C3%A8s';
 
 /**
  * Entrée d'ASV Pro : connexion par lien magique (même compte et même session

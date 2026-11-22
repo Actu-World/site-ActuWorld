@@ -88,8 +88,8 @@ export default function PrivacyPage() {
           </p>
           <p>
             {t(
-              "Pour toute question ou demande liée à tes données : actuworld.app@outlook.fr (objet « Données personnelles »). Nous répondons sous un mois.",
-              "For any question or request about your data: actuworld.app@outlook.fr (subject “Personal data”). We reply within one month."
+              "Pour toute question ou demande liée à tes données : contact@actuworld.fr (objet « Données personnelles »). Nous répondons sous un mois.",
+              "For any question or request about your data: contact@actuworld.fr (subject “Personal data”). We reply within one month."
             )}
           </p>
         </>
@@ -313,8 +313,8 @@ export default function PrivacyPage() {
         <>
           <p>
             {t(
-              "Tu disposes des droits d'accès, de rectification, d'effacement, de portabilité, d'opposition et de limitation, ainsi que du droit de retirer ton consentement à tout moment. Écris à actuworld.app@outlook.fr ; nous pouvons te demander de confirmer ton identité depuis l'adresse de ton compte.",
-              "You have the rights of access, rectification, erasure, portability, objection and restriction, as well as the right to withdraw your consent at any time. Write to actuworld.app@outlook.fr; we may ask you to confirm your identity from your account's email address."
+              "Tu disposes des droits d'accès, de rectification, d'effacement, de portabilité, d'opposition et de limitation, ainsi que du droit de retirer ton consentement à tout moment. Écris à contact@actuworld.fr ; nous pouvons te demander de confirmer ton identité depuis l'adresse de ton compte.",
+              "You have the rights of access, rectification, erasure, portability, objection and restriction, as well as the right to withdraw your consent at any time. Write to contact@actuworld.fr; we may ask you to confirm your identity from your account's email address."
             )}
           </p>
           <p>

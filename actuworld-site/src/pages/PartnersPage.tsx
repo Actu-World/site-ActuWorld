@@ -7,7 +7,7 @@ import { PageWrapper, AnimatedSection } from "../components/animations";
 import { useLanguage } from "../i18n/LanguageContext";
 import { EpitechLogo } from "../components/EpitechLogo";
 
-const PARTNER_EMAIL = "actuworld.app@outlook.fr";
+const PARTNER_EMAIL = "contact@actuworld.fr";
 const MAILTO = `mailto:${PARTNER_EMAIL}?subject=${encodeURIComponent("Partenariat ActuWorld")}`;
 
 export default function PartnersPage() {

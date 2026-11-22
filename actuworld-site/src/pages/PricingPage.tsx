@@ -28,9 +28,9 @@ type Plan = {
 
 // ASV Pro 4.7 — grille proposée le 17/11/2026 (Docs/asv/ASV-PRO-TARIFS.md) : prix à
 // l'ouverture, bêta gratuite sur invitation tant que CGV et facturation (4.8) ne sont pas prêtes.
-const BETA_MAILTO = "mailto:actuworld.app@outlook.fr?subject=ASV%20Pro%20%3A%20demande%20d'acc%C3%A8s%20%C3%A0%20la%20b%C3%AAta";
-const QUOTE_MAILTO = "mailto:actuworld.app@outlook.fr?subject=ASV%20Pro%20%3A%20demande%20de%20devis";
-const EDU_MAILTO = "mailto:actuworld.app@outlook.fr?subject=ASV%20Pro%20%C3%89ducation";
+const BETA_MAILTO = "mailto:contact@actuworld.fr?subject=ASV%20Pro%20%3A%20demande%20d'acc%C3%A8s%20%C3%A0%20la%20b%C3%AAta";
+const QUOTE_MAILTO = "mailto:contact@actuworld.fr?subject=ASV%20Pro%20%3A%20demande%20de%20devis";
+const EDU_MAILTO = "mailto:contact@actuworld.fr?subject=ASV%20Pro%20%C3%89ducation";
 
 function PlanCard({ p }: { p: Plan }) {
   return (

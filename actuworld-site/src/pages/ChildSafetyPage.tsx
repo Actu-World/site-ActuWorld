@@ -80,8 +80,8 @@ export default function ChildSafetyPage() {
           </ol>
           <p>
             {t(
-              "Les signalements relatifs à la sécurité des enfants sont traités en priorité absolue par notre équipe de modération. Tu peux aussi nous signaler un problème par e-mail à actuworld.app@outlook.fr (objet\u00a0: « Sécurité enfants »).",
-              "Reports related to child safety are treated with the highest priority by our moderation team. You can also report an issue by email at actuworld.app@outlook.fr (subject: “Child safety”)."
+              "Les signalements relatifs à la sécurité des enfants sont traités en priorité absolue par notre équipe de modération. Tu peux aussi nous signaler un problème par e-mail à contact@actuworld.fr (objet\u00a0: « Sécurité enfants »).",
+              "Reports related to child safety are treated with the highest priority by our moderation team. You can also report an issue by email at contact@actuworld.fr (subject: “Child safety”)."
             )}
           </p>
         </>
@@ -122,8 +122,8 @@ export default function ChildSafetyPage() {
       body: (
         <p>
           {t(
-            "Pour toute question relative à ces normes ou à la conformité d'ActuWorld en matière de prévention des contenus d'abus sexuels sur mineurs, contacte notre point de contact désigné\u00a0: actuworld.app@outlook.fr.",
-            "For any question about these standards or ActuWorld's compliance regarding the prevention of child sexual abuse material, contact our designated point of contact: actuworld.app@outlook.fr."
+            "Pour toute question relative à ces normes ou à la conformité d'ActuWorld en matière de prévention des contenus d'abus sexuels sur mineurs, contacte notre point de contact désigné\u00a0: contact@actuworld.fr.",
+            "For any question about these standards or ActuWorld's compliance regarding the prevention of child sexual abuse material, contact our designated point of contact: contact@actuworld.fr."
           )}
         </p>
       ),

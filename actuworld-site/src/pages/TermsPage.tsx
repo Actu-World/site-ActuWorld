@@ -169,8 +169,8 @@ export default function TermsPage() {
           </p>
           <p>
             {t(
-              "Selon la gravité, la modération peut : masquer ou retirer un contenu, adresser un avertissement, restreindre temporairement la publication, suspendre ou bannir un compte. Toute mesure t'est notifiée avec son motif. Tu peux la contester en écrivant à actuworld.app@outlook.fr dans les 30 jours ; nous répondons sous 15 jours. En cas de bannissement, tu ne peux pas ouvrir un nouveau compte.",
-              "Depending on severity, moderation may: hide or remove content, issue a warning, temporarily restrict publishing, suspend or ban an account. Every measure is notified to you with its reason. You can appeal by writing to actuworld.app@outlook.fr within 30 days; we reply within 15 days. If banned, you may not open a new account."
+              "Selon la gravité, la modération peut : masquer ou retirer un contenu, adresser un avertissement, restreindre temporairement la publication, suspendre ou bannir un compte. Toute mesure t'est notifiée avec son motif. Tu peux la contester en écrivant à contact@actuworld.fr dans les 30 jours ; nous répondons sous 15 jours. En cas de bannissement, tu ne peux pas ouvrir un nouveau compte.",
+              "Depending on severity, moderation may: hide or remove content, issue a warning, temporarily restrict publishing, suspend or ban an account. Every measure is notified to you with its reason. You can appeal by writing to contact@actuworld.fr within 30 days; we reply within 15 days. If banned, you may not open a new account."
             )}
           </p>
         </>
@@ -291,8 +291,8 @@ export default function TermsPage() {
       body: (
         <p>
           {t(
-            "Pour toute question relative aux conditions d'utilisation, écris-nous à actuworld.app@outlook.fr.",
-            "For any questions about these terms, contact us at actuworld.app@outlook.fr."
+            "Pour toute question relative aux conditions d'utilisation, écris-nous à contact@actuworld.fr.",
+            "For any questions about these terms, contact us at contact@actuworld.fr."
           )}
         </p>
       ),

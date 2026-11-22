@@ -28,7 +28,7 @@ export default function LegalNoticePage() {
             <dd className="font-semibold tabular">99507068700018</dd>
             <dt className="text-aw-muted">{t("E-mail", "Email")}</dt>
             <dd>
-              <a href="mailto:actuworld.app@outlook.fr">actuworld.app@outlook.fr</a>
+              <a href="mailto:contact@actuworld.fr">contact@actuworld.fr</a>
             </dd>
           </dl>
         </>
@@ -90,8 +90,8 @@ export default function LegalNoticePage() {
       body: (
         <p>
           {t(
-            "Pour toute question concernant ces mentions légales, écris-nous à actuworld.app@outlook.fr.",
-            "For any question regarding this legal notice, write to us at actuworld.app@outlook.fr."
+            "Pour toute question concernant ces mentions légales, écris-nous à contact@actuworld.fr.",
+            "For any question regarding this legal notice, write to us at contact@actuworld.fr."
           )}
         </p>
       ),

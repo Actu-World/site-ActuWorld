@@ -34,8 +34,8 @@ export default function AccountDeletionPage() {
       body: (
         <p>
           {t(
-            "Si tu ne peux plus accéder à ton compte, envoie un e-mail à actuworld.app@outlook.fr depuis l'adresse associée à ton compte, avec pour objet « Suppression de compte ». Nous traitons la demande sous 30 jours au plus.",
-            "If you can no longer access your account, email actuworld.app@outlook.fr from the address associated with your account, with the subject “Account deletion”. We process requests within 30 days at most."
+            "Si tu ne peux plus accéder à ton compte, envoie un e-mail à contact@actuworld.fr depuis l'adresse associée à ton compte, avec pour objet « Suppression de compte ». Nous traitons la demande sous 30 jours au plus.",
+            "If you can no longer access your account, email contact@actuworld.fr from the address associated with your account, with the subject “Account deletion”. We process requests within 30 days at most."
           )}
         </p>
       ),
@@ -53,8 +53,8 @@ export default function AccountDeletionPage() {
           </p>
           <p>
             {t(
-              "Pour toute autre demande de suppression partielle (par exemple l'historique lié à ton compte), écris-nous à actuworld.app@outlook.fr\u00a0: nous traitons la demande sous 30 jours, sans que tu aies à supprimer ton compte.",
-              "For any other partial deletion request (for example account-related history), write to actuworld.app@outlook.fr: we process requests within 30 days, without requiring you to delete your account."
+              "Pour toute autre demande de suppression partielle (par exemple l'historique lié à ton compte), écris-nous à contact@actuworld.fr\u00a0: nous traitons la demande sous 30 jours, sans que tu aies à supprimer ton compte.",
+              "For any other partial deletion request (for example account-related history), write to contact@actuworld.fr: we process requests within 30 days, without requiring you to delete your account."
             )}
           </p>
         </>
@@ -95,8 +95,8 @@ export default function AccountDeletionPage() {
       body: (
         <p>
           {t(
-            "Pour toute question relative à la suppression de tes données, écris-nous à actuworld.app@outlook.fr.",
-            "For any question about the deletion of your data, write to us at actuworld.app@outlook.fr."
+            "Pour toute question relative à la suppression de tes données, écris-nous à contact@actuworld.fr.",
+            "For any question about the deletion of your data, write to us at contact@actuworld.fr."
           )}
         </p>
       ),

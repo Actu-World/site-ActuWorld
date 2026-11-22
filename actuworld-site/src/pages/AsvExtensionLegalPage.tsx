@@ -39,7 +39,7 @@ export default function AsvExtensionLegalPage() {
             <dd className="font-semibold tabular">99507068700018</dd>
             <dt className="text-aw-muted">{t("E-mail", "Email")}</dt>
             <dd>
-              <a href="mailto:actuworld.app@outlook.fr">actuworld.app@outlook.fr</a>
+              <a href="mailto:contact@actuworld.fr">contact@actuworld.fr</a>
             </dd>
           </dl>
           <p className="mt-4">
@@ -151,8 +151,8 @@ export default function AsvExtensionLegalPage() {
         <>
           <p>
             {t(
-              "Tu peux demander l'accès aux données qui te concernent, leur rectification, leur effacement, la limitation de leur traitement ou t'y opposer. Écris à actuworld.app@outlook.fr avec l'objet « Données personnelles ». Nous répondons sous un mois.",
-              "You can ask to access the data about you, have it corrected or deleted, restrict its processing or object to it. Write to actuworld.app@outlook.fr with the subject “Personal data”. We reply within one month."
+              "Tu peux demander l'accès aux données qui te concernent, leur rectification, leur effacement, la limitation de leur traitement ou t'y opposer. Écris à contact@actuworld.fr avec l'objet « Données personnelles ». Nous répondons sous un mois.",
+              "You can ask to access the data about you, have it corrected or deleted, restrict its processing or object to it. Write to contact@actuworld.fr with the subject “Personal data”. We reply within one month."
             )}
           </p>
           <p>
@@ -197,8 +197,8 @@ export default function AsvExtensionLegalPage() {
       body: (
         <p>
           {t(
-            "Une question, un bug, un résultat qui te semble faux ? Écris à actuworld.app@outlook.fr avec l'objet « Extension ASV », en indiquant l'adresse de la page analysée et la version de ton navigateur. Pour comprendre comment ASV note un éditeur, lis la ",
-            "A question, a bug, a result that looks wrong? Write to actuworld.app@outlook.fr with the subject “ASV extension”, giving the address of the analyzed page and your browser version. To understand how ASV rates a publisher, read the "
+            "Une question, un bug, un résultat qui te semble faux ? Écris à contact@actuworld.fr avec l'objet « Extension ASV », en indiquant l'adresse de la page analysée et la version de ton navigateur. Pour comprendre comment ASV note un éditeur, lis la ",
+            "A question, a bug, a result that looks wrong? Write to contact@actuworld.fr with the subject “ASV extension”, giving the address of the analyzed page and your browser version. To understand how ASV rates a publisher, read the "
           )}
           <Link to="/reco-src">{t("page ASV", "ASV page")}</Link>.
         </p>

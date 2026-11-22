@@ -6,7 +6,7 @@ import { PageMeta } from "../components/PageMeta";
 import { useLanguage } from "../i18n/LanguageContext";
 import { PageWrapper, AnimatedSection } from "../components/animations";
 
-const EMAIL = "actuworld.app@outlook.fr";
+const EMAIL = "contact@actuworld.fr";
 
 export default function ContactPage() {
   const { isEnglish } = useLanguage();

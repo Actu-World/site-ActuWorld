@@ -8,7 +8,7 @@ import { useStudioSession } from '../../hooks/useStudioSession';
 import type { ProAccess } from '../../lib/pro/types';
 import { planLabel } from '../../lib/pro/plan';
 
-const CONTACT = 'mailto:actuworld.app@outlook.fr?subject=ASV%20Pro';
+const CONTACT = 'mailto:contact@actuworld.fr?subject=ASV%20Pro';
 
 /**
  * Un compte créé sur le site n'a pas de mot de passe (connexion par lien). Pour
