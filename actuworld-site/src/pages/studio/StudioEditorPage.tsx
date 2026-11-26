@@ -1038,6 +1038,8 @@ export default function StudioEditorPage() {
                     {sendError && (
                       <p className="text-red-500 text-sm mb-4" role="alert">{sendError}</p>
                     )}
+                    {/* Vérifier d'abord : la tuile ASV et son explication, au-dessus des boutons. */}
+                    <ProCheckLink check={proCheck} />
                     <div className="flex flex-col sm:flex-row gap-3">
                       <button type="button" onClick={() => void handlePublish()}
                         disabled={isSending || isPublishing || isCoverUploading}
@@ -1056,7 +1058,6 @@ export default function StudioEditorPage() {
                             : t("Envoyer vers l'app", 'Send to the app')}
                       </button>
                     </div>
-                    <ProCheckLink check={proCheck} />
                     {publishConfirm.dialog}
                     <p className="text-aw-muted text-xs mt-3 text-center">
                       {t(

@@ -825,6 +825,8 @@ export default function StudioPostPage() {
                   {/* Publication directe + envoi en brouillon vers l'app */}
                   <div className="card p-5">
                     {sendError && <p className="text-red-500 text-sm mb-4" role="alert">{sendError}</p>}
+                    {/* Vérifier d'abord : la tuile ASV et son explication, au-dessus des boutons. */}
+                    <ProCheckLink check={proCheck} />
                     <div className="flex flex-col sm:flex-row gap-3">
                       <button type="button" onClick={() => void handlePublish()} disabled={isSending || isPublishing || isUploading}
                         className="btn-primary flex-1 inline-flex items-center justify-center disabled:opacity-60">
@@ -837,7 +839,6 @@ export default function StudioPostPage() {
                         {isSending ? t('Envoi en cours…', 'Sending…') : t("Envoyer vers l'app", 'Send to the app')}
                       </button>
                     </div>
-                    <ProCheckLink check={proCheck} />
                     {publishConfirm.dialog}
                     <p className="text-aw-muted text-xs mt-3 text-center">
                       {t(

@@ -204,7 +204,7 @@ function ProCheckDialogs({ check }: { check: ReturnType<typeof useProCheck> }) {
   );
 }
 
-/** Lien « Vérifier mes sources avant de publier », à poser près de Publier. */
+/** Lien « Vérifier mes sources avant de publier », à poser juste au-dessus de Publier. */
 export function ProCheckLink({ check }: { check: ReturnType<typeof useProCheck> }) {
   const { isEnglish } = useLanguage();
   const t = (fr: string, en: string) => (isEnglish ? en : fr);
@@ -214,7 +214,7 @@ export function ProCheckLink({ check }: { check: ReturnType<typeof useProCheck> 
       ? t('Revoir le rapport ASV', 'View the ASV report again')
       : t('Vérifier mes sources avant de publier', 'Check my sources before publishing');
   return (
-    <div className="mt-4 text-center">
+    <div className="mb-4 text-center">
       <button type="button" onClick={() => void check.run()}
         className="btn-link text-sm inline-flex items-center gap-2">
         {/* Tuile ASV de l'app : contour + jauge vide, traits qui chargent pendant
