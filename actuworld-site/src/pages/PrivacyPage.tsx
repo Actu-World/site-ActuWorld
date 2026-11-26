@@ -68,6 +68,14 @@ export default function PrivacyPage() {
       where: t("États-Unis", "United States"),
     },
     {
+      name: "Mixpanel, Inc.",
+      role: t(
+        "Mesure de l'utilisation de l'application, uniquement avec ton consentement",
+        "Measurement of app usage, only with your consent"
+      ),
+      where: t("Union européenne (données stockées dans l'UE)", "European Union (data stored in the EU)"),
+    },
+    {
       name: "Google LLC — Google Analytics",
       role: t("Mesure d'audience du site, uniquement avec ton consentement", "Website audience measurement, only with your consent"),
       where: t("États-Unis", "United States"),
@@ -128,6 +136,12 @@ export default function PrivacyPage() {
             </li>
             <li>
               {t(
+                "Statistiques d'utilisation de l'application, seulement si tu l'acceptes : les écrans ouverts, les étapes de création de profil et de publication, l'usage de la recherche et des thèmes, la part d'un contenu lue (par quarts), avec le type d'appareil, la version de l'app et la langue. Ces données sont rattachées à l'identifiant interne de ton compte, jamais à ton nom ni à ton e-mail. Nous ne mesurons ni quels contenus tu lis, ni ce que tu écris ou recherches, ni tes messages, ni tes votes, ni ta position.",
+                "App usage statistics, only if you accept: screens opened, profile-setup and publishing steps, use of search and themes, how much of a piece of content was read (by quarters), with device type, app version and language. This data is linked to your account's internal identifier, never to your name or email. We do not measure which contents you read, what you write or search for, your messages, your votes or your location."
+              )}
+            </li>
+            <li>
+              {t(
                 "Localisation : seulement si tu l'actives toi-même pour pré-remplir ton pays dans ton profil. La position n'est jamais enregistrée.",
                 "Location: only if you enable it yourself to pre-fill your country in your profile. The position is never stored."
               )}
@@ -175,6 +189,12 @@ export default function PrivacyPage() {
             {t(
               "Te prévenir du lancement si tu t'es inscrit à la liste d'attente (consentement, retirable à tout moment en répondant à l'e-mail).",
               "Letting you know about the launch if you joined the waitlist (consent, withdrawable at any time by replying to the email)."
+            )}
+          </li>
+          <li>
+            {t(
+              "Mesurer l'utilisation de l'application pour l'améliorer (consentement, demandé dans l'app ; tu peux le retirer à tout moment dans Paramètres, « Statistiques d'utilisation »). Sans ton accord, rien n'est envoyé. Ces données sont effacées quand ton compte est supprimé.",
+              "Measuring app usage to improve it (consent, asked in the app; you can withdraw it at any time in Settings, “Usage statistics”). Without your agreement, nothing is sent. This data is erased when your account is deleted."
             )}
           </li>
           <li>
@@ -358,7 +378,7 @@ export default function PrivacyPage() {
         />
       }
       title={t("Politique de confidentialité", "Privacy Policy")}
-      meta={t("Dernière mise à jour : 22 octobre 2026", "Last updated: 22 October 2026")}
+      meta={t("Dernière mise à jour : 26 novembre 2026", "Last updated: 26 November 2026")}
       sections={sections}
     />
   );
