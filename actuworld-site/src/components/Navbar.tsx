@@ -42,6 +42,7 @@ export const Navbar: React.FC = () => {
   const navLinks = [
     { href: '/app', label: t("L'app", 'The app') },
     { href: '/reco-src', label: 'ASV' },
+    { href: '/pro', label: 'ASV Pro' },
     { href: '/faq', label: 'FAQ' },
     { href: '/partenaires', label: t('Partenaires', 'Partners') },
     { href: '/contact', label: 'Contact' },
@@ -49,9 +50,9 @@ export const Navbar: React.FC = () => {
 
   // Sur mobile, le menu a la place d'afficher aussi les pages secondaires
   const mobileLinks = [
-    ...navLinks.slice(0, 2),
+    ...navLinks.slice(0, 3),
     { href: '/about', label: t('À propos', 'About') },
-    ...navLinks.slice(2),
+    ...navLinks.slice(3),
     { href: '/press', label: t('Presse', 'Press') },
   ];
 

@@ -258,6 +258,10 @@ export default function ReportView({ data, lang, actions, banner, showReview = t
           'ASV mesure la transparence des éditeurs et la fidélité du texte à ses sources. Il ne dit pas si un contenu est vrai ou faux. Une source non lue n’est jamais comptée comme fausse.',
           'ASV measures how transparent publishers are and how faithful the text is to its sources. It does not say whether content is true or false. An unread source is never counted as false.',
         )}{' '}
+        {t(
+          'Ce rapport est produit automatiquement, avec l’aide d’un modèle d’IA : il peut se tromper. La citation de la source fait foi.',
+          'This report is produced automatically, with the help of an AI model: it can be wrong. The quote from the source is what counts.',
+        )}{' '}
         <Link to="/reco-src" className="link">{t('Comment ASV vérifie', 'How ASV checks')}</Link>
       </p>
     </article>

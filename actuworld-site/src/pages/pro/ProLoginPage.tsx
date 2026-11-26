@@ -124,7 +124,7 @@ export default function ProLoginPage() {
             </H2>
             <p className="text-aw-muted mt-3">
               {t(
-                "Colle ton texte et tes sources. ASV lit chaque source en entier et te dit, section par section, si elle confirme ce que tu écris, citation à l'appui.",
+                "Colle ton texte et tes sources. ASV lit chaque source en entier et te dit, passage par passage, si elle confirme ce que tu écris, citation à l'appui.",
                 'Paste your text and your sources. ASV reads each source in full and tells you, section by section, whether it confirms what you write, with the quote.',
               )}
             </p>
@@ -221,11 +221,11 @@ export default function ProLoginPage() {
                 <form onSubmit={handleSignup}>
                   <p className="text-aw-muted text-sm mb-5">
                     {t(
-                      'Pas besoin de l’app : crée ton compte ActuWorld ici. Tu commences avec la formule Découverte, 5 vérifications par mois, gratuites.',
-                      'No app needed: create your ActuWorld account here. You start on the Discovery plan, 5 free checks per month.',
+                      'Un compte suffit pour utiliser ASV Pro, sans installer l’app ni rien publier. Tu commences avec la formule Découverte : 5 vérifications par mois, gratuites.',
+                      'An account is all you need to use ASV Pro, without installing the app or publishing anything. You start on the Discovery plan: 5 free checks per month.',
                     )}
                   </p>
-                  <label htmlFor="pro-signup-name" className="body-semi block mb-2">{t('Nom de plume', 'Pen name')}</label>
+                  <label htmlFor="pro-signup-name" className="body-semi block mb-2">{t('Ton nom', 'Your name')}</label>
                   <input
                     id="pro-signup-name"
                     type="text"
@@ -235,7 +235,7 @@ export default function ProLoginPage() {
                     autoComplete="name"
                     value={penName}
                     onChange={(e) => setPenName(e.target.value)}
-                    placeholder={t('Celui qui signera tes textes', 'The one that will sign your texts')}
+                    placeholder={t('Ton nom, ou celui de ta rédaction ou de ton établissement', 'Your name, or your newsroom’s or school’s')}
                     className="field"
                   />
                   <label htmlFor="pro-signup-email" className="body-semi block mb-2 mt-4">{t('Email', 'Email')}</label>
@@ -269,8 +269,8 @@ export default function ProLoginPage() {
                     {sendState === 'sending' ? t('Création en cours…', 'Creating…') : t('Créer mon compte', 'Create my account')}
                   </button>
                   <p className="text-aw-muted text-xs mt-4 text-center">
-                    {t('Pas de mot de passe : tu reçois un lien pour confirmer ton adresse. Le même compte te sert dans l’app.',
-                      'No password: you receive a link to confirm your address. The same account works in the app.')}
+                    {t('Pas de mot de passe : tu reçois un lien pour confirmer ton adresse. Si tu utilises un jour l’app ActuWorld, le même compte y fonctionne et ce nom y sera ta signature.',
+                      'No password: you receive a link to confirm your address. If you ever use the ActuWorld app, the same account works there and this name will be your byline.')}
                   </p>
                 </form>
               )}
@@ -279,7 +279,7 @@ export default function ProLoginPage() {
 
           <ul className="grid gap-3 mt-8">
             {[
-              { icon: Quote, text: t('Pour chaque section, la phrase exacte de la source qui la confirme ou la contredit.', 'For each section, the exact sentence of the source that confirms or contradicts it.') },
+              { icon: Quote, text: t('Pour chaque passage, la phrase exacte de la source qui la confirme ou la contredit.', 'For each section, the exact sentence of the source that confirms or contradicts it.') },
               { icon: FileSearch, text: t('Les sources lues en entier : pages, PDF officiels, copies archivées. Ce qui n’a pas pu être lu est dit, jamais compté comme faux.', 'Sources read in full: pages, official PDFs, archived copies. What could not be read is said, never counted as false.') },
               { icon: ShieldCheck, text: t("ASV ne dit pas « vrai » ou « faux » : il montre ce que disent les sources et ce que l'auteur ajoute.", "ASV does not say “true” or “false”: it shows what the sources say and what the author adds.") },
             ].map(({ icon: Icon, text }) => (
@@ -291,6 +291,8 @@ export default function ProLoginPage() {
           </ul>
           <p className="text-center text-sm text-aw-muted mt-6">
             <Link to="/reco-src" className="link">{t('Comment ASV vérifie', 'How ASV checks')}</Link>
+            <span aria-hidden="true"> · </span>
+            <Link to="/tarifs" className="link">{t('Voir les formules', 'See the plans')}</Link>
           </p>
         </div>
       </Section>

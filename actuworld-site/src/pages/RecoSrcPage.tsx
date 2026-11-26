@@ -349,15 +349,18 @@ export default function RecoSrcPage() {
             <H2>{t("Une rédaction, une école, un projet ?", "A newsroom, a school, a project?")}</H2>
             <p className="lead mt-4">
               {t(
-                "ASV fonctionne aujourd'hui dans l'app. Une extension navigateur et une intégration pour les rédactions sont en préparation : dis-nous comment tu aimerais l'utiliser.",
-                "ASV runs inside the app today. A browser extension and a newsroom integration are in preparation: tell us how you'd like to use it."
+                "ASV Pro vérifie un texte contre ses propres sources avant publication, sans passer par l'app : colle ton article avec ses liens, le rapport dit passage par passage ce que chaque source confirme, contredit ou ne contient pas. La formule Découverte est gratuite, 5 rapports par mois.",
+                "ASV Pro checks a text against its own sources before publication, without the app: paste your article with its links, and the report says, passage by passage, what each source confirms, contradicts or does not contain. The Discovery plan is free, 5 reports per month."
               )}
             </p>
           </div>
           <div className="flex flex-col sm:flex-row sm:flex-wrap items-center gap-x-6 gap-y-3">
-            <Link to="/contact" className="btn-primary w-full sm:w-auto justify-center">{t("Nous écrire", "Write to us")}</Link>
-            <Link to="/liste-attente" className="btn-link">
-              {t("Être prévenu", "Get notified")} <ChevronRight className="w-4 h-4" aria-hidden="true" />
+            <Link to="/pro" className="btn-primary w-full sm:w-auto justify-center">{t("Essayer ASV Pro", "Try ASV Pro")}</Link>
+            <Link to="/tarifs" className="btn-link">
+              {t("Voir les formules", "See the plans")} <ChevronRight className="w-4 h-4" aria-hidden="true" />
+            </Link>
+            <Link to="/contact" className="btn-link">
+              {t("Nous écrire", "Write to us")} <ChevronRight className="w-4 h-4" aria-hidden="true" />
             </Link>
           </div>
         </div>

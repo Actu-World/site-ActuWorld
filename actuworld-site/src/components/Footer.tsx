@@ -12,6 +12,10 @@ export const Footer: React.FC = () => {
   const explore = [
     { to: '/app', label: t("L'app", 'The app') },
     { to: '/reco-src', label: 'ASV' },
+    { to: '/pro', label: 'ASV Pro' },
+    { to: '/tarifs', label: t('Tarifs', 'Pricing') },
+    { to: '/pro', label: 'ASV Pro' },
+    { to: '/tarifs', label: t('Tarifs', 'Pricing') },
     { to: '/about', label: t('À propos', 'About') },
     { to: '/faq', label: 'FAQ' },
     { to: '/partenaires', label: t('Partenaires', 'Partners') },

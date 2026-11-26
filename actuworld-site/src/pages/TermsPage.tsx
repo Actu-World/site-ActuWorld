@@ -209,8 +209,8 @@ export default function TermsPage() {
           </p>
           <p>
             {t(
-              "À ce jour, le service ne propose aucune offre payante ni aucun système de don entre utilisateurs. Des outils destinés aux professionnels de l'information (ASV Pro) sont en préparation ; ils feront l'objet de conditions particulières au moment de leur ouverture.",
-              "To date, the service offers no paid plan and no donation system between users. Tools for information professionals (ASV Pro) are being prepared; they will be covered by specific terms when they open."
+              "À ce jour, le service ne propose aucune offre payante ni aucun système de don entre utilisateurs. ASV Pro, l'outil qui vérifie un texte contre ses sources, est ouvert en formule Découverte gratuite ; ses formules payantes sont en bêta gratuite, sur invitation, et feront l'objet de conditions particulières au moment de leur ouverture.",
+              "To date, the service offers no paid plan and no donation system between users. ASV Pro, the tool that checks a text against its sources, is open on a free Discovery plan; its paid plans are in free, invitation-only beta and will be covered by specific terms when they open."
             )}
           </p>
         </>

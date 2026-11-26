@@ -158,7 +158,7 @@ export default function PricingPage() {
       desc: t("Presse, médias, services communication", "Press, media, comms teams"),
       points: [
         t("150 rapports par siège et par mois, mis en commun", "150 reports per seat per month, pooled"),
-        t("Membres gérés par la rédaction", "Members managed by the newsroom"),
+        t("Membres gérés par la rédaction (à venir)", "Members managed by the newsroom (coming)"),
         t("Tout ce que contient Pro", "Everything in Pro"),
       ],
       cta: t("Demander un accès", "Request access"),
@@ -173,8 +173,8 @@ export default function PricingPage() {
       desc: t("Éducation aux médias", "Media literacy"),
       points: [
         t("Enseignants : comme Pro, avec une adresse académique", "Teachers: same as Pro, with an academic email"),
-        t("Établissement : comptes élèves", "Schools: student accounts"),
-        t("Exercices sur un texte et ses sources", "Exercises on a text and its sources"),
+        t("Établissement : comptes élèves (à venir)", "Schools: student accounts (coming)"),
+        t("Exercices sur un texte et ses sources (à venir)", "Exercises on a text and its sources (coming)"),
       ],
       cta: t("Nous écrire", "Write to us"),
       mailto: EDU_MAILTO,

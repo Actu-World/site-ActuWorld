@@ -231,6 +231,12 @@ export default function PrivacyPage() {
           </p>
           <p>
             {t(
+              "ASV Pro (vérifier un texte avant de le publier) : le texte que tu confies à ASV Pro, ses liens et le rapport produit sont enregistrés dans ton espace ASV Pro. Ils ne sont pas publiés dans ActuWorld. Tu peux supprimer un rapport à tout moment depuis sa page, la suppression est définitive ; tout est effacé avec ton compte. Pour l'analyse, le texte et le contenu des pages citées sont transmis au modèle Gemini de Google, sans donnée de ton compte (nom, e-mail, identifiant). Un rapport n'est consultable par d'autres personnes que si tu crées toi-même un lien de partage en lecture seule.",
+              "ASV Pro (checking a text before publishing it): the text you submit to ASV Pro, its links and the resulting report are stored in your ASV Pro space. They are not published on ActuWorld. You can delete a report at any time from its page, and deletion is permanent; everything is erased with your account. For the analysis, the text and the content of the cited pages are sent to Google's Gemini model, with no account data (name, email, identifier). A report can be viewed by other people only if you create a read-only sharing link yourself."
+            )}
+          </p>
+          <p>
+            {t(
               "La modération des contenus et des comptes (signalements, retraits, avertissements, suspensions) est faite par des personnes. Toute mesure prise est motivée et peut faire l'objet d'un recours par e-mail.",
               "Moderation of content and accounts (reports, removals, warnings, suspensions) is done by people. Every measure is explained and can be appealed by email."
             )}
