@@ -127,7 +127,7 @@ describe('sections', () => {
     const items = reviewItems(views, 'fr', [{ code: 'link_cited_sources', params: { n: 2 } }]);
     expect(items.map((i) => [i.passage, i.tone])).toEqual([[0, 'orange'], [1, 'grey'], [2, 'red'], [3, 'orange']]);
     expect(items[0].text).toBe('Le texte cite 2 sources sans leur lien. Ajoute le lien de chacune.');
-    expect(items[1].text).toBe("Passage 1 : une partie est ton analyse (« Bonne nouvelle. »). Signale-la comme telle si c'est voulu.");
+    expect(items[1].text).toBe("Passage 1 : « Bonne nouvelle. » n'est pas dans ta source. Si c'est ton analyse, signale-la comme telle ; si c'est un fait, ajoute la source qui le dit.");
     expect(items[3].text).toContain("x.com est un réseau social ou une vidéo. Cite la publication d'origine");
     // Rapport d'après la 3.3 sans conseil : rien à reprendre, sans recalcul local.
     expect(reviewItems(sectionViews(input, cards, [], 'fr'), 'fr', [])).toEqual([]);

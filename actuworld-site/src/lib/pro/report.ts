@@ -510,8 +510,8 @@ export function cardAdviceWords(advice: Alert, lang: Lang): AdviceText | null {
   if (advice.code !== 'flag_opinion') return null;
   const quote = String(advice.params?.text ?? '');
   return { tone: 'grey', text: pick(lang,
-    `une partie est ton analyse (« ${quote} »). Signale-la comme telle si c'est voulu.`,
-    `part of it is your own analysis (“${quote}”). Flag it as such if intended.`) };
+    `« ${quote} » n'est pas dans ta source. Si c'est ton analyse, signale-la comme telle ; si c'est un fait, ajoute la source qui le dit.`,
+    `“${quote}” is not in your source. If it is your own analysis, flag it as such; if it is a fact, add the source that states it.`) };
 }
 
 /** Un conseil sur le texte entier ; null si le code est inconnu. */
