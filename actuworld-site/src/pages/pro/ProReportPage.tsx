@@ -107,7 +107,7 @@ function Report({ id, access }: { id: string; access: ProAccess }) {
       <div className="card p-8 text-center">
         <p className="body-semi">{error}</p>
         <Link to={homePath} className="btn-outline btn-sm mt-5">
-          {features.history ? t("Retour à l'historique", 'Back to history') : t('Vérifier un texte', 'Check a text')}
+          {features.history ? t('Retour à mes rapports', 'Back to my reports') : t('Vérifier un texte', 'Check a text')}
         </Link>
       </div>
     );
