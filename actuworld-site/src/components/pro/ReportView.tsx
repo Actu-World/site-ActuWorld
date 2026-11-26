@@ -27,7 +27,7 @@ function Passage({ view, lang, textScope }: { view: SectionView; lang: Lang; tex
     ? view.lines.filter((line) => line.stance === 'supports' || line.stance === 'contradicts')
     : view.lines;
   return (
-    <li id={`passage-${view.index + 1}`} className="card p-5 sm:p-6 break-inside-avoid scroll-mt-24">
+    <li id={`passage-${view.index + 1}`} className="card p-5 @xl:p-6 break-inside-avoid scroll-mt-24">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
         <h3 className="text-lg">{t('Passage', 'Passage')} {view.index + 1}</h3>
         <span className="inline-flex items-center gap-2 text-sm font-semibold">
@@ -149,11 +149,11 @@ export default function ReportView({ data, lang, actions, banner, showReview = t
     .toLocaleString(lang === 'en' ? 'en-GB' : 'fr-FR', { dateStyle: 'long', timeStyle: 'short' });
 
   return (
-    <article className="space-y-6">
-      <header className="card p-6 sm:p-8">
+    <article className="@container space-y-6">
+      <header className="card p-6 @xl:p-8">
         {banner}
         <p className="caption text-aw-muted">{t('Rapport ASV', 'ASV report')} · {date}</p>
-        <h1 className="text-2xl sm:text-3xl mt-2">{data.input.title}</h1>
+        <h1 className="text-2xl @xl:text-3xl mt-2">{data.input.title}</h1>
         {pending && !v ? (
           <p className="mt-4 inline-flex items-center gap-2 text-aw-muted" role="status">
             <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
@@ -183,7 +183,7 @@ export default function ReportView({ data, lang, actions, banner, showReview = t
           </p>
         )}
         {v && showReview && (
-          <section className="mt-6 rounded-xl border border-aw p-4 sm:p-5" aria-labelledby="pro-review">
+          <section className="mt-6 rounded-xl border border-aw p-4 @xl:p-5" aria-labelledby="pro-review">
             <h2 id="pro-review" className="text-base">{t('À reprendre avant publication', 'To fix before publishing')}</h2>
             {review.length === 0 ? (
               <p className="text-sm mt-2 inline-flex items-center gap-2"><ToneDot color={TONE_COLOR.green} />{reviewEmpty(lang)}</p>
@@ -200,7 +200,7 @@ export default function ReportView({ data, lang, actions, banner, showReview = t
           </section>
         )}
         {v && (
-          <dl className="grid sm:grid-cols-2 gap-4 mt-6 text-sm">
+          <dl className="grid @xl:grid-cols-2 gap-4 mt-6 text-sm">
             <div>
               <dt className="text-aw-muted">{t('Qui publie les sources', 'Who publishes the sources')}</dt>
               <dd className="body-semi mt-1">{publisherWords(v.publisher, lang)}</dd>
@@ -226,7 +226,7 @@ export default function ReportView({ data, lang, actions, banner, showReview = t
       </header>
 
       {v && textScope && textSources.length > 0 && (
-        <section className="card p-5 sm:p-6" aria-labelledby="pro-text-sources">
+        <section className="card p-5 @xl:p-6" aria-labelledby="pro-text-sources">
           <h2 id="pro-text-sources" className="text-lg">{t('Sources du texte', 'Text sources')}</h2>
           <p className="text-sm text-aw-muted mt-1 max-w-prose">
             {t('Elles valent pour tout le texte. Sous chaque passage, seules celles qui en parlent sont rappelées.',

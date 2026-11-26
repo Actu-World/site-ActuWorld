@@ -1,4 +1,5 @@
 import { useEffect, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import type { LucideIcon } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
 
@@ -48,7 +49,9 @@ export function StudioDialog({ open, onClose, title, icon: Icon, iconNode, iconS
   }, [open, onClose]);
 
   if (!open) return null;
-  return (
+  // Rendue dans <body> : elle passe devant tout, y compris le rapport ASV rangé
+  // à droite de l'éditeur, quel que soit l'endroit de la page qui l'ouvre.
+  return createPortal(
     <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="studio-dialog-title">
       {onClose ? (
         <button type="button" className="absolute inset-0 bg-black/50 cursor-default" aria-label={isEnglish ? 'Close' : 'Fermer'} onClick={onClose} />
@@ -68,6 +71,7 @@ export function StudioDialog({ open, onClose, title, icon: Icon, iconNode, iconS
         {children}
         {actions && <div className="flex flex-col gap-2">{actions}</div>}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

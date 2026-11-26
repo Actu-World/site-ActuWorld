@@ -17,7 +17,7 @@ import { StudioByline } from '../../components/studio/StudioByline';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { isAlreadyPublishedError, studioApi } from '../../lib/studio/api';
 import { useAlreadyPublishedNotice } from '../../components/studio/useAlreadyPublished';
-import { useProCheck, usePublishConfirm } from '../../components/studio/proCheckFlow';
+import { REPORT_DOCK_PADDING, useProCheck, usePublishConfirm } from '../../components/studio/proCheckFlow';
 import { ProCheckLink } from '../../components/studio/ProCheckLink';
 import { useConfirmDelete } from '../../components/studio/useConfirmDelete';
 import { forgetProChecks, moveProChecks } from '../../lib/studio/proCheckStore';
@@ -560,7 +560,7 @@ export default function StudioPostPage() {
   const avatarSrc = resolveAvatarUrl(profile?.avatar_url, profile?.avatar_updated_at);
 
   return (
-    <div className="min-h-screen bg-aw-bg text-aw-text">
+    <div className={`min-h-screen bg-aw-bg text-aw-text ${proCheck.reportOpen ? REPORT_DOCK_PADDING : ''}`}>
       <PageMeta
         title={t('Studio — Dépêche', 'Studio — Dispatch')}
         description={t("Compose une dépêche (cartes visuelles sourcées), publie-la directement ou envoie-la en brouillon dans l'app.", 'Compose a dispatch (sourced visual cards), publish it directly or send it as a draft to the app.')}

@@ -46,6 +46,14 @@ type Phase =
 
 export type ProCheckStatus = 'idle' | 'running' | 'ready';
 
+/**
+ * Écran large (tablette en paysage, ordinateur) : le rapport se range à droite
+ * de l'éditeur au lieu de le recouvrir, pour corriger en le lisant.
+ */
+export const REPORT_DOCK_QUERY = '(min-width: 1024px)';
+/** Place laissée au panneau du rapport par la page de l'éditeur (mêmes largeurs que le panneau). */
+export const REPORT_DOCK_PADDING = 'lg:pr-[24rem] xl:pr-[30rem] 2xl:pr-[36rem]';
+
 type Context = {
   /** Compte connecté : les rapports sont rangés avec lui. */
   userId: string | null | undefined;
@@ -221,8 +229,13 @@ export function useProCheck(kind: Kind, getData: () => PlanItemData, { userId, d
     setPhase({ step: 'message', text: isEnglish ? 'The check did not complete. Try again in a moment.' : "La vérification n'a pas abouti. Réessaie dans un instant." });
   }, [userId, shown, isEnglish]);
 
+  /** Rapport à l'écran : la page lui laisse sa place à droite sur écran large. */
+  const reportOpen = !!shown?.detail?.result;
+  /** Le texte ou les sources ont changé depuis le rapport affiché. */
+  const stale = !!shown && shown.key !== key;
+
   return {
-    run, start, close, setPhase, phase, busy: running, error, isChecked, status, latest, shown,
+    run, start, close, setPhase, phase, busy: running, error, isChecked, status, latest, shown, reportOpen, stale,
   };
 }
 
