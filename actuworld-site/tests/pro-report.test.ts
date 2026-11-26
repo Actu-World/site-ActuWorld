@@ -10,7 +10,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import {
-  cardAdditions, cardDetails, cardStance, cardUnfoundNumbers, faithfulnessWords, highlightAdditions, publisherWords, reviewItems, sectionViews,
+  cardAdditions, cardDetails, cardStance, cardUnfoundNumbers, faithfulnessWords, highlightAdditions, publisherWords, readingWords, reviewItems, sectionViews,
   reportSummary, sourceLine, summaryFragment, synthesis, toMarkdown, verdictTone, verdictWords,
 } from '../src/lib/pro/report';
 import { draftProblems } from '../src/lib/pro/draft';
@@ -241,5 +241,16 @@ describe('chiffres non retrouvés dans les sources lues (contrôle sans modèle)
     const item = reviewItems(views, 'fr', []).find((i) => i.text.includes('20 000'));
     expect(item?.tone).toBe('grey');
     expect(item?.text).toContain("n'a pas été retrouvé dans les sources lues");
+  });
+});
+
+
+describe('source lue en partie (plafond de lecture)', () => {
+  const base = { url: 'https://fr.wikipedia.org/wiki/Tour_Eiffel', read_method: 'trafilatura', read_chars: 60000 };
+
+  it('dit que seul le début a été lu', () => {
+    expect(readingWords({ ...base, read_truncated: true }, 'fr')).toContain("seul le début a été lu");
+    expect(readingWords({ ...base, read_truncated: false }, 'fr')).not.toContain('début');
+    expect(readingWords(base, 'fr')).not.toContain('début');
   });
 });

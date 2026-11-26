@@ -159,7 +159,13 @@ export function readingWords(src: CardSource, lang: Lang): string | null {
   const when = src.read_at
     ? new Date(src.read_at).toLocaleString(locale, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
     : null;
-  return [how, chars, when && pick(lang, `le ${when}`, `on ${when}`)].filter(Boolean).join(', ');
+  const read = [how, chars, when && pick(lang, `le ${when}`, `on ${when}`)].filter(Boolean).join(', ');
+  // Plafond de lecture atteint : dire que la suite de la page n'a pas été lue.
+  return src.read_truncated
+    ? pick(lang,
+      `${read}. Page très longue : seul le début a été lu, la suite n'a pas été vérifiée.`,
+      `${read}. Very long page: only the beginning was read, the rest was not checked.`)
+    : read;
 }
 
 export type SourceLine = {
