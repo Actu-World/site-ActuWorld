@@ -33,9 +33,9 @@ export function ProShell({ title, path, children }: Props) {
   const historyLocked = !!access && !featuresOf(access).history;
   const links = [
     { to: '/pro/verifier', label: t('Vérifier un texte', 'Check a text'), locked: false },
-    { to: '/pro/app', label: t('À vérifier', 'To check'), locked: false },
-    { to: '/pro/historique', label: t('Historique', 'History'), locked: historyLocked },
-    { to: '/pro/sources', label: t('Éditeurs', 'Publishers'), locked: !!access && !featuresOf(access).publishers },
+    { to: '/pro/app', label: t('Reçus de l’app', 'From the app'), locked: false },
+    { to: '/pro/historique', label: t('Mes rapports', 'My reports'), locked: historyLocked },
+    { to: '/pro/sources', label: t('Qui publie ?', 'Who publishes?'), locked: !!access && !featuresOf(access).publishers },
     { to: '/pro/compte', label: t('Compte', 'Account'), locked: false },
   ];
 

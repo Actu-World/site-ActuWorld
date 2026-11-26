@@ -358,7 +358,7 @@ function VerifyForm({ access }: { access: ProAccess }) {
         </div>
         <p className="text-xs text-aw-muted">
           {t(
-            'Ton texte reste privé : il est gardé dans ton historique jusqu’à ce que tu le supprimes, et rien n’est publié.',
+            'Ton texte reste privé : il est gardé dans « Mes rapports » jusqu’à ce que tu le supprimes, et rien n’est publié.',
             'Your text stays private: it is kept in your history until you delete it, and nothing is published.',
           )}
         </p>

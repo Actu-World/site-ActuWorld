@@ -127,7 +127,7 @@ function Sources() {
 export default function ProSourcesPage() {
   const { isEnglish } = useLanguage();
   return (
-    <ProShell title={isEnglish ? 'Publishers' : 'Éditeurs'} path="/pro/sources">
+    <ProShell title={isEnglish ? 'Who publishes?' : 'Qui publie ?'} path="/pro/sources">
       {(access) => (featuresOf(access).publishers ? <Sources /> : (
         <ProUpsell
           title={isEnglish ? 'Publisher analysis comes with the Pro plan' : "L'analyse des éditeurs fait partie de la formule Pro"}

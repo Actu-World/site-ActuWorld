@@ -106,7 +106,7 @@ function Account({ access }: { access: ProAccess }) {
         <p className="body-semi text-aw-text">{t('Tes textes', 'Your texts')}</p>
         <p>
           {t(
-            'Les textes que tu vérifies restent privés : ils sont gardés dans ton historique jusqu’à ce que tu les supprimes, et la suppression est définitive. Rien n’est publié dans ActuWorld.',
+            'Les textes que tu vérifies restent privés : ils sont gardés dans « Mes rapports » jusqu’à ce que tu les supprimes, et la suppression est définitive. Rien n’est publié dans ActuWorld.',
             'The texts you check stay private: they are kept in your history until you delete them, and deletion is permanent. Nothing is published on ActuWorld.',
           )}
         </p>

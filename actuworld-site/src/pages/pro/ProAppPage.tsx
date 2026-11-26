@@ -71,7 +71,7 @@ function ImportDetail({ id, access }: { id: string; access: ProAccess }) {
     return (
       <div className="card p-8 text-center">
         <p className="body-semi">{error}</p>
-        <Link to="/pro/app" className="btn-outline btn-sm mt-5">{t('Retour à « À vérifier »', 'Back to “To check”')}</Link>
+        <Link to="/pro/app" className="btn-outline btn-sm mt-5">{t('Retour à « Reçus de l’app »', 'Back to “From the app”')}</Link>
       </div>
     );
   }
@@ -209,7 +209,7 @@ function ImportList() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl sm:text-3xl">{t('À vérifier', 'To check')}</h1>
+        <h1 className="text-2xl sm:text-3xl">{t('Reçus de l’app', 'From the app')}</h1>
         <p className="text-aw-muted mt-2 max-w-prose">
           {t('Les dépêches et les articles que tu envoies depuis l’app ou le Studio avec « Vérifier mes sources ». Tu décides ici de lancer la vérification : c’est à ce moment-là qu’elle compte dans ton quota.',
             'The briefs and articles you send from the app or the Studio with “Check my sources”. You decide here when to start the check: that is when it counts towards your quota.')}
@@ -244,7 +244,7 @@ function ImportList() {
               {it.verification_id ? (
                 <Link to={`/pro/rapport/${it.verification_id}`} className="btn-outline btn-sm">{t('Voir le rapport', 'See the report')}</Link>
               ) : (
-                <Link to={`/pro/app/${it.id}`} className="btn-primary btn-sm">{t('À vérifier', 'To check')}</Link>
+                <Link to={`/pro/app/${it.id}`} className="btn-primary btn-sm">{t('Ouvrir', 'Open')}</Link>
               )}
               <button type="button" className="btn-outline btn-sm" onClick={() => remove(it.id)}
                 aria-label={t(`Retirer « ${it.title} »`, `Remove “${it.title}”`)}>
@@ -262,7 +262,7 @@ export default function ProAppPage() {
   const { id } = useParams();
   const { isEnglish } = useLanguage();
   return (
-    <ProShell title={isEnglish ? 'To check' : 'À vérifier'} path={id ? `/pro/app/${id}` : '/pro/app'}>
+    <ProShell title={isEnglish ? 'From the app' : 'Reçus de l’app'} path={id ? `/pro/app/${id}` : '/pro/app'}>
       {(access) => (id ? <ImportDetail id={id} access={access} /> : <ImportList />)}
     </ProShell>
   );

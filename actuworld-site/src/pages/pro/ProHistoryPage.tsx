@@ -55,7 +55,7 @@ function History() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <h1 className="text-2xl sm:text-3xl">{t('Historique', 'History')}</h1>
+        <h1 className="text-2xl sm:text-3xl">{t('Mes rapports', 'My reports')}</h1>
         <Link to="/pro/verifier" className="btn-primary btn-sm">{t('Nouvelle vérification', 'New check')}</Link>
       </div>
       <div className="flex flex-wrap gap-2" role="group" aria-label={t('Filtrer par verdict', 'Filter by verdict')}>
@@ -105,7 +105,7 @@ function History() {
 export default function ProHistoryPage() {
   const { isEnglish } = useLanguage();
   return (
-    <ProShell title={isEnglish ? 'History' : 'Historique'} path="/pro/historique">
+    <ProShell title={isEnglish ? 'My reports' : 'Mes rapports'} path="/pro/historique">
       {(access) => (featuresOf(access).history ? <History /> : (
         <ProUpsell
           title={isEnglish ? 'History comes with the Pro plan' : "L'historique fait partie de la formule Pro"}
