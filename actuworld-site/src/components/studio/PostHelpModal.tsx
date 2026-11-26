@@ -41,24 +41,24 @@ export function PostHelpModal({ cards, primaryTheme, onClose }: PostHelpModalPro
       en: 'One image per card (required)',
     },
     {
-      ok: !!filled[0]?.subject?.trim(),
-      fr: 'Un sujet sur la carte 1 (obligatoire — c\'est le titre de la dépêche)',
-      en: 'A subject on card 1 (required — it is the dispatch title)',
+      ok: filled.length > 0 && filled.every((c) => !!c.subject?.trim()),
+      fr: 'Un sujet par carte (obligatoire — celui de la carte 1 est le titre de la dépêche)',
+      en: 'A subject per card (required — the one on card 1 is the dispatch title)',
     },
     {
-      ok: filled.every((c) => !!c.description?.trim()),
-      fr: 'Un excerpt court par carte (obligatoire)',
-      en: 'A short excerpt per card (required)',
+      ok: filled.length > 0 && filled.every((c) => !!c.description?.trim()),
+      fr: 'Un texte court par carte (obligatoire)',
+      en: 'A short text per card (required)',
     },
     {
       ok: filled.length > 0 && filled.every((c) => !!c.source?.url?.trim() && isValidSourceUrl(c.source.url)),
-      fr: 'Au moins une source valide par carte (obligatoire pour publier)',
-      en: 'At least one valid source per card (required to publish)',
+      fr: 'Une source valide par carte (obligatoire pour publier)',
+      en: 'A valid source per card (required to publish)',
     },
     {
       ok: !!primaryTheme,
-      fr: 'Un thème principal choisi',
-      en: 'A main theme selected',
+      fr: 'Un thème principal choisi (obligatoire pour publier)',
+      en: 'A main theme selected (required to publish)',
     },
   ];
 
@@ -68,12 +68,12 @@ export function PostHelpModal({ cards, primaryTheme, onClose }: PostHelpModalPro
       'A dispatch = 1 to 4 visual cards. Card 1 carries the title.',
     ],
     [
-      'Par carte : sujet (80 caractères max), excerpt court (150 max), description longue optionnelle (600 max) et une source.',
-      'Per card: subject (80 characters max), short excerpt (150 max), optional long description (600 max) and a source.',
+      'Par carte : sujet (80 caractères max), texte court (150 max), description longue optionnelle (600 max) et une source.',
+      'Per card: subject (80 characters max), short text (150 max), optional long description (600 max) and a source.',
     ],
     [
-      "Le recto affiche l'image, le sujet et l'excerpt ; la description longue et la source sont au dos de la carte.",
-      'The front shows the image, subject and excerpt; the long description and source are on the back of the card.',
+      "Le recto affiche l'image, le sujet et le texte court ; la description longue et la source sont au dos de la carte.",
+      'The front shows the image, subject and short text; the long description and source are on the back of the card.',
     ],
     [
       "Publier met la dépêche en ligne tout de suite et lance la vérification des sources. Tu peux aussi l'envoyer en brouillon dans l'app pour la relire sur ton téléphone.",

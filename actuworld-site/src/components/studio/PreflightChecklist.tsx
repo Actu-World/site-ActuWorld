@@ -46,8 +46,9 @@ export function PreflightChecklist({
     },
     {
       ok: bodyLength > 0,
-      fr: 'Un corps de texte rédigé',
-      en: 'A written body',
+      required: true,
+      fr: 'Un texte rédigé (obligatoire pour publier)',
+      en: 'A written body (required to publish)',
     },
     {
       ok: primaryTheme !== '',

@@ -110,6 +110,8 @@ export default function StudioEditorPage() {
   const [blocks, setBlocks] = useState<JournalBlock[]>([{ type: 'paragraph', text: '' }]);
   const [sources, setSources] = useState<JournalSource[]>([{ url: '', title: '' }]);
   const [restoredNotice, setRestoredNotice] = useState(false);
+  // Brouillon repris de la liste : rien à renvoyer tant qu'on n'a rien changé.
+  const resumedRef = useRef(false);
   const [isCoverUploading, setIsCoverUploading] = useState(false);
   const [isCoverDragOver, setIsCoverDragOver] = useState(false);
   const coverInputRef = useRef<HTMLInputElement>(null);
@@ -340,42 +342,88 @@ export default function StudioEditorPage() {
   // ── Sauvegarde serveur continue : dès qu'il y a un titre, le brouillon vit
   // sur Supabase (création puis PUT silencieux ~2,5 s après la dernière frappe).
   // L'autosauvegarde locale reste le filet quand l'API est injoignable. ──
-  useEffect(() => {
-    if (!userId || sentDraftTitle || isSending || isPublishing || !title.trim()) return;
+  /** L'article à l'écran (avec un titre) a-t-il des changements pas encore sur le serveur ? */
+  const hasUnsavedChanges = () =>
+    !!userId && !sentDraftTitle && !!title.trim() && JSON.stringify(buildPayload()) !== lastSavedSnapshotRef.current;
+
+  /**
+   * Enregistre l'article en cours sur le serveur sans attendre le délai. Rend
+   * false si l'enregistrement a échoué (le texte reste dans ce navigateur).
+   */
+  const saveNow = async (): Promise<boolean> => {
+    // Une sauvegarde est déjà partie : on la laisse finir, puis on enregistre le reste.
+    for (let i = 0; i < 30 && isAutosavingRef.current; i++) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+    if (!hasUnsavedChanges() || isAutosavingRef.current) return true;
     const payload = buildPayload();
     const snapshot = JSON.stringify(payload);
-    if (snapshot === lastSavedSnapshotRef.current) return;
-
-    const timer = setTimeout(async () => {
-      if (isAutosavingRef.current) return; // un save à la fois — le prochain changement relancera
-      isAutosavingRef.current = true;
-      setSaveState('saving');
-      try {
-        if (editingDraftId) {
-          await updateDraft(editingDraftId, payload);
-        } else {
-          const { id } = await createDraft(payload);
-          editingDraftIdRef.current = id; // lu par la publication avant le prochain rendu
-          // Les rapports ASV de l'éditeur suivent le brouillon sous son identifiant.
-          if (userId) moveProChecks(userId, 'article', null, id);
-          setEditingDraftId(id);
-          void refreshJournal();
-        }
-        lastSavedSnapshotRef.current = snapshot;
-        setSaveState('saved');
-        setLastSavedAt(new Date().toLocaleTimeString(isEnglish ? 'en-GB' : 'fr-FR', {
-          hour: '2-digit', minute: '2-digit',
-        }));
-      } catch (err) {
-        if (isAlreadyPublishedError(err)) { handleAlreadyPublished(); return; }
-        setSaveState('error');
-      } finally {
-        isAutosavingRef.current = false;
+    const draftId = editingDraftIdRef.current;
+    isAutosavingRef.current = true;
+    setSaveState('saving');
+    try {
+      if (draftId) {
+        await updateDraft(draftId, payload);
+      } else {
+        const { id } = await createDraft(payload);
+        editingDraftIdRef.current = id; // lu par la publication avant le prochain rendu
+        // Les rapports ASV de l'éditeur suivent le brouillon sous son identifiant.
+        if (userId) moveProChecks(userId, 'article', null, id);
+        setEditingDraftId(id);
+        void refreshJournal();
       }
-    }, 2500);
+      lastSavedSnapshotRef.current = snapshot;
+      setSaveState('saved');
+      setLastSavedAt(new Date().toLocaleTimeString(isEnglish ? 'en-GB' : 'fr-FR', {
+        hour: '2-digit', minute: '2-digit',
+      }));
+      return true;
+    } catch (err) {
+      if (isAlreadyPublishedError(err)) { handleAlreadyPublished(); return true; }
+      setSaveState('error');
+      return false;
+    } finally {
+      isAutosavingRef.current = false;
+    }
+  };
+  // Toujours la version du dernier rendu (minuteur, changement de page, onglet masqué).
+  const saveNowRef = useRef(saveNow);
+  saveNowRef.current = saveNow;
+  const saveLocalNow = () => {
+    if (!userId || sentDraftTitle) return;
+    saveLocalDraft(userId, { editingDraftId, title, dek, primaryTheme, format, tags, coverPath, coverCredit, blocks, sources });
+  };
+  const saveLocalNowRef = useRef(saveLocalNow);
+  saveLocalNowRef.current = saveLocalNow;
+
+  useEffect(() => {
+    if (isSending || isPublishing) return;
+    // Brouillon tout juste repris : son contenu est déjà sur le serveur.
+    if (resumedRef.current) {
+      resumedRef.current = false;
+      lastSavedSnapshotRef.current = JSON.stringify(buildPayload());
+      return;
+    }
+    if (!hasUnsavedChanges()) return;
+    const timer = setTimeout(() => { void saveNowRef.current(); }, 2500);
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, editingDraftId, title, dek, primaryTheme, format, tags, coverPath, coverCredit, blocks, sources, sentDraftTitle, isSending, isPublishing]);
+
+  // Rien ne se perd en quittant : la saisie des dernières secondes est gardée
+  // tout de suite (dans ce navigateur, et sur le serveur s'il y a un titre) quand
+  // on change de page dans le Studio, qu'on masque l'onglet ou qu'on le ferme.
+  useEffect(() => {
+    const flush = () => { saveLocalNowRef.current(); void saveNowRef.current(); };
+    const onHidden = () => { if (document.visibilityState === 'hidden') flush(); };
+    document.addEventListener('visibilitychange', onHidden);
+    window.addEventListener('pagehide', flush);
+    return () => {
+      document.removeEventListener('visibilitychange', onHidden);
+      window.removeEventListener('pagehide', flush);
+      flush();
+    };
+  }, []);
 
   const resetEditor = () => {
     // Éditeur vierge : aucun rapport ASV du texte précédent non enregistré.
@@ -544,26 +592,22 @@ export default function StudioEditorPage() {
   const publishConfirm = usePublishConfirm();
 
   // ── Publication directe : mêmes gardes que le bouton Publier de l'app
-  // (titre + au moins une source valide), confirmation explicite car l'article
+  // (titre, thématique, texte, au moins une source valide), confirmation explicite car l'article
   // devient public immédiatement et la vérification ASV se lance. ──
   const handlePublish = async () => {
     if (isSending || isPublishing || !userId || sentDraftTitle) return;
     setSendError('');
 
-    if (!title.trim()) {
-      setSendError(t('Un titre est requis pour publier.', 'A title is required to publish.'));
-      return;
-    }
     const payload = buildPayload();
+    const missing: string[] = [];
+    if (!title.trim()) missing.push(t('un titre', 'a title'));
+    if (!payload.primary_theme) missing.push(t('une thématique', 'a theme'));
+    if (bodyLength === 0) missing.push(t('un texte', 'a body text'));
     if (!payload.sources.some((s) => isValidSourceUrl(s.url))) {
-      setSendError(t(
-        'Au moins une source valide (http:// ou https://) est requise pour publier.',
-        'At least one valid source (http:// or https://) is required to publish.'
-      ));
-      return;
+      missing.push(t('au moins une source valide (http:// ou https://)', 'at least one valid source (http:// or https://)'));
     }
-    if (!payload.primary_theme) {
-      setSendError(t('Une thématique est requise pour publier.', 'A theme is required to publish.'));
+    if (missing.length > 0) {
+      setSendError(t(`Pour publier, il manque : ${missing.join(', ')}.`, `To publish, still missing: ${missing.join(', ')}.`));
       return;
     }
     // Confirmation : si les sources n'ont pas été vérifiées, on propose de le faire d'abord.
@@ -604,9 +648,31 @@ export default function StudioEditorPage() {
     }
   };
 
-  const handleResume = (draft: StudioDraftRow) => {
+  const handleResume = async (draft: StudioDraftRow) => {
+    if (draft.id === editingDraftIdRef.current) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    if (hasDraftContent && !title.trim()) {
+      // Sans titre, l'article en cours ne peut pas rejoindre les brouillons.
+      const replace = await confirmDelete.ask(
+        t("Remplacer l'article en cours ?", 'Replace the current article?'),
+        t("L'article en cours n'a pas de titre : il ne peut pas être gardé en brouillon et sera perdu. Annule et ajoute un titre pour le garder.",
+          'The current article has no title: it cannot be kept as a draft and will be lost. Cancel and add a title to keep it.'),
+        t('Remplacer', 'Replace'),
+      );
+      if (!replace) return;
+    } else if (!(await saveNow())) {
+      // L'article en cours rejoint d'abord les brouillons : rien n'est écrasé.
+      setSendError(t(
+        "L'article en cours n'a pas pu être enregistré : il reste à l'écran. Réessaie dans un instant.",
+        'The current article could not be saved: it stays on screen. Try again in a moment.'
+      ));
+      return;
+    }
     // Le texte non enregistré est remplacé : ses rapports ASV aussi.
-    if (userId && !editingDraftId) forgetProChecks(userId, 'article', null);
+    if (userId && !editingDraftIdRef.current) forgetProChecks(userId, 'article', null);
+    resumedRef.current = true;
     setEditingDraftId(draft.id);
     setTitle(draft.title ?? '');
     setDek(draft.dek ?? '');
@@ -630,7 +696,6 @@ export default function StudioEditorPage() {
     setLastSavedAt(new Date(draft.updated_at).toLocaleTimeString(isEnglish ? 'en-GB' : 'fr-FR', {
       hour: '2-digit', minute: '2-digit',
     }));
-    lastSavedSnapshotRef.current = null;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -1078,7 +1143,7 @@ export default function StudioEditorPage() {
                         isLoading={draftsLoading}
                         loadError={draftsError}
                         busyDraftId={busyDraftId}
-                        onResume={handleResume}
+                        onResume={(draft) => void handleResume(draft)}
                         onDelete={(draft) => void handleDelete(draft)}
                       />
                     </div>

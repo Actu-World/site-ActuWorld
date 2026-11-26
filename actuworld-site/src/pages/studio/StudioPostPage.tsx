@@ -59,6 +59,12 @@ const cardHasContent = (card: PostDraftImage): boolean =>
 const inputClass =
   'w-full rounded-lg border border-aw bg-aw-bg px-3 py-2.5 text-aw-text text-sm placeholder:text-aw-muted focus:outline-none focus:ring-2 focus:ring-aw-primary';
 
+/** Compteur sous un champ limité : orange près de la limite, rouge quand elle est atteinte. */
+function FieldCount({ value, max }: { value: string; max: number }) {
+  const tone = value.length >= max ? 'text-red-500' : value.length > max * 0.9 ? 'text-amber-500' : 'text-aw-muted';
+  return <p className={`text-[11px] text-right tabular-nums -mt-1.5 ${tone}`}>{value.length} / {max}</p>;
+}
+
 /** Échec réseau pur (API injoignable ou CORS refusé). */
 function isNetworkError(err: unknown): boolean {
   return err instanceof TypeError;
@@ -89,6 +95,8 @@ export default function StudioPostPage() {
   const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
   const lastSavedSnapshotRef = useRef<string | null>(null);
   const isAutosavingRef = useRef(false);
+  // Brouillon repris de la liste : rien à renvoyer tant qu'on n'a rien changé.
+  const resumedRef = useRef(false);
   const [isSending, setIsSending] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [sendError, setSendError] = useState('');
@@ -212,41 +220,87 @@ export default function StudioPostPage() {
 
   const hasAnyContent = cards.some(cardHasContent);
 
-  // Sauvegarde serveur continue dès qu'il y a du contenu réel.
-  useEffect(() => {
-    if (!userId || sentTitle || isSending || isPublishing || !hasAnyContent) return;
+  /** La dépêche à l'écran a-t-elle des changements pas encore enregistrés ? */
+  const hasUnsavedChanges = () =>
+    !!userId && !sentTitle && hasAnyContent && JSON.stringify(buildPayload()) !== lastSavedSnapshotRef.current;
+
+  /**
+   * Enregistre la dépêche en cours sans attendre le délai. Rend false si
+   * l'enregistrement a échoué (le contenu n'est alors que dans la page).
+   */
+  const saveNow = async (): Promise<boolean> => {
+    // Une sauvegarde est déjà partie : on la laisse finir, puis on enregistre le reste.
+    for (let i = 0; i < 30 && isAutosavingRef.current; i++) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+    if (!hasUnsavedChanges() || isAutosavingRef.current) return true;
     const payload = buildPayload();
     const snapshot = JSON.stringify(payload);
-    if (snapshot === lastSavedSnapshotRef.current) return;
-
-    const timer = setTimeout(async () => {
-      if (isAutosavingRef.current) return;
-      isAutosavingRef.current = true;
-      setSaveState('saving');
-      try {
-        if (editingDraftId) {
-          await updatePostDraft(editingDraftId, payload);
-        } else {
-          const { id } = await createPostDraft(payload);
-          editingDraftIdRef.current = id; // lu par la publication avant le prochain rendu
-          // Les rapports ASV de l'éditeur suivent le brouillon sous son identifiant.
-          if (userId) moveProChecks(userId, 'post', null, id);
-          setEditingDraftId(id);
-          void refreshDrafts();
-        }
-        lastSavedSnapshotRef.current = snapshot;
-        setSaveState('saved');
-        setLastSavedAt(new Date().toLocaleTimeString(isEnglish ? 'en-GB' : 'fr-FR', { hour: '2-digit', minute: '2-digit' }));
-      } catch (err) {
-        if (isAlreadyPublishedError(err)) { handleAlreadyPublished(); return; }
-        setSaveState('error');
-      } finally {
-        isAutosavingRef.current = false;
+    const draftId = editingDraftIdRef.current;
+    isAutosavingRef.current = true;
+    setSaveState('saving');
+    try {
+      if (draftId) {
+        await updatePostDraft(draftId, payload);
+      } else {
+        const { id } = await createPostDraft(payload);
+        editingDraftIdRef.current = id; // lu par la publication avant le prochain rendu
+        // Les rapports ASV de l'éditeur suivent le brouillon sous son identifiant.
+        if (userId) moveProChecks(userId, 'post', null, id);
+        setEditingDraftId(id);
+        void refreshDrafts();
       }
-    }, AUTOSAVE_DELAY_MS);
+      lastSavedSnapshotRef.current = snapshot;
+      setSaveState('saved');
+      setLastSavedAt(new Date().toLocaleTimeString(isEnglish ? 'en-GB' : 'fr-FR', { hour: '2-digit', minute: '2-digit' }));
+      return true;
+    } catch (err) {
+      if (isAlreadyPublishedError(err)) { handleAlreadyPublished(); return true; }
+      setSaveState('error');
+      return false;
+    } finally {
+      isAutosavingRef.current = false;
+    }
+  };
+  // Toujours la version du dernier rendu (minuteur, changement de page, onglet masqué).
+  const saveNowRef = useRef(saveNow);
+  saveNowRef.current = saveNow;
+  const hasUnsavedChangesRef = useRef(hasUnsavedChanges);
+  hasUnsavedChangesRef.current = hasUnsavedChanges;
+
+  // Sauvegarde serveur continue dès qu'il y a du contenu réel.
+  useEffect(() => {
+    if (isSending || isPublishing) return;
+    // Brouillon tout juste repris : son contenu est déjà sur le serveur.
+    if (resumedRef.current) {
+      resumedRef.current = false;
+      lastSavedSnapshotRef.current = JSON.stringify(buildPayload());
+      return;
+    }
+    if (!hasUnsavedChanges()) return;
+    const timer = setTimeout(() => { void saveNowRef.current(); }, AUTOSAVE_DELAY_MS);
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, editingDraftId, primaryTheme, tags, cards, sentTitle, isSending, isPublishing]);
+
+  // Rien ne se perd en quittant : la saisie des dernières secondes part tout de
+  // suite quand on change de page dans le Studio ou qu'on masque l'onglet ; si
+  // on ferme alors qu'il reste des changements, le navigateur demande confirmation.
+  useEffect(() => {
+    const onHidden = () => { if (document.visibilityState === 'hidden') void saveNowRef.current(); };
+    const onBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (!hasUnsavedChangesRef.current()) return;
+      void saveNowRef.current();
+      event.preventDefault();
+    };
+    document.addEventListener('visibilitychange', onHidden);
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => {
+      document.removeEventListener('visibilitychange', onHidden);
+      window.removeEventListener('beforeunload', onBeforeUnload);
+      void saveNowRef.current();
+    };
+  }, []);
 
   const resetEditor = () => {
     // Éditeur vierge : aucun rapport ASV du texte précédent non enregistré.
@@ -399,19 +453,21 @@ export default function StudioPostPage() {
   const publishConfirm = usePublishConfirm();
 
   // ── Publication directe : mêmes gardes que le bouton Publier de l'app
-  // (image, sujet, excerpt et source sur chaque carte + thématique), puis
+  // (image, sujet, texte court et source sur chaque carte + thématique), puis
   // confirmation explicite : la dépêche devient publique et l'ASV se lance. ──
   const handlePublish = async () => {
     if (isSending || isPublishing || isUploading || !userId || sentTitle) return;
     setSendError('');
 
     const filledCards = cards.filter(cardHasContent);
+    // Rien d'écrit : on juge la carte vide, pour annoncer tout ce qui manque d'un coup.
+    const judged = filledCards.length > 0 ? filledCards : cards.slice(0, 1);
     const missing: string[] = [];
-    if (filledCards.length === 0 || filledCards.some((c) => !c.image_url)) missing.push(t('une image sur chaque carte', 'an image on each card'));
+    if (judged.some((c) => !c.image_url)) missing.push(t('une image sur chaque carte', 'an image on each card'));
     if (!primaryTheme) missing.push(t('une thématique', 'a theme'));
-    if (filledCards.some((c) => !c.subject?.trim())) missing.push(t('un sujet sur chaque carte', 'a subject on each card'));
-    if (filledCards.some((c) => !c.description?.trim())) missing.push(t('un excerpt sur chaque carte', 'an excerpt on each card'));
-    if (filledCards.some((c) => !isValidSourceUrl(c.source?.url ?? ''))) {
+    if (judged.some((c) => !c.subject?.trim())) missing.push(t('un sujet sur chaque carte', 'a subject on each card'));
+    if (judged.some((c) => !c.description?.trim())) missing.push(t('un texte court sur chaque carte', 'a short text on each card'));
+    if (judged.some((c) => !isValidSourceUrl(c.source?.url ?? ''))) {
       missing.push(t('une source valide (http:// ou https://) sur chaque carte', 'a valid source (http:// or https://) on each card'));
     }
     if (missing.length > 0) {
@@ -486,9 +542,20 @@ export default function StudioPostPage() {
     }
   };
 
-  const handleResume = (draft: PostDraftRow) => {
-    // Le texte non enregistré est remplacé : ses rapports ASV aussi.
-    if (userId && !editingDraftId) forgetProChecks(userId, 'post', null);
+  const handleResume = async (draft: PostDraftRow) => {
+    if (draft.id === editingDraftIdRef.current) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    // La dépêche en cours rejoint d'abord les brouillons : rien n'est écrasé.
+    if (!(await saveNow())) {
+      setSendError(t(
+        "La dépêche en cours n'a pas pu être enregistrée : elle reste à l'écran. Réessaie dans un instant.",
+        'The current dispatch could not be saved: it stays on screen. Try again in a moment.'
+      ));
+      return;
+    }
+    resumedRef.current = true;
     setEditingDraftId(draft.id);
     setPrimaryTheme(draft.payload.primary_theme ?? '');
     setTags(draft.payload.tags ?? []);
@@ -497,7 +564,6 @@ export default function StudioPostPage() {
     setSendError('');
     setSaveState('saved');
     setLastSavedAt(new Date(draft.updated_at).toLocaleTimeString(isEnglish ? 'en-GB' : 'fr-FR', { hour: '2-digit', minute: '2-digit' }));
-    lastSavedSnapshotRef.current = null;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -761,14 +827,17 @@ export default function StudioPostPage() {
                             onChange={(e) => replaceCard(index, { ...card, subject: e.target.value })}
                             placeholder={index === 0 ? t('Sujet — titre de la dépêche *', 'Subject — dispatch title *') : t('Sujet de la carte *', 'Card subject *')}
                             className={`${inputClass} font-semibold`} />
+                          <FieldCount value={card.subject ?? ''} max={POST_SUBJECT_MAX} />
                           <textarea value={card.description ?? ''} maxLength={POST_DESC_MAX} rows={2}
                             onChange={(e) => replaceCard(index, { ...card, description: e.target.value })}
-                            placeholder={t('Excerpt court (sur la carte) *', 'Short excerpt (on the card) *')}
+                            placeholder={t('Texte court (sur la carte) *', 'Short text (on the card) *')}
                             className={inputClass} />
+                          <FieldCount value={card.description ?? ''} max={POST_DESC_MAX} />
                           <textarea value={card.back_description ?? ''} maxLength={POST_BACK_DESC_MAX} rows={3}
                             onChange={(e) => replaceCard(index, { ...card, back_description: e.target.value })}
                             placeholder={t('Description longue (dos de la carte)', 'Long description (back of the card)')}
                             className={inputClass} />
+                          <FieldCount value={card.back_description ?? ''} max={POST_BACK_DESC_MAX} />
                           <div className="relative">
                             <Link2 className="w-3.5 h-3.5 text-aw-primary absolute left-3 top-3" />
                             <input type="url" value={card.source?.url ?? ''} maxLength={POST_SOURCE_URL_MAX}
@@ -873,7 +942,7 @@ export default function StudioPostPage() {
                           </div>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
-                          <button type="button" onClick={() => handleResume(draft)} disabled={busyDraftId === draft.id}
+                          <button type="button" onClick={() => void handleResume(draft)} disabled={busyDraftId === draft.id}
                             className="btn-outline inline-flex items-center text-sm disabled:opacity-50">
                             {t('Reprendre', 'Resume')}
                           </button>
