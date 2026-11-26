@@ -10,7 +10,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import {
-  cardAdditions, cardDetails, cardStance, faithfulnessWords, highlightAdditions, publisherWords, reviewItems, sectionViews,
+  cardAdditions, cardDetails, cardStance, cardUnfoundNumbers, faithfulnessWords, highlightAdditions, publisherWords, reviewItems, sectionViews,
   reportSummary, sourceLine, summaryFragment, synthesis, toMarkdown, verdictTone, verdictWords,
 } from '../src/lib/pro/report';
 import { draftProblems } from '../src/lib/pro/draft';
@@ -220,5 +220,26 @@ describe('écarts de détail (guider, pas discréditer)', () => {
     const items = reviewItems(views, 'fr', []);
     expect(items).toContainEqual({ passage: 1, tone: 'orange',
       text: 'Passage 1 : tu écris « En 1904 », slate.fr dit « En 1903, Lizzie Magie dépose le brevet. ». Vérifie ce point.' });
+  });
+});
+
+
+describe('chiffres non retrouvés dans les sources lues (contrôle sans modèle)', () => {
+  const unfound = { value: '20 000', card_text: 'La tour pèse environ 20 000 tonnes', span: [14, 20] as [number, number] };
+  const withUnfound: CardCheck[] = [{ ...cards[0], unfound_numbers: [unfound] }, cards[1]];
+
+  it('lit les chiffres du passage, sans rien pour un ancien rapport', () => {
+    expect(cardUnfoundNumbers(withUnfound[0])).toEqual([{ value: '20 000', cardText: 'La tour pèse environ 20 000 tonnes' }]);
+    expect(cardUnfoundNumbers(cards[0])).toEqual([]);
+    expect(cardUnfoundNumbers(undefined)).toEqual([]);
+  });
+
+  it('ne change pas le verdict du passage et ajoute un point à reprendre, en gris', () => {
+    const views = sectionViews(input, withUnfound, [], 'fr');
+    expect(views[0].stance).toBe('supports');
+    expect(views[1].unfound).toEqual([]);
+    const item = reviewItems(views, 'fr', []).find((i) => i.text.includes('20 000'));
+    expect(item?.tone).toBe('grey');
+    expect(item?.text).toContain("n'a pas été retrouvé dans les sources lues");
   });
 });

@@ -74,6 +74,26 @@ function Passage({ view, lang, textScope }: { view: SectionView; lang: Lang; tex
           </ul>
         </div>
       )}
+      {view.unfound.length > 0 && (
+        <div className="mt-4 text-sm">
+          <p className="body-semi">
+            {view.unfound.length > 1
+              ? t('Chiffres non retrouvés dans les sources lues :', 'Figures not found in the sources that were read:')
+              : t('Un chiffre non retrouvé dans les sources lues :', 'One figure not found in the sources that were read:')}
+          </p>
+          <ul className="list-disc pl-5 text-aw-muted mt-1 space-y-1">
+            {view.unfound.map((n) => (
+              <li key={`${n.value}-${n.cardText}`}>
+                <span className="body-semi text-aw-text">{n.value}</span> {t('dans', 'in')} « {n.cardText} »
+              </li>
+            ))}
+          </ul>
+          <p className="caption text-aw-muted mt-1">
+            {t('Ce n’est pas une contradiction : la source peut le donner dans une partie non lue. Vérifie-le, ou ajoute la source qui le donne.',
+              'This is not a contradiction: the source may give it in a part that was not read. Check it, or add the source that gives it.')}
+          </p>
+        </div>
+      )}
       <ul className="mt-5 space-y-4">
         {textScope && view.lines.length > 0 && lines.length === 0 && (
           <li className="text-sm text-aw-muted">

@@ -220,6 +220,23 @@ export function highlightAdditions(text: string, card: CardCheck | undefined): S
   return out.length ? out : [{ text, added: false }];
 }
 
+export type UnfoundView = { value: string; cardText: string };
+
+/** Chiffres du passage que les sources lues ne donnent pas (contrôle sans modèle). */
+export function cardUnfoundNumbers(card: CardCheck | undefined): UnfoundView[] {
+  if (!card || !Array.isArray(card.unfound_numbers)) return [];
+  return card.unfound_numbers
+    .filter((n) => n && typeof n.value === 'string' && typeof n.card_text === 'string' && n.value.trim() && n.card_text.trim())
+    .slice(0, MAX_ADDITIONS)
+    .map((n) => ({ value: n.value.trim(), cardText: n.card_text.trim() }));
+}
+
+export function unfoundWords(n: UnfoundView, lang: Lang): string {
+  return pick(lang,
+    `« ${n.value} » n'a pas été retrouvé dans les sources lues (« ${n.cardText} »). Vérifie ce chiffre ou ajoute la source qui le donne.`,
+    `“${n.value}” was not found in the sources that were read (“${n.cardText}”). Check this figure or add the source that gives it.`);
+}
+
 export type SectionView = {
   index: number;
   input: ProSectionInput;
@@ -228,6 +245,8 @@ export type SectionView = {
   additions: string[];
   /** Écarts de détail : montrés pour guider, sans effet sur le verdict du passage. */
   details: DetailView[];
+  /** Chiffres non retrouvés dans les sources lues : montrés pour guider, sans effet sur le verdict. */
+  unfound: UnfoundView[];
   /** 3.10 : une source n'a été lue qu'en partie (abonnés) ; un « ajout » peut être dans la partie non lue. */
   partialRead: boolean;
   lines: SourceLine[];
@@ -249,6 +268,7 @@ export function sectionViews(
       segments: highlightAdditions(section.text, card),
       additions: cardAdditions(card),
       details: cardDetails(card),
+      unfound: cardUnfoundNumbers(card),
       partialRead: (card?.sources ?? []).some((s) => isPartial(s.source_state)),
       lines: (card?.sources ?? []).map((s) => sourceLine(s, checks ?? [], lang, explanationsLocale)),
       cardAdvice: card?.advice ?? [],
@@ -521,6 +541,7 @@ function reviewFromAdvice(views: SectionView[], content: Alert[], lang: Lang): R
       if (w) items.push({ passage: n, tone: w.tone, text: prefix(w.text) });
     }
     for (const d of v.details) items.push({ passage: n, tone: 'orange', text: prefix(detailWords(d, lang)) });
+    for (const u of v.unfound) items.push({ passage: n, tone: 'grey', text: prefix(unfoundWords(u, lang)) });
   }
   return items;
 }
@@ -563,6 +584,7 @@ export function reviewItems(views: SectionView[], lang: Lang, contentAdvice?: Al
         `part of it is your own analysis (“${v.additions[0]}”). Flag it as such if intended.`) });
     }
     for (const d of v.details) items.push({ passage: n, tone: 'orange', text: p(detailWords(d, lang), detailWords(d, lang)) });
+    for (const u of v.unfound) items.push({ passage: n, tone: 'grey', text: p(unfoundWords(u, 'fr'), unfoundWords(u, 'en')) });
   }
   return items;
 }
@@ -610,6 +632,7 @@ export function toMarkdown(detail: ReportData, lang: Lang): string {
       : pick(lang, "L'auteur ajoute, sans sa source", 'The author adds, without a source');
     for (const addition of view.additions) lines.push(`- ${addLabel} : « ${addition} »`);
     for (const d of view.details) lines.push(`- ${pick(lang, 'Point à vérifier', 'Point to check')} : ${detailWords(d, lang)}`);
+    for (const u of view.unfound) lines.push(`- ${pick(lang, 'Chiffre non retrouvé', 'Figure not found')} : ${unfoundWords(u, lang)}`);
     lines.push('');
   }
   lines.push('---', pick(lang,

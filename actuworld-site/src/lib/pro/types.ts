@@ -70,6 +70,15 @@ export type DetailGap = {
   span?: [number, number] | null;
 };
 
+/** Contrôle des chiffres (RECO-SRC, 26/11, sans modèle) : un nombre ou une date du
+ *  passage qui ne figure dans le texte lu d'aucune de ses sources. Pas une
+ *  contradiction : à montrer pour guider l'auteur, sans effet sur le verdict. */
+export type UnfoundNumber = {
+  value: string;
+  card_text: string;
+  span?: [number, number] | null;
+};
+
 export type CardSource = {
   url: string;
   stance?: Stance | null;
@@ -96,6 +105,7 @@ export type CardCheck = {
   additions?: string[];
   addition_spans?: Array<[number, number] | null>;
   details?: DetailGap[];
+  unfound_numbers?: UnfoundNumber[];
   /** 3.3 : conseils pour le passage entier (l'auteur ajoute son analyse). */
   advice?: Alert[];
 };
