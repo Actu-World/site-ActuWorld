@@ -100,6 +100,8 @@ export default function App() {
             <Route path="/app" element={<AppPage />} />
             <Route path="/reco-src" element={<RecoSrcPage />} />
             <Route path="/pricing" element={<PricingPage />} />
+            {/* Les liens « Voir les formules » d’ASV Pro et du Studio pointent sur /tarifs. */}
+            <Route path="/tarifs" element={<PricingPage />} />
             <Route path="/faq" element={<FaqPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
