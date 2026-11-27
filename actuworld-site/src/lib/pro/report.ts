@@ -147,7 +147,11 @@ export function reliabilityWords(score: number, lang: Lang): string {
 export function readingWords(src: CardSource, lang: Lang): string | null {
   const method = src.read_method ?? '';
   if (!method || method === 'aucune' || !src.read_chars) return null;
-  const how = method.includes('wayback')
+  const how = method.includes('openalex+pdf')
+    ? pick(lang, "Revue fermée à la lecture : version en accès libre de l'article lue", 'Journal closed to reading: open-access version of the article read')
+    : method.includes('openalex')
+    ? pick(lang, "Revue fermée à la lecture : notice de l'article lue dans un index public (OpenAlex)", 'Journal closed to reading: article record read from a public index (OpenAlex)')
+    : method.includes('wayback')
     ? pick(lang, 'Lue via une copie archivée (archive.org)', 'Read from an archived copy (archive.org)')
     : method.includes('ocr') ? pick(lang, 'PDF scanné, transcrit', 'Scanned PDF, transcribed')
     : method.includes('pdf') ? pick(lang, 'PDF lu', 'PDF read')

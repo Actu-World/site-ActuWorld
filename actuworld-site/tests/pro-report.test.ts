@@ -265,6 +265,13 @@ describe("page qui présente un ouvrage sans en donner le contenu", () => {
     expect(readingWords(base, 'fr')).not.toContain('ouvrage');
   });
 
+  it("dit quand une revue fermée a été lue par sa notice ou sa version en accès libre", () => {
+    expect(readingWords({ ...base, read_method: 'openalex', presentation_only: true }, 'fr')).toContain("notice de l'article lue dans un index public");
+    expect(readingWords({ ...base, read_method: 'openalex', presentation_only: true }, 'fr')).toContain("présente l'ouvrage");
+    expect(readingWords({ ...base, read_method: 'openalex+pdf', read_chars: 59331 }, 'fr')).toContain('version en accès libre');
+    expect(readingWords({ ...base, read_method: 'openalex+pdf', read_chars: 59331 }, 'fr')).not.toContain('PDF lu');
+  });
+
   it("dit à l'auteur que sa source n'est pas en cause", () => {
     const words = sourceAdviceWords({ code: 'cite_passage_of_work' }, 'journals.sagepub.com', 'fr');
     expect(words?.tone).toBe('grey');
