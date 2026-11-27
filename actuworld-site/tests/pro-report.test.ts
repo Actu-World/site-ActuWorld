@@ -11,7 +11,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   cardAdditions, cardDetails, cardStance, cardUnfoundNumbers, faithfulnessWords, highlightAdditions, publisherWords, readingWords, reviewItems, sectionViews,
-  reportSummary, sourceLine, summaryFragment, synthesis, toMarkdown, verdictTone, verdictWords,
+  reportSummary, sourceAdviceWords, sourceLine, summaryFragment, synthesis, toMarkdown, verdictTone, verdictWords,
 } from '../src/lib/pro/report';
 import { draftProblems } from '../src/lib/pro/draft';
 import type { CardCheck, ProInput, ProVerificationDetail } from '../src/lib/pro/types';
@@ -252,5 +252,22 @@ describe('source lue en partie (plafond de lecture)', () => {
     expect(readingWords({ ...base, read_truncated: true }, 'fr')).toContain("seul le début a été lu");
     expect(readingWords({ ...base, read_truncated: false }, 'fr')).not.toContain('début');
     expect(readingWords(base, 'fr')).not.toContain('début');
+  });
+});
+
+
+describe("page qui présente un ouvrage sans en donner le contenu", () => {
+  const base = { url: 'https://journals.sagepub.com/doi/10.1111/x', read_method: 'trafilatura', read_chars: 2292 };
+
+  it("dit que c'est la fiche qui a été lue, pas l'ouvrage", () => {
+    expect(readingWords({ ...base, presentation_only: true }, 'fr')).toContain("présente l'ouvrage");
+    expect(readingWords({ ...base, presentation_only: true }, 'en')).toContain('presents the work');
+    expect(readingWords(base, 'fr')).not.toContain('ouvrage');
+  });
+
+  it("dit à l'auteur que sa source n'est pas en cause", () => {
+    const words = sourceAdviceWords({ code: 'cite_passage_of_work' }, 'journals.sagepub.com', 'fr');
+    expect(words?.tone).toBe('grey');
+    expect(words?.text).toContain("Ta source n'est pas en cause");
   });
 });

@@ -160,6 +160,13 @@ export function readingWords(src: CardSource, lang: Lang): string | null {
     ? new Date(src.read_at).toLocaleString(locale, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
     : null;
   const read = [how, chars, when && pick(lang, `le ${when}`, `on ${when}`)].filter(Boolean).join(', ');
+  // La page présente un ouvrage (résumé d'article savant, fiche de livre, notice) : dire que
+  // c'est elle qui a été lue, pas l'ouvrage.
+  if (src.presentation_only) {
+    return pick(lang,
+      `${read}. Cette page présente l'ouvrage (résumé ou fiche) : son contenu n'a pas été lu.`,
+      `${read}. This page presents the work (abstract or listing): its content was not read.`);
+  }
   // Plafond de lecture atteint : dire que la suite de la page n'a pas été lue.
   return src.read_truncated
     ? pick(lang,
@@ -495,6 +502,9 @@ export function sourceAdviceWords(advice: Alert, domain: string, lang: Lang): Ad
     case 'check_paywalled_part': return { tone: 'grey', text: pick(lang,
       `${domain} n'a été lue qu'en partie (abonnés). Vérifie toi-même la partie réservée.`,
       `${domain} was only partly read (subscribers). Check the paywalled part yourself.`) };
+    case 'cite_passage_of_work': return { tone: 'grey', text: pick(lang,
+      `${domain} présente l'ouvrage, pas son contenu : ce passage n'a pas pu y être vérifié. Ta source n'est pas en cause. Cite la page ou le passage, ou joins une version en accès libre.`,
+      `${domain} presents the work, not its content: this passage could not be checked against it. Your source is not at fault. Cite the page or the passage, or add an open-access version.`) };
     case 'off_topic_source': return { tone: 'orange', text: pick(lang,
       `${domain} ne traite pas de ce passage. Remplace-la par une source qui en parle.`,
       `${domain} does not cover this passage. Replace it with a source that does.`) };

@@ -95,6 +95,8 @@ export type CardSource = {
   read_at?: string | null;
   /** Plafond de lecture atteint : seule la première partie de la page a été lue. */
   read_truncated?: boolean | null;
+  /** La page lue présente un ouvrage (résumé, fiche, notice) sans en donner le contenu. */
+  presentation_only?: boolean | null;
   /** 3.3 : que faire de cette source (code RECO-SRC, api/asv_app/advice.py). */
   advice?: Alert | null;
 };
