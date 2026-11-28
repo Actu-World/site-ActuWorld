@@ -302,9 +302,14 @@ export function publisherWords(note: PublisherNote | undefined, lang: Lang): str
     }
     return pick(lang, 'Aucune source évaluée', 'No source assessed');
   }
-  if (note.score >= 7.5) return pick(lang, 'Éditeurs identifiables', 'Identifiable publishers');
-  if (note.score >= 5.5) return pick(lang, 'Éditeurs partiellement identifiables', 'Partially identifiable publishers');
-  if (note.score >= 3.5) return pick(lang, 'Éditeurs peu identifiables', 'Barely identifiable publishers');
+  // Mêmes paliers et mêmes mots que le libellé affiché sous chaque source
+  // (RECO-SRC `asv/labels.py` : 8 / 6 / 4 / 2). Avec les anciens paliers
+  // (7,5 / 5,5 / 3,5), une seule source « Transparent » donnait un en-tête
+  // « partiellement identifiables » : l'en-tête contredisait la ligne du dessous.
+  if (note.score >= 8) return pick(lang, 'Éditeurs très transparents', 'Very transparent publishers');
+  if (note.score >= 6) return pick(lang, 'Éditeurs transparents', 'Transparent publishers');
+  if (note.score >= 4) return pick(lang, 'Éditeurs partiellement transparents', 'Partially transparent publishers');
+  if (note.score >= 2) return pick(lang, 'Éditeurs faiblement transparents', 'Weakly transparent publishers');
   return pick(lang, 'Éditeurs opaques', 'Opaque publishers');
 }
 
@@ -418,7 +423,11 @@ export function summaryFragment(frag: Alert, lang: Lang): string | null {
         ? `${n} ${one ? 'source non analysée' : 'sources non analysées'} (modèle indisponible)`
         : `${n} ${one ? 'source' : 'sources'} not analysed (model unavailable)`;
     case 'opinion':
-      return fr ? `avis de l'auteur sur ${n} ${one ? 'passage' : 'passages'}` : `author's opinion on ${n} ${one ? 'passage' : 'passages'}`;
+      // Un passage « mixte » est compté ici ET dans `confirmed` : « avis de l'auteur
+      // sur 1 passage » après « 1 passage sur 1 confirmé » se lisait comme une contradiction.
+      return fr
+        ? `une part d'avis de l'auteur dans ${n} ${one ? 'passage' : 'passages'}`
+        : `some author's opinion in ${n} ${one ? 'passage' : 'passages'}`;
     case 'unlinked':
       return fr ? `${n} ${one ? 'passage sans lien' : 'passages sans lien'}` : `${n} ${one ? 'passage' : 'passages'} without a link`;
     case 'not_judged':
@@ -466,7 +475,7 @@ export function synthesis(views: SectionView[], lang: Lang): string {
   parts.push(contradicted
     ? pick(lang, `${contradicted} contredit(s) par sa source`, `${contradicted} contradicted by its source`)
     : pick(lang, 'aucune contradiction', 'no contradiction'));
-  if (opinions) parts.push(pick(lang, `avis de l'auteur sur ${opinions} passage(s)`, `author's opinion on ${opinions} passage(s)`));
+  if (opinions) parts.push(pick(lang, `une part d'avis de l'auteur dans ${opinions} passage(s)`, `some author's opinion in ${opinions} passage(s)`));
   if (unread) parts.push(pick(lang, `${unread} source(s) non lue(s) ou lue(s) en partie`, `${unread} source(s) not read or partly read`));
   if (unlinked) parts.push(pick(lang, `${unlinked} passage(s) sans lien`, `${unlinked} passage(s) without a link`));
   const sentence = parts.join(', ');

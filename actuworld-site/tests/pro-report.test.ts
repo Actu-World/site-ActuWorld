@@ -97,7 +97,8 @@ describe('sections', () => {
     expect(reportSummary(v, views, 'fr')).toBe('3 passages sur 4 confirmés par leurs sources, 1 source illisible (accès réservé), aucune contradiction.');
     expect(reportSummary(v, views, 'en')).toBe('3 of 4 passages confirmed by their sources, 1 unreadable source (restricted access), no contradiction.');
     expect(summaryFragment({ code: 'contradicted', params: { n: 1 } }, 'fr')).toBe('1 passage contredit par sa source');
-    expect(summaryFragment({ code: 'opinion', params: { n: 2 } }, 'en')).toBe("author's opinion on 2 passages");
+    expect(summaryFragment({ code: 'opinion', params: { n: 2 } }, 'en')).toBe("some author's opinion in 2 passages");
+    expect(summaryFragment({ code: 'opinion', params: { n: 1 } }, 'fr')).toBe("une part d'avis de l'auteur dans 1 passage");
   });
 
   it('retombe sur la phrase de RECO-SRC, puis sur la phrase locale', () => {
@@ -170,7 +171,10 @@ describe('lecture des sources (3.5)', () => {
 
 describe('notes', () => {
   it('Éditeur et Fidélité en mots, seuils de RECO-SRC', () => {
-    expect(publisherWords({ score: 8, label: '', sources_evaluated: 3 }, 'fr')).toBe('Éditeurs identifiables');
+    expect(publisherWords({ score: 8, label: '', sources_evaluated: 3 }, 'fr')).toBe('Éditeurs très transparents');
+    // Une seule source « Transparent » (6 à 8) : l'en-tête dit la même chose que la ligne de la source.
+    expect(publisherWords({ score: 6.5, label: '', sources_evaluated: 1 }, 'fr')).toBe('Éditeurs transparents');
+    expect(publisherWords({ score: 4, label: '', sources_evaluated: 2 }, 'fr')).toBe('Éditeurs partiellement transparents');
     expect(publisherWords({ score: 5.5, label: 'Non applicable', sources_evaluated: 0 }, 'fr')).toBe('Non applicable (réseaux sociaux, vidéos)');
     expect(faithfulnessWords({ available: false, stance_counts: { unverifiable: 2 } }, 'fr')).toBe('Non établie : sources illisibles');
     expect(faithfulnessWords({ available: false, stance_counts: { unverifiable: 1 }, unreadable_count: 0, not_found_count: 1 }, 'fr'))
